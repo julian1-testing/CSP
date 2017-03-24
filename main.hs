@@ -1,4 +1,6 @@
 
+-- good doc -> https://wiki.haskell.org/HXT#Installation
+
 module Main
 where
  
@@ -51,5 +53,12 @@ application cfg src dst
  
 processDocumentRootElement  :: IOSArrow XmlTree XmlTree
 processDocumentRootElement 
-    =  this -- substitute this by the real application
+    -- =  this -- substitute this by the real application
+    =  selectAllText 
+
+
+selectAllText :: ArrowXml a => a XmlTree XmlTree
+selectAllText
+    = deep isText
+
 
