@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<response from="1" to="10" selected="0">
+ARGO
+  <metadata>
+    <title>IMOS - Argo Profiles</title>
+    <popularity>548</popularity>
+    <source>ed23e365-c459-4aa4-bbc1-5d2cd0274af0</source>
+    <owner>1</owner>
+    <responsibleParty>coInvestigator|resource|CSIRO Oceans &amp; Atmosphere - Hobart|</responsibleParty>
+    <responsibleParty>principalInvestigator|resource|CSIRO Oceans &amp; Atmosphere - Hobart|</responsibleParty>
+    <responsibleParty>distributor|metadata|Integrated Marine Observing System (IMOS)|</responsibleParty>
+    <geoPolygon>POLYGON ((160 -80, 160 -70, 135 -70, 135 -65, 130 -65, 130 -70, 100 -70, 100 -65, 95 -65, 95 -70, 10 -70, 10 -65, 40 -65, 40 -60, 25 -60, 25 -55, 5 -55, 5 -60, -50 -60, -50 -70, -55 -70, -55 -65, -65 -65, -65 -70, -130 -70, -130 -65, -135 -65, -135 -70, -145 -70, -145 -60, -150 -60, -150 -65, -155 -65, -155 -80, -165 -80, -165 -75, -180 -75, -180 10, -155 10, -155 5, -125 5, -125 0, -120 0, -120 5, -115 5, -115 0, -110 0, -110 5, -100 5, -100 0, -90 0, -90 -10, -115 -10, -115 -5, -120 -5, -120 -10, -125 -10, -125 -5, -130 -5, -130 -10, -150 -10, -150 -15, -155 -15, -155 -20, -140 -20, -140 -25, -135 -25, -135 -35, -130 -35, -130 -40, -125 -40, -125 -35, -115 -35, -115 -40, -90 -40, -90 -35, -80 -35, -80 -30, -75 -30, -75 -25, -80 -25, -80 -15, -75 -15, -75 -20, -70 -20, -70 -35, -75 -35, -75 -40, -85 -40, -85 -50, -75 -50, -75 -55, -65 -55, -65 -50, -60 -50, -60 -35, -55 -35, -55 -30, -45 -30, -45 -35, -15 -35, -15 -40, 5 -40, 5 -35, 0 -35, 0 -30, 30 -30, 30 -25, 35 -25, 35 -20, 45 -20, 45 -15, 40 -15, 40 -10, 35 -10, 35 0, 40 0, 40 5, 45 5, 45 10, 50 10, 50 20, 55 20, 55 30, 60 30, 60 25, 65 25, 65 20, 70 20, 70 5, 85 5, 85 10, 95 10, 95 5, 100 5, 100 0, 110 0, 110 -5, 115 -5, 115 5, 120 5, 120 10, 125 10, 125 15, 120 15, 120 30, 125 30, 125 20, 135 20, 135 15, 140 15, 140 20, 160 20, 160 15, 180 15, 180 -75, 170 -75, 170 -80, 160 -80), (165 -65, 165 -70, 170 -70, 170 -65, 165 -65), (140 -15, 140 -5, 120 -5, 120 -10, 135 -10, 135 -15, 125 -15, 125 -20, 115 -20, 115 -30, 135 -30, 135 -35, 150 -35, 150 -20, 145 -20, 145 -15, 140 -15))</geoPolygon>
+    <geoPolygon>POLYGON ((-85 -15, -85 -10, -80 -10, -80 -15, -85 -15))</geoPolygon>
+    <geoPolygon>POLYGON ((-90 -20, -90 -15, -85 -15, -85 -20, -90 -20))</geoPolygon>
+    <geoPolygon>POLYGON ((125 30, 125 35, 130 35, 130 30, 125 30))</geoPolygon>
+    <geoPolygon>POLYGON ((-5 45, -5 50, 0 50, 0 45, -5 45))</geoPolygon>
+    <geoPolygon>POLYGON ((-125 45, -125 50, -120 50, -120 45, -125 45))</geoPolygon>
+    <geoPolygon>POLYGON ((-125 30, -125 35, -120 35, -120 30, -125 30))</geoPolygon>
+    <geoPolygon>POLYGON ((-25 -70, -25 -65, -20 -65, -20 -70, -25 -70))</geoPolygon>
+    <geoPolygon>POLYGON ((-40 -70, -40 -65, -35 -65, -35 -70, -40 -70))</geoPolygon>
+    <geoPolygon>POLYGON ((-15 -75, -15 -65, -5 -65, -5 -70, -10 -70, -10 -75, -15 -75))</geoPolygon>
+    <type>dataset</type>
+    <useLimitation>Data, products and services from IMOS are provided "as is" without any warranty as to fitness for a particular purpose.</useLimitation>
+    <useLimitation>Argo Data (Temperature and Salinity profiles) are freely available without any restriction, via the internet Global Data Centres (GDACs) and the GTS of WMO. Please support Argo by acknowledging your use of Argo data with the following words: "These data were collected and made freely available by the International Argo project and the national programs that contribute to it. (http://www.argo.net). Argo is a pilot programme of the Global Ocean Observing System."</useLimitation>
+    <userinfo>admin||admin|Administrator</userinfo>
+    <isTemplate>n</isTemplate>
+    <rating>0</rating>
+    <credit>Integrated Marine Observing System (IMOS). IMOS is a national collaborative research infrastructure, supported by Australian Government.</credit>
+    <credit>CSIRO Oceans &amp; Atmosphere</credit>
+    <credit>Australian Bureau of Meteorology (BOM)</credit>
+    <credit>Royal Australian Navy (RAN)</credit>
+    <platform>drifting subsurface profiling float</platform>
+    <parentId>8cc13f98-9897-4193-8ba6-d1f05356d3f2</parentId>
+    <tempExtentBegin>1999-10-01t00:00:00.000z</tempExtentBegin>
+    <image>thumbnail|../../srv/en/resources.get?uuid=4402cb50-e20a-44ee-93e6-4728259250d2&amp;fname=argologointro_s.png&amp;access=public</image>
+    <datasetLang>eng</datasetLang>
+    <jurisdictionLink>http://creativecommons.org/international/</jurisdictionLink>
+    <isHarvested>y</isHarvested>
+    <imageLink>https://licensebuttons.net/l/by/4.0/88x31.png</imageLink>
+    <attrConstr>The citation in a list of references is: "IMOS [year-of-data-download], [Title], [data-access-URL], accessed [date-of-access]."</attrConstr>
+    <attrConstr>Any users of IMOS data are required to clearly acknowledge the source of the material derived from IMOS in the format: "Data was sourced from the Integrated Marine Observing System (IMOS) - IMOS is a national collaborative research infrastructure, supported by the Australian Government." If relevant, also credit other organisations involved in collection of this particular datastream (as listed in 'credit' in the metadata record).</attrConstr>
+    <language>eng</language>
+    <link>|Point of truth URL of this metadata record|https://catalogue-imos.aodn.org.au:443/geonetwork/srv/en/metadata.show?uuid=4402cb50-e20a-44ee-93e6-4728259250d2|WWW:LINK-1.0-http--metadata-URL|text/html</link>
+    <link>argo-dm-user-manual.pdf|Argo User's Manual|https://catalogue-imos.aodn.org.au:443/geonetwork/srv/en/file.disclaimer?uuid=4402cb50-e20a-44ee-93e6-4728259250d2&amp;fname=argo-dm-user-manual.pdf&amp;access=private|WWW:DOWNLOAD-1.0-http--downloadother|application/pdf</link>
+    <link>|Argo page on IMOS website|http://imos.org.au/argo.html|WWW:LINK-1.0-http--link|text/html</link>
+    <link>|Data available through the IMOS Thredds server|http://thredds.aodn.org.au/thredds/catalog/IMOS/Argo/dac/catalog.html|WWW:LINK-1.0-http--link|text/html</link>
+    <link>|View and download data though the AODN Portal|https://imos.aodn.org.au/imos123/home?uuid=4402cb50-e20a-44ee-93e6-4728259250d2|WWW:LINK-1.0-http--link|text/html</link>
+    <link>imos:argo_profile_map|Argo Profiles|http://geoserver-123.aodn.org.au/geoserver/wms|OGC:WMS-1.1.1-http-get-map|application/vnd.ogc.wms_xml</link>
+    <link>imos:argo_profile_map|Argo Profiles|../../srv/en/google.kml?uuid=&amp;layers=imos:argo_profile_map|application/vnd.google-earth.kml+xml|application/vnd.google-earth.kml+xml</link>
+    <link>imos:argo_profile_data|This OGC WFS service returns filtered geographic information. The returned data is available in multiple formats including CSV.|http://geoserver-123.aodn.org.au/geoserver/ows|OGC:WFS-1.0.0-http-get-capabilities|OGC:WFS-1.0.0-http-get-capabilities</link>
+    <link>|OGC WFS help documentation|http://help.aodn.org.au/help/?q=node/53|WWW:LINK-1.0-http--link|text/html</link>
+    <link>argo_profile_map#url|The BODAAC is a WFS service that returns a list of OpenDAP URLs matching a query.|http://geoserver-123.aodn.org.au/geoserver/ows|IMOS:AGGREGATION--bodaac|IMOS:AGGREGATION--bodaac</link>
+    <link>|BODAAC help documentation|http://help.aodn.org.au/help/?q=node/69|WWW:LINK-1.0-http--link|text/html</link>
+    <licenseName>Attribution 4.0 International</licenseName>
+    <tempExtentEnd>2017-04-07t23:59:59.000z</tempExtentEnd>
+    <licenseLink>http://creativecommons.org/licenses/by/4.0/</licenseLink>
+    <_locale>eng</_locale>
+    <valid>-1</valid>
+    <abstract>Argo Australia aims to undertake real time monitoring of the broad ocean state around Australia by maintaining an array of profiling (Argo) floats that measure temperature, salinity and pressure down to 2000m every 10 days in real time. The data presented here, represent all Australian Argo profiles collected since 2000, and covers the oceans in the southern hemisphere worldwide A typical Argo float mission is to profile from 2000 m depth to the sea surface every 10 days. On deployment, the float sinks to a depth of 1000 m and drifts with the ocean currents for 9 days. Then the float sinks deeper to its profile depth (usually 2000 m) before starting to ascend through the water column measuring temperature, salinity, pressure, and oxygen (on selected floats) as it rises. Once at the surface it transmits location and profile data via satellite to land-based Argo data centres. After transmission the float sinks again and repeats the cycle. Each Argo float is identified by a unique identification number called a WMO ID. WMO (World Meteorological Organisation) ID Numbers are assigned to measurement stations and observing platforms to enable researchers to keep track of, and uniquely identify their floats. The average life of the latest model APEX Argo floats are around 3.7 years or approximately 135 cycles. These statistics are for floats with the standard alkaline battery configuration from an analysis by Kobayashi et al (2009). In the Australian Argo program, the floats are deployed with a combination of lithium and alkaline battery packs which extends float lifetime. Argo Australia floats usually last 5 years and several floats are approaching their 9th birthday and are still returning good data.</abstract>
+    <parameter>Temperature of the water body</parameter>
+    <parameter>Practical salinity of the water body</parameter>
+    <parameter>Concentration of oxygen {O2} per unit mass of the water body</parameter>
+    <parameter>Pressure (measured variable) in the water body exerted by overlying sea water and any medium above it</parameter>
+    <keyword>Oceans | Ocean Temperature | Water Temperature</keyword>
+    <keyword>Oceans | Bathymetry | Water Depth</keyword>
+    <keyword>Oceans | Ocean Circulation | Ocean Currents</keyword>
+    <keyword>Oceans | Salinity/density | Salinity</keyword>
+    <keyword>Oceans | Ocean Chemistry | Dissolved Gases</keyword>
+    <keyword>Oceans | Ocean Pressure | Water Pressure</keyword>
+    <keyword>IMOS Node | Bluewater and Climate</keyword>
+    <keyword>Profiling Float | Autonomous Profiling Float</keyword>
+    <keyword>Global / Oceans | Atlantic Ocean</keyword>
+    <keyword>Global / Oceans | Southern Ocean</keyword>
+    <keyword>Global / Oceans | Indian Ocean</keyword>
+    <keyword>Regional Seas | Arabian Sea</keyword>
+    <keyword>Marine Features (Australia) | Great Australian Bight, SA/WA</keyword>
+    <keyword>Regional Seas | Tasman Sea</keyword>
+    <keyword>Marine Features (Australia) | Bass Strait, TAS/VIC</keyword>
+    <keyword>Regional Seas | Coral Sea</keyword>
+    <keyword>Global / Oceans | Pacific Ocean</keyword>
+    <keyword>Regional Seas | Philippine Sea</keyword>
+    <keyword>Regional Seas | Celebes Sea</keyword>
+    <keyword>Regional Seas | East China Sea</keyword>
+    <keyword>Regional Seas | Bismarck Sea</keyword>
+    <keyword>Countries | Australia</keyword>
+    <keyword>Countries | New Zealand</keyword>
+    <keyword>Countries | Indonesia</keyword>
+    <keyword>Countries | Papua New Guinea</keyword>
+    <keyword>Countries | Philippines</keyword>
+    <keyword>Countries | Fiji</keyword>
+    <keyword>Countries | New Caledonia</keyword>
+    <keyword>Countries | Solomon Islands</keyword>
+    <keyword>Countries | Vanuatu</keyword>
+    <keyword>oceans</keyword>
+    <organisation>Integrated Marine Observing System (IMOS)</organisation>
+    <organisation>CSIRO Oceans &amp; Atmosphere - Hobart</organisation>
+    <defaultTitle>IMOS - Argo Profiles</defaultTitle>
+    <docLocale>eng</docLocale>
+    <geonet:info xmlns:geonet="http://www.fao.org/geonetwork">
+      <id>177</id>
+      <uuid>4402cb50-e20a-44ee-93e6-4728259250d2</uuid>
+      <schema>iso19139.mcp-2.0</schema>
+      <createDate>2016-05-25T16:35:14</createDate>
+      <changeDate>2017-04-07T00:00:04</changeDate>
+      <source>ed23e365-c459-4aa4-bbc1-5d2cd0274af0</source>
+      <view>true</view>
+      <notify>false</notify>
+      <download>false</download>
+      <dynamic>true</dynamic>
+      <featured>true</featured>
+      <guestdownload>false</guestdownload>
+      <selected>false</selected>
+    </geonet:info>
+  </metadata>
+
+

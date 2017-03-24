@@ -1,0 +1,1498 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<response from="1" to="10" selected="0">
+  <summary count="133" type="local">
+    <dimension value="Measured parameter" count="124">
+      <category value="Physical-Water" count="96">
+        <category value="Temperature" count="72">
+          <category value="Temperature of the water body" count="52" />
+          <category value="Skin temperature of the water body" count="20" />
+          <category value="Temperature anomaly of the water body" count="2" />
+        </category>
+        <category value="Salinity" count="37">
+          <category value="Practical salinity of the water body" count="37" />
+          <category value="Electrical conductivity of the water body" count="16" />
+          <category value="Practical salinity anomaly of the water body" count="2" />
+        </category>
+        <category value="Current" count="21">
+          <category value="Eastward current velocity in the water body" count="19" />
+          <category value="Northward current velocity in the water body" count="19" />
+          <category value="Current direction in the water body" count="15" />
+          <category value="Current speed in the water body" count="15" />
+          <category value="Upward current velocity in the water body" count="3" />
+          <category value="Northward geostrophic current velocity in the water body" count="2" />
+          <category value="Eastward geostrophic current velocity in the water body" count="2" />
+        </category>
+        <category value="Water pressure" count="21">
+          <category value="Pressure (measured variable) in the water body exerted by overlying sea water and any medium above it" count="14" />
+          <category value="Pressure (measured variable) in the water body exerted by overlying sea water only" count="10" />
+        </category>
+        <category value="Optical properties" count="14">
+          <category value="Downwelling vector irradiance as photons (PAR wavelengths) in the atmosphere" count="5" />
+          <category value="Colored Dissolved Organic Matter" count="3" />
+          <category value="Downwelling vector irradiance as photons (PAR wavelengths) in the water body" count="3" />
+          <category value="Light absorption coefficient of phytoplankton" count="1" />
+          <category value="Light absorption coefficient of nonalgal particles" count="1" />
+          <category value="Light absorption coefficient of dissolved organic matter" count="1" />
+          <category value="Sky radiance as energy in the atmosphere" count="1" />
+          <category value="Upwelling radiance as energy in the atmosphere" count="1" />
+          <category value="Downwelling vector irradiance as energy in the atmosphere" count="1" />
+          <category value="Secchi depth" count="1" />
+        </category>
+        <category value="Turbidity" count="10">
+          <category value="Turbidity of the water body" count="10" />
+        </category>
+        <category value="Air-Sea Fluxes" count="7">
+          <category value="Downwelling vector irradiance as energy (solar (300-3000nm) wavelengths) in the atmosphere" count="7" />
+          <category value="Downwelling vector irradiance as energy (longwave) in the atmosphere" count="7" />
+          <category value="Net shortwave heat flux" count="4" />
+          <category value="Net longwave heat flux" count="4" />
+          <category value="Net mass flux" count="4" />
+          <category value="Net heat flux" count="4" />
+          <category value="Latent heat flux" count="4" />
+          <category value="Sensible heat flux" count="4" />
+          <category value="Sensible heat flux due to precipitation" count="1" />
+        </category>
+        <category value="Density" count="4">
+          <category value="Density of the water body" count="4" />
+        </category>
+        <category value="Acoustics" count="3">
+          <category value="Acoustic signal return amplitude from the water body" count="2" />
+          <category value="Sound recorded in the water body" count="1" />
+        </category>
+        <category value="Wave" count="3">
+          <category value="Significant height of waves on the water body" count="3" />
+          <category value="Directional spreading of waves on the water body" count="1" />
+          <category value="Direction of waves on the water body" count="1" />
+          <category value="Maximum height of waves on the water body" count="1" />
+        </category>
+        <category value="Sea surface height" count="2">
+          <category value="Sea surface height above geoid" count="2" />
+          <category value="Sea surface height anomaly" count="2" />
+        </category>
+        <category value="Depth" count="1">
+          <category value="Sea-floor depth below surface of the water body" count="1" />
+        </category>
+        <category value="Backscattering" count="1">
+          <category value="Volume backscattering coefficient" count="1" />
+        </category>
+      </category>
+      <category value="Biological" count="44">
+        <category value="Chlorophyll" count="26">
+          <category value="Concentration of inferred chlorophyll from relative fluorescence per unit volume of the water body" count="22" />
+          <category value="Fluorescence of the water body" count="4" />
+          <category value="Concentration of total chlorophyll-a plus chlorophyll-b plus chlorophyll-c per unit volume of the water body" count="1" />
+          <category value="Concentration of total chlorophyll-c per unit volume of the water body" count="1" />
+          <category value="Concentration of total chlorophyll-a per unit volume of the water body" count="1" />
+          <category value="Concentration of chlorophyll per unit volume of the water body" count="1" />
+        </category>
+        <category value="Ocean Biota" count="15">
+          <category value="Biotic taxonomic identification" count="13" />
+          <category value="Abundance of biota" count="11" />
+          <category value="Biovolume" count="3" />
+          <category value="Dry weight biomass per unit volume of the water body" count="1" />
+          <category value="Phytoplankton Colour Index" count="1" />
+          <category value="Detection of acoustic tag" count="1" />
+        </category>
+        <category value="Nutrient" count="4">
+          <category value="Concentration of silicate {SiO4} per unit volume of the water body" count="2" />
+          <category value="Concentration of phosphate {PO4} per unit volume of the water body" count="2" />
+          <category value="Concentration of nitrate {NO3} per unit volume of the water body" count="2" />
+          <category value="Concentration of silicate {SiO4} per unit mass of the water body" count="2" />
+          <category value="Concentration of phosphate {PO4} per unit mass of the water body" count="2" />
+          <category value="Concentration of nitrate {NO3} per unit mass of the water body" count="2" />
+          <category value="Concentration of ammonium {NH4} per unit volume of the water body" count="1" />
+        </category>
+        <category value="Pigment" count="2">
+          <category value="Concentration of pyropheophytin-a per unit volume of the water body" count="2" />
+          <category value="Concentration of alpha-carotene and beta-carotene per unit volume of the water body" count="2" />
+          <category value="Concentration of beta-carotene per unit volume of the water body" count="2" />
+          <category value="Concentration of alpha-carotene per unit volume of the water body" count="2" />
+          <category value="Concentration of lycopene per unit volume of the water body" count="2" />
+          <category value="Concentration of pheophytin-a per unit volume of the water body" count="2" />
+          <category value="Concentration of pheophytin-b per unit volume of the water body" count="2" />
+          <category value="Concentration of echinenone per unit mass of the water body" count="2" />
+          <category value="Concentration of chlorophyll-a plus divinyl chlorophyll-a per unit volume of the water body" count="2" />
+          <category value="Concentration of chlorophyll-a per unit volume of the water body" count="2" />
+          <category value="Concentration of divinyl chlorophyll-a per unit volume of the water body" count="2" />
+          <category value="Concentration of chlorophyll-b per unit volume of the water body" count="2" />
+          <category value="Concentration of divinyl chlorophyll-b per unit volume of the water body" count="2" />
+          <category value="Concentration of gyroxanthin diester per unit volume of the water body" count="2" />
+          <category value="Concentration of canthaxanthin per unit volume of the water body" count="2" />
+          <category value="Concentration of lutein per unit volume of the water body" count="2" />
+          <category value="Concentration of zeaxanthin per unit volume of the water body" count="2" />
+          <category value="Concentration of diatoxanthin per unit volume of the water body" count="2" />
+          <category value="Concentration of alloxanthin per unit volume of the water body" count="2" />
+          <category value="Concentration of antheraxanthin per unit volume of the water body" count="2" />
+          <category value="Concentration of dinoxanthin per unit volume of the water body" count="2" />
+          <category value="Concentration of diadinoxanthin per unit volume of the water body" count="2" />
+          <category value="Concentration of diadinochrome per unit volume of the water body" count="2" />
+          <category value="Concentration of astaxanthin per unit volume of the water body" count="2" />
+          <category value="Concentration of 19-hexanoyloxyfucoxanthin per unit volume of the water body" count="2" />
+          <category value="Concentration of violaxanthin per unit volume of the water body" count="2" />
+          <category value="Concentration of prasinoxanthin per unit volume of the water body" count="2" />
+          <category value="Concentration of 4-keto-19-hexanoyloxyfucoxanthin per unit volume of the water body" count="2" />
+          <category value="Concentration of neoxanthin per unit volume of the water body" count="2" />
+          <category value="Concentration of fucoxanthin per unit volume of the water body" count="2" />
+          <category value="Concentration of 19-butanoyloxyfucoxanthin per unit volume of the water body" count="2" />
+          <category value="Concentration of pyropheophorbide-a per unit volume of the water body" count="2" />
+          <category value="Concentration of peridinin per unit volume of the water body" count="2" />
+          <category value="Concentration of pheophorbide-a per unit volume of the water body" count="2" />
+          <category value="Concentration of chlorophyllide-a per unit volume of the water body" count="2" />
+          <category value="Concentration of chlorophyll-c1c2 per unit volume of the water body" count="2" />
+          <category value="Concentration of chlorophyll-c1 per unit volume of the water body" count="2" />
+          <category value="Concentration of chlorophyll-c2 per unit volume of the water body" count="2" />
+          <category value="Concentration of Mg-2,4-divinyl pheoporphyrin a5 monomethyl ester per unit volume of the water body" count="2" />
+          <category value="Concentration of chlorophyll-c3 per unit volume of the water body" count="2" />
+          <category value="Concentration of total diagnostic pigments per unit volume of the water body" count="1" />
+          <category value="Concentration of total pigment per unit volume of the water body" count="1" />
+          <category value="Concentration of total accessory pigments per unit volume of the water body" count="1" />
+          <category value="Concentration of photosynthetic pigments per unit volume of the water body" count="1" />
+          <category value="Concentration of photosynthetic carotenoids per unit volume of the water body" count="1" />
+          <category value="Concentration of photoprotective carotenoids per unit volume of the water body" count="1" />
+          <category value="Concentration of chlorophyll-b plus divinyl chlorophyll-b per unit volume of the water body" count="1" />
+        </category>
+        <category value="Suspended particulate material" count="2">
+          <category value="Concentration of suspended particulate material per unit volume of the water body" count="2" />
+          <category value="Concentration of suspended particulate material (organic) per unit volume of the water body" count="2" />
+          <category value="Concentration of suspended particulate material (inorganic) per unit volume of the water body" count="2" />
+        </category>
+      </category>
+      <category value="Chemical" count="17">
+        <category value="Oxygen" count="13">
+          <category value="Concentration of oxygen {O2} per unit volume of the water body" count="9" />
+          <category value="Concentration of oxygen {O2} per unit mass of the water body" count="6" />
+          <category value="Saturation of oxygen {O2} in the water body [dissolved phase]" count="1" />
+        </category>
+        <category value="Carbon" count="6">
+          <category value="Mole fraction of carbon dioxide (dry air) in the equilibrated marine sample" count="4" />
+          <category value="Mole fraction of carbon dioxide (dry air) in the atmosphere" count="4" />
+          <category value="Concentration of carbon (total inorganic) per unit mass of the water body" count="2" />
+          <category value="Fugacity anomaly (water - air) of carbon dioxide in the water body" count="2" />
+          <category value="Fugacity of carbon dioxide (at 100% humidity) in the atmosphere" count="2" />
+          <category value="Fugacity of carbon dioxide (at 100% humidity) in the water body" count="2" />
+        </category>
+        <category value="Alkalinity" count="2">
+          <category value="Total alkalinity per unit mass of the water body" count="2" />
+        </category>
+      </category>
+      <category value="Physical-Atmosphere" count="16">
+        <category value="Air pressure" count="15">
+          <category value="Pressure (measured variable) exerted by the atmosphere" count="14" />
+          <category value="Pressure (measured variable) exerted by the atmosphere and correction to sea level" count="1" />
+        </category>
+        <category value="Wind" count="15">
+          <category value="Wind speed in the atmosphere" count="15" />
+          <category value="Wind from direction in the atmosphere" count="9" />
+          <category value="Wind to direction in the atmosphere" count="6" />
+          <category value="Wind stress on the water body" count="4" />
+          <category value="Northward wind velocity in the atmosphere" count="3" />
+          <category value="Eastward wind velocity in the atmosphere" count="3" />
+          <category value="Wind speed of gust in the atmosphere" count="1" />
+        </category>
+        <category value="Air temperature" count="14">
+          <category value="Temperature of the atmosphere" count="14" />
+          <category value="Wet bulb temperature of the atmosphere" count="1" />
+          <category value="Dew point temperature of the atmosphere" count="1" />
+        </category>
+        <category value="Humidity" count="12">
+          <category value="Relative humidity of the atmosphere" count="12" />
+        </category>
+        <category value="Precipitation and evaporation" count="11">
+          <category value="Thickness of precipitation amount (liquid water equivalent) in the atmosphere" count="9" />
+          <category value="Precipitation rate (liquid water equivalent) in the atmosphere" count="7" />
+          <category value="Hail intensity in the atmosphere" count="1" />
+          <category value="Thickness of hail amount in the atmosphere" count="1" />
+          <category value="Hail duration in the atmosphere" count="1" />
+          <category value="Precipitation duration (liquid water equivalent) in the atmosphere" count="1" />
+        </category>
+        <category value="Air-Sea Fluxes" count="7">
+          <category value="Downwelling vector irradiance as energy (solar (300-3000nm) wavelengths) in the atmosphere" count="7" />
+          <category value="Downwelling vector irradiance as energy (longwave) in the atmosphere" count="7" />
+          <category value="Net shortwave heat flux" count="4" />
+          <category value="Net longwave heat flux" count="4" />
+          <category value="Net mass flux" count="4" />
+          <category value="Net heat flux" count="4" />
+          <category value="Latent heat flux" count="4" />
+          <category value="Sensible heat flux" count="4" />
+          <category value="Sensible heat flux due to precipitation" count="1" />
+        </category>
+        <category value="UV radiation" count="1">
+          <category value="Downwelling vector irradiance as energy (ultra-violet wavelengths) in the atmosphere" count="1" />
+        </category>
+      </category>
+    </dimension>
+    <dimension value="Temporal Resolution" count="34">
+      <category value="day" label="Day" count="15" />
+      <category value="six-day" label="Six day" count="10" />
+      <category value="three-day" label="Three day" count="3" />
+      <category value="none" label="None" count="3" />
+      <category value="week" label="Week" count="2" />
+      <category value="multi-year" label="Multi-year" count="1" />
+    </dimension>
+    <dimension value="Organisation" count="133">
+      <category value="Integrated Marine Observing System (IMOS)" count="98" />
+      <category value="CSIRO Oceans &amp; Atmosphere - Hobart" count="47" />
+      <category value="Bureau of Meteorology (BOM)" count="31" />
+      <category value="Institute for Marine and Antarctic Studies (IMAS), University of Tasmania (UTAS)" count="20" />
+      <category value="School of Civil, Environmental and Mining Engineering (CEME), The University of Western Australia (UWA)" count="16" />
+      <category value="Australian Institute of Marine Science (AIMS)" count="13" />
+      <category value="Office of Environment and Heritage (OEH), New South Wales Government" count="5" />
+      <category value="CSIRO Oceans &amp; Atmosphere - Dutton Park" count="5" />
+      <category value="Department of Biological Sciences, Macquarie University" count="5" />
+      <category value="Environment Protection Authority Victoria (EPA), Victorian Government" count="4" />
+      <category value="Defence Science and Technology Organisation (DSTO), Department of Defence (DoD), Australian Government" count="3" />
+      <category value="Australian Antarctic Data Centre (AADC)" count="2" />
+      <category value="Royal Australian Navy Hydrography and METOC Branch" count="2" />
+      <category value="Tasmanian Aquaculture and Fisheries Institute (TAFI)" count="2" />
+      <category value="Food Authority, New South Wales Government" count="2" />
+      <category value="Warringah Council" count="2" />
+      <category value="National Climate Change Adaptation Research Facility (NCCARF), Griffith University (GU)" count="2" />
+      <category value="UWA Oceans Institute (OI), The University of Western Australia (UWA)" count="2" />
+      <category value="SARDI Aquatic Sciences, South Australian Research and Development Institute (SARDI)" count="2" />
+      <category value="CSIRO Oceans &amp; Atmosphere - Floreat" count="2" />
+      <category value="School of Biological Sciences, Flinders University" count="2" />
+      <category value="Department of Science, Information Technology and Innovation (DSITI), Queensland Government" count="2" />
+      <category value="University of Geneva" count="2" />
+      <category value="Centre for Tropical Waters and Aquatic Research (TropWATER), James Cook University (JCU)" count="2" />
+      <category value="Hornsby Shire Council" count="2" />
+      <category value="Australian Rivers Institute (ARI), Griffith University (GU)" count="2" />
+      <category value="Microalgal Services" count="2" />
+      <category value="University of Technology, Sydney (UTS)" count="2" />
+      <category value="School of Biological Sciences (SBS), The University of Queensland (UQ)" count="2" />
+      <category value="National Institute for Environmental Studies (NIES)" count="1" />
+      <category value="Climate Change Research Centre (CCRC), The University of New South Wales (UNSW)" count="1" />
+      <category value="Department of Meteorology, Stockholm University (MISU)" count="1" />
+      <category value="Tasmanian Partnership for Advanced Computing (TPAC)" count="1" />
+      <category value="Antarctic Climate &amp; Ecosystems Cooperative Research Centre (ACE CRC)" count="1" />
+      <category value="Department of Applied Geology, Curtin University" count="1" />
+      <category value="Department of Applied Geology, Curtin University of Technology" count="1" />
+      <category value="Centre for Marine Science and Technology (CMST), Curtin University" count="1" />
+      <category value="Australian Centre for Field Robotics (ACFR), The University of Sydney (USYD)" count="1" />
+      <category value="Sydney Institute of Marine Science (SIMS)" count="1" />
+      <category value="Australian Antarctic Division (AAD)" count="1" />
+      <category value="School of Land and Food (SLAF), University of Tasmania (UTAS)" count="1" />
+      <category value="Hydrography and METOC Branch" count="1" />
+      <category value="National Oceanic and Atmospheric Administration (NOAA)" count="1" />
+      <category value="Manly Hydraulics Laboratory (MHL)" count="1" />
+      <category value="Maritime Division, Defence Science and Technology Group (DST Group)" count="1" />
+      <category value="School of Zoology, University of Tasmania (UTAS)" count="1" />
+      <category value="Great Barrier Reef Foundation" count="1" />
+      <category value="Rio Tinto Alcan" count="1" />
+      <category value="Research Institute for the Environment and Livelihoods (RIEL), Charles Darwin University (CDU)" count="1" />
+      <category value="University of Wales Swansea" count="1" />
+      <category value="School for Environmental Research, Institute of Advanced Studies, Charles Darwin University (CDU)" count="1" />
+    </dimension>
+    <dimension value="Platform" count="121">
+      <category value="Satellite" count="34">
+        <category value="orbiting satellite" count="34">
+          <category value="NOAA-19" count="19" />
+          <category value="NOAA-18" count="17" />
+          <category value="NOAA-17" count="17" />
+          <category value="Aqua" count="11" />
+          <category value="OrbView-2" count="2" />
+        </category>
+      </category>
+      <category value="Vessel" count="30">
+        <category value="vessel of opportunity" count="12" />
+        <category value="small boat" count="8" />
+        <category value="research vessel" count="7">
+          <category value="L'Astrolabe" count="1" />
+        </category>
+        <category value="vessel of opportunity on fixed route" count="2" />
+        <category value="naval vessel" count="1" />
+      </category>
+      <category value="Mooring and buoy" count="21">
+        <category value="mooring" count="18" />
+        <category value="subsurface mooring" count="2" />
+        <category value="moored surface buoy" count="1" />
+      </category>
+      <category value="Biological platform" count="14">
+        <category value="diver" count="5" />
+        <category value="land-sea mammals" count="3" />
+        <category value="organism" count="3" />
+        <category value="seabird and duck" count="2" />
+        <category value="flightless bird" count="1" />
+      </category>
+      <category value="Radar" count="12">
+        <category value="WERA beam forming HF radar" count="8" />
+        <category value="SeaSonde direction finding HF radar" count="4" />
+      </category>
+      <category value="Fixed station" count="4">
+        <category value="fixed benthic node" count="2" />
+        <category value="coastal structure" count="1" />
+        <category value="offshore structure" count="1" />
+      </category>
+      <category value="Glider" count="3">
+        <category value="sub-surface gliders" count="3" />
+      </category>
+      <category value="Float" count="2">
+        <category value="drifting subsurface profiling float" count="1" />
+        <category value="drifting surface float" count="1" />
+      </category>
+      <category value="AUV" count="1">
+        <category value="unmanned autonomous underwater vehicle" count="1" />
+      </category>
+    </dimension>
+  </summary>
+  <metadata>
+    <title>IMOS - SRS Satellite - SST L3S - 01 day composite - night time</title>
+    <popularity>1798</popularity>
+    <source>ed23e365-c459-4aa4-bbc1-5d2cd0274af0</source>
+    <owner>1</owner>
+    <responsibleParty>resourceProvider|resource|Bureau of Meteorology (BOM)|</responsibleParty>
+    <responsibleParty>principalInvestigator|resource|Bureau of Meteorology (BOM)|</responsibleParty>
+    <responsibleParty>distributor|metadata|Integrated Marine Observing System (IMOS)|</responsibleParty>
+    <type>dataset</type>
+    <userinfo>admin||admin|Administrator</userinfo>
+    <isTemplate>n</isTemplate>
+    <rating>0</rating>
+    <credit>Integrated Marine Observing System (IMOS). IMOS is a national collaborative research infrastructure, supported by Australian Government.</credit>
+    <credit>Bureau of Meteorology (BOM)</credit>
+    <credit>CSIRO Marine and Atmospheric Research (CMAR)</credit>
+    <platform>NOAA-17</platform>
+    <platform>NOAA-18</platform>
+    <platform>NOAA-19</platform>
+    <parentId>5356744f-10f7-442e-8dd5-8a05f016588d</parentId>
+    <tempExtentBegin>1992-03-20t00:00:00.000z</tempExtentBegin>
+    <image>thumbnail|../../srv/en/resources.get?uuid=aaad092c-c3af-42e6-87e0-bdaef945f522&amp;fname=SRS_map_s.png&amp;access=public</image>
+    <datasetLang>eng</datasetLang>
+    <jurisdictionLink>http://creativecommons.org/international/</jurisdictionLink>
+    <isHarvested>y</isHarvested>
+    <imageLink>https://licensebuttons.net/l/by/4.0/88x31.png</imageLink>
+    <attrConstr>The citation in a list of references is: "IMOS [year-of-data-download], [Title], [data-access-URL], accessed [date-of-access]."</attrConstr>
+    <attrConstr>Any users of IMOS data are required to clearly acknowledge the source of the material derived from IMOS in the format: "Data was sourced from the Integrated Marine Observing System (IMOS) - IMOS is a national collaborative research infrastructure, supported by the Australian Government." If relevant, also credit other organisations involved in collection of this particular datastream (as listed in 'credit' in the metadata record).</attrConstr>
+    <language>eng</language>
+    <link>|Point of truth URL of this metadata record|https://catalogue-imos.aodn.org.au:443/geonetwork/srv/en/metadata.show?uuid=aaad092c-c3af-42e6-87e0-bdaef945f522|WWW:LINK-1.0-http--metadata-URL|text/html</link>
+    <link>|Sea Surface Temperatures Derived from NOAA Satellite Data|http://imos.org.au/sstproducts.html|WWW:LINK-1.0-http--link|text/html</link>
+    <link>|Data available through the OPeNDAP server|http://thredds.aodn.org.au/thredds/catalog/IMOS/SRS/SST/ghrsst/L3S-1d/ngt/catalog.html|WWW:LINK-1.0-http--link|text/html</link>
+    <link>|View and download data though the AODN Portal|https://imos.aodn.org.au/imos123/home?uuid=aaad092c-c3af-42e6-87e0-bdaef945f522|WWW:LINK-1.0-http--link|text/html</link>
+    <link>srs_sst_l3s_1d_ngt_gridded_url/sea_surface_temperature|SRS - SST L3S 01 night - WMS layer|http://geoserver-123.aodn.org.au/geoserver/ncwms|IMOS:NCWMS--proto|IMOS:NCWMS--proto</link>
+    <link>srs_sst_l3s_1d_ngt_gridded_url|The GoGoDuck subsets and aggregates gridded data. Data is returned as a NetCDF file.|http://geoserver-wps.aodn.org.au/geoserver/wps|OGC:WPS--gogoduck|OGC:WPS--gogoduck</link>
+    <link>|GoGoDuck help documentation|http://help.aodn.org.au/help/?q=node/88|WWW:LINK-1.0-http--link|text/html</link>
+    <link>srs_sst_l3s_1d_ngt_gridded_url#file_url|The BODAAC is a WFS service that returns a list of OpenDAP URLs matching a query.|http://geoserver-123.aodn.org.au/geoserver/ows|IMOS:AGGREGATION--bodaac|IMOS:AGGREGATION--bodaac</link>
+    <link>|BODAAC help documentation|http://help.aodn.org.au/help/?q=node/69|WWW:LINK-1.0-http--link|text/html</link>
+    <licenseName>Attribution 4.0 International</licenseName>
+    <tempExtentEnd>2017-04-07t23:59:59.000z</tempExtentEnd>
+    <licenseLink>http://creativecommons.org/licenses/by/4.0/</licenseLink>
+    <_locale>eng</_locale>
+    <valid>-1</valid>
+    <abstract>This is a multi-sensor SSTskin product for a single night-time period, derived using observations from AVHRR instruments on all available NOAA polar-orbiting satellites.  It is provided as a 0.02deg x 0.02deg cylindrical equidistant projected map over the region 70°E to 170°W, 20°N to 70°S.  Each grid cell contains the 1 night average of all the highest available quality SSTs that overlap with that cell, weighted by the area of overlap.  The diagram at https://help.aodn.org.au/satellite-data/product-information/ indicates where this product fits within the GHRSST suite of NOAA/AVHRR products. Matchups with buoy SST observations (adjusted to skin depths) indicate typical 2014 biases of &lt; 0.01 degC and standard deviations of 0.6 degC.  Refer to the IMOS SST products web page at http://imos.org.au/sstproducts.html and Beggs et al. (2013) at http://imos.org.au/sstdata_references.html for further information.</abstract>
+    <parameter>Skin temperature of the water body</parameter>
+    <parameter>Skin temperature of the water body</parameter>
+    <parameter>Skin temperature of the water body</parameter>
+    <keyword>Oceans | Ocean Temperature | Sea Surface Temperature</keyword>
+    <keyword>Remote Sensing | Ocean Temperature | Sea Surface Temperature</keyword>
+    <keyword>Global / Oceans | Indian Ocean</keyword>
+    <keyword>Global / Oceans | Southern Ocean</keyword>
+    <keyword>Global / Oceans | Pacific Ocean</keyword>
+    <keyword>Marine Features (Australia) | Great Australian Bight, SA/WA</keyword>
+    <keyword>Marine Features (Australia) | Bass Strait, TAS/VIC</keyword>
+    <keyword>Regional Seas | Tasman Sea</keyword>
+    <keyword>Regional Seas | Solomon Sea</keyword>
+    <keyword>Regional Seas | Coral Sea</keyword>
+    <keyword>Regional Seas | Arafura Sea</keyword>
+    <keyword>Regional Seas | Timor Sea</keyword>
+    <keyword>Regional Seas | Banda Sea</keyword>
+    <keyword>Regional Seas | Java Sea</keyword>
+    <keyword>Regional Seas | Celebes Sea</keyword>
+    <keyword>Regional Seas | Philippine Sea</keyword>
+    <keyword>Marine Features | Strait of Malacca</keyword>
+    <keyword>Regional Seas | South China Sea</keyword>
+    <keyword>Regional Seas | Gulf of Thailand</keyword>
+    <keyword>Countries | Australia</keyword>
+    <keyword>Countries | New Zealand</keyword>
+    <keyword>States, Territories (Australia) | Western Australia</keyword>
+    <keyword>States, Territories (Australia) | South Australia</keyword>
+    <keyword>States, Territories (Australia) | Victoria</keyword>
+    <keyword>States, Territories (Australia) | Tasmania</keyword>
+    <keyword>States, Territories (Australia) | New South Wales</keyword>
+    <keyword>States, Territories (Australia) | Northern Territory</keyword>
+    <keyword>States, Territories (Australia) | Queensland</keyword>
+    <keyword>Countries | Papua New Guinea</keyword>
+    <keyword>Countries | Indonesia</keyword>
+    <keyword>Countries | Timor-Leste</keyword>
+    <keyword>Offshore Islands (Australia) | Macquarie Island</keyword>
+    <keyword>Countries | Malaysia</keyword>
+    <keyword>Countries | New Caledonia</keyword>
+    <keyword>Countries | Fiji</keyword>
+    <keyword>Countries | Philippines</keyword>
+    <keyword>Countries | Vanuatu</keyword>
+    <keyword>Countries | Singapore</keyword>
+    <keyword>Countries | Vietnam</keyword>
+    <keyword>Continents | Antarctica</keyword>
+    <keyword>Countries | Thailand</keyword>
+    <keyword>oceans</keyword>
+    <organisation>Integrated Marine Observing System (IMOS)</organisation>
+    <organisation>Bureau of Meteorology (BOM)</organisation>
+    <geoBox>190|-70|70|20</geoBox>
+    <defaultTitle>IMOS - SRS Satellite - SST L3S - 01 day composite - night time</defaultTitle>
+    <docLocale>eng</docLocale>
+    <geonet:info xmlns:geonet="http://www.fao.org/geonetwork">
+      <id>153</id>
+      <uuid>aaad092c-c3af-42e6-87e0-bdaef945f522</uuid>
+      <schema>iso19139.mcp-2.0</schema>
+      <createDate>2016-05-25T16:35:13</createDate>
+      <changeDate>2017-04-07T00:00:01</changeDate>
+      <source>ed23e365-c459-4aa4-bbc1-5d2cd0274af0</source>
+      <view>true</view>
+      <notify>false</notify>
+      <download>false</download>
+      <dynamic>true</dynamic>
+      <featured>true</featured>
+      <guestdownload>false</guestdownload>
+      <selected>false</selected>
+    </geonet:info>
+  </metadata>
+  <metadata>
+    <title>IMOS - Australian National Mooring Network (ANMN) Facility - Current velocity time-series</title>
+    <popularity>839</popularity>
+    <source>ed23e365-c459-4aa4-bbc1-5d2cd0274af0</source>
+    <owner>1</owner>
+    <responsibleParty>pointOfContact|resource|Integrated Marine Observing System (IMOS)|</responsibleParty>
+    <responsibleParty>principalInvestigator|resource|Australian Institute of Marine Science (AIMS)|</responsibleParty>
+    <responsibleParty>distributor|metadata|Integrated Marine Observing System (IMOS)|</responsibleParty>
+    <geoPolygon>POLYGON ((116 -21, 116 -20, 115 -20, 115 -19, 117 -19, 117 -21, 116 -21))</geoPolygon>
+    <geoPolygon>POLYGON ((152 -22, 152 -21, 153 -21, 153 -22, 152 -22))</geoPolygon>
+    <geoPolygon>POLYGON ((152 -23, 153 -23, 153 -24, 151 -24, 151 -22, 152 -22, 152 -23))</geoPolygon>
+    <geoPolygon>POLYGON ((128 -14, 128 -12, 127 -12, 127 -9, 128 -9, 128 -10, 129 -10, 129 -14, 128 -14))</geoPolygon>
+    <geoPolygon>POLYGON ((123 -15, 123 -14, 124 -14, 124 -15, 123 -15))</geoPolygon>
+    <geoPolygon>POLYGON ((145 -15, 145 -14, 146 -14, 146 -15, 145 -15))</geoPolygon>
+    <geoPolygon>POLYGON ((130 -13, 130 -12, 131 -12, 131 -13, 130 -13))</geoPolygon>
+    <geoPolygon>POLYGON ((147 -20, 147 -18, 148 -18, 148 -20, 147 -20))</geoPolygon>
+    <geoPolygon>POLYGON ((121 -17, 121 -15, 122 -15, 122 -17, 121 -17))</geoPolygon>
+    <geoPolygon>POLYGON ((115 -33, 115 -32, 114 -32, 114 -31, 116 -31, 116 -33, 115 -33))</geoPolygon>
+    <geoPolygon>POLYGON ((113 -22, 113 -21, 114 -21, 114 -22, 113 -22))</geoPolygon>
+    <geoPolygon>POLYGON ((153 -28, 153 -27, 154 -27, 154 -28, 153 -28))</geoPolygon>
+    <geoPolygon>POLYGON ((153 -31, 153 -30, 154 -30, 154 -31, 153 -31))</geoPolygon>
+    <geoPolygon>POLYGON ((137 -36, 137 -37, 135 -37, 135 -35, 134 -35, 134 -34, 136 -34, 136 -35, 137 -35, 137 -36))</geoPolygon>
+    <geoPolygon>POLYGON ((151 -35, 151 -33, 152 -33, 152 -35, 151 -35))</geoPolygon>
+    <geoPolygon>POLYGON ((121 -34, 121 -33, 122 -33, 122 -34, 121 -34))</geoPolygon>
+    <geoPolygon>POLYGON ((150 -37, 150 -36, 151 -36, 151 -37, 150 -37))</geoPolygon>
+    <geoPolygon>POLYGON ((148 -43, 148 -42, 149 -42, 149 -43, 148 -43))</geoPolygon>
+    <useLimitation>Data, products and services from IMOS are provided "as is" without any warranty as to fitness for a particular purpose.</useLimitation>
+    <userinfo>admin||admin|Administrator</userinfo>
+    <isTemplate>n</isTemplate>
+    <rating>0</rating>
+    <credit>Integrated Marine Observing System (IMOS). IMOS is a national collaborative research infrastructure, supported by Australian Government.</credit>
+    <platform>mooring</platform>
+    <parentId>f9c151bd-d95b-4af6-8cb7-21c05b7b383b</parentId>
+    <tempExtentBegin>2007-09-09t00:00:00.000z</tempExtentBegin>
+    <image>thumbnail|../../srv/en/resources.get?uuid=ae86e2f5-eaaf-459e-a405-e654d85adb9c&amp;fname=Mooring_launch_01_s.png&amp;access=public</image>
+    <datasetLang>eng</datasetLang>
+    <jurisdictionLink>http://creativecommons.org/international/</jurisdictionLink>
+    <isHarvested>y</isHarvested>
+    <imageLink>https://licensebuttons.net/l/by/4.0/88x31.png</imageLink>
+    <attrConstr>The citation in a list of references is: "IMOS [year-of-data-download], [Title], [data-access-URL], accessed [date-of-access]."</attrConstr>
+    <attrConstr>Any users of IMOS data are required to clearly acknowledge the source of the material derived from IMOS in the format: "Data was sourced from the Integrated Marine Observing System (IMOS) - IMOS is a national collaborative research infrastructure, supported by the Australian Government." If relevant, also credit other organisations involved in collection of this particular datastream (as listed in 'credit' in the metadata record).</attrConstr>
+    <language>eng</language>
+    <link>|Point of truth URL of this metadata record|https://catalogue-imos.aodn.org.au:443/geonetwork/srv/en/metadata.show?uuid=ae86e2f5-eaaf-459e-a405-e654d85adb9c|WWW:LINK-1.0-http--metadata-URL|text/html</link>
+    <link>|ANMN page on IMOS website|http://imos.org.au/nationalmooringnetwork.html|WWW:LINK-1.0-http--link|text/html</link>
+    <link>|Data available through the IMOS Thredds server|http://thredds.aodn.org.au/thredds/catalog/IMOS/ANMN/catalog.html|WWW:LINK-1.0-http--link|text/html</link>
+    <link>|View and download data though the AODN Portal|https://imos.aodn.org.au/imos123/home?uuid=ae86e2f5-eaaf-459e-a405-e654d85adb9c|WWW:LINK-1.0-http--link|text/html</link>
+    <link>imos:anmn_velocity_timeseries_map|Moorings - velocity time-series|http://geoserver-123.aodn.org.au/geoserver/wms|OGC:WMS-1.1.1-http-get-map|application/vnd.ogc.wms_xml</link>
+    <link>imos:anmn_velocity_timeseries_map|Moorings - velocity time-series|../../srv/en/google.kml?uuid=&amp;layers=imos:anmn_velocity_timeseries_map|application/vnd.google-earth.kml+xml|application/vnd.google-earth.kml+xml</link>
+    <link>anmn_velocity_timeseries_map#file_url|The BODAAC is a WFS service that returns a list of OpenDAP URLs matching a query.|http://geoserver-123.aodn.org.au/geoserver/ows|IMOS:AGGREGATION--bodaac|IMOS:AGGREGATION--bodaac</link>
+    <link>|BODAAC help documentation|http://help.aodn.org.au/help/?q=node/69|WWW:LINK-1.0-http--link|text/html</link>
+    <licenseName>Attribution 4.0 International</licenseName>
+    <tempExtentEnd>2017-04-07t23:59:59.000z</tempExtentEnd>
+    <licenseLink>http://creativecommons.org/licenses/by/4.0/</licenseLink>
+    <_locale>eng</_locale>
+    <valid>-1</valid>
+    <abstract>The Australian National Mooring Network (ANMN) Facility is a series of national reference stations and regional moorings designed to monitor particular oceanographic phenomena in Australian coastal ocean waters. This collection contains time-series observations of current velocity from moorings deployed by the ANMN. The primary parameters are the zonal, meridional and vertical components of the current speed within different bins in the water column, the height above the instrument of each bin, the pressure (when available) and depth at the instrument. Temperature at the instrument is also usually measured. The observations were made using a range of Acoustic Doppler Current Profiler (ADCP) and Acoustic Doppler Current Meter (single point measurement) instruments. We are also producing a gridded product of sea water velocity time-series based on these data. These will be available in a separate collection.</abstract>
+    <parameter>Northward current velocity in the water body</parameter>
+    <parameter>Eastward current velocity in the water body</parameter>
+    <parameter>Upward current velocity in the water body</parameter>
+    <parameter>Current speed in the water body</parameter>
+    <parameter>Current direction in the water body</parameter>
+    <parameter>Pressure (measured variable) in the water body exerted by overlying sea water only</parameter>
+    <parameter>Acoustic signal return amplitude from the water body</parameter>
+    <keyword>Oceans | Ocean Temperature | Water Temperature</keyword>
+    <keyword>Oceans | Bathymetry | Water Depth</keyword>
+    <keyword>Oceans | Ocean Circulation | Ocean Currents</keyword>
+    <keyword>Oceans | Salinity/density | Conductivity</keyword>
+    <keyword>Buoys | Moored Buoys</keyword>
+    <keyword>Current Meters/Profilers | Acoustic Doppler Current Profiler (ADCP)</keyword>
+    <keyword>Slope Mooring</keyword>
+    <keyword>Shelf Mooring</keyword>
+    <keyword>Deepwater Mooring</keyword>
+    <keyword>IMOS Facility | ANMN | Australian National Mooring Network</keyword>
+    <keyword>Global / Oceans | Indian Ocean</keyword>
+    <keyword>Global / Oceans | Pacific Ocean</keyword>
+    <keyword>Marine Features (Australia) | Great Australian Bight, SA/WA</keyword>
+    <keyword>Regional Seas | Tasman Sea</keyword>
+    <keyword>Regional Seas | Timor Sea</keyword>
+    <keyword>Regional Seas | Coral Sea</keyword>
+    <keyword>Countries | Australia</keyword>
+    <keyword>Countries | Indonesia</keyword>
+    <keyword>States, Territories (Australia) | Western Australia</keyword>
+    <keyword>States, Territories (Australia) | Victoria</keyword>
+    <keyword>States, Territories (Australia) | Tasmania</keyword>
+    <keyword>States, Territories (Australia) | South Australia</keyword>
+    <keyword>States, Territories (Australia) | Queensland</keyword>
+    <keyword>States, Territories (Australia) | Northern Territory</keyword>
+    <keyword>States, Territories (Australia) | New South Wales</keyword>
+    <keyword>States, Territories (Australia) l South Australia</keyword>
+    <keyword>Marine Features (Australia) | Kangaroo Island, SA</keyword>
+    <keyword>Marine Features (Australia) | Maria Island, TAS</keyword>
+    <keyword>Coastal Cities / Towns (Australia) | Sydney, NSW</keyword>
+    <keyword>Coastal Cities / Towns (Australia) | Coffs Harbour, NSW</keyword>
+    <keyword>Coastal Cities / Towns (Australia) | Darwin, NT</keyword>
+    <keyword>Marine Features (Australia) | Kimberley Coast, WA</keyword>
+    <keyword>Marine Features (Australia) | Kimberley Islands, WA</keyword>
+    <keyword>Marine Features (Australia) | Ningaloo Marine Park, WA</keyword>
+    <keyword>Marine Features (Australia) | Pilbara Coast, WA</keyword>
+    <keyword>Coastal Cities / Towns (Australia) | Perth, WA</keyword>
+    <keyword>Coastal Cities / Towns (Australia) | Esperance, WA</keyword>
+    <keyword>Marine Features (Australia) | Rottnest Island, WA</keyword>
+    <keyword>Marine Features (Australia) | Great Barrier Reef, QLD</keyword>
+    <keyword>oceans</keyword>
+    <organisation>Integrated Marine Observing System (IMOS)</organisation>
+    <organisation>Australian Institute of Marine Science (AIMS)</organisation>
+    <defaultTitle>IMOS - Australian National Mooring Network (ANMN) Facility - Current velocity time-series</defaultTitle>
+    <docLocale>eng</docLocale>
+    <geonet:info xmlns:geonet="http://www.fao.org/geonetwork">
+      <id>205</id>
+      <uuid>ae86e2f5-eaaf-459e-a405-e654d85adb9c</uuid>
+      <schema>iso19139.mcp-2.0</schema>
+      <createDate>2016-05-25T16:35:14</createDate>
+      <changeDate>2017-04-07T00:00:03</changeDate>
+      <source>ed23e365-c459-4aa4-bbc1-5d2cd0274af0</source>
+      <view>true</view>
+      <notify>false</notify>
+      <download>false</download>
+      <dynamic>true</dynamic>
+      <featured>true</featured>
+      <guestdownload>false</guestdownload>
+      <selected>false</selected>
+    </geonet:info>
+  </metadata>
+
+ARGO
+  <metadata>
+    <title>IMOS - Argo Profiles</title>
+    <popularity>548</popularity>
+    <source>ed23e365-c459-4aa4-bbc1-5d2cd0274af0</source>
+    <owner>1</owner>
+    <responsibleParty>coInvestigator|resource|CSIRO Oceans &amp; Atmosphere - Hobart|</responsibleParty>
+    <responsibleParty>principalInvestigator|resource|CSIRO Oceans &amp; Atmosphere - Hobart|</responsibleParty>
+    <responsibleParty>distributor|metadata|Integrated Marine Observing System (IMOS)|</responsibleParty>
+    <geoPolygon>POLYGON ((160 -80, 160 -70, 135 -70, 135 -65, 130 -65, 130 -70, 100 -70, 100 -65, 95 -65, 95 -70, 10 -70, 10 -65, 40 -65, 40 -60, 25 -60, 25 -55, 5 -55, 5 -60, -50 -60, -50 -70, -55 -70, -55 -65, -65 -65, -65 -70, -130 -70, -130 -65, -135 -65, -135 -70, -145 -70, -145 -60, -150 -60, -150 -65, -155 -65, -155 -80, -165 -80, -165 -75, -180 -75, -180 10, -155 10, -155 5, -125 5, -125 0, -120 0, -120 5, -115 5, -115 0, -110 0, -110 5, -100 5, -100 0, -90 0, -90 -10, -115 -10, -115 -5, -120 -5, -120 -10, -125 -10, -125 -5, -130 -5, -130 -10, -150 -10, -150 -15, -155 -15, -155 -20, -140 -20, -140 -25, -135 -25, -135 -35, -130 -35, -130 -40, -125 -40, -125 -35, -115 -35, -115 -40, -90 -40, -90 -35, -80 -35, -80 -30, -75 -30, -75 -25, -80 -25, -80 -15, -75 -15, -75 -20, -70 -20, -70 -35, -75 -35, -75 -40, -85 -40, -85 -50, -75 -50, -75 -55, -65 -55, -65 -50, -60 -50, -60 -35, -55 -35, -55 -30, -45 -30, -45 -35, -15 -35, -15 -40, 5 -40, 5 -35, 0 -35, 0 -30, 30 -30, 30 -25, 35 -25, 35 -20, 45 -20, 45 -15, 40 -15, 40 -10, 35 -10, 35 0, 40 0, 40 5, 45 5, 45 10, 50 10, 50 20, 55 20, 55 30, 60 30, 60 25, 65 25, 65 20, 70 20, 70 5, 85 5, 85 10, 95 10, 95 5, 100 5, 100 0, 110 0, 110 -5, 115 -5, 115 5, 120 5, 120 10, 125 10, 125 15, 120 15, 120 30, 125 30, 125 20, 135 20, 135 15, 140 15, 140 20, 160 20, 160 15, 180 15, 180 -75, 170 -75, 170 -80, 160 -80), (165 -65, 165 -70, 170 -70, 170 -65, 165 -65), (140 -15, 140 -5, 120 -5, 120 -10, 135 -10, 135 -15, 125 -15, 125 -20, 115 -20, 115 -30, 135 -30, 135 -35, 150 -35, 150 -20, 145 -20, 145 -15, 140 -15))</geoPolygon>
+    <geoPolygon>POLYGON ((-85 -15, -85 -10, -80 -10, -80 -15, -85 -15))</geoPolygon>
+    <geoPolygon>POLYGON ((-90 -20, -90 -15, -85 -15, -85 -20, -90 -20))</geoPolygon>
+    <geoPolygon>POLYGON ((125 30, 125 35, 130 35, 130 30, 125 30))</geoPolygon>
+    <geoPolygon>POLYGON ((-5 45, -5 50, 0 50, 0 45, -5 45))</geoPolygon>
+    <geoPolygon>POLYGON ((-125 45, -125 50, -120 50, -120 45, -125 45))</geoPolygon>
+    <geoPolygon>POLYGON ((-125 30, -125 35, -120 35, -120 30, -125 30))</geoPolygon>
+    <geoPolygon>POLYGON ((-25 -70, -25 -65, -20 -65, -20 -70, -25 -70))</geoPolygon>
+    <geoPolygon>POLYGON ((-40 -70, -40 -65, -35 -65, -35 -70, -40 -70))</geoPolygon>
+    <geoPolygon>POLYGON ((-15 -75, -15 -65, -5 -65, -5 -70, -10 -70, -10 -75, -15 -75))</geoPolygon>
+    <type>dataset</type>
+    <useLimitation>Data, products and services from IMOS are provided "as is" without any warranty as to fitness for a particular purpose.</useLimitation>
+    <useLimitation>Argo Data (Temperature and Salinity profiles) are freely available without any restriction, via the internet Global Data Centres (GDACs) and the GTS of WMO. Please support Argo by acknowledging your use of Argo data with the following words: "These data were collected and made freely available by the International Argo project and the national programs that contribute to it. (http://www.argo.net). Argo is a pilot programme of the Global Ocean Observing System."</useLimitation>
+    <userinfo>admin||admin|Administrator</userinfo>
+    <isTemplate>n</isTemplate>
+    <rating>0</rating>
+    <credit>Integrated Marine Observing System (IMOS). IMOS is a national collaborative research infrastructure, supported by Australian Government.</credit>
+    <credit>CSIRO Oceans &amp; Atmosphere</credit>
+    <credit>Australian Bureau of Meteorology (BOM)</credit>
+    <credit>Royal Australian Navy (RAN)</credit>
+    <platform>drifting subsurface profiling float</platform>
+    <parentId>8cc13f98-9897-4193-8ba6-d1f05356d3f2</parentId>
+    <tempExtentBegin>1999-10-01t00:00:00.000z</tempExtentBegin>
+    <image>thumbnail|../../srv/en/resources.get?uuid=4402cb50-e20a-44ee-93e6-4728259250d2&amp;fname=argologointro_s.png&amp;access=public</image>
+    <datasetLang>eng</datasetLang>
+    <jurisdictionLink>http://creativecommons.org/international/</jurisdictionLink>
+    <isHarvested>y</isHarvested>
+    <imageLink>https://licensebuttons.net/l/by/4.0/88x31.png</imageLink>
+    <attrConstr>The citation in a list of references is: "IMOS [year-of-data-download], [Title], [data-access-URL], accessed [date-of-access]."</attrConstr>
+    <attrConstr>Any users of IMOS data are required to clearly acknowledge the source of the material derived from IMOS in the format: "Data was sourced from the Integrated Marine Observing System (IMOS) - IMOS is a national collaborative research infrastructure, supported by the Australian Government." If relevant, also credit other organisations involved in collection of this particular datastream (as listed in 'credit' in the metadata record).</attrConstr>
+    <language>eng</language>
+    <link>|Point of truth URL of this metadata record|https://catalogue-imos.aodn.org.au:443/geonetwork/srv/en/metadata.show?uuid=4402cb50-e20a-44ee-93e6-4728259250d2|WWW:LINK-1.0-http--metadata-URL|text/html</link>
+    <link>argo-dm-user-manual.pdf|Argo User's Manual|https://catalogue-imos.aodn.org.au:443/geonetwork/srv/en/file.disclaimer?uuid=4402cb50-e20a-44ee-93e6-4728259250d2&amp;fname=argo-dm-user-manual.pdf&amp;access=private|WWW:DOWNLOAD-1.0-http--downloadother|application/pdf</link>
+    <link>|Argo page on IMOS website|http://imos.org.au/argo.html|WWW:LINK-1.0-http--link|text/html</link>
+    <link>|Data available through the IMOS Thredds server|http://thredds.aodn.org.au/thredds/catalog/IMOS/Argo/dac/catalog.html|WWW:LINK-1.0-http--link|text/html</link>
+    <link>|View and download data though the AODN Portal|https://imos.aodn.org.au/imos123/home?uuid=4402cb50-e20a-44ee-93e6-4728259250d2|WWW:LINK-1.0-http--link|text/html</link>
+    <link>imos:argo_profile_map|Argo Profiles|http://geoserver-123.aodn.org.au/geoserver/wms|OGC:WMS-1.1.1-http-get-map|application/vnd.ogc.wms_xml</link>
+    <link>imos:argo_profile_map|Argo Profiles|../../srv/en/google.kml?uuid=&amp;layers=imos:argo_profile_map|application/vnd.google-earth.kml+xml|application/vnd.google-earth.kml+xml</link>
+    <link>imos:argo_profile_data|This OGC WFS service returns filtered geographic information. The returned data is available in multiple formats including CSV.|http://geoserver-123.aodn.org.au/geoserver/ows|OGC:WFS-1.0.0-http-get-capabilities|OGC:WFS-1.0.0-http-get-capabilities</link>
+    <link>|OGC WFS help documentation|http://help.aodn.org.au/help/?q=node/53|WWW:LINK-1.0-http--link|text/html</link>
+    <link>argo_profile_map#url|The BODAAC is a WFS service that returns a list of OpenDAP URLs matching a query.|http://geoserver-123.aodn.org.au/geoserver/ows|IMOS:AGGREGATION--bodaac|IMOS:AGGREGATION--bodaac</link>
+    <link>|BODAAC help documentation|http://help.aodn.org.au/help/?q=node/69|WWW:LINK-1.0-http--link|text/html</link>
+    <licenseName>Attribution 4.0 International</licenseName>
+    <tempExtentEnd>2017-04-07t23:59:59.000z</tempExtentEnd>
+    <licenseLink>http://creativecommons.org/licenses/by/4.0/</licenseLink>
+    <_locale>eng</_locale>
+    <valid>-1</valid>
+    <abstract>Argo Australia aims to undertake real time monitoring of the broad ocean state around Australia by maintaining an array of profiling (Argo) floats that measure temperature, salinity and pressure down to 2000m every 10 days in real time. The data presented here, represent all Australian Argo profiles collected since 2000, and covers the oceans in the southern hemisphere worldwide A typical Argo float mission is to profile from 2000 m depth to the sea surface every 10 days. On deployment, the float sinks to a depth of 1000 m and drifts with the ocean currents for 9 days. Then the float sinks deeper to its profile depth (usually 2000 m) before starting to ascend through the water column measuring temperature, salinity, pressure, and oxygen (on selected floats) as it rises. Once at the surface it transmits location and profile data via satellite to land-based Argo data centres. After transmission the float sinks again and repeats the cycle. Each Argo float is identified by a unique identification number called a WMO ID. WMO (World Meteorological Organisation) ID Numbers are assigned to measurement stations and observing platforms to enable researchers to keep track of, and uniquely identify their floats. The average life of the latest model APEX Argo floats are around 3.7 years or approximately 135 cycles. These statistics are for floats with the standard alkaline battery configuration from an analysis by Kobayashi et al (2009). In the Australian Argo program, the floats are deployed with a combination of lithium and alkaline battery packs which extends float lifetime. Argo Australia floats usually last 5 years and several floats are approaching their 9th birthday and are still returning good data.</abstract>
+    <parameter>Temperature of the water body</parameter>
+    <parameter>Practical salinity of the water body</parameter>
+    <parameter>Concentration of oxygen {O2} per unit mass of the water body</parameter>
+    <parameter>Pressure (measured variable) in the water body exerted by overlying sea water and any medium above it</parameter>
+    <keyword>Oceans | Ocean Temperature | Water Temperature</keyword>
+    <keyword>Oceans | Bathymetry | Water Depth</keyword>
+    <keyword>Oceans | Ocean Circulation | Ocean Currents</keyword>
+    <keyword>Oceans | Salinity/density | Salinity</keyword>
+    <keyword>Oceans | Ocean Chemistry | Dissolved Gases</keyword>
+    <keyword>Oceans | Ocean Pressure | Water Pressure</keyword>
+    <keyword>IMOS Node | Bluewater and Climate</keyword>
+    <keyword>Profiling Float | Autonomous Profiling Float</keyword>
+    <keyword>Global / Oceans | Atlantic Ocean</keyword>
+    <keyword>Global / Oceans | Southern Ocean</keyword>
+    <keyword>Global / Oceans | Indian Ocean</keyword>
+    <keyword>Regional Seas | Arabian Sea</keyword>
+    <keyword>Marine Features (Australia) | Great Australian Bight, SA/WA</keyword>
+    <keyword>Regional Seas | Tasman Sea</keyword>
+    <keyword>Marine Features (Australia) | Bass Strait, TAS/VIC</keyword>
+    <keyword>Regional Seas | Coral Sea</keyword>
+    <keyword>Global / Oceans | Pacific Ocean</keyword>
+    <keyword>Regional Seas | Philippine Sea</keyword>
+    <keyword>Regional Seas | Celebes Sea</keyword>
+    <keyword>Regional Seas | East China Sea</keyword>
+    <keyword>Regional Seas | Bismarck Sea</keyword>
+    <keyword>Countries | Australia</keyword>
+    <keyword>Countries | New Zealand</keyword>
+    <keyword>Countries | Indonesia</keyword>
+    <keyword>Countries | Papua New Guinea</keyword>
+    <keyword>Countries | Philippines</keyword>
+    <keyword>Countries | Fiji</keyword>
+    <keyword>Countries | New Caledonia</keyword>
+    <keyword>Countries | Solomon Islands</keyword>
+    <keyword>Countries | Vanuatu</keyword>
+    <keyword>oceans</keyword>
+    <organisation>Integrated Marine Observing System (IMOS)</organisation>
+    <organisation>CSIRO Oceans &amp; Atmosphere - Hobart</organisation>
+    <defaultTitle>IMOS - Argo Profiles</defaultTitle>
+    <docLocale>eng</docLocale>
+    <geonet:info xmlns:geonet="http://www.fao.org/geonetwork">
+      <id>177</id>
+      <uuid>4402cb50-e20a-44ee-93e6-4728259250d2</uuid>
+      <schema>iso19139.mcp-2.0</schema>
+      <createDate>2016-05-25T16:35:14</createDate>
+      <changeDate>2017-04-07T00:00:04</changeDate>
+      <source>ed23e365-c459-4aa4-bbc1-5d2cd0274af0</source>
+      <view>true</view>
+      <notify>false</notify>
+      <download>false</download>
+      <dynamic>true</dynamic>
+      <featured>true</featured>
+      <guestdownload>false</guestdownload>
+      <selected>false</selected>
+    </geonet:info>
+  </metadata>
+
+
+
+
+  <metadata>
+    <title>IMOS - Australian National Facility for Ocean Gliders (ANFOG) - delayed mode glider deployments</title>
+    <popularity>526</popularity>
+    <source>ed23e365-c459-4aa4-bbc1-5d2cd0274af0</source>
+    <owner>1</owner>
+    <responsibleParty>pointOfContact|resource|School of Civil, Environmental and Mining Engineering (CEME), The University of Western Australia (UWA)|</responsibleParty>
+    <responsibleParty>distributor|metadata|Integrated Marine Observing System (IMOS)|</responsibleParty>
+    <geoPolygon>POLYGON ((110 -30, 112 -30, 112 -28, 110 -28, 110 -26, 116 -26, 116 -30, 144 -30, 144 -28, 154 -28, 154 -32, 156 -32, 156 -34, 158 -34, 158 -36, 154 -36, 154 -38, 150 -38, 150 -32, 152 -32, 152 -30, 146 -30, 146 -32, 132 -32, 132 -34, 138 -34, 138 -36, 130 -36, 130 -32, 124 -32, 124 -34, 122 -34, 122 -36, 116 -36, 116 -34, 112 -34, 112 -32, 108 -32, 108 -30, 110 -30))</geoPolygon>
+    <geoPolygon>POLYGON ((150 -18, 150 -20, 146 -20, 146 -18, 144 -18, 144 -10, 146 -10, 146 -12, 148 -12, 148 -16, 150 -16, 150 -18))</geoPolygon>
+    <geoPolygon>POLYGON ((120 -18, 120 -14, 122 -14, 122 -18, 120 -18))</geoPolygon>
+    <geoPolygon>POLYGON ((112 -24, 112 -22, 110 -22, 110 -20, 114 -20, 114 -18, 118 -18, 118 -22, 114 -22, 114 -24, 112 -24))</geoPolygon>
+    <geoPolygon>POLYGON ((152 -22, 154 -22, 154 -24, 150 -24, 150 -22, 152 -22))</geoPolygon>
+    <geoPolygon>POLYGON ((142 -38, 144 -38, 144 -40, 140 -40, 140 -38, 138 -38, 138 -36, 142 -36, 142 -38))</geoPolygon>
+    <geoPolygon>POLYGON ((146 -46, 146 -48, 140 -48, 140 -46, 142 -46, 142 -44, 144 -44, 144 -42, 146 -42, 146 -38, 148 -38, 148 -40, 154 -40, 154 -42, 152 -42, 152 -44, 148 -44, 148 -46, 146 -46))</geoPolygon>
+    <useLimitation>Data, products and services from IMOS are provided "as is" without any warranty as to fitness for a particular purpose.</useLimitation>
+    <userinfo>admin||admin|Administrator</userinfo>
+    <isTemplate>n</isTemplate>
+    <rating>0</rating>
+    <credit>Integrated Marine Observing System (IMOS). IMOS is a national collaborative research infrastructure, supported by Australian Government.</credit>
+    <credit>The University of Western Australia (UWA)</credit>
+    <platform>sub-surface gliders</platform>
+    <parentId>11b3ccd0-d9e0-11dc-8635-00188b4c0af8</parentId>
+    <tempExtentBegin>2008-07-16t00:00:00.000z</tempExtentBegin>
+    <image>thumbnail|../../srv/en/resources.get?uuid=c317b0fe-02e8-4ff9-96c9-563fd58e82ac&amp;fname=gliders_map_s.png&amp;access=public</image>
+    <datasetLang>eng</datasetLang>
+    <jurisdictionLink>http://creativecommons.org/international/</jurisdictionLink>
+    <isHarvested>y</isHarvested>
+    <imageLink>https://licensebuttons.net/l/by/4.0/88x31.png</imageLink>
+    <attrConstr>The citation in a list of references is: "IMOS [year-of-data-download], [Title], [data-access-URL], accessed [date-of-access]."</attrConstr>
+    <attrConstr>Any users of IMOS data are required to clearly acknowledge the source of the material derived from IMOS in the format: "Data was sourced from the Integrated Marine Observing System (IMOS) - IMOS is a national collaborative research infrastructure, supported by the Australian Government." If relevant, also credit other organisations involved in collection of this particular datastream (as listed in 'credit' in the metadata record).</attrConstr>
+    <language>eng</language>
+    <link>|Point of truth URL of this metadata record|https://catalogue-imos.aodn.org.au:443/geonetwork/srv/en/metadata.show?uuid=c317b0fe-02e8-4ff9-96c9-563fd58e82ac|WWW:LINK-1.0-http--metadata-URL|text/html</link>
+    <link>imos:anfog_dm_trajectory_map|Delayed mode Glider deployments|http://geoserver-123.aodn.org.au/geoserver/wms|OGC:WMS-1.1.1-http-get-map|application/vnd.ogc.wms_xml</link>
+    <link>imos:anfog_dm_trajectory_map|Delayed mode Glider deployments|../../srv/en/google.kml?uuid=&amp;layers=imos:anfog_dm_trajectory_map|application/vnd.google-earth.kml+xml|application/vnd.google-earth.kml+xml</link>
+    <link>|ANFOG page on IMOS website|http://imos.org.au/oceangliders.html|WWW:LINK-1.0-http--link|text/html</link>
+    <link>ANFOG_data_management3_1.pdf|ANFOG data management document|https://catalogue-imos.aodn.org.au:443/geonetwork/srv/en/file.disclaimer?uuid=c317b0fe-02e8-4ff9-96c9-563fd58e82ac&amp;fname=ANFOG_data_management3_1.pdf&amp;access=private|WWW:DOWNLOAD-1.0-http--download|application/pdf</link>
+    <link>|Delayed mode data available through the IMOS Thredds server|http://thredds.aodn.org.au/thredds/catalog/IMOS/ANFOG/catalog.html|WWW:LINK-1.0-http--link|text/html</link>
+    <link>|View and download data though the AODN Portal|https://imos.aodn.org.au/imos123/home?uuid=c317b0fe-02e8-4ff9-96c9-563fd58e82ac|WWW:LINK-1.0-http--link|text/html</link>
+    <link>anfog_dm_trajectory_data|This OGC WFS service returns filtered geographic information. The returned data is available in multiple formats including CSV.|http://geoserver-123.aodn.org.au/geoserver/ows|OGC:WFS-1.0.0-http-get-capabilities|OGC:WFS-1.0.0-http-get-capabilities</link>
+    <link>|OGC WFS help documentation|http://help.aodn.org.au/help/?q=node/53|WWW:LINK-1.0-http--link|text/html</link>
+    <link>anfog_dm_trajectory_map#url|The BODAAC is a WFS service that returns a list of OpenDAP URLs matching a query.|http://geoserver-123.aodn.org.au/geoserver/ows|IMOS:AGGREGATION--bodaac|IMOS:AGGREGATION--bodaac</link>
+    <link>|BODAAC help documentation|http://help.aodn.org.au/help/?q=node/69|WWW:LINK-1.0-http--link|text/html</link>
+    <licenseName>Attribution 4.0 International</licenseName>
+    <tempExtentEnd>2017-04-07t23:59:59.000z</tempExtentEnd>
+    <licenseLink>http://creativecommons.org/licenses/by/4.0/</licenseLink>
+    <_locale>eng</_locale>
+    <valid>-1</valid>
+    <abstract>The Australian National Facility for Ocean Gliders (ANFOG), with IMOS/NCRIS funding, deploys a fleet of eight gliders around Australia. The data represented by this record, are presented in delayed mode. The underwater ocean glider represents a technological revolution for oceanography. Autonomous ocean gliders can be built relatively cheaply, are controlled remotely and are reusables allowing them to make repeated subsurface ocean observations at a fraction of the cost of conventional methods. The data retrieved from the glider fleet will contribute to the study of the major boundary current systems surrounding Australia and their links to coastal ecosystems. The ANFOG glider fleet consists of two types; Slocum gliders and Seagliders. Slocum gliders (named for Joshua Slocum, the first solo global circumnavigator), manufactured by Webb Research Corp are optimised for shallow coastal waters (&lt;200m) were high manoeuvrability is needed. ANFOG will have three Slocum gliders for deployment on the continental shelf. Seagliders, built at the University of Washington, are designed to operate more efficiently in the open ocean up to 1000m water depth. ANFOG uses their five Seagliders to monitor the boundary currents and continental shelves, which is valuable for gathering long-term environmental records of physical, chemical and biological data not widely measured to date. Whilst the Slocum gliders, due to their low cost and operational flexibility, will be of great use in intensive coastal monitoring, both types of gliders weigh only 52kg, enabling them to be launched from small boats. They have a suite of sensors able to record temperature, salinity, dissolved oxygen, turbidity, dissolved organic matter and chlorophyll against position and depth Sustained ocean observations will allow researchers to document the natural variability of the ocean, and better understand the effect of climate change on coastal ecosystems. The IMOS gliders will focus particularly on the major boundary currents that run down the Australia coast, the Leeuwin in the west and the East Australian Current (EAC). The study of these currents is critical for understanding the north-south transport of freshwater, heat and biogeochemical properties. The currents exert a large influence on coastal ecosystems, shipping lanes and fisheries.</abstract>
+    <parameter>Temperature of the water body</parameter>
+    <parameter>Practical salinity of the water body</parameter>
+    <parameter>Concentration of oxygen {O2} per unit volume of the water body</parameter>
+    <parameter>Electrical conductivity of the water body</parameter>
+    <parameter>Northward current velocity in the water body</parameter>
+    <parameter>Eastward current velocity in the water body</parameter>
+    <parameter>Pressure (measured variable) in the water body exerted by overlying sea water and any medium above it</parameter>
+    <parameter>Concentration of inferred chlorophyll from relative fluorescence per unit volume of the water body</parameter>
+    <parameter>Colored Dissolved Organic Matter</parameter>
+    <keyword>Oceans | Salinity/density | Conductivity</keyword>
+    <keyword>Oceans | Ocean Temperature | Water Temperature</keyword>
+    <keyword>Oceans | Bathymetry | Water Depth</keyword>
+    <keyword>Oceans | Ocean Optics | Fluorescence</keyword>
+    <keyword>Oceans | Ocean Chemistry | Oxygen</keyword>
+    <keyword>Oceans | Ocean Optics | Turbidity</keyword>
+    <keyword>Oceans | Ocean Circulation | Ocean Currents</keyword>
+    <keyword>Oceans | Ocean Chemistry | Chlorophyll</keyword>
+    <keyword>Oceans | Salinity/density | Salinity</keyword>
+    <keyword>Oceans | Ocean Chemistry | Organic Matter</keyword>
+    <keyword>Fluorometers</keyword>
+    <keyword>CTD (Conductivity-Temperature-Depth Profilers)</keyword>
+    <keyword>IMOS Facility | ANFOG | Australian National Facility for Ocean Gliders</keyword>
+    <keyword>IMOS Node | Bluewater and Climate</keyword>
+    <keyword>IMOS Node | WAIMOS | Western Australia Integrated Marine Observing System</keyword>
+    <keyword>IMOS Node | NSW-IMOS | New South Wales Integrated Marine Observing System</keyword>
+    <keyword>IMOS Node | SA-IMOS | Southern Australian Integrated Marine Observing System</keyword>
+    <keyword>Marine Features (Australia) | Leeuwin Current</keyword>
+    <keyword>Marine Features (Australia) | East Australian Current</keyword>
+    <keyword>Physical Oceanography</keyword>
+    <keyword>Global / Oceans | Indian Ocean</keyword>
+    <keyword>Global / Oceans | Southern Ocean</keyword>
+    <keyword>Global / Oceans | Pacific Ocean</keyword>
+    <keyword>Marine Features (Australia) | Great Australian Bight, SA/WA</keyword>
+    <keyword>Regional Seas | Tasman Sea</keyword>
+    <keyword>Regional Seas | Coral Sea</keyword>
+    <keyword>Countries | Australia</keyword>
+    <keyword>States, Territories (Australia) | Western Australia</keyword>
+    <keyword>States, Territories (Australia) l South Australia</keyword>
+    <keyword>States, Territories (Australia) | Tasmania</keyword>
+    <keyword>States, Territories (Australia) | Victoria</keyword>
+    <keyword>States, Territories (Australia) | New South Wales</keyword>
+    <keyword>States, Territories (Australia) | Queensland</keyword>
+    <keyword>oceans</keyword>
+    <organisation>Integrated Marine Observing System (IMOS)</organisation>
+    <organisation>School of Civil, Environmental and Mining Engineering (CEME), The University of Western Australia (UWA)</organisation>
+    <defaultTitle>IMOS - Australian National Facility for Ocean Gliders (ANFOG) - delayed mode glider deployments</defaultTitle>
+    <docLocale>eng</docLocale>
+    <geonet:info xmlns:geonet="http://www.fao.org/geonetwork">
+      <id>179</id>
+      <uuid>c317b0fe-02e8-4ff9-96c9-563fd58e82ac</uuid>
+      <schema>iso19139.mcp-2.0</schema>
+      <createDate>2016-05-25T16:35:14</createDate>
+      <changeDate>2017-04-07T00:00:04</changeDate>
+      <source>ed23e365-c459-4aa4-bbc1-5d2cd0274af0</source>
+      <view>true</view>
+      <notify>false</notify>
+      <download>false</download>
+      <dynamic>true</dynamic>
+      <featured>true</featured>
+      <guestdownload>false</guestdownload>
+      <selected>false</selected>
+    </geonet:info>
+  </metadata>
+  <metadata>
+    <title>IMOS - SRS Satellite - SST L3S - 06 day composite - day time</title>
+    <popularity>455</popularity>
+    <source>ed23e365-c459-4aa4-bbc1-5d2cd0274af0</source>
+    <owner>1</owner>
+    <responsibleParty>resourceProvider|resource|Bureau of Meteorology (BOM)|</responsibleParty>
+    <responsibleParty>principalInvestigator|resource|Bureau of Meteorology (BOM)|</responsibleParty>
+    <responsibleParty>distributor|metadata|Integrated Marine Observing System (IMOS)|</responsibleParty>
+    <type>dataset</type>
+    <userinfo>admin||admin|Administrator</userinfo>
+    <isTemplate>n</isTemplate>
+    <rating>0</rating>
+    <credit>Integrated Marine Observing System (IMOS). IMOS is a national collaborative research infrastructure, supported by Australian Government.</credit>
+    <credit>Bureau of Meteorology (BOM)</credit>
+    <credit>CSIRO Marine and Atmospheric Research (CMAR)</credit>
+    <credit>CSIRO Oceans &amp; Atmosphere</credit>
+    <platform>NOAA-17</platform>
+    <platform>NOAA-18</platform>
+    <platform>NOAA-19</platform>
+    <parentId>5356744f-10f7-442e-8dd5-8a05f016588d</parentId>
+    <tempExtentBegin>1992-03-18t00:00:00.000z</tempExtentBegin>
+    <image>thumbnail|../../srv/en/resources.get?uuid=a5cad244-c33e-4083-b8a9-09ef59500b3d&amp;fname=SRS_map_s.png&amp;access=public</image>
+    <datasetLang>eng</datasetLang>
+    <jurisdictionLink>http://creativecommons.org/international/</jurisdictionLink>
+    <isHarvested>y</isHarvested>
+    <imageLink>https://licensebuttons.net/l/by/4.0/88x31.png</imageLink>
+    <attrConstr>The citation in a list of references is: "IMOS [year-of-data-download], [Title], [data-access-URL], accessed [date-of-access]."</attrConstr>
+    <attrConstr>Any users of IMOS data are required to clearly acknowledge the source of the material derived from IMOS in the format: "Data was sourced from the Integrated Marine Observing System (IMOS) - IMOS is a national collaborative research infrastructure, supported by the Australian Government." If relevant, also credit other organisations involved in collection of this particular datastream (as listed in 'credit' in the metadata record).</attrConstr>
+    <language>eng</language>
+    <link>|Point of truth URL of this metadata record|https://catalogue-imos.aodn.org.au:443/geonetwork/srv/en/metadata.show?uuid=a5cad244-c33e-4083-b8a9-09ef59500b3d|WWW:LINK-1.0-http--metadata-URL|text/html</link>
+    <link>|Sea Surface Temperatures Derived from NOAA Satellite Data|http://imos.org.au/sstproducts.html|WWW:LINK-1.0-http--link|text/html</link>
+    <link>|Data available through the OPeNDAP server|http://thredds.aodn.org.au/thredds/catalog/IMOS/SRS/SST/ghrsst/L3S-6d/day/catalog.html|WWW:LINK-1.0-http--link|text/html</link>
+    <link>|View and download data though the AODN Portal|https://imos.aodn.org.au/imos123/home?uuid=a5cad244-c33e-4083-b8a9-09ef59500b3d|WWW:LINK-1.0-http--link|text/html</link>
+    <link>srs_sst_l3s_6d_day_gridded_url/sea_surface_temperature|SRS - SST L3S 06 day - WMS layer|http://geoserver-123.aodn.org.au/geoserver/ncwms|IMOS:NCWMS--proto|IMOS:NCWMS--proto</link>
+    <link>srs_sst_l3s_6d_day_gridded_url|The GoGoDuck subsets and aggregates gridded data. Data is returned as a NetCDF file.|http://geoserver-wps.aodn.org.au/geoserver/wps|OGC:WPS--gogoduck|OGC:WPS--gogoduck</link>
+    <link>|GoGoDuck help documentation|https://help.aodn.org.au/web-services/gogoduck-aggregator/|WWW:LINK-1.0-http--link|text/html</link>
+    <licenseName>Attribution 4.0 International</licenseName>
+    <tempExtentEnd>2017-04-07t23:59:59.000z</tempExtentEnd>
+    <licenseLink>http://creativecommons.org/licenses/by/4.0/</licenseLink>
+    <_locale>eng</_locale>
+    <valid>-1</valid>
+    <abstract>This is a multi-sensor SSTskin product for six consecutive day-time periods, derived using observations from AVHRR instruments on all available NOAA polar-orbiting satellites.  It is provided as a 0.02deg x 0.02deg cylindrical equidistant projected map over the region 70°E to 170°W, 20°N to 70°S.  Each grid cell contains the 6 day average of all the highest available quality SSTs that overlap with that cell, weighted by the area of overlap. The diagram at https://help.aodn.org.au/satellite-data/product-information/ indicates where this product fits within the GHRSST suite of NOAA/AVHRR products.  Matchups with buoy SST observations for the central date (adjusted to skin depths) indicate typical 2014 biases of &lt; 0.3 degC and standard deviations of 0.7 degC.  Refer to the IMOS SST products web page at http://imos.org.au/sstproducts.html and Beggs et al. (2013) at http://imos.org.au/sstdata_references.html for further information.</abstract>
+    <parameter>Skin temperature of the water body</parameter>
+    <parameter>Skin temperature of the water body</parameter>
+    <parameter>Skin temperature of the water body</parameter>
+    <keyword>Oceans | Ocean Temperature | Sea Surface Temperature</keyword>
+    <keyword>Remote Sensing | Ocean Temperature | Sea Surface Temperature</keyword>
+    <keyword>Global / Oceans | Indian Ocean</keyword>
+    <keyword>Global / Oceans | Southern Ocean</keyword>
+    <keyword>Global / Oceans | Pacific Ocean</keyword>
+    <keyword>Marine Features (Australia) | Great Australian Bight, SA/WA</keyword>
+    <keyword>Marine Features (Australia) | Bass Strait, TAS/VIC</keyword>
+    <keyword>Regional Seas | Tasman Sea</keyword>
+    <keyword>Regional Seas | Coral Sea</keyword>
+    <keyword>Regional Seas | Arafura Sea</keyword>
+    <keyword>Regional Seas | Timor Sea</keyword>
+    <keyword>Regional Seas | Banda Sea</keyword>
+    <keyword>Regional Seas | Java Sea</keyword>
+    <keyword>Regional Seas | Philippine Sea</keyword>
+    <keyword>Regional Seas | Celebes Sea</keyword>
+    <keyword>Marine Features | Strait of Malacca</keyword>
+    <keyword>Regional Seas | Solomon Sea</keyword>
+    <keyword>Regional Seas | South China Sea</keyword>
+    <keyword>Countries | Australia</keyword>
+    <keyword>Countries | New Zealand</keyword>
+    <keyword>States, Territories (Australia) | Western Australia</keyword>
+    <keyword>States, Territories (Australia) | Victoria</keyword>
+    <keyword>States, Territories (Australia) | Tasmania</keyword>
+    <keyword>States, Territories (Australia) l South Australia</keyword>
+    <keyword>States, Territories (Australia) | Queensland</keyword>
+    <keyword>States, Territories (Australia) | Northern Territory</keyword>
+    <keyword>States, Territories (Australia) | New South Wales</keyword>
+    <keyword>Countries | Papua New Guinea</keyword>
+    <keyword>Countries | Indonesia</keyword>
+    <keyword>Countries | Timor-Leste</keyword>
+    <keyword>Countries | Malaysia</keyword>
+    <keyword>Offshore Islands (Australia) | Macquarie Island</keyword>
+    <keyword>Countries | New Caledonia</keyword>
+    <keyword>Countries | Fiji</keyword>
+    <keyword>Countries | Vanuatu</keyword>
+    <keyword>Countries | Philippines</keyword>
+    <keyword>Continents | Antarctica</keyword>
+    <keyword>Countries | Vietnam</keyword>
+    <keyword>oceans</keyword>
+    <organisation>Integrated Marine Observing System (IMOS)</organisation>
+    <organisation>Bureau of Meteorology (BOM)</organisation>
+    <geoBox>170|-70|70|20</geoBox>
+    <defaultTitle>IMOS - SRS Satellite - SST L3S - 06 day composite - day time</defaultTitle>
+    <docLocale>eng</docLocale>
+    <geonet:info xmlns:geonet="http://www.fao.org/geonetwork">
+      <id>233</id>
+      <uuid>a5cad244-c33e-4083-b8a9-09ef59500b3d</uuid>
+      <schema>iso19139.mcp-2.0</schema>
+      <createDate>2016-06-21T00:00:04</createDate>
+      <changeDate>2017-04-07T00:00:03</changeDate>
+      <source>ed23e365-c459-4aa4-bbc1-5d2cd0274af0</source>
+      <view>true</view>
+      <notify>false</notify>
+      <download>false</download>
+      <dynamic>true</dynamic>
+      <featured>true</featured>
+      <guestdownload>false</guestdownload>
+      <selected>false</selected>
+    </geonet:info>
+  </metadata>
+  <metadata>
+    <title>IMOS - Australian National Mooring Network (ANMN) Facility - Temperature and salinity time-series</title>
+    <popularity>453</popularity>
+    <source>ed23e365-c459-4aa4-bbc1-5d2cd0274af0</source>
+    <owner>1</owner>
+    <responsibleParty>pointOfContact|resource|Integrated Marine Observing System (IMOS)|</responsibleParty>
+    <responsibleParty>principalInvestigator|resource|Australian Institute of Marine Science (AIMS)|</responsibleParty>
+    <responsibleParty>distributor|metadata|Integrated Marine Observing System (IMOS)|</responsibleParty>
+    <geoPolygon>POLYGON ((152 -22, 152 -21, 153 -21, 153 -22, 152 -22))</geoPolygon>
+    <geoPolygon>POLYGON ((113 -22, 113 -21, 114 -21, 114 -22, 113 -22))</geoPolygon>
+    <geoPolygon>POLYGON ((152 -23, 153 -23, 153 -24, 151 -24, 151 -22, 152 -22, 152 -23))</geoPolygon>
+    <geoPolygon>POLYGON ((130 -13, 130 -12, 131 -12, 131 -13, 130 -13))</geoPolygon>
+    <geoPolygon>POLYGON ((128 -14, 128 -12, 127 -12, 127 -9, 128 -9, 128 -10, 129 -10, 129 -14, 128 -14))</geoPolygon>
+    <geoPolygon>POLYGON ((145 -15, 145 -14, 146 -14, 146 -15, 145 -15))</geoPolygon>
+    <geoPolygon>POLYGON ((123 -15, 123 -14, 124 -14, 124 -15, 123 -15))</geoPolygon>
+    <geoPolygon>POLYGON ((121 -17, 121 -15, 122 -15, 122 -17, 121 -17))</geoPolygon>
+    <geoPolygon>POLYGON ((147 -20, 147 -18, 148 -18, 148 -20, 147 -20))</geoPolygon>
+    <geoPolygon>POLYGON ((116 -21, 116 -20, 115 -20, 115 -19, 117 -19, 117 -21, 116 -21))</geoPolygon>
+    <geoPolygon>POLYGON ((151 -21, 151 -20, 152 -20, 152 -21, 151 -21))</geoPolygon>
+    <geoPolygon>POLYGON ((115 -33, 115 -32, 114 -32, 114 -31, 116 -31, 116 -33, 115 -33))</geoPolygon>
+    <geoPolygon>POLYGON ((153 -28, 153 -27, 154 -27, 154 -28, 153 -28))</geoPolygon>
+    <geoPolygon>POLYGON ((153 -31, 153 -30, 154 -30, 154 -31, 153 -31))</geoPolygon>
+    <geoPolygon>POLYGON ((151 -35, 151 -33, 152 -33, 152 -35, 151 -35))</geoPolygon>
+    <geoPolygon>POLYGON ((150 -37, 150 -35, 151 -35, 151 -37, 150 -37))</geoPolygon>
+    <geoPolygon>POLYGON ((134 -35, 134 -34, 136 -34, 136 -35, 137 -35, 137 -37, 135 -37, 135 -35, 134 -35))</geoPolygon>
+    <geoPolygon>POLYGON ((121 -34, 121 -33, 122 -33, 122 -34, 121 -34))</geoPolygon>
+    <geoPolygon>POLYGON ((148 -43, 148 -42, 149 -42, 149 -43, 148 -43))</geoPolygon>
+    <useLimitation>Data, products and services from IMOS are provided "as is" without any warranty as to fitness for a particular purpose.</useLimitation>
+    <userinfo>admin||admin|Administrator</userinfo>
+    <isTemplate>n</isTemplate>
+    <rating>0</rating>
+    <credit>Integrated Marine Observing System (IMOS). IMOS is a national collaborative research infrastructure, supported by Australian Government.</credit>
+    <platform>mooring</platform>
+    <parentId>f9c151bd-d95b-4af6-8cb7-21c05b7b383b</parentId>
+    <tempExtentBegin>2007-09-10t00:00:00.000z</tempExtentBegin>
+    <image>thumbnail|../../srv/en/resources.get?uuid=7e13b5f3-4a70-4e31-9e95-335efa491c5c&amp;fname=Mooring_launch_01_s.png&amp;access=public</image>
+    <datasetLang>eng</datasetLang>
+    <jurisdictionLink>http://creativecommons.org/international/</jurisdictionLink>
+    <isHarvested>y</isHarvested>
+    <imageLink>https://licensebuttons.net/l/by/4.0/88x31.png</imageLink>
+    <attrConstr>The citation in a list of references is: "IMOS [year-of-data-download], [Title], [data-access-URL], accessed [date-of-access]."</attrConstr>
+    <attrConstr>Any users of IMOS data are required to clearly acknowledge the source of the material derived from IMOS in the format: "Data was sourced from the Integrated Marine Observing System (IMOS) - IMOS is a national collaborative research infrastructure, supported by the Australian Government." If relevant, also credit other organisations involved in collection of this particular datastream (as listed in 'credit' in the metadata record).</attrConstr>
+    <language>eng</language>
+    <link>|Point of truth URL of this metadata record|https://catalogue-imos.aodn.org.au:443/geonetwork/srv/en/metadata.show?uuid=7e13b5f3-4a70-4e31-9e95-335efa491c5c|WWW:LINK-1.0-http--metadata-URL|text/html</link>
+    <link>|ANMN page on IMOS website|http://imos.org.au/nationalmooringnetwork.html|WWW:LINK-1.0-http--link|text/html</link>
+    <link>|Data available through the IMOS Thredds server|http://thredds.aodn.org.au/thredds/catalog/IMOS/ANMN/catalog.html|WWW:LINK-1.0-http--link|text/html</link>
+    <link>|View and download data though the AODN Portal|https://imos.aodn.org.au/imos123/home?uuid=7e13b5f3-4a70-4e31-9e95-335efa491c5c|WWW:LINK-1.0-http--link|text/html</link>
+    <link>imos:anmn_ts_timeseries_map|Moorings - temperature &amp; salinity time-series|http://geoserver-123.aodn.org.au/geoserver/wms|OGC:WMS-1.1.1-http-get-map|application/vnd.ogc.wms_xml</link>
+    <link>imos:anmn_ts_timeseries_map|Moorings - temperature &amp; salinity time-series|../../srv/en/google.kml?uuid=&amp;layers=imos:anmn_ts_timeseries_map|application/vnd.google-earth.kml+xml|application/vnd.google-earth.kml+xml</link>
+    <link>anmn_ts_timeseries_data|This OGC WFS service returns filtered geographic information. The returned data is available in multiple formats including CSV.|http://geoserver-123.aodn.org.au/geoserver/ows|OGC:WFS-1.0.0-http-get-capabilities|OGC:WFS-1.0.0-http-get-capabilities</link>
+    <link>|OGC WFS help documentation|http://help.aodn.org.au/help/?q=node/53|WWW:LINK-1.0-http--link|text/html</link>
+    <link>anmn_ts_timeseries_map#file_url|The BODAAC is a WFS service that returns a list of OpenDAP URLs matching a query.|http://geoserver-123.aodn.org.au/geoserver/ows|IMOS:AGGREGATION--bodaac|IMOS:AGGREGATION--bodaac</link>
+    <link>|BODAAC help documentation|http://help.aodn.org.au/help/?q=node/69|WWW:LINK-1.0-http--link|text/html</link>
+    <link>imos:anmn_ts_timeseries_data|This is a WPS service that returns a zip file of subsetted NetCDF files matching a query.|http://geoserver-wps.aodn.org.au/geoserver/wps|OGC:WPS--netcdf-subset-service|OGC:WPS--netcdf-subset-service</link>
+    <licenseName>Attribution 4.0 International</licenseName>
+    <tempExtentEnd>2017-04-07t23:59:59.000z</tempExtentEnd>
+    <licenseLink>http://creativecommons.org/licenses/by/4.0/</licenseLink>
+    <_locale>eng</_locale>
+    <valid>-1</valid>
+    <abstract>The Australian National Mooring Network (ANMN) Facility is a series of national reference stations and regional moorings designed to monitor particular oceanographic phenomena in Australian coastal ocean waters. This collection contains time-series observations of temperature and salinity from moorings deployed by the ANMN. The primary parameters are temperature, pressure (when available) and depth of the instrument. A subset of this collection also includes conductivity and salinity. The observations were made using a range of temperature loggers, conductivity-temperature-depth (CTD) instruments, and temperature sensors on acoustic Doppler current profilers (ADCPs). We are also producing a gridded product of temperature time-series profiles based on these data. These will be available in a separate collection.</abstract>
+    <parameter>Temperature of the water body</parameter>
+    <parameter>Practical salinity of the water body</parameter>
+    <parameter>Electrical conductivity of the water body</parameter>
+    <parameter>Pressure (measured variable) in the water body exerted by overlying sea water and any medium above it</parameter>
+    <parameter>Pressure (measured variable) in the water body exerted by overlying sea water only</parameter>
+    <keyword>Oceans | Salinity/density | Conductivity</keyword>
+    <keyword>Oceans | Ocean Temperature | Water Temperature</keyword>
+    <keyword>Oceans | Bathymetry | Water Depth</keyword>
+    <keyword>Oceans | Salinity/density | Salinity</keyword>
+    <keyword>Buoys | Moored Buoys</keyword>
+    <keyword>CTD (Conductivity-Temperature-Depth Profilers)</keyword>
+    <keyword>Slope Mooring</keyword>
+    <keyword>Shelf Mooring</keyword>
+    <keyword>IMOS Facility | ANMN | Australian National Mooring Network</keyword>
+    <keyword>Global / Oceans | Indian Ocean</keyword>
+    <keyword>Global / Oceans | Pacific Ocean</keyword>
+    <keyword>Marine Features (Australia) | Great Australian Bight, SA/WA</keyword>
+    <keyword>Regional Seas | Tasman Sea</keyword>
+    <keyword>Regional Seas | Timor Sea</keyword>
+    <keyword>Regional Seas | Coral Sea</keyword>
+    <keyword>Marine Features (Australia) | Jervis Bay, ACT</keyword>
+    <keyword>Countries | Australia</keyword>
+    <keyword>Countries | Indonesia</keyword>
+    <keyword>States, Territories (Australia) | Western Australia</keyword>
+    <keyword>States, Territories (Australia) | South Australia</keyword>
+    <keyword>States, Territories (Australia) | Victoria</keyword>
+    <keyword>States, Territories (Australia) | Tasmania</keyword>
+    <keyword>States, Territories (Australia) | Queensland</keyword>
+    <keyword>States, Territories (Australia) | Northern Territory</keyword>
+    <keyword>States, Territories (Australia) | New South Wales</keyword>
+    <keyword>States, Territories (Australia) l South Australia</keyword>
+    <keyword>Marine Features (Australia) | Maria Island, TAS</keyword>
+    <keyword>Marine Features (Australia) | Kangaroo Island, SA</keyword>
+    <keyword>Marine Features (Australia) | Batemans Bay, NSW</keyword>
+    <keyword>Marine Features (Australia) | Port Hacking, NSW</keyword>
+    <keyword>Coastal Cities / Towns (Australia) | Coffs Harbour, NSW</keyword>
+    <keyword>Coastal Cities / Towns (Australia) | Sydney, NSW</keyword>
+    <keyword>Marine Features (Australia) | Great Barrier Reef, QLD</keyword>
+    <keyword>Coastal Cities / Towns (Australia) | Darwin, NT</keyword>
+    <keyword>Marine Features (Australia) | Kimberley Coast, WA</keyword>
+    <keyword>Marine Features (Australia) | Kimberley Islands, WA</keyword>
+    <keyword>Marine Features (Australia) | Ningaloo Marine Park, WA</keyword>
+    <keyword>Marine Features (Australia) | Pilbara Coast, WA</keyword>
+    <keyword>Coastal Cities / Towns (Australia) | Esperance, WA</keyword>
+    <keyword>Coastal Cities / Towns (Australia) | Perth, WA</keyword>
+    <keyword>Marine Features (Australia) | Rottnest Island, WA</keyword>
+    <keyword>oceans</keyword>
+    <organisation>Integrated Marine Observing System (IMOS)</organisation>
+    <organisation>Australian Institute of Marine Science (AIMS)</organisation>
+    <defaultTitle>IMOS - Australian National Mooring Network (ANMN) Facility - Temperature and salinity time-series</defaultTitle>
+    <docLocale>eng</docLocale>
+    <geonet:info xmlns:geonet="http://www.fao.org/geonetwork">
+      <id>149</id>
+      <uuid>7e13b5f3-4a70-4e31-9e95-335efa491c5c</uuid>
+      <schema>iso19139.mcp-2.0</schema>
+      <createDate>2016-05-25T16:35:14</createDate>
+      <changeDate>2017-04-07T00:00:04</changeDate>
+      <source>ed23e365-c459-4aa4-bbc1-5d2cd0274af0</source>
+      <view>true</view>
+      <notify>false</notify>
+      <download>false</download>
+      <dynamic>true</dynamic>
+      <featured>true</featured>
+      <guestdownload>false</guestdownload>
+      <selected>false</selected>
+    </geonet:info>
+  </metadata>
+  <metadata>
+    <title>IMOS - OceanCurrent - Gridded sea level anomaly - Near real time</title>
+    <popularity>287</popularity>
+    <source>ed23e365-c459-4aa4-bbc1-5d2cd0274af0</source>
+    <owner>1</owner>
+    <responsibleParty>processor|resource|CSIRO Oceans &amp; Atmosphere - Hobart|</responsibleParty>
+    <responsibleParty>pointOfContact|resource|Integrated Marine Observing System (IMOS)|</responsibleParty>
+    <responsibleParty>distributor|metadata|Integrated Marine Observing System (IMOS)|</responsibleParty>
+    <type>dataset</type>
+    <useLimitation>Data, products and services from IMOS are provided "as is" without any warranty as to fitness for a particular purpose.</useLimitation>
+    <userinfo>admin||admin|Administrator</userinfo>
+    <isTemplate>n</isTemplate>
+    <rating>0</rating>
+    <credit>Integrated Marine Observing System (IMOS). IMOS is a national collaborative research infrastructure, supported by Australian Government.</credit>
+    <credit>CSIRO Oceans &amp; Atmosphere - Hobart</credit>
+    <platform>orbiting satellite</platform>
+    <tempExtentBegin>2011-09-01t00:00:00.000z</tempExtentBegin>
+    <image>thumbnail|../../srv/en/resources.get?uuid=0c9eb39c-9cbe-4c6a-8a10-5867087e703a&amp;fname=AA1112V3_s.png&amp;access=public</image>
+    <datasetLang>eng</datasetLang>
+    <jurisdictionLink>http://creativecommons.org/international/</jurisdictionLink>
+    <isHarvested>y</isHarvested>
+    <imageLink>https://licensebuttons.net/l/by/4.0/88x31.png</imageLink>
+    <attrConstr>The citation in a list of references is: "IMOS [year-of-data-download], [Title], [data-access-URL], accessed [date-of-access]."</attrConstr>
+    <attrConstr>Any users of IMOS data are required to clearly acknowledge the source of the material derived from IMOS in the format: "Data was sourced from the Integrated Marine Observing System (IMOS) - IMOS is a national collaborative research infrastructure, supported by the Australian Government." If relevant, also credit other organisations involved in collection of this particular datastream (as listed in 'credit' in the metadata record).</attrConstr>
+    <language>eng</language>
+    <link>|Point of truth URL of this metadata record|https://catalogue-imos.aodn.org.au:443/geonetwork/srv/en/metadata.show?uuid=0c9eb39c-9cbe-4c6a-8a10-5867087e703a|WWW:LINK-1.0-http--metadata-URL|text/html</link>
+    <link>|Link to THREDDS for Near Real Time data|http://thredds.aodn.org.au/thredds/catalog/IMOS/OceanCurrent/GSLA/NRT00/catalog.html|WWW:LINK-1.0-http--link|text/html</link>
+    <link>|OceanCurrent web site|http://oceancurrent.imos.org.au/|WWW:LINK-1.0-http--link|text/html</link>
+    <link>|View and download data though the AODN Portal|https://imos.aodn.org.au/imos123/home?uuid=0c9eb39c-9cbe-4c6a-8a10-5867087e703a|WWW:LINK-1.0-http--link|text/html</link>
+    <link>gsla_nrt00_timeseries_url/surface_geostrophic_sea_water_velocity|Sea water velocity - real-time - WMSlayer|http://geoserver-123.aodn.org.au/geoserver/ncwms|IMOS:NCWMS--proto|IMOS:NCWMS--proto</link>
+    <link>gsla_nrt00_timeseries_url|The GoGoDuck subsets and aggregates gridded data. Data is returned as a NetCDF file.|http://geoserver-wps.aodn.org.au/geoserver/wps|OGC:WPS--gogoduck|OGC:WPS--gogoduck</link>
+    <link>|GoGoDuck help documentation|http://help.aodn.org.au/help/?q=node/88|WWW:LINK-1.0-http--link|text/html</link>
+    <link>gsla_nrt00_timeseries_url#file_url|The BODAAC is a WFS service that returns a list of OpenDAP URLs matching a query.|http://geoserver-123.aodn.org.au/geoserver/ows|IMOS:AGGREGATION--bodaac|IMOS:AGGREGATION--bodaac</link>
+    <link>|BODAAC help documentation|http://help.aodn.org.au/help/?q=node/69|WWW:LINK-1.0-http--link|text/html</link>
+    <licenseName>Attribution 4.0 International</licenseName>
+    <tempExtentEnd>2017-04-07t23:59:59.000z</tempExtentEnd>
+    <licenseLink>http://creativecommons.org/licenses/by/4.0/</licenseLink>
+    <_locale>eng</_locale>
+    <valid>-1</valid>
+    <abstract>Gridded (adjusted) sea level anomaly (GSLA), gridded sea level (GSL) and surface geostrophic velocity (UCUR,VCUR) for the Australasian region. GSLA is mapped using optimal interpolation of detided, de-meaned, inverse-barometer-adjusted altimeter and tidegauge estimates of sea level. GSL is GSLA plus an estimate of the departure of mean sea level from the geoid – mean sea level (over 18 years of model time) of Ocean Forecasting Australia Model version 3 (OFAM3). The geostrophic velocities are derived from GSLA and the mean surface velocity from OFAM3. 
+
+
+The altimeter data window for input to the Delayed Mode (DM) maps is symmetrical about the map date. The width of the window is dependent on the number of altimeters flying at the time and ranges from 30 days to 14 days. The altimeter data window for Near Real Time (NRT) maps is asymmetrical about the analysis date (-21 to 4 days). For both NRT and DM, altimeter data is weighted by the difference between the analysis date of the map and the time of each altimeter observation.
+
+References: http://imos.aodn.org.au/oceancurrent</abstract>
+    <parameter>Eastward geostrophic current velocity in the water body</parameter>
+    <parameter>Northward geostrophic current velocity in the water body</parameter>
+    <parameter>Sea surface height anomaly</parameter>
+    <parameter>Sea surface height above geoid</parameter>
+    <keyword>Oceans | Sea Surface Height | Sea Surface Height</keyword>
+    <keyword>Oceans | Ocean Circulation | Eddies</keyword>
+    <keyword>Oceans | Ocean Circulation | Gyres</keyword>
+    <keyword>Oceans | Ocean Circulation | Ocean Currents</keyword>
+    <keyword>Oceans | Ocean Circulation | Upwelling</keyword>
+    <keyword>Satellite Altimetry</keyword>
+    <keyword>Global / Oceans | Indian Ocean</keyword>
+    <keyword>Global / Oceans | Southern Ocean</keyword>
+    <keyword>Global / Oceans | Pacific Ocean</keyword>
+    <keyword>Marine Features (Australia) | Great Australian Bight, SA/WA</keyword>
+    <keyword>Marine Features (Australia) | Bass Strait, TAS/VIC</keyword>
+    <keyword>Regional Seas | Tasman Sea</keyword>
+    <keyword>Regional Seas | Solomon Sea</keyword>
+    <keyword>Regional Seas | Coral Sea</keyword>
+    <keyword>Regional Seas | Arafura Sea</keyword>
+    <keyword>Regional Seas | Timor Sea</keyword>
+    <keyword>Regional Seas | Banda Sea</keyword>
+    <keyword>Regional Seas | Java Sea</keyword>
+    <keyword>Regional Seas | Philippine Sea</keyword>
+    <keyword>Regional Seas | Celebes Sea</keyword>
+    <keyword>Regional Seas | South China Sea</keyword>
+    <keyword>Marine Features | Strait of Malacca</keyword>
+    <keyword>Regional Seas | Gulf of Thailand</keyword>
+    <keyword>Countries | Australia</keyword>
+    <keyword>Countries | New Zealand</keyword>
+    <keyword>States, Territories (Australia) | Western Australia</keyword>
+    <keyword>States, Territories (Australia) | South Australia</keyword>
+    <keyword>States, Territories (Australia) | Victoria</keyword>
+    <keyword>States, Territories (Australia) | Tasmania</keyword>
+    <keyword>States, Territories (Australia) | New South Wales</keyword>
+    <keyword>States, Territories (Australia) | Queensland</keyword>
+    <keyword>States, Territories (Australia) | Northern Territory</keyword>
+    <keyword>Countries | Papua New Guinea</keyword>
+    <keyword>Countries | Indonesia</keyword>
+    <keyword>Countries | Singapore</keyword>
+    <keyword>Countries | Timor-Leste</keyword>
+    <keyword>Countries | Malaysia</keyword>
+    <keyword>Countries | India</keyword>
+    <keyword>Countries | Sri Lanka</keyword>
+    <keyword>Offshore Islands (Australia) | Macquarie Island</keyword>
+    <keyword>Countries | New Caledonia</keyword>
+    <keyword>Countries | Fiji</keyword>
+    <keyword>Countries | Vanuatu</keyword>
+    <keyword>Countries | Philippines</keyword>
+    <keyword>Countries | Vietnam</keyword>
+    <keyword>oceans</keyword>
+    <organisation>Integrated Marine Observing System (IMOS)</organisation>
+    <organisation>CSIRO Oceans &amp; Atmosphere - Hobart</organisation>
+    <geoBox>57.00000000000001|-59.99999999999999|185|10</geoBox>
+    <defaultTitle>IMOS - OceanCurrent - Gridded sea level anomaly - Near real time</defaultTitle>
+    <docLocale>eng</docLocale>
+    <geonet:info xmlns:geonet="http://www.fao.org/geonetwork">
+      <id>158</id>
+      <uuid>0c9eb39c-9cbe-4c6a-8a10-5867087e703a</uuid>
+      <schema>iso19139.mcp-2.0</schema>
+      <createDate>2016-05-25T16:35:13</createDate>
+      <changeDate>2017-04-07T00:00:02</changeDate>
+      <source>ed23e365-c459-4aa4-bbc1-5d2cd0274af0</source>
+      <view>true</view>
+      <notify>false</notify>
+      <download>false</download>
+      <dynamic>true</dynamic>
+      <featured>true</featured>
+      <guestdownload>false</guestdownload>
+      <selected>false</selected>
+    </geonet:info>
+  </metadata>
+  <metadata>
+    <title>IMOS - ACORN - Rottnest Shelf HF ocean radar site (Western Australia, Australia) - Real-time sea water velocity</title>
+    <popularity>255</popularity>
+    <source>ed23e365-c459-4aa4-bbc1-5d2cd0274af0</source>
+    <owner>1</owner>
+    <responsibleParty>pointOfContact|resource|School of Civil, Environmental and Mining Engineering (CEME), The University of Western Australia (UWA)|</responsibleParty>
+    <responsibleParty>pointOfContact|resource|Integrated Marine Observing System (IMOS)|</responsibleParty>
+    <responsibleParty>distributor|metadata|Integrated Marine Observing System (IMOS)|</responsibleParty>
+    <useLimitation>Data, products and services from IMOS are provided "as is" without any warranty as to fitness for a particular purpose.</useLimitation>
+    <userinfo>admin||admin|Administrator</userinfo>
+    <isTemplate>n</isTemplate>
+    <rating>0</rating>
+    <credit>Integrated Marine Observing System (IMOS). IMOS is a national collaborative research infrastructure, supported by Australian Government.</credit>
+    <platform>WERA beam forming HF radar</platform>
+    <parentId>dc2743f5-709f-4760-b681-3cae02cbb6f0</parentId>
+    <tempExtentBegin>2010-02-19t00:00:00.000z</tempExtentBegin>
+    <image>thumbnail|../../srv/en/resources.get?uuid=8b469535-eb48-4f1f-9612-bdf2e83cdce8&amp;fname=rot_s.png&amp;access=public</image>
+    <datasetLang>eng</datasetLang>
+    <jurisdictionLink>http://creativecommons.org/international/</jurisdictionLink>
+    <isHarvested>y</isHarvested>
+    <spatialRepresentationType>grid</spatialRepresentationType>
+    <imageLink>https://licensebuttons.net/l/by/4.0/88x31.png</imageLink>
+    <attrConstr>The citation in a list of references is: "IMOS [year-of-data-download], [Title], [data-access-URL], accessed [date-of-access]."</attrConstr>
+    <attrConstr>Any users of IMOS data are required to clearly acknowledge the source of the material derived from IMOS in the format: "Data was sourced from the Integrated Marine Observing System (IMOS) - IMOS is a national collaborative research infrastructure, supported by the Australian Government." If relevant, also credit other organisations involved in collection of this particular datastream (as listed in 'credit' in the metadata record).</attrConstr>
+    <language>eng</language>
+    <link>|Point of truth URL of this metadata record|https://catalogue-imos.aodn.org.au:443/geonetwork/srv/en/metadata.show?uuid=8b469535-eb48-4f1f-9612-bdf2e83cdce8|WWW:LINK-1.0-http--metadata-URL|text/html</link>
+    <link>|Radar sites page on IMOS website|http://imos.org.au/oceanradar_sites.html|WWW:LINK-1.0-http--link|text/html</link>
+    <link>|Link to THREDDS for non-QC'd hourly averaged surface current data files|http://thredds.aodn.org.au/thredds/catalog/IMOS/ACORN/gridded_1h-avg-current-map_non-QC/ROT/catalog.html|WWW:LINK-1.0-http--link|text/html</link>
+    <link>|View and download data though the AODN Portal|https://imos.aodn.org.au/imos123/home?uuid=8b469535-eb48-4f1f-9612-bdf2e83cdce8|WWW:LINK-1.0-http--link|text/html</link>
+    <link>acorn_hourly_avg_rot_nonqc_timeseries_url/sea_water_velocity|Rottnest shelf - sea water velocity (non-QC data) - wms layer|http://geoserver-123.aodn.org.au/geoserver/ncwms|IMOS:NCWMS--proto|IMOS:NCWMS--proto</link>
+    <link>acorn_hourly_avg_rot_nonqc_timeseries_url#file_url|The BODAAC is a WFS service that returns a list of OpenDAP URLs matching a query.|http://geoserver-123.aodn.org.au/geoserver/ows|IMOS:AGGREGATION--bodaac|IMOS:AGGREGATION--bodaac</link>
+    <link>|BODAAC help documentation|http://help.aodn.org.au/help/?q=node/69|WWW:LINK-1.0-http--link|text/html</link>
+    <link>acorn_hourly_avg_rot_nonqc_timeseries_url|The GoGoDuck subsets and aggregates gridded data. Data is returned as a NetCDF file|http://geoserver-wps.aodn.org.au/geoserver/wps|OGC:WPS--gogoduck|OGC:WPS--gogoduck</link>
+    <link>|GoGoDuck help documentation|http://help.aodn.org.au/help/?q=node/88|WWW:LINK-1.0-http--link|text/html</link>
+    <licenseName>Attribution 4.0 International</licenseName>
+    <tempExtentEnd>2017-04-07t23:59:59.000z</tempExtentEnd>
+    <licenseLink>http://creativecommons.org/licenses/by/4.0/</licenseLink>
+    <_locale>eng</_locale>
+    <valid>-1</valid>
+    <abstract>The Rottnest Shelf (ROT) HF ocean radar system covers an area which includes Rottnest Island and the Perth Canyon to the north-west.  The Perth Canyon has the highest marine biodiversity in the region with whale and fish aggregations, and high primary and secondary productions which are controlled by the physical oceanographic processes.  
+
+Combined with the dynamics of the Perth Canyon is the dominant Leeuwin Current which produces a wake on the leeward side of Rottnest Island.   This is a topographically induced up-welling and associated primary and secondary productivity.  The region is influenced by Swan River outflow, submarine groundwater discharges , and waste-water outfalls.  
+
+The ROT HF ocean radar is a WERA phased array system with 16-element receive arrays located at Fremantle (32.031 S, 115.746 E) and Guilderton (31.342 S, 115.489 E).  These radars operate at a frequency of 8.512 MHz, with a bandwidth of 33 KHz and a maximum range of 200 Km.  Within the HF radar coverage area surface currents are measured.  Data are also collected from which wind directions and significant wave height can be calculated.  
+
+The ROT area of coverage has a small overlap of commonly observed ocean with the Turqoise Coast (TURQ) SeaSonde HF ocean radar system on its north side.  Together, the ROT and TURQ systems provide continuous monitoring of the shelf from Fremantle to Jurien Bay.</abstract>
+    <parameter>Current speed in the water body</parameter>
+    <parameter>Current direction in the water body</parameter>
+    <parameter>Eastward current velocity in the water body</parameter>
+    <parameter>Northward current velocity in the water body</parameter>
+    <keyword>Oceans | Ocean Circulation | Eddies</keyword>
+    <keyword>Oceans | Ocean Circulation | Ocean Currents</keyword>
+    <keyword>Oceans | Ocean Circulation | Upwelling</keyword>
+    <keyword>Oceans | Ocean Circulation | Wind-driven Circulation</keyword>
+    <keyword>Oceans | Ocean Waves | Significant Wave Height</keyword>
+    <keyword>Oceans | Ocean Waves | Wave Frequency</keyword>
+    <keyword>Oceans | Ocean Waves | Wave Length</keyword>
+    <keyword>Oceans | Ocean Waves | Wave Period</keyword>
+    <keyword>Oceans | Ocean Waves | Wave Speed/direction</keyword>
+    <keyword>Oceans | Ocean Waves | Wave Spectra</keyword>
+    <keyword>Oceans | Ocean Winds | Surface Winds</keyword>
+    <keyword>Oceans | Coastal Processes | Coral Reefs</keyword>
+    <keyword>Radiance Or Imagery | Radio Wave | Radio Wave</keyword>
+    <keyword>Atmosphere | Atmospheric Winds | Surface Winds</keyword>
+    <keyword>Oceans | Ocean Waves | Sea State</keyword>
+    <keyword>Oceans | Ocean Waves | Swells</keyword>
+    <keyword>Oceans | Ocean Waves | Wind Waves</keyword>
+    <keyword>IMOS Site | ROT | Rottnest Shelf HF ocean radar site</keyword>
+    <keyword>Marine Features (Australia) | Rottnest Island, WA</keyword>
+    <keyword>Marine Features (Australia) | Leeuwin Current</keyword>
+    <keyword>WERA HF Radar | Phased Array</keyword>
+    <keyword>Doppler Frequency</keyword>
+    <keyword>Physical Oceanography</keyword>
+    <keyword>Global / Oceans | Indian Ocean</keyword>
+    <keyword>Marine Features (Australia) | Perth Canyon, WA</keyword>
+    <keyword>Countries | Australia</keyword>
+    <keyword>Coastal Cities / Towns (Australia) | Perth, WA</keyword>
+    <keyword>States, Territories (Australia) | Western Australia</keyword>
+    <keyword>Marine Features (Australia) | Rottnest Island, WA</keyword>
+    <keyword>oceans</keyword>
+    <organisation>Integrated Marine Observing System (IMOS)</organisation>
+    <organisation>School of Civil, Environmental and Mining Engineering (CEME), The University of Western Australia (UWA)</organisation>
+    <geoBox>112.9|-33.4|115.6|-30.7</geoBox>
+    <defaultTitle>IMOS - ACORN - Rottnest Shelf HF ocean radar site (Western Australia, Australia) - Real-time sea water velocity</defaultTitle>
+    <docLocale>eng</docLocale>
+    <geonet:info xmlns:geonet="http://www.fao.org/geonetwork">
+      <id>152</id>
+      <uuid>8b469535-eb48-4f1f-9612-bdf2e83cdce8</uuid>
+      <schema>iso19139.mcp-2.0</schema>
+      <createDate>2016-05-25T16:35:13</createDate>
+      <changeDate>2017-04-07T00:00:01</changeDate>
+      <source>ed23e365-c459-4aa4-bbc1-5d2cd0274af0</source>
+      <view>true</view>
+      <notify>false</notify>
+      <download>false</download>
+      <dynamic>true</dynamic>
+      <featured>true</featured>
+      <guestdownload>false</guestdownload>
+      <selected>false</selected>
+    </geonet:info>
+  </metadata>
+  <metadata>
+    <title>The Australian Phytoplankton Database (1844 - 2016) - abundance and biovolume</title>
+    <popularity>248</popularity>
+    <source>80235762-1241-44b1-832c-5978d0a1fcfa</source>
+    <owner>1</owner>
+    <responsibleParty>coInvestigator|resource|CSIRO Oceans &amp; Atmosphere - Hobart|</responsibleParty>
+    <responsibleParty>distributor|metadata|Integrated Marine Observing System (IMOS)|</responsibleParty>
+    <geoPolygon>POLYGON ((155 -65, 155 -70, 135 -70, 135 -60, 125 -60, 125 -65, 115 -65, 115 -70, 110 -70, 110 -60, 100 -60, 100 -65, 85 -65, 85 -60, 95 -60, 95 -55, 105 -55, 105 -45, 115 -45, 115 -50, 130 -50, 130 -45, 135 -45, 135 -40, 115 -40, 115 -35, 105 -35, 105 -30, 100 -30, 100 -25, 95 -25, 95 -20, 105 -20, 105 -25, 110 -25, 110 -15, 120 -15, 120 -10, 135 -10, 135 -5, 145 -5, 145 -10, 150 -10, 150 -5, 165 -5, 165 -10, 170 -10, 170 -30, 175 -30, 175 -45, 170 -45, 170 -50, 160 -50, 160 -65, 155 -65), (130 -35, 135 -35, 135 -30, 140 -30, 140 -35, 145 -35, 145 -30, 150 -30, 150 -25, 145 -25, 145 -15, 140 -15, 140 -20, 135 -20, 135 -15, 125 -15, 125 -20, 120 -20, 120 -25, 115 -25, 115 -30, 130 -30, 130 -35))</geoPolygon>
+    <geoPolygon>POLYGON ((-10 -50, -10 -45, -5 -45, -5 -50, -10 -50))</geoPolygon>
+    <geoPolygon>POLYGON ((80 -35, 80 -30, 85 -30, 85 -35, 80 -35))</geoPolygon>
+    <geoPolygon>POLYGON ((-20 -35, -20 -30, -15 -30, -15 -35, -20 -35))</geoPolygon>
+    <geoPolygon>POLYGON ((110 -10, 110 -5, 115 -5, 115 -10, 110 -10))</geoPolygon>
+    <geoPolygon>POLYGON ((-80 -40, -80 -35, -75 -35, -75 -40, -80 -40))</geoPolygon>
+    <geoPolygon>POLYGON ((70 -55, 70 -50, 75 -50, 75 -55, 70 -55))</geoPolygon>
+    <geoPolygon>POLYGON ((10 -55, 10 -50, 15 -50, 15 -55, 10 -55))</geoPolygon>
+    <geoPolygon>POLYGON ((20 -60, 20 -55, 25 -55, 25 -60, 20 -60))</geoPolygon>
+    <geoPolygon>POLYGON ((165 -65, 165 -55, 170 -55, 170 -65, 165 -65))</geoPolygon>
+    <geoPolygon>POLYGON ((-35 -75, -35 -70, -30 -70, -30 -75, -35 -75))</geoPolygon>
+    <type>dataset</type>
+    <userinfo>admin||admin|Administrator</userinfo>
+    <isTemplate>n</isTemplate>
+    <rating>0</rating>
+    <credit>We acknowledge the contributions from all collaborators and their institutions.</credit>
+    <tempExtentBegin>1844-01-02t00:00:00.000z</tempExtentBegin>
+    <datasetLang>eng</datasetLang>
+    <jurisdictionLink>http://creativecommons.org/international/</jurisdictionLink>
+    <isHarvested>y</isHarvested>
+    <imageLink>https://licensebuttons.net/l/by/4.0/88x31.png</imageLink>
+    <attrConstr>This is the bibliographic reference for the dataset and this metadata record that describes it: Davies CH, Coughlan A, Hallegraeff G, Ajani P, Armbrecht L, Atkins N, Bonham P, Brett S, Brinkman R, Burford M, Clementson L, Coad P, Coman F, Davies D, Dela-cruz J, Devlin M, Edgar S, Eriksen R, Furnas M, Hassler C, Hill D, Holmes M, Ingleton T, Jameson I, Leterme SC, Lonborg C, McLaughlin J, McEnnulty F, McKinnon AD, Miller M, Murray S, Nayar S, Patten R, Pritchard T, Proctor R, Purcell-Meyerink D, Raes E, Rissik D, Ruszczyk J, Slotwinski A, Swadling K, Tattersall K, Thompson P, Thomson P, Tonks M, Trull TW, Uribe-Palomino J, Waite AM, Yauwenas R, Zammit A, Richardson AJ (2016), The Australian Phytoplankton Database (1844 - 2016) - abundance and biovolume. Australian Ocean Data Network - DOI: 10.4225/69/56454b2ba2f79 (http://dx.doi.org/10.4225/69/56454b2ba2f79)</attrConstr>
+    <attrConstr>If data from multiple projects are used, please acknowledge the data paper publication; if individual project data are used, please acknowledge use of data as per the custodian information.</attrConstr>
+    <attrConstr>The following projects require amendments to the citations in the database, please cite as below: Project 752 Citation: Koubbi P., Goffart A., Hecq J.H., Swadling K., Beans C., Wright S., 2007. Plankton and ichthyoplankton database of the Icota-Pelagant Programmes from Terre Adélie to the Mertz Glacier Tongue, East-Antarctica, in January 2004. http://www.vliz.be/en/imis?module=dataset&amp;dasid=1335 Project 778 Citation: Koubbi P., Goffart A., Hecq J.H., Swadling K., Beans C., Wright S., 2007. Plankton and ichthyoplankton database of the Icota-Pelagant Programmes from Terre Adélie to the Mertz Glacier Tongue, East-Antarctica, in January 2004. http://www.vliz.be/en/imis?module=dataset&amp;dasid=1335 Project 746 Citation: Trull, T.W. and Bray, S.G. (1999, updated 2016) Subantarctic Zone (SAZ) Project and Sediment Trap Moorings. Australian Antarctic Data Centre - doi:10.4225/15/5774826D27B59 Project 748 Citation: van den Enden, D. (1999, updated 2015) Electron Microscope Database. Australian Antarctic Data Centre - doi:10.4225/15/5773130A3E465 Project 744 Citation: Franklin, D.C. (2003, updated 2014) Recent diatom and foraminiferal assemblages in surficial sediments of Prydz Bay, Antarctica. Australian Antarctic Data Centre - doi:10.4225/15/577312B0D193B</attrConstr>
+    <attrConstr>If using data from Project 599 the National Reference Stations or Project 597 the Australian Continuous Plankton Recorder, please use the following acknowledgement: "Data was sourced from the Integrated Marine Observing System (IMOS) - IMOS is a national collaborative research infrastructure, supported by the Australian Government."</attrConstr>
+    <attrConstr>Similarly for Projects 806 and 1066, please use the following acknowledgement: “A part of the data included in the database was obtained with support from the Great Barrier Reef Marine Park Authority, through funding from the Australian Government Reef Program and from the Australian Institute of Marine Science”.</attrConstr>
+    <attrConstr>Please acknowledge funding bodies accordingly when using these data.</attrConstr>
+    <language>eng</language>
+    <link>|Point of truth URL of this metadata record|https://catalogue-imos.aodn.org.au:443/geonetwork/srv/en/metadata.show?uuid=16e191c0-6b64-482b-affd-783fc2023df4|WWW:LINK-1.0-http--metadata-URL|text/html</link>
+    <link>|View and download data though the AODN Portal|https://imos.aodn.org.au/imos123/home?uuid=16e191c0-6b64-482b-affd-783fc2023df4|WWW:LINK-1.0-http--link|text/html</link>
+    <link>|Data paper in Scientific Data|http://www.nature.com/articles/sdata201643|WWW:LINK-1.0-http--link|text/html</link>
+    <link>|Corrigendum to Data Paper|http://www.nature.com/articles/sdata2016111|WWW:LINK-1.0-http--link|text/html</link>
+    <link>imos:aus_phyto_db_map|Phytoplankton database|http://geoserver-123.aodn.org.au/geoserver/wms|OGC:WMS-1.1.1-http-get-map|application/vnd.ogc.wms_xml</link>
+    <link>imos:aus_phyto_db_map|Phytoplankton database|../../srv/en/google.kml?uuid=&amp;layers=imos:aus_phyto_db_map|application/vnd.google-earth.kml+xml|application/vnd.google-earth.kml+xml</link>
+    <link>imos:aus_phyto_db_data|This OGC WFS service returns filtered geographic information. The returned data is available in multiple formats including CSV.|http://geoserver-123.aodn.org.au/geoserver/ows|OGC:WFS-1.0.0-http-get-capabilities|OGC:WFS-1.0.0-http-get-capabilities</link>
+    <link>|OGC WFS help documentation|https://help.aodn.org.au/web-services/ogc-wfs/|WWW:LINK-1.0-http--link|text/html</link>
+    <licenseName>Attribution 4.0 International</licenseName>
+    <tempExtentEnd>2016-01-20t00:00:00.000z</tempExtentEnd>
+    <licenseLink>http://creativecommons.org/licenses/by/4.0/</licenseLink>
+    <_locale>eng</_locale>
+    <valid>-1</valid>
+    <otherConstr>We would also advise the data user to enter into collaboration with the researchers involved in the data they use - understanding the history of a project will add value to the research.</otherConstr>
+    <otherConstr>Data access constraints vary with each individual project. Please check with custodian, details as in IMOS_APD_metadata.</otherConstr>
+    <abstract>There have been many individual phytoplankton datasets collected across Australia since the mid 1900s, but most are unavailable to the research community. We have searched archives, contacted researchers, and scanned the primary and grey literature to collate 3,665,221 records of marine phytoplankton species from Australian waters from 1844 to the present. Many of these are small datasets collected for local questions, but combined they provide over 170 years of data on phytoplankton communities in Australian waters. Units and taxonomy have been standardised, obviously erroneous data removed, and all metadata included. We have lodged this dataset with the Australian Ocean Data Network (http://imos.aodn.org.au/), allowing public access. The Australian Phytoplankton Database will be invaluable for global change studies, as it allows analysis of ecological indicators of climate change and eutrophication (e.g., changes in distribution; diatom:dinoflagellate ratios). In addition, the standardised conversion of abundance records to biomass provides modellers with quantifiable data to initialise and validate ecosystem models of lower marine trophic levels. 
+
+This is a static snapshot of the database as at March 2016. To access subsequent additions in a dynamic database, please refer to the following metadata record https://catalogue-imos.aodn.org.au/geonetwork/srv/en/metadata.show?uuid=75f4f1fc-bee3-4498-ab71-aa1ab29ab2c0</abstract>
+    <parameter>Abundance of biota</parameter>
+    <parameter>Biotic taxonomic identification</parameter>
+    <parameter>Biovolume</parameter>
+    <keyword>Earth Science | Biological Classification | Animals/Invertebrates</keyword>
+    <keyword>Earth Science | Biological Classification | Protists | Plankton | Phytoplankton</keyword>
+    <keyword>Earth Science | Biosphere | Aquatic Ecosystems | Coastal Habitat</keyword>
+    <keyword>Earth Science | Biosphere | Aquatic Ecosystems | Estuarine Habitat</keyword>
+    <keyword>Earth Science | Biosphere | Aquatic Ecosystems | Pelagic Habitat</keyword>
+    <keyword>Earth Science | Biosphere | Aquatic Ecosystems | Plankton | Zooplankton</keyword>
+    <keyword>Earth Science | Biosphere | Aquatic Ecosystems | Reef Habitat</keyword>
+    <keyword>Boats and Small Vessels</keyword>
+    <keyword>Microscopes | Optical Microscopes</keyword>
+    <keyword>Microscopes | Optical Microscopes | Fluorescence Microscopes</keyword>
+    <keyword>Microscopes | Scanning Electron Microscopes</keyword>
+    <keyword>Microscopes | Transmission Electron Microscopes</keyword>
+    <keyword>Nets | Plankton Nets/Drop Nets</keyword>
+    <keyword>Nets | Plankton Nets/Drop Nets | Phytoplankton Nets</keyword>
+    <keyword>Niskin Bottles</keyword>
+    <keyword>Countries | Australia</keyword>
+    <keyword>CMAR Marine Plankton</keyword>
+    <keyword>Centopages furcatus</keyword>
+    <keyword>Clausocalanus arcuicornis</keyword>
+    <keyword>Clausocalanus furcatus</keyword>
+    <keyword>Corycaeus agilis</keyword>
+    <keyword>Cosmocalanus darwinii</keyword>
+    <keyword>Oithona plumifera</keyword>
+    <keyword>Oncaea venusta</keyword>
+    <keyword>Paracalanus aculeatus</keyword>
+    <keyword>Paracalanus indicus</keyword>
+    <keyword>Temora turbinata</keyword>
+    <keyword>Global / Oceans | Indian Ocean</keyword>
+    <keyword>Global / Oceans | Pacific Ocean</keyword>
+    <keyword>Global / Oceans | Southern Ocean</keyword>
+    <keyword>Marine Features (Australia) | Bass Strait, TAS/VIC</keyword>
+    <keyword>Marine Features (Australia) | Great Australian Bight, SA/WA</keyword>
+    <keyword>Regional Seas | Arafura Sea</keyword>
+    <keyword>Regional Seas | Coral Sea</keyword>
+    <keyword>Regional Seas | Solomon Sea</keyword>
+    <keyword>Regional Seas | Timor Sea</keyword>
+    <keyword>Regional Seas | Tasman Sea</keyword>
+    <keyword>Continents | Antarctica</keyword>
+    <keyword>Countries | Australia</keyword>
+    <keyword>Countries | Indonesia</keyword>
+    <keyword>Countries | New Caledonia</keyword>
+    <keyword>Countries | New Zealand</keyword>
+    <keyword>Countries | Papua New Guinea</keyword>
+    <keyword>Countries | Solomon Islands</keyword>
+    <keyword>Countries | Timor-Leste</keyword>
+    <keyword>Countries | Vanuatu</keyword>
+    <keyword>Marine Features (Australia) | Great Barrier Reef, QLD</keyword>
+    <keyword>Offshore Islands (Australia) | Macquarie Island</keyword>
+    <keyword>States, Territories (Australia) l South Australia</keyword>
+    <keyword>States, Territories (Australia) | New South Wales</keyword>
+    <keyword>States, Territories (Australia) | Northern Territory</keyword>
+    <keyword>States, Territories (Australia) | Queensland</keyword>
+    <keyword>States, Territories (Australia) | South Australia</keyword>
+    <keyword>States, Territories (Australia) | Tasmania</keyword>
+    <keyword>States, Territories (Australia) | Victoria</keyword>
+    <keyword>States, Territories (Australia) | Western Australia</keyword>
+    <keyword>biota</keyword>
+    <keyword>oceans</keyword>
+    <organisation>CSIRO Oceans &amp; Atmosphere - Hobart</organisation>
+    <organisation>School of Biological Sciences (SBS), The University of Queensland (UQ)</organisation>
+    <organisation>Institute for Marine and Antarctic Studies (IMAS), University of Tasmania (UTAS)</organisation>
+    <organisation>University of Technology, Sydney (UTS)</organisation>
+    <organisation>Department of Biological Sciences, Macquarie University</organisation>
+    <organisation>Integrated Marine Observing System (IMOS)</organisation>
+    <organisation>Microalgal Services</organisation>
+    <organisation>Australian Institute of Marine Science (AIMS)</organisation>
+    <organisation>Australian Rivers Institute (ARI), Griffith University (GU)</organisation>
+    <organisation>Hornsby Shire Council</organisation>
+    <organisation>CSIRO Oceans &amp; Atmosphere - Dutton Park</organisation>
+    <organisation>Office of Environment and Heritage (OEH), New South Wales Government</organisation>
+    <organisation>Centre for Tropical Waters and Aquatic Research (TropWATER), James Cook University (JCU)</organisation>
+    <organisation>University of Geneva</organisation>
+    <organisation>Department of Science, Information Technology and Innovation (DSITI), Queensland Government</organisation>
+    <organisation>School of Biological Sciences, Flinders University</organisation>
+    <organisation>CSIRO Oceans &amp; Atmosphere - Floreat</organisation>
+    <organisation>SARDI Aquatic Sciences, South Australian Research and Development Institute (SARDI)</organisation>
+    <organisation>Environment Protection Authority Victoria (EPA), Victorian Government</organisation>
+    <organisation>UWA Oceans Institute (OI), The University of Western Australia (UWA)</organisation>
+    <organisation>National Climate Change Adaptation Research Facility (NCCARF), Griffith University (GU)</organisation>
+    <organisation>Warringah Council</organisation>
+    <organisation>School of Civil, Environmental and Mining Engineering (CEME), The University of Western Australia (UWA)</organisation>
+    <organisation>Food Authority, New South Wales Government</organisation>
+    <defaultTitle>The Australian Phytoplankton Database (1844 - 2016) - abundance and biovolume</defaultTitle>
+    <docLocale>eng</docLocale>
+    <geonet:info xmlns:geonet="http://www.fao.org/geonetwork">
+      <id>127</id>
+      <uuid>16e191c0-6b64-482b-affd-783fc2023df4</uuid>
+      <schema>iso19139.mcp-2.0</schema>
+      <createDate>2016-05-25T16:34:35</createDate>
+      <changeDate>2017-04-06T23:45:03</changeDate>
+      <source>80235762-1241-44b1-832c-5978d0a1fcfa</source>
+      <view>true</view>
+      <notify>false</notify>
+      <download>false</download>
+      <dynamic>true</dynamic>
+      <featured>true</featured>
+      <guestdownload>false</guestdownload>
+      <selected>false</selected>
+    </geonet:info>
+  </metadata>
+  <metadata>
+    <title>IMOS - SRS - MODIS - 01 day - Ocean Colour - SST</title>
+    <popularity>228</popularity>
+    <source>ed23e365-c459-4aa4-bbc1-5d2cd0274af0</source>
+    <owner>1</owner>
+    <responsibleParty>resourceProvider|resource|CSIRO Oceans &amp; Atmosphere - Hobart|</responsibleParty>
+    <responsibleParty>distributor|metadata|Integrated Marine Observing System (IMOS)|</responsibleParty>
+    <type>dataset</type>
+    <useLimitation>Data, products and services from IMOS are provided "as is" without any warranty as to fitness for a particular purpose.</useLimitation>
+    <userinfo>admin||admin|Administrator</userinfo>
+    <isTemplate>n</isTemplate>
+    <rating>0</rating>
+    <credit>Integrated Marine Observing System (IMOS). IMOS is a national collaborative research infrastructure, supported by Australian Government.</credit>
+    <credit>Commonwealth Scientific and Industrial Research Organisation (CSIRO)</credit>
+    <platform>Aqua</platform>
+    <parentId>8209bf83-0c3c-4fbe-9f36-41f7a5ee9913</parentId>
+    <tempExtentBegin>2002-08-01t00:00:00.000z</tempExtentBegin>
+    <image>thumbnail|../../srv/en/resources.get?uuid=468f550b-bbd8-42b1-91b5-313d5898d9e6&amp;fname=SRS_map_s.png&amp;access=public</image>
+    <datasetLang>eng</datasetLang>
+    <jurisdictionLink>http://creativecommons.org/international/</jurisdictionLink>
+    <isHarvested>y</isHarvested>
+    <imageLink>https://licensebuttons.net/l/by/4.0/88x31.png</imageLink>
+    <attrConstr>The citation in a list of references is: "IMOS [year-of-data-download], [Title], [data-access-URL], accessed [date-of-access]."</attrConstr>
+    <attrConstr>Any users of IMOS data are required to clearly acknowledge the source of the material derived from IMOS in the format: "Data was sourced from the Integrated Marine Observing System (IMOS) - IMOS is a national collaborative research infrastructure, supported by the Australian Government." If relevant, also credit other organisations involved in collection of this particular datastream (as listed in 'credit' in the metadata record).</attrConstr>
+    <language>eng</language>
+    <link>|Point of truth URL of this metadata record|https://catalogue-imos.aodn.org.au:443/geonetwork/srv/en/metadata.show?uuid=468f550b-bbd8-42b1-91b5-313d5898d9e6|WWW:LINK-1.0-http--metadata-URL|text/html</link>
+    <link>|Satellite Remote Sensing page on IMOS website|http://imos.org.au/srs.html|WWW:LINK-1.0-http--link|text/html</link>
+    <link>|Link to OPENDAP server|http://thredds.aodn.org.au/thredds/catalog/IMOS/SRS/OC/gridded/aqua/P1D/catalog.html|WWW:LINK-1.0-http--link|text/html</link>
+    <link>|View and download data though the AODN Portal|https://imos.aodn.org.au/imos123/home?uuid=468f550b-bbd8-42b1-91b5-313d5898d9e6|WWW:LINK-1.0-http--link|text/html</link>
+    <link>srs_oc_sst_1d_aqua_url/sst|SRS - Ocean Colour SST - WMS layer|http://geoserver-123.aodn.org.au/geoserver/ncwms|IMOS:NCWMS--proto|IMOS:NCWMS--proto</link>
+    <link>srs_oc_sst_1d_aqua_url|The GoGoDuck subsets and aggregates gridded data. Data is returned as a NetCDF file.|http://geoserver-wps.aodn.org.au/geoserver/wps|OGC:WPS--gogoduck|OGC:WPS--gogoduck</link>
+    <link>|GoGoDuck help documentation|https://help.aodn.org.au/web-services/gogoduck-aggregator/|WWW:LINK-1.0-http--link|text/html</link>
+    <licenseName>Attribution 4.0 International</licenseName>
+    <tempExtentEnd>2017-04-07t23:59:59.000z</tempExtentEnd>
+    <licenseLink>http://creativecommons.org/licenses/by/4.0/</licenseLink>
+    <_locale>eng</_locale>
+    <valid>-1</valid>
+    <abstract>The MODIS Sea Surface Temperature product is derived from MODIS bands 31 and 32 according to the algorithm described at http://oceancolor.gsfc.nasa.gov/DOCS/MSL12/master_prodlist.html/#SST. This is not a GHRSST-quality product, and demanding applications requiring a high standard of accuracy should conside using one of the IMOS GHRSST products in preference. The MODIS SST is nevertheless useful primarily because it is measured at the same time as the water leaving radiances used to derive the optical properties (eg chl).  This means it is both contemporaneous, and has a matching cloud mask, so it is valuable for applications that seek to combine both SST and optical properties. The data set provided here matches the Chl-OC3 product in temporal and spatial extent.
+
+This SRS dataset covers waters around Australia.</abstract>
+    <parameter>Skin temperature of the water body</parameter>
+    <keyword>Oceans | Ocean Optics | Ocean Color</keyword>
+    <keyword>Oceans | Ocean Temperature | Sea Surface Temperature</keyword>
+    <keyword>IMOS Sub-Facility | SRS-MODIS | Aqua OC3 Chlorophyll-a Ocean Colour</keyword>
+    <keyword>Global / Oceans | Indian Ocean</keyword>
+    <keyword>Global / Oceans | Southern Ocean</keyword>
+    <keyword>Global / Oceans | Pacific Ocean</keyword>
+    <keyword>Marine Features (Australia) | Great Australian Bight, SA/WA</keyword>
+    <keyword>Marine Features (Australia) | Bass Strait, TAS/VIC</keyword>
+    <keyword>Regional Seas | Tasman Sea</keyword>
+    <keyword>Regional Seas | Timor Sea</keyword>
+    <keyword>Regional Seas | Solomon Sea</keyword>
+    <keyword>Regional Seas | Coral Sea</keyword>
+    <keyword>Regional Seas | Arafura Sea</keyword>
+    <keyword>Regional Seas | Banda Sea</keyword>
+    <keyword>Regional Seas | Java Sea</keyword>
+    <keyword>Regional Seas | Celebes Sea</keyword>
+    <keyword>Regional Seas | Philippine Sea</keyword>
+    <keyword>Countries | Australia</keyword>
+    <keyword>Countries | New Zealand</keyword>
+    <keyword>States, Territories (Australia) | Western Australia</keyword>
+    <keyword>States, Territories (Australia) | South Australia</keyword>
+    <keyword>States, Territories (Australia) | Victoria</keyword>
+    <keyword>States, Territories (Australia) | Tasmania</keyword>
+    <keyword>States, Territories (Australia) | New South Wales</keyword>
+    <keyword>States, Territories (Australia) | Queensland</keyword>
+    <keyword>States, Territories (Australia) | Northern Territory</keyword>
+    <keyword>Countries | Papua New Guinea</keyword>
+    <keyword>Countries | Indonesia</keyword>
+    <keyword>Countries | Malaysia</keyword>
+    <keyword>Countries | Timor-Leste</keyword>
+    <keyword>Countries | Philippines</keyword>
+    <keyword>Countries | New Caledonia</keyword>
+    <keyword>oceans</keyword>
+    <organisation>Integrated Marine Observing System (IMOS)</organisation>
+    <organisation>CSIRO Oceans &amp; Atmosphere - Hobart</organisation>
+    <geoBox>80|-59.99999999999999|180|10</geoBox>
+    <defaultTitle>IMOS - SRS - MODIS - 01 day - Ocean Colour - SST</defaultTitle>
+    <docLocale>eng</docLocale>
+    <geonet:info xmlns:geonet="http://www.fao.org/geonetwork">
+      <id>187</id>
+      <uuid>468f550b-bbd8-42b1-91b5-313d5898d9e6</uuid>
+      <schema>iso19139.mcp-2.0</schema>
+      <createDate>2016-05-25T16:35:13</createDate>
+      <changeDate>2017-04-07T00:00:02</changeDate>
+      <source>ed23e365-c459-4aa4-bbc1-5d2cd0274af0</source>
+      <view>true</view>
+      <notify>false</notify>
+      <download>false</download>
+      <dynamic>true</dynamic>
+      <featured>true</featured>
+      <guestdownload>false</guestdownload>
+      <selected>false</selected>
+    </geonet:info>
+  </metadata>
+</response>
+
