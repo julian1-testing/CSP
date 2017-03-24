@@ -20,6 +20,7 @@ import System.Exit
 main :: IO ()
 main
     = do
+      print "hi"
       argv <- getArgs
       (al, src, dst) <- cmdlineOpts argv
       [rc]  <- runX (application al src dst)
@@ -42,7 +43,7 @@ application cfg src dst
       >>>
       readDocument [] src
       >>>
-      processChildren (processDocumentRootElement `when` isElem)  -- (1)
+      processChildren (processDocumentRootElement )--`when` isElem)  -- (1)
       >>>
       writeDocument [] dst                                        -- (3)
       >>>
@@ -59,6 +60,9 @@ processDocumentRootElement
 
 selectAllText :: ArrowXml a => a XmlTree XmlTree
 selectAllText
-    = deep isText
-
+  -- = deep isText
+  -- = deep isElem
+  -- = deep ( hasName "protocol" )  --
+  -- = deep 
+  = deep (isElem >>> hasName "gmd:CI_OnlineResource" )
 
