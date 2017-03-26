@@ -1,5 +1,6 @@
 
 -- good doc -> https://wiki.haskell.org/HXT#Installation
+-- transforms xml -> xml
 
 module Main
 where

@@ -4,6 +4,15 @@
 apt-get install cabal-install
 cabal install hxt
 cabal install hxt-curl
-ghc main.hs
-./main input.xml  out.xml
+
+
+
+ghc parse.hs
+./parse
+
+# for postgres,
+apt-get install libpq-dev
+cabal install postgresql-simple
+
+
 

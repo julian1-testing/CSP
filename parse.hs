@@ -1,5 +1,7 @@
 {-# LANGUAGE Arrows, NoMonomorphismRestriction #-}
 import Text.XML.HXT.Core
+
+-- parses xml -> to data structure
  
 -- This example demonstrates a more complex XML parse,
 -- involving multiple levels, attributes, inner lists,
@@ -38,6 +40,7 @@ getTeams1 = atTag "gmd:CI_OnlineResource" >>>
     url      <- atTag "gmd:linkage"  >>> getChildren >>> hasName "gmd:URL" >>> getChildren >>> getText -< l
 
 
+-- important see how this is aparently extracting from sub- references.
 --    diviName <- getAttrValue "NAME" -< divi
 --    team     <- atTag "TEAM"        -< divi
 --    teamName <- getAttrValue "NAME" -< team
