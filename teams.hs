@@ -10,16 +10,12 @@ import Text.XML.HXT.Core
 -- save as: simple2.xml
  
 data Team = Team 
-  { teamName, division, league, city :: String,
-    players :: [Player] }
+  { teamName, division, league, city :: String  }
   deriving (Show, Eq)
  
-data Player = Player
-  { firstName, lastName, position :: String,
- 
-    atBats, hits :: Maybe Int,
-    era          :: Maybe Float }
-  deriving (Show, Eq)
+
+
+
  
 parseXML file = readDocument [ withValidate no
                              , withRemoveWS yes  -- throw away formating WS
@@ -32,15 +28,20 @@ atTag tag = deep (isElem >>> hasName tag)
 -- First, list the teams.
 -- Try it out in GHCi: 
 -- Main> runX (parseXML "simple2.xml" >>> getTeams1)
+
+
  
 getTeams1 = atTag "gmd:CI_OnlineResource" >>>
   proc l -> do
     -- leagName <- getAttrValue "NAME"   -< l
-    divi     <- atTag "gmd:protocol"  -< l
+    -- divi <- atTag "gmd:protocol" >>> getChildren >>> hasName "gco:CharacterString" <<< getChildren -< l
+    url  <- atTag "gmd:linkage"  >>> getChildren >>> hasName "gmd:URL" >>> getChildren -< l
+
+
 --    diviName <- getAttrValue "NAME" -< divi
 --    team     <- atTag "TEAM"        -< divi
 --    teamName <- getAttrValue "NAME" -< team
-    returnA -< (divi, divi, divi)
+    returnA -< (url)
 
 
  
