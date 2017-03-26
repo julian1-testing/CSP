@@ -34,19 +34,20 @@ atTag tag = deep (isElem >>> hasName tag)
 getTeams1 = atTag "gmd:CI_OnlineResource" >>>
   proc l -> do
     -- leagName <- getAttrValue "NAME"   -< l
-    -- divi <- atTag "gmd:protocol" >>> getChildren >>> hasName "gco:CharacterString" <<< getChildren -< l
-    url  <- atTag "gmd:linkage"  >>> getChildren >>> hasName "gmd:URL" >>> getChildren >>> getText -< l
+    protocol <- atTag "gmd:protocol" >>> getChildren >>> hasName "gco:CharacterString" >>> getChildren >>> getText -< l
+    url      <- atTag "gmd:linkage"  >>> getChildren >>> hasName "gmd:URL" >>> getChildren >>> getText -< l
 
 
 --    diviName <- getAttrValue "NAME" -< divi
 --    team     <- atTag "TEAM"        -< divi
 --    teamName <- getAttrValue "NAME" -< team
-    returnA -< (url)
+    returnA -< (protocol, url)
 
 
  
 main = do
   teams <- runX (parseXML "argo.xml" >>> getTeams1)
-  print teams
+  let lst = map (\(a,b) -> " ->" ++ a ++ " ->" ++ b ) teams
+  mapM print lst
 
  
