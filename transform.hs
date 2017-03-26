@@ -116,7 +116,7 @@ selectAllText
       >>> getUrl
       -- >>> getText >>> mkText  -- works
       -- let t = getText in
-      >>> returnA "hi" 
+      -- >>> returnA "hi" 
       -- >>> (_ -> mkelem "html" [] [])
     )
 
