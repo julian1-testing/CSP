@@ -60,6 +60,47 @@ processDocumentRootElement
     -- =  this -- substitute this by the real application
     =  selectAllText 
 
+-- VERY IMPORTANT - we are not converting to text. We are selecting/walking xml nodes.
+
+-- getText should work. through.
+-- but it probably returns a string....
+
+
+-- this works. 
+--  >>> getText >>> mkText 
+
+isOnlineResource :: ArrowXml a => a XmlTree XmlTree
+isOnlineResource = isElem >>> hasName "gmd:CI_OnlineResource"
+
+-- works
+getProtocol :: ArrowXml a => a XmlTree XmlTree
+getProtocol = 
+  getChildren >>> hasName "gmd:protocol" >>> 
+  getChildren >>> hasName "gco:CharacterString" >>> 
+  getChildren >>> isText 
+
+-- Works
+getUrl :: ArrowXml a => a XmlTree XmlTree
+getUrl = getChildren >>> hasName "gmd:linkage" >>> 
+  getChildren >>> hasName "gmd:URL" >>> 
+  getChildren 
+  >>> getText >>> mkText 
+  -- >>> (arr "whoot") 
+
+-- how do we lift a string node ... 
+
+addBrackets :: String -> String
+addBrackets s
+  =  " [[ " ++ s ++ " ]] "
+
+-- now how would we build a tuple of these values...  
+-- and do it for each one.
+
+
+--              <gmd:linkage>
+--                <gmd:URL>http://geoserver-123.aodn.org.au/geoserver/ows</gmd:URL>
+ 
+ 
 
 selectAllText :: ArrowXml a => a XmlTree XmlTree
 selectAllText
@@ -68,5 +109,33 @@ selectAllText
   -- = deep ( hasName "protocol" )  --
   -- = deep 
   -- getChildren selects the children...
-  = deep (isElem >>> hasName "gmd:CI_OnlineResource" >>> getChildren >>> hasName "gmd:protocol"  )
+  = deep $ ( isElem 
+      >>> hasName "gmd:CI_OnlineResource"
+      -- >>> arr [ getUrl, getProtocol ] 
+      >>> getUrl
+      -- >>> getText >>> mkText  -- works
+      -- let t = getText in
+      >>> returnA "hi" 
+      -- >>> (_ -> mkelem "html" [] [])
+    )
+
+
+      -- >>> (arr addBrackets)
+--      >>> getChildren >>> hasName "gmd:protocol"  )
+
+
+helloWorld  :: ArrowXml a => a XmlTree XmlTree
+helloWorld
+    = mkelem "html" []              -- (1)
+      [ mkelem "head" []
+  [ mkelem "title" []
+    [ txt "Hello World" ]     -- (2)
+  ]
+      , mkelem "body"
+  [ sattr "class" "haskell" ] -- (3)
+  [ mkelem "h1" []
+    [ txt "Hello World" ]     -- (4)
+  ]
+      ]
+
 
