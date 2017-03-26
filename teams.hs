@@ -35,12 +35,12 @@ atTag tag = deep (isElem >>> hasName tag)
  
 getTeams1 = atTag "gmd:CI_OnlineResource" >>>
   proc l -> do
-    leagName <- getAttrValue "NAME" -< l
-    divi     <- atTag "DIVISION"    -< l
-    diviName <- getAttrValue "NAME" -< divi
-    team     <- atTag "TEAM"        -< divi
-    teamName <- getAttrValue "NAME" -< team
-    returnA -< (leagName, diviName, teamName)
+    -- leagName <- getAttrValue "NAME"   -< l
+    divi     <- atTag "gmd:protocol"  -< l
+--    diviName <- getAttrValue "NAME" -< divi
+--    team     <- atTag "TEAM"        -< divi
+--    teamName <- getAttrValue "NAME" -< team
+    returnA -< (divi, divi, divi)
 
 
  
