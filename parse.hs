@@ -9,12 +9,12 @@ import Text.XML.HXT.Core
 -- http://www.ibiblio.org/xml/books/bible/examples/05/5-1.xml
 -- save as: simple2.xml
  
-data Team = Team 
-  { teamName, division, league, city :: String  }
-  deriving (Show, Eq)
+--data Team = Team 
+--  { teamName, division, league, city :: String  }
+--  deriving (Show, Eq)
  
 
-
+--- should use a data structure .... rather than a tuple... 
 
  
 parseXML file = readDocument [ withValidate no
