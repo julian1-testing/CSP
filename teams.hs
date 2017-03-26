@@ -35,7 +35,7 @@ getTeams1 = atTag "gmd:CI_OnlineResource" >>>
   proc l -> do
     -- leagName <- getAttrValue "NAME"   -< l
     -- divi <- atTag "gmd:protocol" >>> getChildren >>> hasName "gco:CharacterString" <<< getChildren -< l
-    url  <- atTag "gmd:linkage"  >>> getChildren >>> hasName "gmd:URL" >>> getChildren -< l
+    url  <- atTag "gmd:linkage"  >>> getChildren >>> hasName "gmd:URL" >>> getChildren >>> getText -< l
 
 
 --    diviName <- getAttrValue "NAME" -< divi
