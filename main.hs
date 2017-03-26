@@ -39,18 +39,21 @@ cmdlineOpts argv
  
 application :: SysConfigList -> String -> String -> IOSArrow b Int
 application cfg src dst
-    = configSysVars cfg                                           -- (0)
+    = configSysVars cfg                                    -- (0)
       >>>
       readDocument [] src
       >>>
-      processChildren (processDocumentRootElement )--`when` isElem)  -- (1)
+      processChildren (processDocumentRootElement)        --`when` isElem)  -- (1)
       >>>
-      writeDocument [] dst                                        -- (3)
+      writeDocument [] dst                                 -- (3)
       >>>
       getErrStatus
  
  
 -- | the dummy for the real processing: the identity filter
+
+-- Very Important IOSArrow is probably a function type -eg. with =>
+-- IOSArrow is 
  
 processDocumentRootElement  :: IOSArrow XmlTree XmlTree
 processDocumentRootElement 
@@ -64,5 +67,6 @@ selectAllText
   -- = deep isElem
   -- = deep ( hasName "protocol" )  --
   -- = deep 
-  = deep (isElem >>> hasName "gmd:CI_OnlineResource" )
+  -- getChildren selects the children...
+  = deep (isElem >>> hasName "gmd:CI_OnlineResource" >>> getChildren >>> hasName "gmd:protocol"  )
 
