@@ -4,6 +4,8 @@
 apt-get install cabal-install
 cabal install hxt
 cabal install hxt-curl
+cabal install warp
+# cabal install warp-tls
 
 
 
