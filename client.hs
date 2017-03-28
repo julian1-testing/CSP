@@ -35,24 +35,38 @@ getOnlineResources1 = atTag "gmd:CI_OnlineResource" >>>
 
 -- one function to extract and one to download - and parametize the actual url. 
 
-getIdentifiers =  
+getIdentifiers = do
+
+    let url = "https://catalogue-portal.aodn.org.au/geonetwork/srv/eng/csw?request=GetRecords&service=CSW&version=2.0.2&constraint=AnyText+like+%*%&constraintLanguage=CQL_TEXT&resultType=results&maxRecords=1000"
+    print "done"
 
 
-    "https://catalogue-portal.aodn.org.au/geonetwork/srv/eng/csw?request=GetRecords&service=CSW&version=2.0.2&constraint=AnyText+like+%*%&constraintLanguage=CQL_TEXT&resultType=results&maxRecords=1000"
+-- manager <- newManager settings
+
+
+
+doHTTP url = do
+    let settings = tlsManagerSettings  { managerResponseTimeout = responseTimeoutMicro $ 60 * 1000000 }
+    -- let url = "https://catalogue-portal.aodn.org.au/geonetwork/srv/eng/csw?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&id=4402cb50-e20a-44ee-93e6-4728259250d2&outputSchema=http://www.isotc211.org/2005/gmd"
+    manager <- newManager settings
+    request <- parseRequest url
+    response <- httpLbs request manager
+    Prelude.putStrLn $ "The status code was: " ++ (show $ statusCode $ responseStatus response)
+    return response
 
 
 
 
 getResources = do
-    let settings = tlsManagerSettings  { managerResponseTimeout = responseTimeoutMicro $ 60 * 1000000 }
-    manager <- newManager settings
+    -- let settings = tlsManagerSettings  { managerResponseTimeout = responseTimeoutMicro $ 60 * 1000000 }
 
     let url = "https://catalogue-portal.aodn.org.au/geonetwork/srv/eng/csw?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&id=4402cb50-e20a-44ee-93e6-4728259250d2&outputSchema=http://www.isotc211.org/2005/gmd"
-    request <- parseRequest url
+    -- manager <- newManager settings
+    -- request <- parseRequest url
+    -- response <- httpLbs request manager
+    -- Prelude.putStrLn $ "The status code was: " ++ (show $ statusCode $ responseStatus response)
 
-    response <- httpLbs request manager
-
-    Prelude.putStrLn $ "The status code was: " ++ (show $ statusCode $ responseStatus response)
+    response <- doHTTP url
 
     -- convert internal.ByteString to String
     let s = unpack $ responseBody response
