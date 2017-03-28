@@ -38,11 +38,12 @@ curl 'https://catalogue-portal.aodn.org.au/geonetwork/srv/eng/csw?request=GetRec
 
 
 # no search constraint and limit to search
-https://catalogue-portal.aodn.org.au/geonetwork/srv/eng/csw?request=GetRecords&service=CSW&version=2.0.2&constraint=AnyText+like+%*%&constraintLanguage=CQL_TEXT&resultType=results&maxRecords=1000
+https://catalogue-portal.aodn.org.au/geonetwork/srv/eng/csw?request=GetRecords&service=CSW&version=2.0.2&constraint=AnyText+like+%*%&constraintLanguage=CQL_TEXT&resultType=results&maxRecords=1000       # *%
 
 
 # GetRecordById - retrieves subset of argo record information by csw - note it's not the full record
-# and doesn't tell us the schema,
+# and doesn't tell us the schema
+
 https://catalogue-portal.aodn.org.au/geonetwork/srv/eng/csw?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&id=4402cb50-e20a-44ee-93e6-4728259250d2
 
 Doc says it should be returned in full schema,
