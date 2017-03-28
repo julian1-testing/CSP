@@ -47,10 +47,14 @@ getTeams1 = atTag "gmd:CI_OnlineResource" >>>
     returnA -< (protocol, url)
 
 
+-- think we may want to be able to parse a bytestring...
  
 main = do
   teams <- runX (parseXML "argo.xml" >>> getTeams1)
   let lst = map (\(a,b) -> " ->" ++ a ++ " ->" ++ b ) teams
   mapM print lst
+
+
+--- so we want to request the damn xml document.
 
  

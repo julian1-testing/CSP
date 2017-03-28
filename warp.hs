@@ -11,10 +11,13 @@ main = do
     run port app
 
 
--- what's the damn monad here,
+-- how would we throttle this according to the number of db connections - until one was available?
+-- 
 
 app :: Application
 app req f = do
     print "got request"
-    f $ responseLBS status200 [(hContentType, "text/plain")] "Hello world!" 
+    x <- f $ responseLBS status200 [(hContentType, "text/plain")] "Hello world!" 
+    print "done request"
+    x
 
