@@ -1,6 +1,11 @@
 
 ### CSW
 
+#### test.csw - to test filter constructions,
+http://eo2-geonetwork.brgm-rec.fr/geonetwork/srv/en/test.csw
+
+
+#### curl
 curl 'https://catalogue-portal.aodn.org.au/geonetwork/srv/eng/xml_iso19139.mcp?id=177&styleSheet=xml_iso19139.mcp.xsl' > argo.xml
 
 curl http://localhost:8080/geoserver/csw?service=CSW&version=2.0.2&request=DescribeRecord&typeName=gmd:MD_Metadata
@@ -38,9 +43,15 @@ curl 'https://catalogue-portal.aodn.org.au/geonetwork/srv/eng/csw?request=GetRec
 https://catalogue-portal.aodn.org.au/geonetwork/srv/eng/csw?request=GetRecords&service=CSW&version=2.0.2&constraint=AnyText+like+%*%&constraintLanguage=CQL_TEXT&resultType=results&maxRecords=1000       #### *%
 
 
+url encoding is hard this also works,
+curl 'https://catalogue-portal.aodn.org.au/geonetwork/srv/eng/csw?request=GetRecords&service=CSW&version=2.0.2&constraint="csw:AnyText+Like+'%*%'"&constraintLanguage=CQL_TEXT&resultType=results&maxRecords=1000'
+
+
 #### GetRecordById - retrieves subset of argo record information by csw - note it's not the full record
 #### and doesn't tell us the schema
 
+# using a post following - this appears to work except no records retrieved, 
+curl -k -v -H "Content-Type: application/xml"   -X POST -d @query.xml 'https://catalogue-123.aodn.org.au/geonetwork/srv/eng/csw'
 
 
 #### GetRecordById Like this. will 
