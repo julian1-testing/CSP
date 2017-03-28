@@ -5,7 +5,7 @@
       <Filter xmlns="http://www.opengis.net/ogc" xmlns:gml="http://www.opengis.net/gml">
         <PropertyIsLike wildCard="%" singleChar="_" escape="\\">
           <PropertyName>AnyText</PropertyName>
-          <Literal>%argo%</Literal>
+          <Literal>%</Literal>
         </PropertyIsLike>
       </Filter>
     </csw:Constraint>
