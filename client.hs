@@ -13,7 +13,9 @@ import Network.HTTP.Client
 import Network.HTTP.Client.TLS
 import Network.HTTP.Types.Status (statusCode)
 
-
+--
+-- import Data.ByteString.Lazy.Char8 as Char8
+import Data.ByteString.Lazy.Char8 (unpack)
 
 -- import Network.HTTP.Client.Internal(ResponseTimeout)
 
@@ -53,15 +55,20 @@ main = do
     response <- httpLbs request manager
 
 
-    putStrLn $ "The status code was: " ++ (show $ statusCode $ responseStatus response)
+    Prelude.putStrLn $ "The status code was: " ++ (show $ statusCode $ responseStatus response)
       -- putStrLn $ "The status code was: " ++ (show $ RESponseStatus response)
 
     -- s <- responseBody response
 
-    print $ responseBody response
+    -- print $ responseBody response
+
+    let s = unpack $ responseBody response
 
 
-    teams <- runX (parseXML (responseBody response)  >>> getTeams1)
+    teams <- runX (parseXML s  >>> getTeams1)
+    let lst = Prelude.map (\(a,b) -> " ->" ++ a ++ " ->" ++ b ) teams
+    mapM print lst
+
     
     print "done"
  
