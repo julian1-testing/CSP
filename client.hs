@@ -9,7 +9,12 @@ import Network.HTTP.Client
 import Network.HTTP.Client.TLS
 import Network.HTTP.Types.Status (statusCode)
 
+-- import Network.HTTP.Types.Method.Method
+import Network.HTTP.Types.Method
+
 import Data.ByteString.Lazy.Char8(unpack)
+import qualified Data.ByteString as B
+import qualified Data.ByteString.Char8 as BC
 
 
 
@@ -31,14 +36,78 @@ parseOnlineResources = atTag "gmd:CI_OnlineResource" >>>
     returnA -< (protocol, url)
 
 
--- ok, we want to hit the main metadata....
 
+
+-- ok, we want to hit the main metadata....
 -- one function to extract and one to download - and parametize the actual url. 
 
-getIdentifiers = do
+-- change name to doGetRecords
 
-    let url = "https://catalogue-portal.aodn.org.au/geonetwork/srv/eng/csw?request=GetRecords&service=CSW&version=2.0.2&constraint=AnyText+like+%*%&constraintLanguage=CQL_TEXT&resultType=results&maxRecords=1000"
-    print "done"
+-- this is hell.... we're going to have to escape everything .... 
+
+
+
+doGetRecords1 = do
+    -- let url = "https://catalogue-portal.aodn.org.au/geonetwork/srv/eng/csw?request=GetRecords&service=CSW&version=2.0.2&constraint=AnyText+like+%*%&constraintLanguage=CQL_TEXT&resultType=results&maxRecords=1000"
+    -- OK, the following url is a valid url
+    -- let url = "https://catalogue-portal.aodn.org.au/geonetwork/srv/eng/csw?request=GetRecords&service=CSW&version=2.0.2&constraint=AnyText+like+%25argo%25&constraintLanguage=CQL_TEXT&resultType=results&maxRecords=1000"
+
+    -- either the url encoding complains about the delimiter, - invalidURL 
+    -- or the cql filter complains,
+    -- let url = "https://catalogue-portal.aodn.org.au/geonetwork/srv/eng/csw?request=GetRecords&service=CSW&version=2.0.2&constraint=\"csw:AnyText+Like+'%*%'\"&constraintLanguage=CQL_TEXT&resultType=results&maxRecords=1000"
+    -- let url = "https://catalogue-portal.aodn.org.au/geonetwork/srv/eng/csw?request=GetRecords&service=CSW&version=2.0.2&constraint=\"csw:AnyText+Like+\'%*%\'\"&constraintLanguage=CQL_TEXT&resultType=results&maxRecords=1000"
+    -- let url = "https://catalogue-portal.aodn.org.au/geonetwork/srv/eng/csw?request=GetRecords&service=CSW&version=2.0.2&constraint=csw:AnyText+Like+'%*%'&constraintLanguage=CQL_TEXT&resultType=results&maxRecords=1000"
+    let url = "https://catalogue-portal.aodn.org.au/geonetwork/srv/eng/csw?request=GetRecords&service=CSW&version=2.0.2&constraint=AnyText+Like+%27%25argo%25%27&constraintLanguage=CQL_TEXT&resultType=results&maxRecords=1000"
+    -- ' is %27   
+    -- % is %25
+    response <- doHTTP url
+    let s = unpack $ responseBody response
+    print s
+
+
+
+
+-- QuasiQuotes may be cleaner,
+-- http://kseo.github.io/posts/2014-02-06-multi-line-strings-in-haskell.html
+query :: String
+query = unlines [
+    "<?xml version=\"1.0\" encoding=\"UTF-8\"?>",
+    "<csw:GetRecords xmlns:csw=\"http://www.opengis.net/cat/csw/2.0.2\" service=\"CSW\" version=\"2.0.2\"    ",
+    "    resultType=\"results\" startPosition=\"1\" maxRecords=\"5\" outputFormat=\"application/xml\"  >",
+    "  <csw:Query typeNames=\"csw:Record\">",
+    "    <csw:Constraint version=\"1.1.0\">",
+    "      <Filter xmlns=\"http://www.opengis.net/ogc\" xmlns:gml=\"http://www.opengis.net/gml\">",
+    "        <PropertyIsLike wildCard=\"%\" singleChar=\"_\" escape=\"\\\">",
+    "          <PropertyName>AnyText</PropertyName>",
+    "          <Literal>%</Literal>",
+    "        </PropertyIsLike>",
+    "      </Filter>",
+    "    </csw:Constraint>",
+    "  </csw:Query>",
+    "</csw:GetRecords>" ]
+
+
+-- curl -k -v -H "Content-Type: application/xml"   -X POST -d @query.xml 'https://catalogue-123.aodn.org.au/geonetwork/srv/eng/csw' 2>&1  | less
+
+
+
+doPost url = do
+    let settings = tlsManagerSettings  { managerResponseTimeout = responseTimeoutMicro $ 60 * 1000000 }
+    manager <- newManager settings
+    -- get initial request
+    initialRequest <- parseRequest url
+    let request = initialRequest { method = BC.pack "POST", requestBody = RequestBodyBS $ BC.pack query }  
+
+    response <- httpLbs request manager
+    Prelude.putStrLn $ "The status code was: " ++ (show $ statusCode $ responseStatus response)
+    return response
+
+doGetRecords = do
+    let url = "https://catalogue-123.aodn.org.au/geonetwork/srv/eng/csw"
+    response <- doPost url
+    let s = unpack $ responseBody response
+    print s
+
 
 
 -- manager <- newManager settings
@@ -66,5 +135,8 @@ getResources = do
 
 
 main :: IO ()
-main = getResources
+-- main = getResources
+main = doGetRecords
+-- main = do
+--    putStrLn query 
 
