@@ -21,7 +21,8 @@ parseXML s = readString [ withValidate no
 atTag tag = deep (isElem >>> hasName tag)
 
 
-
+-- limit to just the wms/wfs stuff.
+-- 
 getOnlineResources1 = atTag "gmd:CI_OnlineResource" >>>
   proc l -> do
     -- leagName <- getAttrValue "NAME"   -< l
@@ -30,12 +31,21 @@ getOnlineResources1 = atTag "gmd:CI_OnlineResource" >>>
     returnA -< (protocol, url)
 
 
+-- ok, we want to hit the main metadata....
 
-main :: IO ()
-main = do
+-- one function to extract and one to download - and parametize the actual url. 
+
+getIdentifiers =  
+
+
+    "https://catalogue-portal.aodn.org.au/geonetwork/srv/eng/csw?request=GetRecords&service=CSW&version=2.0.2&constraint=AnyText+like+%*%&constraintLanguage=CQL_TEXT&resultType=results&maxRecords=1000"
+
+
+
+
+getResources = do
     let settings = tlsManagerSettings  { managerResponseTimeout = responseTimeoutMicro $ 60 * 1000000 }
     manager <- newManager settings
-
 
     let url = "https://catalogue-portal.aodn.org.au/geonetwork/srv/eng/csw?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&id=4402cb50-e20a-44ee-93e6-4728259250d2&outputSchema=http://www.isotc211.org/2005/gmd"
     request <- parseRequest url
@@ -50,7 +60,10 @@ main = do
     teams <- runX (parseXML s  >>> getOnlineResources1)
     let lst = Prelude.map (\(a,b) -> " ->" ++ a ++ " ->" ++ b ) teams
     mapM print lst
-
-
     print "done"
+
+
+
+main :: IO ()
+main = getResources
 
