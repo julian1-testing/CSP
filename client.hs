@@ -21,8 +21,8 @@ import Data.ByteString.Lazy.Char8 (unpack)
 
 
 parseXML s = readString [ withValidate no
-                             , withRemoveWS yes  -- throw away formating WS
-                             ] s 
+    , withRemoveWS yes  -- throw away formating WS
+    ] s 
 
 
 atTag tag = deep (isElem >>> hasName tag)
@@ -43,8 +43,6 @@ getTeams1 = atTag "gmd:CI_OnlineResource" >>>
 
 main :: IO ()
 main = do
-    -- let timeout = responseTimeoutMicro 100
-
     let settings = tlsManagerSettings  { managerResponseTimeout = responseTimeoutMicro $ 60 * 1000000 } 
     manager <- newManager settings 
 
@@ -54,16 +52,10 @@ main = do
 
     response <- httpLbs request manager
 
-
     Prelude.putStrLn $ "The status code was: " ++ (show $ statusCode $ responseStatus response)
-      -- putStrLn $ "The status code was: " ++ (show $ RESponseStatus response)
 
-    -- s <- responseBody response
-
-    -- print $ responseBody response
-
+    -- convert internal.ByteString to String
     let s = unpack $ responseBody response
-
 
     teams <- runX (parseXML s  >>> getTeams1)
     let lst = Prelude.map (\(a,b) -> " ->" ++ a ++ " ->" ++ b ) teams
