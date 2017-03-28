@@ -98,7 +98,11 @@ doPost url = do
     manager <- newManager settings
     -- get initial request
     initialRequest <- parseRequest url
-    let request = initialRequest { method = BC.pack "POST", requestBody = RequestBodyBS $ BC.pack query, requestHeaders = [ (hContentType, BC.pack "sdf"  ) ] }  
+    let request = initialRequest { 
+        method = BC.pack "POST", 
+        requestBody = RequestBodyBS $ BC.pack query, 
+        requestHeaders = [ (hContentType, BC.pack "sdf"  ) ] 
+    }
 
     response <- httpLbs request manager
     Prelude.putStrLn $ "The status code was: " ++ (show $ statusCode $ responseStatus response)
