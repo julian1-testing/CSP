@@ -12,6 +12,8 @@ import Network.HTTP.Types.Status (statusCode)
 -- import Network.HTTP.Types.Method.Method
 import Network.HTTP.Types.Method
 
+import Network.HTTP.Types.Header
+
 import Data.ByteString.Lazy.Char8(unpack)
 import qualified Data.ByteString as B
 import qualified Data.ByteString.Char8 as BC
@@ -96,7 +98,7 @@ doPost url = do
     manager <- newManager settings
     -- get initial request
     initialRequest <- parseRequest url
-    let request = initialRequest { method = BC.pack "POST", requestBody = RequestBodyBS $ BC.pack query }  
+    let request = initialRequest { method = BC.pack "POST", requestBody = RequestBodyBS $ BC.pack query, requestHeaders = [ (hContentType, BC.pack "sdf"  ) ] }  
 
     response <- httpLbs request manager
     Prelude.putStrLn $ "The status code was: " ++ (show $ statusCode $ responseStatus response)
