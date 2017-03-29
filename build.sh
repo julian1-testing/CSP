@@ -1,9 +1,22 @@
 #!/bin/bash -x
 
-ghc -outputdir output examples/psql.hs
-ghc -outputdir output examples/psql2.hs
-ghc -outputdir output examples/transform.hs
-ghc -outputdir output examples/parse.hs
+rm output -rf
+ghc -outputdir output examples/psql.hs || exit
 
-ghc -outputdir output client.hs
+rm output -rf
+ghc -outputdir output examples/psql2.hs || exit
+
+rm output -rf
+ghc -outputdir output examples/transform.hs || exit
+
+rm output -rf
+ghc -outputdir output examples/parse.hs || exit
+
+
+rm output -rf
+ghc -outputdir output harvest.hs || exit
+
+rm output -rf
+ghc -outputdir output load-vocab.hs || exit
+
 

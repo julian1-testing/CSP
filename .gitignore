@@ -1,6 +1,6 @@
 *.o
 *.hi
-client
+harvest
 load-vocab
 examples/parse
 examples/psql
