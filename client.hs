@@ -157,7 +157,7 @@ parseDataParameters = atTag "mcp:dataParameter" >>>
       >>> getChildren >>> hasName "mcp:parameterName" 
       >>> getChildren >>> hasName "mcp:DP_Term" -< l
 
-    xxx <- getChildren >>> hasName "mcp:term"  -< term
+    xxx <- getChildren >>> hasName "mcp:term"  >>> getChildren >>> hasName "gco:CharacterString" >>> getChildren >>> getText -< term
       -- >>> getChildren >>> hasName "mcp:DP_Term" 
       -- >>> getChildren >>> hasName "mcp:term" 
       -- >>> getChildren >>> hasName "gco:CharacterString" 
