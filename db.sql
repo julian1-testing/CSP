@@ -9,6 +9,7 @@ create database harvest owner harvest;
 
 \c harvest
 
+-- TODO change name to record, or metadata,   catalog is the particular catalog instance that we scan.
 create table catalog (
 
   id serial primary key not null,
