@@ -31,13 +31,6 @@ atTag tag = deep (isElem >>> hasName tag)
 
 -- limit to just the wms/wfs stuff.
 --
-parseOnlineResources = atTag "gmd:CI_OnlineResource" >>>
-  proc l -> do
-    -- leagName <- getAttrValue "NAME"   -< l
-    protocol <- atTag "gmd:protocol" >>> getChildren >>> hasName "gco:CharacterString" >>> getChildren >>> getText -< l
-    url      <- atTag "gmd:linkage"  >>> getChildren >>> hasName "gmd:URL" >>> getChildren >>> getText -< l
-    returnA -< (protocol, url)
-
 
 
 
@@ -46,12 +39,11 @@ doHTTPGET url = do
     manager <- newManager settings
     request <- parseRequest url
     response <- httpLbs request manager
-    Prelude.putStrLn $ "The status code was: " ++ (show $ statusCode $ responseStatus response)
+    -- Prelude.putStrLn $ "The status code was: " ++ (show $ statusCode $ responseStatus response)
     return response
 
 
 
--- curl -k -v -H "Content-Type: application/xml"   -X POST -d @query.xml 'https://catalogue-123.aodn.org.au/geonetwork/srv/eng/csw' 2>&1  | less
 
 -- IMPORTANT must close!!!
 -- responseClose :: Response a -> IO () 
@@ -107,17 +99,19 @@ getRecordsQuery = unlines [
 
 
 doGetRecords = do
-    let url = "https://catalogue-123.aodn.org.au/geonetwork/srv/eng/csw"
+    let url = "https://catalogue-portal.aodn.org.au/geonetwork/srv/eng/csw"
     response <- doHTTPPost url getRecordsQuery
     let s = BLC.unpack $ responseBody response
-    -- putStrLn s
+    -- parse out the metadata identifierss
     identifiers <- runX (parseXML s  >>> parseIdentifiers)
-    let lst = Prelude.map (\(identifier,title) -> identifier ++ " -> " ++ title) identifiers 
-    mapM putStrLn lst
+    -- print the records,
+    let formattedlst = Prelude.map (\(identifier,title) -> identifier ++ " -> " ++ title) identifiers 
+    mapM putStrLn formattedlst
 
-    mapM (\(identifier,title) -> doGetRecordById identifier ) identifiers 
+    -- go process each record,
+    mapM (\(identifier,title) -> doGetRecordById identifier title) identifiers 
 
-    print "finished"
+    putStrLn "finished"
 
 
 
@@ -126,18 +120,27 @@ doGetRecords = do
 -- ok now we want to go through the actual damn records,
 
 
+parseOnlineResources = atTag "gmd:CI_OnlineResource" >>>
+  proc l -> do
+    -- leagName <- getAttrValue "NAME"   -< l
+    protocol <- atTag "gmd:protocol" >>> getChildren >>> hasName "gco:CharacterString" >>> getChildren >>> getText -< l
+    url      <- atTag "gmd:linkage"  >>> getChildren >>> hasName "gmd:URL" >>> getChildren >>> getText -< l
+    returnA -< (protocol, url)
 
 
-doGetRecordById uuid = do
-    let url = "https://catalogue-123.aodn.org.au/geonetwork/srv/eng/csw?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&id=" ++ uuid ++ "&outputSchema=http://www.isotc211.org/2005/gmd"
+-- function is wrongly named, since it is decoding the online resources also,  
+-- should we pass both title the uuid 
+doGetRecordById uuid title = do
+    putStrLn $ title ++ uuid
+    let url = "https://catalogue-portal.aodn.org.au/geonetwork/srv/eng/csw?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&id=" ++ uuid ++ "&outputSchema=http://www.isotc211.org/2005/gmd"
     response <- doHTTPGET url
+    putStrLn $ "  The status code was: " ++ (show $ statusCode $ responseStatus response)
     let s = BLC.unpack $ responseBody response
     onlineResources <- runX (parseXML s  >>> parseOnlineResources)
-    let lst = Prelude.map (\(a,b) -> " ->" ++ a ++ " ->" ++ b ) onlineResources
+    let lst = Prelude.map (\(protocol,url) -> "  " ++ protocol ++ " -> " ++ url) onlineResources
     mapM putStrLn lst
 
-
-    print "finished"
+    putStrLn "  finished"
 
 
 main :: IO ()
