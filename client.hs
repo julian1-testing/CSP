@@ -116,14 +116,16 @@ doPost url body = do
     Prelude.putStrLn $ "The status code was: " ++ (show $ statusCode $ responseStatus response)
     return response
 
+--     <csw:SummaryRecord xmlns:dct="http://purl.org/dc/terms/" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:mcp="http://bluenet3.antcrc.utas.edu.au/mcp" xmlns:geonet="http://www.fao.org/geonetwork" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:gmx="http://www.isotc211.org/2005/gmx" xmlns:gmd="http://www.isotc211.org/2005/gmd">
+ --     <dc:identifier>2a044b8f-249a-4ed4-bfb7-20f49d563811</dc:identifier>
+ 
 
-
-parseIdentifiers = atTag "gmd:CI_OnlineResource" >>>
+parseIdentifiers = atTag "csw:SummaryRecord" >>>
   proc l -> do
     -- leagName <- getAttrValue "NAME"   -< l
-    protocol <- atTag "gmd:protocol" >>> getChildren >>> hasName "gco:CharacterString" >>> getChildren >>> getText -< l
-    url      <- atTag "gmd:linkage"  >>> getChildren >>> hasName "gmd:URL" >>> getChildren >>> getText -< l
-    returnA -< (protocol, url)
+    identifier <- getChildren >>> hasName "dc:identifier" >>> getChildren >>> getText -< l
+    title      <- getChildren >>> hasName "dc:title" >>> getChildren >>> getText -< l
+    returnA -< (identifier, title)
 
 
 
@@ -133,6 +135,13 @@ doGetRecords = do
     response <- doPost url getRecordsQuery
     let s = BLC.unpack $ responseBody response
     putStrLn s
+
+    identifiers <- runX (parseXML s  >>> parseIdentifiers)
+    let lst = Prelude.map (\(a,b) -> " ->" ++ a ++ " ->" ++ b ) identifiers 
+    mapM print lst
+    print "finished"
+
+
 
 
 
