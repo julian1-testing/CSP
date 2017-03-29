@@ -17,7 +17,7 @@ import Network.HTTP.Types.Header
 -- import Data.ByteString.Lazy.Char8(unpack)
 import qualified Data.ByteString as B
 import qualified Data.ByteString.Char8 as BC
-import qualified Data.ByteString.Lazy.Char8 as LBC
+import qualified Data.ByteString.Lazy.Char8 as BLC
 
 
 
@@ -31,7 +31,7 @@ atTag tag = deep (isElem >>> hasName tag)
 
 
 -- limit to just the wms/wfs stuff.
--- 
+--
 parseOnlineResources = atTag "gmd:CI_OnlineResource" >>>
   proc l -> do
     -- leagName <- getAttrValue "NAME"   -< l
@@ -43,11 +43,11 @@ parseOnlineResources = atTag "gmd:CI_OnlineResource" >>>
 
 
 -- ok, we want to hit the main metadata....
--- one function to extract and one to download - and parametize the actual url. 
+-- one function to extract and one to download - and parametize the actual url.
 
 -- change name to doGetRecords
 
--- this is hell.... we're going to have to escape everything .... 
+-- this is hell.... we're going to have to escape everything ....
 
 
 
@@ -56,16 +56,16 @@ doGetRecords1 = do
     -- OK, the following url is a valid url
     -- let url = "https://catalogue-portal.aodn.org.au/geonetwork/srv/eng/csw?request=GetRecords&service=CSW&version=2.0.2&constraint=AnyText+like+%25argo%25&constraintLanguage=CQL_TEXT&resultType=results&maxRecords=1000"
 
-    -- either the url encoding complains about the delimiter, - invalidURL 
+    -- either the url encoding complains about the delimiter, - invalidURL
     -- or the cql filter complains,
     -- let url = "https://catalogue-portal.aodn.org.au/geonetwork/srv/eng/csw?request=GetRecords&service=CSW&version=2.0.2&constraint=\"csw:AnyText+Like+'%*%'\"&constraintLanguage=CQL_TEXT&resultType=results&maxRecords=1000"
     -- let url = "https://catalogue-portal.aodn.org.au/geonetwork/srv/eng/csw?request=GetRecords&service=CSW&version=2.0.2&constraint=\"csw:AnyText+Like+\'%*%\'\"&constraintLanguage=CQL_TEXT&resultType=results&maxRecords=1000"
     -- let url = "https://catalogue-portal.aodn.org.au/geonetwork/srv/eng/csw?request=GetRecords&service=CSW&version=2.0.2&constraint=csw:AnyText+Like+'%*%'&constraintLanguage=CQL_TEXT&resultType=results&maxRecords=1000"
     let url = "https://catalogue-portal.aodn.org.au/geonetwork/srv/eng/csw?request=GetRecords&service=CSW&version=2.0.2&constraint=AnyText+Like+%27%25argo%25%27&constraintLanguage=CQL_TEXT&resultType=results&maxRecords=1000"
-    -- ' is %27   
+    -- ' is %27
     -- % is %25
     response <- doHTTP url
-    let s = LBC.unpack $ responseBody response
+    let s = BLC.unpack $ responseBody response
     print s
 
 
@@ -96,17 +96,19 @@ query = unlines [
 
 
 doPost url body = do
-    let settings = tlsManagerSettings  { managerResponseTimeout = responseTimeoutMicro $ 60 * 1000000 }
+    let settings = tlsManagerSettings  {
+        managerResponseTimeout = responseTimeoutMicro $ 60 * 1000000
+    }
     manager <- newManager settings
     -- get initial request
     initialRequest <- parseRequest url
     -- modify for post
-    let request = initialRequest { 
-        method = BC.pack "POST", 
-        requestBody = RequestBodyBS $ BC.pack body, 
-        requestHeaders = [ 
-            (hContentType, BC.pack "application/xml") 
-        ] 
+    let request = initialRequest {
+        method = BC.pack "POST",
+        requestBody = RequestBodyBS $ BC.pack body,
+        requestHeaders = [
+            (hContentType, BC.pack "application/xml")
+        ]
     }
     response <- httpLbs request manager
     Prelude.putStrLn $ "The status code was: " ++ (show $ statusCode $ responseStatus response)
@@ -118,7 +120,7 @@ doGetRecords = do
     let url = "https://catalogue-123.aodn.org.au/geonetwork/srv/eng/csw"
     let body = query
     response <- doPost url body
-    let s = LBC.unpack $ responseBody response
+    let s = BLC.unpack $ responseBody response
     print s
 
 
@@ -140,7 +142,7 @@ doHTTP url = do
 getResources = do
     let url = "https://catalogue-portal.aodn.org.au/geonetwork/srv/eng/csw?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&id=4402cb50-e20a-44ee-93e6-4728259250d2&outputSchema=http://www.isotc211.org/2005/gmd"
     response <- doHTTP url
-    let s = LBC.unpack $ responseBody response
+    let s = BLC.unpack $ responseBody response
     onlineResources <- runX (parseXML s  >>> parseOnlineResources)
     let lst = Prelude.map (\(a,b) -> " ->" ++ a ++ " ->" ++ b ) onlineResources
     mapM print lst
@@ -151,5 +153,5 @@ main :: IO ()
 -- main = getResources
 main = doGetRecords
 -- main = do
---    putStrLn query 
+--    putStrLn query
 
