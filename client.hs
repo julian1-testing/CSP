@@ -14,9 +14,11 @@ import Network.HTTP.Types.Method
 
 import Network.HTTP.Types.Header
 
-import Data.ByteString.Lazy.Char8(unpack)
+-- import Data.ByteString.Lazy.Char8(unpack)
 import qualified Data.ByteString as B
 import qualified Data.ByteString.Char8 as BC
+import qualified Data.ByteString.Lazy.Char8 as LBC
+
 
 
 
@@ -63,7 +65,7 @@ doGetRecords1 = do
     -- ' is %27   
     -- % is %25
     response <- doHTTP url
-    let s = unpack $ responseBody response
+    let s = LBC.unpack $ responseBody response
     print s
 
 
@@ -93,26 +95,30 @@ query = unlines [
 
 
 
-doPost url = do
+doPost url body = do
     let settings = tlsManagerSettings  { managerResponseTimeout = responseTimeoutMicro $ 60 * 1000000 }
     manager <- newManager settings
     -- get initial request
     initialRequest <- parseRequest url
-
+    -- modify for post
     let request = initialRequest { 
         method = BC.pack "POST", 
-        requestBody = RequestBodyBS $ BC.pack query, 
-        requestHeaders = [ (hContentType, BC.pack "application/xml"  ) ] 
+        requestBody = RequestBodyBS $ BC.pack body, 
+        requestHeaders = [ 
+            (hContentType, BC.pack "application/xml") 
+        ] 
     }
-
     response <- httpLbs request manager
     Prelude.putStrLn $ "The status code was: " ++ (show $ statusCode $ responseStatus response)
     return response
 
+
+
 doGetRecords = do
     let url = "https://catalogue-123.aodn.org.au/geonetwork/srv/eng/csw"
-    response <- doPost url
-    let s = unpack $ responseBody response
+    let body = query
+    response <- doPost url body
+    let s = LBC.unpack $ responseBody response
     print s
 
 
@@ -134,7 +140,7 @@ doHTTP url = do
 getResources = do
     let url = "https://catalogue-portal.aodn.org.au/geonetwork/srv/eng/csw?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&id=4402cb50-e20a-44ee-93e6-4728259250d2&outputSchema=http://www.isotc211.org/2005/gmd"
     response <- doHTTP url
-    let s = unpack $ responseBody response
+    let s = LBC.unpack $ responseBody response
     onlineResources <- runX (parseXML s  >>> parseOnlineResources)
     let lst = Prelude.map (\(a,b) -> " ->" ++ a ++ " ->" ++ b ) onlineResources
     mapM print lst
