@@ -12,9 +12,9 @@ create database harvest owner harvest;
 -- TODO change name to record, or metadata,   catalog is the particular catalog instance that we scan.
 create table catalog (
 
-  id serial primary key not null,
-  uuid text not null,
-  title text not null
+  id          serial primary key not null,
+  uuid        text not null,
+  title       text not null
 );
 
 alter table catalog owner to harvest;
@@ -23,8 +23,8 @@ alter table catalog owner to harvest;
 
 create table resource (
 
-  id serial primary key not null,
-  catalog_id integer references catalog(id), 
+  id serial   primary key not null,
+  catalog_id  integer references catalog(id), 
 
   protocol    text not null,
   linkage     text not null,
