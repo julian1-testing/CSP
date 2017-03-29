@@ -1,6 +1,7 @@
 
 
-
+### parameter vocabulary
+https://s3-ap-southeast-2.amazonaws.com/content.aodn.org.au/Vocabularies/parameter-category/aodn_aodn-parameter-category-vocabulary.rdf
 
 
 ### Build,

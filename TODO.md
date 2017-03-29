@@ -1,4 +1,12 @@
 
+- online resources
+- vocab/ skos - facet - and search term
+- wms - wfs association. 
+
+
+
+
+
 Catalog services for Web  (CSW).
 
 

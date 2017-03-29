@@ -1,6 +1,7 @@
 *.o
 *.hi
 client
+load-vocab
 examples/parse
 examples/psql
 examples/psql2
