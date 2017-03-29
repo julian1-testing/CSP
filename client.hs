@@ -154,13 +154,16 @@ parseOnlineResources = atTag "gmd:CI_OnlineResource" >>>
 parseDataParameters = atTag "mcp:dataParameter" >>>
   proc l -> do
     term <- atTag "mcp:DP_DataParameter" 
-      >>> getChildren >>> hasName "mcp:parameterName" -< l
+      >>> getChildren >>> hasName "mcp:parameterName" 
+      >>> getChildren >>> hasName "mcp:DP_Term" -< l
+
+    xxx <- getChildren >>> hasName "mcp:term"  -< term
       -- >>> getChildren >>> hasName "mcp:DP_Term" 
       -- >>> getChildren >>> hasName "mcp:term" 
       -- >>> getChildren >>> hasName "gco:CharacterString" 
       -- >>> getChildren >>> getText -< l
       -- >>> getChildren >>> getText -< l
-    returnA -< term
+    returnA -< xxx 
 
 
 --      <mcp:dataParameters>
