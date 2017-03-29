@@ -134,11 +134,10 @@ doGetRecords = do
     let url = "https://catalogue-123.aodn.org.au/geonetwork/srv/eng/csw"
     response <- doPost url getRecordsQuery
     let s = BLC.unpack $ responseBody response
-    putStrLn s
-
+    -- putStrLn s
     identifiers <- runX (parseXML s  >>> parseIdentifiers)
-    let lst = Prelude.map (\(a,b) -> " ->" ++ a ++ " ->" ++ b ) identifiers 
-    mapM print lst
+    let lst = Prelude.map (\(a,b) -> a ++ " -> " ++ b ) identifiers 
+    mapM putStrLn lst
     print "finished"
 
 
@@ -165,7 +164,7 @@ getResources = do
     let s = BLC.unpack $ responseBody response
     onlineResources <- runX (parseXML s  >>> parseOnlineResources)
     let lst = Prelude.map (\(a,b) -> " ->" ++ a ++ " ->" ++ b ) onlineResources
-    mapM print lst
+    mapM putStrLn lst
     print "finished"
 
 
