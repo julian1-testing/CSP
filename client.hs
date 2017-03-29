@@ -42,7 +42,7 @@ parseOnlineResources = atTag "gmd:CI_OnlineResource" >>>
 
 
 doHTTPGET url = do
-    let settings = tlsManagerSettings  { managerResponseTimeout = responseTimeoutMicro $ 60 * 1000000 }
+    let settings = tlsManagerSettings { managerResponseTimeout = responseTimeoutMicro $ 60 * 1000000 }
     manager <- newManager settings
     request <- parseRequest url
     response <- httpLbs request manager
@@ -114,28 +114,29 @@ doGetRecords = do
     identifiers <- runX (parseXML s  >>> parseIdentifiers)
     let lst = Prelude.map (\(identifier,title) -> identifier ++ " -> " ++ title) identifiers 
     mapM putStrLn lst
+
+    mapM (\(identifier,title) -> doGetRecordById identifier ) identifiers 
+
     print "finished"
 
 
 
 
 -- https://catalogue-portal.aodn.org.au/geonetwork/srv/eng/csw?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&id=4402cb50-e20a-44ee-93e6-4728259250d2&outputSchema=http://www.isotc211.org/2005/gmd
-
-
 -- ok now we want to go through the actual damn records,
 
 
 
 
-
-
-getResources = do
-    let url = "https://catalogue-portal.aodn.org.au/geonetwork/srv/eng/csw?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&id=4402cb50-e20a-44ee-93e6-4728259250d2&outputSchema=http://www.isotc211.org/2005/gmd"
+doGetRecordById uuid = do
+    let url = "https://catalogue-123.aodn.org.au/geonetwork/srv/eng/csw?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&id=" ++ uuid ++ "&outputSchema=http://www.isotc211.org/2005/gmd"
     response <- doHTTPGET url
     let s = BLC.unpack $ responseBody response
     onlineResources <- runX (parseXML s  >>> parseOnlineResources)
     let lst = Prelude.map (\(a,b) -> " ->" ++ a ++ " ->" ++ b ) onlineResources
     mapM putStrLn lst
+
+
     print "finished"
 
 
