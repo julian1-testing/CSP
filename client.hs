@@ -9,17 +9,16 @@ import Network.HTTP.Client
 import Network.HTTP.Client.TLS
 import Network.HTTP.Types.Status (statusCode)
 
--- import Network.HTTP.Types.Method.Method
+-- TODO import qualified
 import Network.HTTP.Types.Method
-
 import Network.HTTP.Types.Header
 
--- import Data.ByteString.Lazy.Char8(unpack)
 import qualified Data.ByteString as B
 import qualified Data.ByteString.Char8 as BC
 import qualified Data.ByteString.Lazy.Char8 as BLC
 
 
+-- import qualified Prelude as P
 
 
 parseXML s = readString [ withValidate no
@@ -42,37 +41,51 @@ parseOnlineResources = atTag "gmd:CI_OnlineResource" >>>
 
 
 
--- ok, we want to hit the main metadata....
--- one function to extract and one to download - and parametize the actual url.
-
--- change name to doGetRecords
-
--- this is hell.... we're going to have to escape everything ....
-
-
-
-doGetRecords1 = do
-    -- let url = "https://catalogue-portal.aodn.org.au/geonetwork/srv/eng/csw?request=GetRecords&service=CSW&version=2.0.2&constraint=AnyText+like+%*%&constraintLanguage=CQL_TEXT&resultType=results&maxRecords=1000"
-    -- OK, the following url is a valid url
-    -- let url = "https://catalogue-portal.aodn.org.au/geonetwork/srv/eng/csw?request=GetRecords&service=CSW&version=2.0.2&constraint=AnyText+like+%25argo%25&constraintLanguage=CQL_TEXT&resultType=results&maxRecords=1000"
-
-    -- either the url encoding complains about the delimiter, - invalidURL
-    -- or the cql filter complains,
-    -- let url = "https://catalogue-portal.aodn.org.au/geonetwork/srv/eng/csw?request=GetRecords&service=CSW&version=2.0.2&constraint=\"csw:AnyText+Like+'%*%'\"&constraintLanguage=CQL_TEXT&resultType=results&maxRecords=1000"
-    -- let url = "https://catalogue-portal.aodn.org.au/geonetwork/srv/eng/csw?request=GetRecords&service=CSW&version=2.0.2&constraint=\"csw:AnyText+Like+\'%*%\'\"&constraintLanguage=CQL_TEXT&resultType=results&maxRecords=1000"
-    -- let url = "https://catalogue-portal.aodn.org.au/geonetwork/srv/eng/csw?request=GetRecords&service=CSW&version=2.0.2&constraint=csw:AnyText+Like+'%*%'&constraintLanguage=CQL_TEXT&resultType=results&maxRecords=1000"
-    let url = "https://catalogue-portal.aodn.org.au/geonetwork/srv/eng/csw?request=GetRecords&service=CSW&version=2.0.2&constraint=AnyText+Like+%27%25argo%25%27&constraintLanguage=CQL_TEXT&resultType=results&maxRecords=1000"
-    -- ' is %27
-    -- % is %25
-    response <- doHTTP url
-    let s = BLC.unpack $ responseBody response
-    print s
+doHTTPGET url = do
+    let settings = tlsManagerSettings  { managerResponseTimeout = responseTimeoutMicro $ 60 * 1000000 }
+    manager <- newManager settings
+    request <- parseRequest url
+    response <- httpLbs request manager
+    Prelude.putStrLn $ "The status code was: " ++ (show $ statusCode $ responseStatus response)
+    return response
 
 
+
+-- curl -k -v -H "Content-Type: application/xml"   -X POST -d @query.xml 'https://catalogue-123.aodn.org.au/geonetwork/srv/eng/csw' 2>&1  | less
+
+-- IMPORTANT must close!!!
+-- responseClose :: Response a -> IO () 
+
+doHTTPPost url body = do
+    let settings = tlsManagerSettings  {
+        managerResponseTimeout = responseTimeoutMicro $ 60 * 1000000
+    }
+    manager <- newManager settings
+    -- get initial request
+    initialRequest <- parseRequest url
+    -- modify for post
+    let request = initialRequest {
+        method = BC.pack "POST",
+        requestBody = RequestBodyBS $ BC.pack body,
+        requestHeaders = [
+            (hContentType, BC.pack "application/xml")
+        ]
+    }
+    response <- httpLbs request manager
+    Prelude.putStrLn $ "The status code was: " ++ (show $ statusCode $ responseStatus response)
+    return response
+
+
+parseIdentifiers = atTag "csw:SummaryRecord" >>>
+  proc l -> do
+    identifier <- getChildren >>> hasName "dc:identifier" >>> getChildren >>> getText -< l
+    title      <- getChildren >>> hasName "dc:title" >>> getChildren >>> getText -< l
+    returnA -< (identifier, title)
 
 
 -- QuasiQuotes may be cleaner,
 -- http://kseo.github.io/posts/2014-02-06-multi-line-strings-in-haskell.html
+-- alternatively use the xml constructor stuff from HXT
 getRecordsQuery :: String
 getRecordsQuery = unlines [
     "<?xml version=\"1.0\" encoding=\"UTF-8\"?>",
@@ -92,75 +105,33 @@ getRecordsQuery = unlines [
     ]
 
 
--- curl -k -v -H "Content-Type: application/xml"   -X POST -d @query.xml 'https://catalogue-123.aodn.org.au/geonetwork/srv/eng/csw' 2>&1  | less
-
--- IMPORTANT must close!!!
--- responseClose :: Response a -> IO () 
-
-doPost url body = do
-    let settings = tlsManagerSettings  {
-        managerResponseTimeout = responseTimeoutMicro $ 60 * 1000000
-    }
-    manager <- newManager settings
-    -- get initial request
-    initialRequest <- parseRequest url
-    -- modify for post
-    let request = initialRequest {
-        method = BC.pack "POST",
-        requestBody = RequestBodyBS $ BC.pack body,
-        requestHeaders = [
-            (hContentType, BC.pack "application/xml")
-        ]
-    }
-    response <- httpLbs request manager
-    Prelude.putStrLn $ "The status code was: " ++ (show $ statusCode $ responseStatus response)
-    return response
-
---     <csw:SummaryRecord xmlns:dct="http://purl.org/dc/terms/" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:mcp="http://bluenet3.antcrc.utas.edu.au/mcp" xmlns:geonet="http://www.fao.org/geonetwork" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:gmx="http://www.isotc211.org/2005/gmx" xmlns:gmd="http://www.isotc211.org/2005/gmd">
- --     <dc:identifier>2a044b8f-249a-4ed4-bfb7-20f49d563811</dc:identifier>
- 
-
-parseIdentifiers = atTag "csw:SummaryRecord" >>>
-  proc l -> do
-    -- leagName <- getAttrValue "NAME"   -< l
-    identifier <- getChildren >>> hasName "dc:identifier" >>> getChildren >>> getText -< l
-    title      <- getChildren >>> hasName "dc:title" >>> getChildren >>> getText -< l
-    returnA -< (identifier, title)
-
-
-
 
 doGetRecords = do
     let url = "https://catalogue-123.aodn.org.au/geonetwork/srv/eng/csw"
-    response <- doPost url getRecordsQuery
+    response <- doHTTPPost url getRecordsQuery
     let s = BLC.unpack $ responseBody response
     -- putStrLn s
     identifiers <- runX (parseXML s  >>> parseIdentifiers)
-    let lst = Prelude.map (\(a,b) -> a ++ " -> " ++ b ) identifiers 
+    let lst = Prelude.map (\(identifier,title) -> identifier ++ " -> " ++ title) identifiers 
     mapM putStrLn lst
     print "finished"
 
 
 
 
-
--- manager <- newManager settings
-
+-- https://catalogue-portal.aodn.org.au/geonetwork/srv/eng/csw?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&id=4402cb50-e20a-44ee-93e6-4728259250d2&outputSchema=http://www.isotc211.org/2005/gmd
 
 
-doHTTP url = do
-    let settings = tlsManagerSettings  { managerResponseTimeout = responseTimeoutMicro $ 60 * 1000000 }
-    manager <- newManager settings
-    request <- parseRequest url
-    response <- httpLbs request manager
-    Prelude.putStrLn $ "The status code was: " ++ (show $ statusCode $ responseStatus response)
-    return response
+-- ok now we want to go through the actual damn records,
+
+
+
 
 
 
 getResources = do
     let url = "https://catalogue-portal.aodn.org.au/geonetwork/srv/eng/csw?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&id=4402cb50-e20a-44ee-93e6-4728259250d2&outputSchema=http://www.isotc211.org/2005/gmd"
-    response <- doHTTP url
+    response <- doHTTPGET url
     let s = BLC.unpack $ responseBody response
     onlineResources <- runX (parseXML s  >>> parseOnlineResources)
     let lst = Prelude.map (\(a,b) -> " ->" ++ a ++ " ->" ++ b ) onlineResources
