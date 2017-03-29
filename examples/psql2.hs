@@ -1,7 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 
-
+-- needed for disambiguating types,
 {-# LANGUAGE ScopedTypeVariables #-}
 
 import Database.PostgreSQL.Simple

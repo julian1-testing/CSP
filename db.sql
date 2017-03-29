@@ -12,13 +12,29 @@ create database harvest owner harvest;
 create table catalog (
 
   id serial primary key not null,
-
-  url text
+  uuid text not null,
+  title text not null
 );
 
 alter table catalog owner to harvest;
 
-insert into catalog(url) values ('http://catalogue');
-insert into catalog(url) values ('http://catalogue2');
+
+
+create table resource (
+
+  id serial primary key not null,
+  catalog_id integer references catalog(id), 
+
+  protocol    text not null,
+  linkage     text not null,
+  description text 
+
+  -- TODO add description
+);
+
+alter table resource owner to harvest;
+
+-- insert into catalog(url) values ('http://catalogue');
+-- insert into catalog(url) values ('http://catalogue2');
 
 

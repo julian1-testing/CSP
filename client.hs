@@ -105,25 +105,33 @@ getRecordsQuery = unlines [
     ]
 
 
+-- TODO need to think about the transaction boundary
+
+-- Also partially bind in the parameters like conn?
+-- or pass in the processing function... eg. continuation passing style 
+
+-- might use a tuple arg, ...
 
 doCSWGetRecords conn = do
+    -- retrieve all record items
     let url = "https://catalogue-portal.aodn.org.au/geonetwork/srv/eng/csw"
     response <- doHTTPPost url getRecordsQuery
     let s = BLC.unpack $ responseBody response
-    -- parse out the metadata identifierss
+
+    -- parse out the metadata identifier/title  
+    -- TODO add description
     identifiers <- runX (parseXML s  >>> parseIdentifiers)
+
     -- print the records,
     let formattedlst = Prelude.map (\(identifier,title) -> identifier ++ " -> " ++ title) identifiers 
     mapM putStrLn formattedlst
 
-
-    -- let storeToDB (identifier,title) = execute conn "insert into catalog(uuid) values (?, ?)" [(identifier :: String), (title :: String ) ]
-    -- let storeToDB (identifier,title) = execute conn "insert into catalog(uuid) values (?, ?)" [(identifier , title  ) ]
-    let storeToDB (identifier,title) = execute conn "insert into catalog(uuid,title) values (?, ?)" [identifier , title  ]
+    -- store to db
+    let storeToDB (identifier,title) = execute conn "insert into catalog(uuid,title) values (?, ?)" [identifier, title]
     mapM storeToDB identifiers
 
-    -- go process each record,
-    mapM (\(identifier,title) -> doCSWGetRecordById identifier title) identifiers 
+    -- further process each record,
+    mapM (\(identifier,title) -> doCSWGetRecordById conn identifier title) identifiers 
     putStrLn "finished"
 
 
@@ -141,17 +149,30 @@ parseOnlineResources = atTag "gmd:CI_OnlineResource" >>>
     returnA -< (protocol, url)
 
 
+
 -- function is wrongly named, since it is decoding the online resources also,  
 -- should we pass both title the uuid 
-doCSWGetRecordById uuid title = do
+doCSWGetRecordById conn uuid title = do
+    -- retrieve record
     putStrLn $ title ++ uuid
     let url = "https://catalogue-portal.aodn.org.au/geonetwork/srv/eng/csw?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&id=" ++ uuid ++ "&outputSchema=http://www.isotc211.org/2005/gmd"
     response <- doHTTPGET url
     putStrLn $ "  The status code was: " ++ (show $ statusCode $ responseStatus response)
     let s = BLC.unpack $ responseBody response
+
+    -- parse for resources,
     onlineResources <- runX (parseXML s  >>> parseOnlineResources)
+
+    -- print resources
     let lst = Prelude.map (\(protocol,url) -> "  " ++ protocol ++ " -> " ++ url) onlineResources
     mapM putStrLn lst
+
+
+    -- store resources to db
+    let storeToDB (protocol,url) = execute conn "insert into resource(catalog_id,protocol,linkage) values (1, ?, ?)" [protocol, url]
+    mapM storeToDB onlineResources
+
+
 
     putStrLn "  finished"
 
