@@ -73,8 +73,8 @@ doGetRecords1 = do
 
 -- QuasiQuotes may be cleaner,
 -- http://kseo.github.io/posts/2014-02-06-multi-line-strings-in-haskell.html
-query :: String
-query = unlines [
+getRecordsQuery :: String
+getRecordsQuery = unlines [
     "<?xml version=\"1.0\" encoding=\"UTF-8\"?>",
     "<csw:GetRecords xmlns:csw=\"http://www.opengis.net/cat/csw/2.0.2\" service=\"CSW\" version=\"2.0.2\"    ",
     "    resultType=\"results\" startPosition=\"1\" maxRecords=\"5\" outputFormat=\"application/xml\"  >",
@@ -88,12 +88,14 @@ query = unlines [
     "      </Filter>",
     "    </csw:Constraint>",
     "  </csw:Query>",
-    "</csw:GetRecords>" ]
+    "</csw:GetRecords>" 
+    ]
 
 
 -- curl -k -v -H "Content-Type: application/xml"   -X POST -d @query.xml 'https://catalogue-123.aodn.org.au/geonetwork/srv/eng/csw' 2>&1  | less
 
-
+-- IMPORTANT must close!!!
+-- responseClose :: Response a -> IO () 
 
 doPost url body = do
     let settings = tlsManagerSettings  {
@@ -116,12 +118,21 @@ doPost url body = do
 
 
 
+parseIdentifiers = atTag "gmd:CI_OnlineResource" >>>
+  proc l -> do
+    -- leagName <- getAttrValue "NAME"   -< l
+    protocol <- atTag "gmd:protocol" >>> getChildren >>> hasName "gco:CharacterString" >>> getChildren >>> getText -< l
+    url      <- atTag "gmd:linkage"  >>> getChildren >>> hasName "gmd:URL" >>> getChildren >>> getText -< l
+    returnA -< (protocol, url)
+
+
+
+
 doGetRecords = do
     let url = "https://catalogue-123.aodn.org.au/geonetwork/srv/eng/csw"
-    let body = query
-    response <- doPost url body
+    response <- doPost url getRecordsQuery
     let s = BLC.unpack $ responseBody response
-    print s
+    putStrLn s
 
 
 
