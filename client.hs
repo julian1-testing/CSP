@@ -3,6 +3,11 @@
 -- {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE Arrows, NoMonomorphismRestriction #-}
 
+-- needed for disambiguating types,
+{-# LANGUAGE ScopedTypeVariables, OverloadedStrings #-}
+
+
+
 import Text.XML.HXT.Core
 
 import Network.HTTP.Client
@@ -16,6 +21,9 @@ import Network.HTTP.Types.Header
 import qualified Data.ByteString as B
 import qualified Data.ByteString.Char8 as BC
 import qualified Data.ByteString.Lazy.Char8 as BLC
+
+
+import Database.PostgreSQL.Simple
 
 
 -- import qualified Prelude as P
@@ -98,7 +106,7 @@ getRecordsQuery = unlines [
 
 
 
-doCSWGetRecords = do
+doCSWGetRecords conn = do
     let url = "https://catalogue-portal.aodn.org.au/geonetwork/srv/eng/csw"
     response <- doHTTPPost url getRecordsQuery
     let s = BLC.unpack $ responseBody response
@@ -107,6 +115,13 @@ doCSWGetRecords = do
     -- print the records,
     let formattedlst = Prelude.map (\(identifier,title) -> identifier ++ " -> " ++ title) identifiers 
     mapM putStrLn formattedlst
+
+
+    -- let storeToDB (identifier,title) = execute conn "insert into catalog(uuid) values (?, ?)" [(identifier :: String), (title :: String ) ]
+    -- let storeToDB (identifier,title) = execute conn "insert into catalog(uuid) values (?, ?)" [(identifier , title  ) ]
+    let storeToDB (identifier,title) = execute conn "insert into catalog(uuid,title) values (?, ?)" [identifier , title  ]
+    mapM storeToDB identifiers
+
     -- go process each record,
     mapM (\(identifier,title) -> doCSWGetRecordById identifier title) identifiers 
     putStrLn "finished"
@@ -149,8 +164,10 @@ doCSWGetRecordById uuid title = do
 
 
 main :: IO ()
--- main = getResources
-main = doCSWGetRecords
--- main = do
---    putStrLn query
+main = do
+  conn <- connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
+
+  doCSWGetRecords conn
+
+  
 
