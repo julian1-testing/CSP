@@ -148,7 +148,7 @@ parseOnlineResources = atTag "gmd:CI_OnlineResource" >>>
     url      <- atTag "gmd:linkage"  >>> getChildren >>> hasName "gmd:URL" >>> getChildren >>> getText -< l
     returnA -< (protocol, url)
 
-
+-- https://catalogue-portal.aodn.org.au/geonetwork/srv/eng/csw?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&id=0a21e0b9-8acb-4dc2-8c82-57c3ea94dd85&outputSchema=http://www.isotc211.org/2005/gmd
 
 parseDataParameters = atTag "mcp:dataParameter" >>>
   proc l -> do
@@ -162,27 +162,11 @@ parseDataParameters = atTag "mcp:dataParameter" >>>
     returnA -< (txt, url) 
 
 
---      <mcp:dataParameters>
---        <mcp:DP_DataParameters>
---          <mcp:dataParameter>
---
---            <mcp:DP_DataParameter>
---              <mcp:parameterName>
---                <mcp:DP_Term>
---                  <mcp:term>
---                    <gco:CharacterString>Temperature of the water body</gco:CharacterString>
- 
--- <mcp:dataParameters>
---   <mcp:DP_DataParameters>
---     <mcp:dataParameter>
---       <mcp:DP_DataParameter>
---         <mcp:parameterName>
---           <mcp:DP_Term>
---             <mcp:term>
---               <gco:CharacterString>Practical salinity of the water body</gco:CharacterString>
+-- Or combine the parsing, and the sql actions.
+-- we need to have the vocab imported - before we can do the lookups.
+-- only need broader and narrower,
 
---    <mcp:vocabularyTermURL><gmd:URL>
-
+-- use hask. rdf library, or sql. - shouldn't be too hard to capture this stuff relationally. it's just one table.
 
 -- TODO separate out retrieving the record and decoding the xml document,.
 -- eg. separate out the online resource from the facet search term stuff.
@@ -201,18 +185,18 @@ doCSWGetRecordById conn uuid title = do
     let s = BLC.unpack $ responseBody response
 
     -- parse for resources,
---    onlineResources <- runX (parseXML s  >>> parseOnlineResources)
-
+    onlineResources <- runX (parseXML s  >>> parseOnlineResources)
     -- print resources
---    let lst = Prelude.map (\(protocol,url) -> "  " ++ protocol ++ " -> " ++ url) onlineResources
---    mapM putStrLn lst
+    let lst = Prelude.map (\(protocol,url) -> "  " ++ protocol ++ " -> " ++ url) onlineResources
+    mapM putStrLn lst
 
     putStrLn "###############"
     putStrLn "parsing the parameters"
 
+    -- parse data parameters,
     dataParameters <- runX (parseXML s  >>> parseDataParameters)
 
-    putStrLn $ (show. length)  dataParameters
+    putStrLn $  (show. length) dataParameters
  
     let lst = Prelude.map (\term -> show term ) dataParameters
     mapM putStrLn lst
