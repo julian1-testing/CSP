@@ -28,8 +28,6 @@ create table resource (
   protocol    text not null,
   linkage     text not null,
   description text 
-
-  -- TODO add description
 );
 
 alter table resource owner to harvest;

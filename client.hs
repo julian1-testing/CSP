@@ -169,7 +169,7 @@ doCSWGetRecordById conn uuid title = do
 
 
     -- store resources to db
-    let storeToDB (protocol,url) = execute conn "insert into resource(catalog_id,protocol,linkage) values (1, ?, ?)" [protocol, url]
+    let storeToDB (protocol,url) = execute conn "insert into resource(catalog_id,protocol,linkage) values ((select id from catalog where uuid = ?), ?, ?)" [uuid, protocol, url]
     mapM storeToDB onlineResources
 
 
