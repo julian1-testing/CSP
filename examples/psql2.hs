@@ -21,7 +21,12 @@ hello = do
 
 
   -- Note also executeMany 
+  -- _ <- query_ conn "begin;" 
+  execute conn "begin;"  ()
+
   execute conn "insert into catalog(url) values (?)" [("catalog3" :: String ) ]
+
+  execute conn "commit;"  ()
 
   return ()
 
