@@ -148,7 +148,44 @@ parseOnlineResources = atTag "gmd:CI_OnlineResource" >>>
     url      <- atTag "gmd:linkage"  >>> getChildren >>> hasName "gmd:URL" >>> getChildren >>> getText -< l
     returnA -< (protocol, url)
 
+-- do the records have 
 
+
+parseDataParameters = atTag "mcp:dataParameters" >>>
+  proc l -> do
+    term <- atTag "mcp:DP_DataParameters" -< l
+      -- >>> getChildren >>> hasName "mcp:parameterName" 
+      -- >>> getChildren >>> hasName "mcp:DP_Term" 
+      -- >>> getChildren >>> hasName "mcp:term" 
+      -- >>> getChildren >>> hasName "gco:CharacterString" 
+      -- >>> getChildren >>> getText -< l
+      -- >>> getChildren >>> getText -< l
+    returnA -< term
+
+
+--      <mcp:dataParameters>
+--        <mcp:DP_DataParameters>
+--          <mcp:dataParameter>
+--
+--            <mcp:DP_DataParameter>
+--              <mcp:parameterName>
+--                <mcp:DP_Term>
+--                  <mcp:term>
+--                    <gco:CharacterString>Temperature of the water body</gco:CharacterString>
+ 
+-- <mcp:dataParameters>
+--   <mcp:DP_DataParameters>
+--     <mcp:dataParameter>
+--       <mcp:DP_DataParameter>
+--         <mcp:parameterName>
+--           <mcp:DP_Term>
+--             <mcp:term>
+--               <gco:CharacterString>Practical salinity of the water body</gco:CharacterString>
+
+
+
+-- TODO separate out retrieving the record and decoding the xml document,.
+-- eg. separate out the online resource from the facet search term stuff.
 
 -- function is wrongly named, since it is decoding the online resources also,  
 -- should we pass both title the uuid 
@@ -156,23 +193,35 @@ doCSWGetRecordById conn uuid title = do
     -- retrieve record
     putStrLn $ title ++ uuid
     let url = "https://catalogue-portal.aodn.org.au/geonetwork/srv/eng/csw?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&id=" ++ uuid ++ "&outputSchema=http://www.isotc211.org/2005/gmd"
+
+    putStrLn url
+
     response <- doHTTPGET url
     putStrLn $ "  The status code was: " ++ (show $ statusCode $ responseStatus response)
     let s = BLC.unpack $ responseBody response
 
     -- parse for resources,
-    onlineResources <- runX (parseXML s  >>> parseOnlineResources)
+--    onlineResources <- runX (parseXML s  >>> parseOnlineResources)
 
     -- print resources
-    let lst = Prelude.map (\(protocol,url) -> "  " ++ protocol ++ " -> " ++ url) onlineResources
+--    let lst = Prelude.map (\(protocol,url) -> "  " ++ protocol ++ " -> " ++ url) onlineResources
+--    mapM putStrLn lst
+
+    putStrLn "###############"
+    putStrLn "parsing the parameters"
+
+    dataParameters <- runX (parseXML s  >>> parseDataParameters)
+
+    putStrLn $ (show. length)  dataParameters
+ 
+    let lst = Prelude.map (\term -> show term ) dataParameters
     mapM putStrLn lst
 
+   
 
     -- store resources to db
-    let storeToDB (protocol,url) = execute conn "insert into resource(catalog_id,protocol,linkage) values ((select id from catalog where uuid = ?), ?, ?)" [uuid, protocol, url]
-    mapM storeToDB onlineResources
-
-
+--    let storeToDB (protocol,url) = execute conn "insert into resource(catalog_id,protocol,linkage) values ((select id from catalog where uuid = ?), ?, ?)" [uuid, protocol, url]
+--    mapM storeToDB onlineResources
 
     putStrLn "  finished"
 
