@@ -158,12 +158,21 @@ parseDataParameters = atTag "mcp:dataParameter" >>>
       >>> getChildren >>> hasName "mcp:DP_Term" -< l
 
     xxx <- getChildren >>> hasName "mcp:term"  >>> getChildren >>> hasName "gco:CharacterString" >>> getChildren >>> getText -< term
+
+
+    url <- getChildren >>> hasName "mcp:vocabularyTermURL"  >>> getChildren >>> hasName "gmd:URL" >>> getChildren >>> getText -< term
+
+--    <mcp:vocabularyTermURL><gmd:URL>
       -- >>> getChildren >>> hasName "mcp:DP_Term" 
       -- >>> getChildren >>> hasName "mcp:term" 
       -- >>> getChildren >>> hasName "gco:CharacterString" 
       -- >>> getChildren >>> getText -< l
       -- >>> getChildren >>> getText -< l
-    returnA -< xxx 
+
+
+
+
+    returnA -< url
 
 
 --      <mcp:dataParameters>
@@ -185,6 +194,7 @@ parseDataParameters = atTag "mcp:dataParameter" >>>
 --             <mcp:term>
 --               <gco:CharacterString>Practical salinity of the water body</gco:CharacterString>
 
+--    <mcp:vocabularyTermURL><gmd:URL>
 
 
 -- TODO separate out retrieving the record and decoding the xml document,.
