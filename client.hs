@@ -98,7 +98,7 @@ getRecordsQuery = unlines [
 
 
 
-doGetRecords = do
+doCSWGetRecords = do
     let url = "https://catalogue-portal.aodn.org.au/geonetwork/srv/eng/csw"
     response <- doHTTPPost url getRecordsQuery
     let s = BLC.unpack $ responseBody response
@@ -107,10 +107,8 @@ doGetRecords = do
     -- print the records,
     let formattedlst = Prelude.map (\(identifier,title) -> identifier ++ " -> " ++ title) identifiers 
     mapM putStrLn formattedlst
-
     -- go process each record,
-    mapM (\(identifier,title) -> doGetRecordById identifier title) identifiers 
-
+    mapM (\(identifier,title) -> doCSWGetRecordById identifier title) identifiers 
     putStrLn "finished"
 
 
@@ -130,7 +128,7 @@ parseOnlineResources = atTag "gmd:CI_OnlineResource" >>>
 
 -- function is wrongly named, since it is decoding the online resources also,  
 -- should we pass both title the uuid 
-doGetRecordById uuid title = do
+doCSWGetRecordById uuid title = do
     putStrLn $ title ++ uuid
     let url = "https://catalogue-portal.aodn.org.au/geonetwork/srv/eng/csw?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&id=" ++ uuid ++ "&outputSchema=http://www.isotc211.org/2005/gmd"
     response <- doHTTPGET url
@@ -143,9 +141,16 @@ doGetRecordById uuid title = do
     putStrLn "  finished"
 
 
+-- So how do we do this...
+-- get the data - then store in sql?  can probably do it. relationally...
+-- update...
+-- 
+
+
+
 main :: IO ()
 -- main = getResources
-main = doGetRecords
+main = doCSWGetRecords
 -- main = do
 --    putStrLn query
 
