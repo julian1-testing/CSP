@@ -151,9 +151,9 @@ parseOnlineResources = atTag "gmd:CI_OnlineResource" >>>
 -- do the records have 
 
 
-parseDataParameters = atTag "mcp:dataParameters" >>>
+parseDataParameters = atTag "mcp:dataParameter" >>>
   proc l -> do
-    term <- atTag "mcp:DP_DataParameters" -< l
+    term <- atTag "mcp:DP_DataParameter" -< l
       -- >>> getChildren >>> hasName "mcp:parameterName" 
       -- >>> getChildren >>> hasName "mcp:DP_Term" 
       -- >>> getChildren >>> hasName "mcp:term" 
