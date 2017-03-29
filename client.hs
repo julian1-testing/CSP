@@ -148,7 +148,6 @@ parseOnlineResources = atTag "gmd:CI_OnlineResource" >>>
     url      <- atTag "gmd:linkage"  >>> getChildren >>> hasName "gmd:URL" >>> getChildren >>> getText -< l
     returnA -< (protocol, url)
 
--- do the records have 
 
 
 parseDataParameters = atTag "mcp:dataParameter" >>>
@@ -157,22 +156,10 @@ parseDataParameters = atTag "mcp:dataParameter" >>>
       >>> getChildren >>> hasName "mcp:parameterName" 
       >>> getChildren >>> hasName "mcp:DP_Term" -< l
 
-    xxx <- getChildren >>> hasName "mcp:term"  >>> getChildren >>> hasName "gco:CharacterString" >>> getChildren >>> getText -< term
-
-
+    txt <- getChildren >>> hasName "mcp:term"  >>> getChildren >>> hasName "gco:CharacterString" >>> getChildren >>> getText -< term
     url <- getChildren >>> hasName "mcp:vocabularyTermURL"  >>> getChildren >>> hasName "gmd:URL" >>> getChildren >>> getText -< term
 
---    <mcp:vocabularyTermURL><gmd:URL>
-      -- >>> getChildren >>> hasName "mcp:DP_Term" 
-      -- >>> getChildren >>> hasName "mcp:term" 
-      -- >>> getChildren >>> hasName "gco:CharacterString" 
-      -- >>> getChildren >>> getText -< l
-      -- >>> getChildren >>> getText -< l
-
-
-
-
-    returnA -< url
+    returnA -< (txt, url) 
 
 
 --      <mcp:dataParameters>
