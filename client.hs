@@ -187,6 +187,9 @@ doCSWGetRecordById conn uuid title = do
 main :: IO ()
 main = do
   conn <- connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
+  -- execute conn "truncate resource;"  ()
+  -- note that the sequence will update - 
+  execute conn "truncate catalog, resource;"  ()
 
   doCSWGetRecords conn
 
