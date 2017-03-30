@@ -62,7 +62,7 @@ parseXML s = readString [ withValidate no
 
 
 significant :: String -> Bool
-significant s = False
+significant s = s == "http://www.w3.org/2004/02/skos/core#Concept"
 
 parseDescription = 
   deep (isElem >>> hasName "rdf:Description") >>> 
@@ -72,7 +72,7 @@ parseDescription =
     -- GOOD this limits to having a type
     -- 	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
 	
-    (getChildren >>> hasName "rdf:type" >>> getAttrValue "rdf:resource1" >>> isA significant    )  -< l
+    (getChildren >>> hasName "rdf:type" >>> getAttrValue "rdf:resource" >>> isA significant    )  -< l
     
     -- if we haven't got these it will just short-circuit,
     about <- getAttrValue "rdf:about" -< l
