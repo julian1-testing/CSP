@@ -13,13 +13,13 @@ create database harvest owner harvest;
 create table catalog (
 
   id          serial primary key not null,
-  uuid        text not null,
+  uuid        text not null unique,
   title       text not null
 );
 
 alter table catalog owner to harvest;
 
-
+-- TODO add uniqueness constraints
 
 create table resource (
 
@@ -40,8 +40,9 @@ create table term (
 
   id serial   primary key not null,
 
-  label       text not null,
-  url         text not null
+  -- is this skos specific?
+  url         text not null unique,
+  label       text not null
 );
 
 alter table term owner to harvest;

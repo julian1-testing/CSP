@@ -27,20 +27,22 @@ Concentration of inferred chlorophyll from relative fluorescence per unit volume
 https://s3-ap-southeast-2.amazonaws.com/content.aodn.org.au/Vocabularies/parameter-category/aodn_aodn-parameter-category-vocabulary.rdf
 
 
-<rdf:Description rdf:about="http://vocab.aodn.org.au/def/discovery_parameter/894">
+<rdf:Description rdf:about="http://vocab.aodn.org.au/def/discovery_parameter/entity/733">
 	<rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
 	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
-	<dcterms:contributor rdf:datatype="http://www.w3.org/2001/XMLSchema#string">eMII_Mancini.Sebastien</dcterms:contributor>
-	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2015-11-18T00:00:00Z</dcterms:created>
-	<dcterms:creator rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Sebastien Mancini</dcterms:creator>
-	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2015-11-19T02:18:19Z</dcterms:modified>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2015-05-11T00:00:00Z</dcterms:created>
+	<dcterms:creator xml:lang="en">Sebastien Mancini</dcterms:creator>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2015-05-28T02:09:29Z</dcterms:modified>
 	<dc:publisher rdf:datatype="http://www.w3.org/2001/XMLSchema#string">eMarine Information Infrastructure (eMII)</dc:publisher>
 	<dc:source rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Australian Ocean Data Network discovery parameter register</dc:source>
-	<skos:broadMatch rdf:resource="http://vocab.aodn.org.au/def/parameter_classes/category/19"/>
+	<skos:broadMatch rdf:resource="http://vocab.aodn.org.au/def/parameter_classes/category/48"/>
+	<skos:definition xml:lang="en"></skos:definition>
 	<skos:inScheme rdf:resource="http://vocab.aodn.org.au/def/discovery_parameter/1"/>
-	<skos:prefLabel xml:lang="en">Concentration of inferred chlorophyll from relative fluorescence per unit volume of the water body</skos:prefLabel>
+	<skos:prefLabel xml:lang="en">Downwelling vector irradiance as energy (ultra-violet wavelengths) in the atmosphere</skos:prefLabel>
 	<skos:topConceptOf rdf:resource="http://vocab.aodn.org.au/def/discovery_parameter/1"/>
+	<skos:hiddenLabel xml:lang="en">RAD_UV</skos:hiddenLabel>
 </rdf:Description>
+
 
 -}
 
@@ -49,30 +51,43 @@ parseXML s = readString [ withValidate no
     ] s
 
 
-atTag tag = deep (isElem >>> hasName tag)
+-- atTag tag = deep (isElem >>> hasName tag)
 
 
 -- need to load terms, then load relationships.
+-- <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
 
+parseDescription = 
+  deep (isElem >>> hasName "rdf:Description" ) >>>
 
-parseDescription = atTag "rdf:Description" >>>
+  -- atTag "rdf:Description" >>>
+
   proc l -> do
-    about <- getAttrValue "rdf:about" -< l
 
+    about <- getAttrValue "rdf:about" -< l
     prefLabel <- getChildren >>> hasName "skos:prefLabel" >>> getChildren >>> getText -< l
 
     returnA -< (about, prefLabel)
 
 
 
-loadVocab conn s = do
- 
+
+-- loadConcepts
+
+loadConcepts conn s = do
+    -- parse 
     dataParameters <- runX (parseXML s  >>> parseDescription)
 
+    -- print count,
     putStrLn $  (show. length) dataParameters
- 
-    let lst = Prelude.map (\term -> show term ) dataParameters
+
+    -- print 
+    let lst = Prelude.map show dataParameters
     mapM putStrLn lst
+
+    -- store to db
+    -- let storeToDB (url,label) = execute conn "insert into term(url,label) values (?, ?)" [url, label]
+    -- mapM storeToDB dataParameters
 
 
 
@@ -81,12 +96,14 @@ main :: IO ()
 main = do
   conn <- connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
 
-  -- execute conn "truncate terms, relationships;"  ()
+  -- should we be using plural?
+  execute conn "truncate term;"  ()
 
   s <- readFile "./vocab/aodn_aodn-discovery-parameter-vocabulary.rdf" 
 
   -- putStrLn s 
-  loadVocab conn s
+  loadConcepts conn s
+  close conn
   putStrLn "  finished"
 
   
