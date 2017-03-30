@@ -150,13 +150,14 @@ storeScheme conn s = do
     -- store narrower relationships
     mapM storeSchemeRel' narrower
 
-    -- narrowermatch
-    narrower <- runX (parseXML s >>> parseNarrowMatch)
-    let lst = Prelude.map show narrower
+    -- narrowerMatchmatch
+    narrowerMatch <- runX (parseXML s >>> parseNarrowMatch)
+    let lst = Prelude.map show narrowerMatch
     mapM putStrLn lst
-    putStrLn $ "count " ++ (show. length) narrower
+    putStrLn $ "count " ++ (show. length) narrowerMatch
 
-
+    -- store narrowerMatch match
+    mapM storeSchemeRel' narrowerMatch
 
 
 
