@@ -6,25 +6,23 @@
 -- needed for disambiguating types,
 {-# LANGUAGE ScopedTypeVariables, OverloadedStrings #-}
 
-
 import Text.XML.HXT.Core
-
 
 import qualified Data.ByteString as B
 import qualified Data.ByteString.Char8 as BC
 import qualified Data.ByteString.Lazy.Char8 as BLC
 
-
 import Database.PostgreSQL.Simple
 
 {-
-http://vocabs.ands.org.au/repository/api/lda/aodn/aodn-discovery-parameter-vocabulary/version-1-2/resource.xml?uri=http://vocab.aodn.org.au/def/discovery_parameter/894
+  http://vocabs.ands.org.au/repository/api/lda/aodn/aodn-discovery-parameter-vocabulary/version-1-2/resource.xml?uri=http://vocab.aodn.org.au/def/discovery_parameter/894
 
-http://vocab.aodn.org.au/def/discovery_parameter/894
+  http://vocab.aodn.org.au/def/discovery_parameter/894
 
-Concentration of inferred chlorophyll from relative fluorescence per unit volume of the water body
+  Concentration of inferred chlorophyll from relative fluorescence per unit volume of the water body
 
-https://s3-ap-southeast-2.amazonaws.com/content.aodn.org.au/Vocabularies/parameter-category/aodn_aodn-parameter-category-vocabulary.rdf
+  https://s3-ap-southeast-2.amazonaws.com/content.aodn.org.au/Vocabularies/parameter-category/aodn_aodn-parameter-category-vocabulary.rdf
+
 
 <rdf:Description rdf:about="http://vocab.aodn.org.au/def/parameter_classes/category/53">
 	<rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
@@ -48,7 +46,6 @@ https://s3-ap-southeast-2.amazonaws.com/content.aodn.org.au/Vocabularies/paramet
 </rdf:Description>
 
 
-
 -}
 
 parseXML s = readString [ withValidate no
@@ -56,20 +53,26 @@ parseXML s = readString [ withValidate no
     ] s
 
 
--- atTag tag = deep (isElem >>> hasName tag)
--- need to load terms, then load relationships.
--- <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
--- <+> is or
--- >>> is and - and  shortCircuit 
--- >>> ( getChildren >>> hasName "rdf:type")  >>>
 
 
 
+parseNarrower =
+  deep (isElem >>> hasName "skos:narrower") >>> 
+  proc e -> do
+    narrower <- getChildren -< e
+    returnA -< (narrower)
 
--- significant :: String -> Bool
--- significant s = s == "http://www.w3.org/2004/02/skos/core#Concept"
 
-parseDescription = 
+-- parseNarrower2 =
+--  -- deep (isElem >>> hasName "skos:narrower") >>> 
+--  deep (isElem >>> hasName "skos:narrower" >>> getAttrValue "rdf:resource"  )
+-- so we have a problem that we have 
+---- or maybe we don't need it????
+---- and we can just write clever sql...
+
+
+
+parseConcept = 
   deep (isElem >>> hasName "rdf:Description") >>> 
   proc e -> do
     -- only core#Concept
@@ -79,15 +82,16 @@ parseDescription =
         >>> isA ((==) "http://www.w3.org/2004/02/skos/core#Concept") -< e
     
     -- this stuff gets short-circuited if doesn't exist 
-    about <- getAttrValue "rdf:about" -< e
+    resource <- getAttrValue "rdf:about" -< e
     prefLabel <- getChildren >>> hasName "skos:prefLabel" >>> getChildren >>> getText -< e
+    narrowerResource <- getChildren >>> isElem >>> hasName "skos:narrower" >>> getAttrValue "rdf:resource"  -< e
 
-    returnA -< (about, prefLabel)
+    returnA -< (resource, narrowerResource)
 
 
 loadConcepts conn s = do
     -- parse 
-    dataParameters <- runX (parseXML s  >>> parseDescription)
+    dataParameters <- runX (parseXML s >>> parseConcept)
 
     -- print 
     let lst = Prelude.map show dataParameters
@@ -96,9 +100,8 @@ loadConcepts conn s = do
     putStrLn $ "count " ++ (show. length) dataParameters
 
     -- store to db
-    let storeToDB (url,label) = execute conn "insert into term(url,label) values (?, ?)" [url, label]
+    let storeToDB (url,label) = execute conn "insert into concept(url,label) values (?, ?)" [url, label]
     mapM storeToDB dataParameters
-
 
 
 
@@ -107,9 +110,9 @@ main = do
   conn <- connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
 
   -- should we be using plural?
-  execute conn "truncate term;"  ()
+  execute conn "truncate concept;" ()
 
-  s <- readFile "./vocab/aodn_aodn-discovery-parameter-vocabulary.rdf" 
+  s <- readFile "./vocab/aodn_aodn-parameter-category-vocabulary.rdf" 
 
   -- putStrLn s 
   loadConcepts conn s
@@ -117,4 +120,3 @@ main = do
   putStrLn "  finished"
 
   
-

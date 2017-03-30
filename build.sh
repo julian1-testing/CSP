@@ -19,4 +19,7 @@ ghc -outputdir output harvest.hs || exit
 rm output -rf
 ghc -outputdir output load-concepts.hs || exit
 
+rm output -rf
+ghc -outputdir output load-scheme.hs || exit
+
 
