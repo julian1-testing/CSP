@@ -61,20 +61,19 @@ parseXML s = readString [ withValidate no
 
 
 
-significant :: String -> Bool
-significant s = s == "http://www.w3.org/2004/02/skos/core#Concept"
+-- significant :: String -> Bool
+-- significant s = s == "http://www.w3.org/2004/02/skos/core#Concept"
 
 parseDescription = 
   deep (isElem >>> hasName "rdf:Description") >>> 
-  -- atTag "rdf:Description" >>>
   proc l -> do
-
-    -- GOOD this limits to having a type
-    -- 	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
-	
-    (getChildren >>> hasName "rdf:type" >>> getAttrValue "rdf:resource" >>> isA significant    )  -< l
+    -- GOOD - limit to core#Concept
+    (getChildren 
+        >>> hasName "rdf:type" 
+        >>> getAttrValue "rdf:resource" 
+        >>> isA ((==) "http://www.w3.org/2004/02/skos/core#Concept")  -< l)
     
-    -- if we haven't got these it will just short-circuit,
+    -- this stuff gets short-circuited if doesn't exist 
     about <- getAttrValue "rdf:about" -< l
     prefLabel <- getChildren >>> hasName "skos:prefLabel" >>> getChildren >>> getText -< l
 
