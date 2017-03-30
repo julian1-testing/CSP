@@ -33,18 +33,31 @@ create table resource (
 
 alter table resource owner to harvest;
 
--- insert into catalog(url) values ('http://catalogue');
--- insert into catalog(url) values ('http://catalogue2');
+
+--------
+
+-- facet search stuff?
 
 create table concept (
 
   id serial   primary key not null,
-
-  -- is this skos specific?
   url         text not null unique,
   label       text not null
 );
 
 alter table concept owner to harvest;
+
+
+create table scheme (
+
+  id serial   primary key not null,
+  concept_id  integer references concept(id), 
+  narrower_id integer references concept(id)
+);
+
+alter table scheme owner to harvest;
+
+
+
 
 

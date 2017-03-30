@@ -45,7 +45,6 @@ import Database.PostgreSQL.Simple
 	<skos:topConceptOf rdf:resource="http://vocab.aodn.org.au/def/parameter_classes/1"/>
 </rdf:Description>
 
-
 -}
 
 parseXML s = readString [ withValidate no
@@ -82,8 +81,6 @@ parseNarrowMatch =
     returnA -< (resource, narrowMatch)
 
 
-
-
 parseCategories = 
   deep isDescription >>> 
   proc e -> do
@@ -94,21 +91,40 @@ parseCategories =
 
 
 
+storeConcept conn (url,label) = 
+  execute conn "insert into concept(url,label) values (?, ?)" [url, label]
+
+--   concept_id  integer references concept(id), 
+--   narrower_id integer references concept(id)
+-- )
+
+storeScheme conn (url,narrower_url) = 
+  execute conn "insert into scheme(concept_id, narrower_id) values ((select id from concept where concept.url = ?), (select id from concept where concept.url = ?))" [url, narrower_url]
+
+
 
 
 loadConcepts conn s = do
+    let storeConcept' = storeConcept conn
+    let storeScheme' = storeScheme conn
+
     -- categories
     categories <- runX (parseXML s >>> parseCategories)
     let lst = Prelude.map show categories
     mapM putStrLn lst
     putStrLn $ "count " ++ (show. length) categories
 
+    -- store categories as concepts to db
+    mapM storeConcept' categories
 
     -- narrower
     narrower <- runX (parseXML s >>> parseNarrower)
     let lst = Prelude.map show narrower
     mapM putStrLn lst
     putStrLn $ "count " ++ (show. length) narrower
+
+    -- store narrower relationships
+    mapM storeScheme' narrower
 
     -- narrowermatch
     narrower <- runX (parseXML s >>> parseNarrowMatch)
@@ -119,9 +135,6 @@ loadConcepts conn s = do
 
 
 
-    -- store to db
-    -- let storeToDB (url,label) = execute conn "insert into concept(url,label) values (?, ?)" [url, label]
-    -- mapM storeToDB dataParameters
 
 
 
@@ -130,7 +143,7 @@ main = do
   conn <- connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
 
   -- should we be using plural?
-  execute conn "truncate concept;" ()
+  execute conn "truncate concept, scheme;" ()
 
   s <- readFile "./vocab/aodn_aodn-parameter-category-vocabulary.rdf" 
 
