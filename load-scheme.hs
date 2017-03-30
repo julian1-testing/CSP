@@ -99,34 +99,6 @@ storeConcept conn (url,label) =
 storeSchemeRel conn (url,narrower_url) = 
   execute conn "insert into scheme(concept_id, narrower_id) values ((select id from concept where concept.url = ?), (select id from concept where concept.url = ?))" [url, narrower_url]
 
---------------------------
--- concept stuff
-
-parseConcept = 
-  deep (isElem >>> hasName "rdf:Description") >>> 
-  proc e -> do
-    isCoreConcept -< e
-    about <- getAttrValue "rdf:about" -< e
-    prefLabel <- getChildren >>> hasName "skos:prefLabel" >>> getChildren >>> getText -< e
-    returnA -< (about, prefLabel)
-
-
-storeConcepts conn s = do
-    -- parse 
-    dataParameters <- runX (parseXML s  >>> parseConcept)
-    -- print 
-    let lst = Prelude.map show dataParameters
-    mapM putStrLn lst
-    putStrLn $ "count " ++ (show. length) dataParameters
-    -- store to db
-    let storeToDB (url,label) = execute conn "insert into concept(url,label) values (?, ?)" [url, label]
-    mapM storeToDB dataParameters
-
-
---------------------------
-
-
-
 
 storeScheme conn s = do
     let storeConcept' = storeConcept conn
@@ -159,6 +131,34 @@ storeScheme conn s = do
     -- store narrowerMatch match
     mapM storeSchemeRel' narrowerMatch
 
+
+
+
+--------------------------
+-- concept stuff
+
+parseConcept = 
+  deep (isElem >>> hasName "rdf:Description") >>> 
+  proc e -> do
+    isCoreConcept -< e
+    about <- getAttrValue "rdf:about" -< e
+    prefLabel <- getChildren >>> hasName "skos:prefLabel" >>> getChildren >>> getText -< e
+    returnA -< (about, prefLabel)
+
+
+storeConcepts conn s = do
+    -- parse 
+    dataParameters <- runX (parseXML s  >>> parseConcept)
+    -- print 
+    let lst = Prelude.map show dataParameters
+    mapM putStrLn lst
+    putStrLn $ "count " ++ (show. length) dataParameters
+    -- store to db
+    let storeToDB (url,label) = execute conn "insert into concept(url,label) values (?, ?)" [url, label]
+    mapM storeToDB dataParameters
+
+
+--------------------------
 
 
  
