@@ -62,89 +62,10 @@ isCoreConcept = do
 isDescription = do
   isElem >>> hasName "rdf:Description"
 
---------------------------
--- scheme stuff
 
-
-
-{-
-parseCategories =
-  deep isDescription >>>
-  proc e -> do
-    isCoreConcept -< e
-    resource <- getAttrValue "rdf:about" -< e
-    label    <- getChildren >>> hasName "skos:prefLabel" >>> getChildren >>> getText -< e
-    returnA -< (resource, label)
--}
-
-
-{-
-storeConcept conn (url,label) =
-  execute conn "insert into concept(url,label) values (?, ?)" [url, label]
--}
-
-
-
-parseNarrower =
-  deep isDescription >>>
-  proc e -> do
-    isCoreConcept -< e
-    resource <- getAttrValue "rdf:about" -< e
-    narrower <- getChildren >>> isElem >>> hasName "skos:narrower" >>> getAttrValue "rdf:resource" -< e
-    returnA -< (resource, narrower)
-
-
-
-storeNarrower conn s = do
---    let storeConcept' = storeConcept conn
-
-    -- let storeNarrowerRel' = storeNarrowerRel conn
-
-    let store conn (url,narrower_url) = execute conn "insert into narrower(concept_id, narrower_id) values ((select id from concept where concept.url = ?), (select id from concept where concept.url = ?))" [url, narrower_url]
-    let store' = store conn
-
-
-{-
-    -- categories
-
-    putStrLn $ "doing categories"
-    categories <- runX (parseXML s >>> parseCategories)
-    let lst = Prelude.map show categories
-    mapM putStrLn lst
-    putStrLn $ "categories count " ++ (show.length) categories
-
-    -- store categories as concepts to db
-    mapM storeConcept' categories
--}
-    -- narrower
-    putStrLn $ "doing narrower"
-    narrower <- runX (parseXML s >>> parseNarrower)
-    let lst = Prelude.map show narrower
-    mapM putStrLn lst
-    putStrLn $ "narrower count " ++ (show.length) narrower
-
-    -- store narrower relationships
-    mapM store' narrower
-
-    -- narrowerMatchmatch
-{-
-    putStrLn $ "doing narrowMatch"
-    narrowerMatch <- runX (parseXML s >>> parseNarrowMatch)
-    let lst = Prelude.map show narrowerMatch
-    mapM putStrLn lst
-    putStrLn $ "narrowMatch count " ++ (show.length) narrowerMatch
-
-    -- store narrowerMatch match
-    mapM storeNarrowerRel' narrowerMatch
-
--}
-
-
--- this is kind of harder to work with
 
 --------------------------
 -- concept stuff
-
 
 
 parseConcept =
@@ -160,16 +81,44 @@ storeConcepts conn s = do
     -- parse
     putStrLn $ "doing concepts"
     concepts <- runX (parseXML s  >>> parseConcept)
-    -- print
     -- let lst = Prelude.map show concepts
     -- mapM putStrLn lst
-    putStrLn $ "concept count " ++ (show.length) concepts
+    putStrLn $ "  concept count " ++ (show.length) concepts
     -- store to db
     let store (url,label) = execute conn "insert into concept(url,label) values (?, ?)" [url, label]
     mapM store concepts
 
 
-------
+
+--------------------------
+-- narrower stuff
+
+parseNarrower =
+  deep isDescription >>>
+  proc e -> do
+    isCoreConcept -< e
+    resource <- getAttrValue "rdf:about" -< e
+    narrower <- getChildren >>> isElem >>> hasName "skos:narrower" >>> getAttrValue "rdf:resource" -< e
+    returnA -< (resource, narrower)
+
+
+storeNarrower conn s = do
+
+    let store conn (url,narrower_url) = execute conn "insert into narrower(concept_id, narrower_id) values ((select id from concept where concept.url = ?), (select id from concept where concept.url = ?))" [url, narrower_url]
+    let store' = store conn
+    -- narrower
+    putStrLn $ "doing narrower"
+    narrower <- runX (parseXML s >>> parseNarrower)
+    -- let lst = Prelude.map show narrower
+    -- mapM putStrLn lst
+    putStrLn $ "  narrower count " ++ (show.length) narrower
+    -- store
+    mapM store' narrower
+
+
+
+--------------------------
+-- narrow match 
 
 parseNarrowMatch =
   deep isDescription >>>
@@ -190,8 +139,8 @@ storeNarrowMatchs conn s = do
     narrowMatch <- runX (parseXML s >>> parseNarrowMatch)
     -- let lst = Prelude.map show narrowMatch
     -- mapM putStrLn lst
-    putStrLn $ "narrowMatch count " ++ (show.length) narrowMatch
-
+    putStrLn $ "  narrowMatch count " ++ (show.length) narrowMatch
+    -- store
     mapM store' narrowMatch
 
 ------
@@ -255,6 +204,6 @@ main = do
 
 
   close conn
-  putStrLn "  finished"
+  putStrLn "finished"
 
 
