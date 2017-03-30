@@ -2,8 +2,8 @@
 
 select 
   concept.label,
-  narrower_concept.label,
-  narrow_match_concept.label
+  narrower_concept.label as narrower_label,
+  narrow_match_concept.label as narrow_match_label
 
   from concept 
   left join narrower on     concept.id = narrower.narrower_id 

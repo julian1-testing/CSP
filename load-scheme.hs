@@ -214,12 +214,29 @@ main = do
   -- TODO the parsing should be done once only...
 
 
-  s <- readFile "./vocab/aodn_aodn-platform-vocabulary.rdf"              -- 396 prefLabels, with narrower, no narrowMatch 
+
+
+  s <- readFile "./vocab/aodn_aodn-discovery-parameter-vocabulary.rdf"   -- 174 prefLabels, no narrower, 1 narrowMatch - prefLabels are detail
   storeNarrower conn s
 
-  s <- readFile "./vocab/aodn_aodn-platform-category-vocabulary.rdf"     -- 9 preflabels,  no narrower, has narrowMatch
+  s <- readFile "./vocab/aodn_aodn-parameter-category-vocabulary.rdf"   -- 32 prefLabels, with 29 narrower, has narrowMatch   - prefLabels are high level
   storeConcepts conn s
 
+
+
+
+-- 1. parse all the pref labels out from both files.
+-- then fill in the narrower an narrowMatch
+-- why not just parse everything to get the pref labels....  first.... and store them...
+
+
+{-
+  s <- readFile "./vocab/aodn_aodn-platform-vocabulary.rdf"              -- 396 prefLabels, with narrower, no narrowMatch - prefLabels are detail 
+  storeNarrower conn s
+
+  s <- readFile "./vocab/aodn_aodn-platform-category-vocabulary.rdf"     -- 9 preflabels,  no narrower, has narrowMatch    - prefLabels are high level
+  storeConcepts conn s
+-}
 
   -- this looks reasonably correct
   -- psql -h postgres.localnet -U harvest -c 'select * from concept left join scheme on concept.id = scheme.narrower_id '
