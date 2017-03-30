@@ -17,8 +17,32 @@ import qualified Data.ByteString.Lazy.Char8 as BLC
 
 import Database.PostgreSQL.Simple
 
+{-
+http://vocabs.ands.org.au/repository/api/lda/aodn/aodn-discovery-parameter-vocabulary/version-1-2/resource.xml?uri=http://vocab.aodn.org.au/def/discovery_parameter/894
+
+http://vocab.aodn.org.au/def/discovery_parameter/894
+
+Concentration of inferred chlorophyll from relative fluorescence per unit volume of the water body
+
+https://s3-ap-southeast-2.amazonaws.com/content.aodn.org.au/Vocabularies/parameter-category/aodn_aodn-parameter-category-vocabulary.rdf
 
 
+<rdf:Description rdf:about="http://vocab.aodn.org.au/def/discovery_parameter/894">
+	<rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<dcterms:contributor rdf:datatype="http://www.w3.org/2001/XMLSchema#string">eMII_Mancini.Sebastien</dcterms:contributor>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2015-11-18T00:00:00Z</dcterms:created>
+	<dcterms:creator rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Sebastien Mancini</dcterms:creator>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2015-11-19T02:18:19Z</dcterms:modified>
+	<dc:publisher rdf:datatype="http://www.w3.org/2001/XMLSchema#string">eMarine Information Infrastructure (eMII)</dc:publisher>
+	<dc:source rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Australian Ocean Data Network discovery parameter register</dc:source>
+	<skos:broadMatch rdf:resource="http://vocab.aodn.org.au/def/parameter_classes/category/19"/>
+	<skos:inScheme rdf:resource="http://vocab.aodn.org.au/def/discovery_parameter/1"/>
+	<skos:prefLabel xml:lang="en">Concentration of inferred chlorophyll from relative fluorescence per unit volume of the water body</skos:prefLabel>
+	<skos:topConceptOf rdf:resource="http://vocab.aodn.org.au/def/discovery_parameter/1"/>
+</rdf:Description>
+
+-}
 
 parseXML s = readString [ withValidate no
     , withRemoveWS yes  -- throw away formating WS
@@ -62,7 +86,7 @@ main = do
 
   execute conn "truncate catalog, resource;"  ()
 
-  s <- readFile "./vocab/aodn_aodn-parameter-category-vocabulary.rdf" 
+  s <- readFile "./vocab/aodn_aodn-discovery-parameter-vocabulary.rdf" 
 
   -- putStrLn s 
   loadVocab conn s
