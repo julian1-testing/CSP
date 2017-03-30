@@ -17,6 +17,6 @@ rm output -rf
 ghc -outputdir output harvest.hs || exit
 
 rm output -rf
-ghc -outputdir output load-vocab.hs || exit
+ghc -outputdir output load-concepts.hs || exit
 
 

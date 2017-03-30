@@ -36,7 +36,7 @@ alter table resource owner to harvest;
 -- insert into catalog(url) values ('http://catalogue');
 -- insert into catalog(url) values ('http://catalogue2');
 
-create table term (
+create table concept (
 
   id serial   primary key not null,
 
@@ -45,6 +45,6 @@ create table term (
   label       text not null
 );
 
-alter table term owner to harvest;
+alter table concept owner to harvest;
 
 

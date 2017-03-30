@@ -26,22 +26,27 @@ Concentration of inferred chlorophyll from relative fluorescence per unit volume
 
 https://s3-ap-southeast-2.amazonaws.com/content.aodn.org.au/Vocabularies/parameter-category/aodn_aodn-parameter-category-vocabulary.rdf
 
-
-<rdf:Description rdf:about="http://vocab.aodn.org.au/def/discovery_parameter/entity/733">
+<rdf:Description rdf:about="http://vocab.aodn.org.au/def/parameter_classes/category/53">
 	<rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
 	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
-	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2015-05-11T00:00:00Z</dcterms:created>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2014-06-01T00:00:00Z</dcterms:created>
 	<dcterms:creator xml:lang="en">Sebastien Mancini</dcterms:creator>
-	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2015-05-28T02:09:29Z</dcterms:modified>
 	<dc:publisher rdf:datatype="http://www.w3.org/2001/XMLSchema#string">eMarine Information Infrastructure (eMII)</dc:publisher>
-	<dc:source rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Australian Ocean Data Network discovery parameter register</dc:source>
-	<skos:broadMatch rdf:resource="http://vocab.aodn.org.au/def/parameter_classes/category/48"/>
-	<skos:definition xml:lang="en"></skos:definition>
-	<skos:inScheme rdf:resource="http://vocab.aodn.org.au/def/discovery_parameter/1"/>
-	<skos:prefLabel xml:lang="en">Downwelling vector irradiance as energy (ultra-violet wavelengths) in the atmosphere</skos:prefLabel>
-	<skos:topConceptOf rdf:resource="http://vocab.aodn.org.au/def/discovery_parameter/1"/>
-	<skos:hiddenLabel xml:lang="en">RAD_UV</skos:hiddenLabel>
+	<dc:source rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Australian Ocean Data Network parameter category register</dc:source>
+	<skos:definition xml:lang="en">This category contains vocabulary terms describing physical atmosphere parameters</skos:definition>
+	<skos:inScheme rdf:resource="http://vocab.aodn.org.au/def/parameter_classes/1"/>
+	<skos:prefLabel xml:lang="en">Physical-Atmosphere</skos:prefLabel>
+	<skos:narrower rdf:resource="http://vocab.aodn.org.au/def/parameter_classes/category/10"/>
+	<skos:narrower rdf:resource="http://vocab.aodn.org.au/def/parameter_classes/category/22"/>
+	<skos:narrower rdf:resource="http://vocab.aodn.org.au/def/parameter_classes/category/30"/>
+	<skos:narrower rdf:resource="http://vocab.aodn.org.au/def/parameter_classes/category/48"/>
+	<skos:narrower rdf:resource="http://vocab.aodn.org.au/def/parameter_classes/category/6"/>
+	<skos:narrower rdf:resource="http://vocab.aodn.org.au/def/parameter_classes/category/7"/>
+	<skos:narrower rdf:resource="http://vocab.aodn.org.au/def/parameter_classes/category/8"/>
+	<skos:narrower rdf:resource="http://vocab.aodn.org.au/def/parameter_classes/category/9"/>
+	<skos:topConceptOf rdf:resource="http://vocab.aodn.org.au/def/parameter_classes/1"/>
 </rdf:Description>
+
 
 
 -}
