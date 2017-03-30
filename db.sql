@@ -48,14 +48,25 @@ create table concept (
 alter table concept owner to harvest;
 
 
-create table scheme (
+create table narrower (
 
   id serial   primary key not null,
   concept_id  integer references concept(id), 
   narrower_id integer references concept(id)
 );
 
-alter table scheme owner to harvest;
+alter table narrower owner to harvest;
+
+
+
+create table narrow_match (
+
+  id serial   primary key not null,
+  concept_id  integer references concept(id), 
+  narrower_id integer references concept(id)
+);
+
+alter table narrow_match owner to harvest;
 
 
 

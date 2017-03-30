@@ -52,21 +52,21 @@ parseXML s = readString [ withValidate no
     ] s
 
 
-isCoreConcept = do 
-  getChildren 
-  >>> hasName "rdf:type" 
-  >>> getAttrValue "rdf:resource" 
-  >>> isA ((==) "http://www.w3.org/2004/02/skos/core#Concept") 
+isCoreConcept = do
+  getChildren
+  >>> hasName "rdf:type"
+  >>> getAttrValue "rdf:resource"
+  >>> isA ((==) "http://www.w3.org/2004/02/skos/core#Concept")
 
 
-isDescription = do 
+isDescription = do
   isElem >>> hasName "rdf:Description"
 
 --------------------------
 -- scheme stuff
 
-parseNarrower = 
-  deep isDescription >>> 
+parseNarrower =
+  deep isDescription >>>
   proc e -> do
     isCoreConcept -< e
     resource <- getAttrValue "rdf:about" -< e
@@ -74,8 +74,8 @@ parseNarrower =
     returnA -< (resource, narrower)
 
 
-parseNarrowMatch = 
-  deep isDescription >>> 
+parseNarrowMatch =
+  deep isDescription >>>
   proc e -> do
     isCoreConcept -< e
     resource <- getAttrValue "rdf:about" -< e
@@ -83,8 +83,8 @@ parseNarrowMatch =
     returnA -< (resource, narrowMatch)
 
 
-parseCategories = 
-  deep isDescription >>> 
+parseCategories =
+  deep isDescription >>>
   proc e -> do
     isCoreConcept -< e
     resource <- getAttrValue "rdf:about" -< e
@@ -92,64 +92,80 @@ parseCategories =
     returnA -< (resource, label)
 
 
-storeConcept conn (url,label) = 
+storeConcept conn (url,label) =
   execute conn "insert into concept(url,label) values (?, ?)" [url, label]
 
 
-storeSchemeRel conn (url,narrower_url) = 
-  execute conn "insert into scheme(concept_id, narrower_id) values ((select id from concept where concept.url = ?), (select id from concept where concept.url = ?))" [url, narrower_url]
+storeNarrowerRel conn (url,narrower_url) =
+  execute conn "insert into narrower(concept_id, narrower_id) values ((select id from concept where concept.url = ?), (select id from concept where concept.url = ?))" [url, narrower_url]
 
 
-storeScheme conn s = do
+storeNarrower conn s = do
     let storeConcept' = storeConcept conn
-    let storeSchemeRel' = storeSchemeRel conn
+
+    let storeNarrowerRel' = storeNarrowerRel conn
 
     -- categories
+
+    putStrLn $ "doing categories"
     categories <- runX (parseXML s >>> parseCategories)
     let lst = Prelude.map show categories
     mapM putStrLn lst
-    putStrLn $ "count " ++ (show.length) categories
+    putStrLn $ "categories count " ++ (show.length) categories
 
     -- store categories as concepts to db
     mapM storeConcept' categories
 
     -- narrower
+    putStrLn $ "doing narrower"
     narrower <- runX (parseXML s >>> parseNarrower)
     let lst = Prelude.map show narrower
     mapM putStrLn lst
-    putStrLn $ "count " ++ (show.length) narrower
+    putStrLn $ "narrower count " ++ (show.length) narrower
 
     -- store narrower relationships
-    mapM storeSchemeRel' narrower
+    mapM storeNarrowerRel' narrower
 
     -- narrowerMatchmatch
+{-
+    putStrLn $ "doing narrowMatch"
     narrowerMatch <- runX (parseXML s >>> parseNarrowMatch)
     let lst = Prelude.map show narrowerMatch
     mapM putStrLn lst
-    putStrLn $ "count " ++ (show.length) narrowerMatch
+    putStrLn $ "narrowMatch count " ++ (show.length) narrowerMatch
 
     -- store narrowerMatch match
-    mapM storeSchemeRel' narrowerMatch
+    mapM storeNarrowerRel' narrowerMatch
+
+-}
 
 
-
+-- this is kind of harder to work with
 
 --------------------------
 -- concept stuff
 
-parseConcept = 
-  deep (isElem >>> hasName "rdf:Description") >>> 
+storeNarrowMatch conn (url,narrower_url) =
+  execute conn "insert into narrow_match(concept_id, narrower_id) values ((select id from concept where concept.url = ?), (select id from concept where concept.url = ?))" [url, narrower_url]
+
+
+
+parseConcept =
+  deep (isElem >>> hasName "rdf:Description") >>>
   proc e -> do
     isCoreConcept -< e
+    -- has prefLabel
     about <- getAttrValue "rdf:about" -< e
     prefLabel <- getChildren >>> hasName "skos:prefLabel" >>> getChildren >>> getText -< e
     returnA -< (about, prefLabel)
 
 
 storeConcepts conn s = do
-    -- parse 
+    -- parse
+
+    putStrLn $ "doing concepts"
     concepts <- runX (parseXML s  >>> parseConcept)
-    -- print 
+    -- print
     let lst = Prelude.map show concepts
     mapM putStrLn lst
     putStrLn $ "count " ++ (show.length) concepts
@@ -158,35 +174,58 @@ storeConcepts conn s = do
     mapM storeToDB concepts
 
 
+    let storeNarrowMatch' = storeNarrowMatch conn
+
+    putStrLn $ "doing narrowMatch"
+    narrowMatch <- runX (parseXML s >>> parseNarrowMatch)
+    let lst = Prelude.map show narrowMatch
+    mapM putStrLn lst
+    putStrLn $ "narrowMatch count " ++ (show.length) narrowMatch
+
+    -- store narrowerMatch match
+    mapM storeNarrowMatch' narrowMatch
+
+
+
 --------------------------
 
+-- think we want to take anything with a prefLabel
 
- 
-
+-- We need to separate out the parsing...
 
 main :: IO ()
 main = do
   conn <- connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
 
   -- should we be using plural?
-  execute conn "truncate concept, scheme;" ()
-
+  execute conn "truncate concept, narrower, narrow_match ;" ()
+{-
   -- parameter
-  s <- readFile "./vocab/aodn_aodn-discovery-parameter-vocabulary.rdf" 
+  s <- readFile "./vocab/aodn_aodn-discovery-parameter-vocabulary.rdf"
   storeConcepts conn s
 
-  s <- readFile "./vocab/aodn_aodn-parameter-category-vocabulary.rdf" 
-  storeScheme conn s
-
+  s <- readFile "./vocab/aodn_aodn-parameter-category-vocabulary.rdf"
+  storeNarrower conn s
+-}
   -- platform
-  s <- readFile "./vocab/aodn_aodn-platform-vocabulary.rdf" 
+--  s <- readFile "./vocab/aodn_aodn-platform-vocabulary.rdf"
+--  storeConcepts conn s
+
+  -- TODO the parsing should be done once only...
+
+
+  s <- readFile "./vocab/aodn_aodn-platform-vocabulary.rdf"              -- 396 prefLabels, with narrower, no narrowMatch 
+  storeNarrower conn s
+
+  s <- readFile "./vocab/aodn_aodn-platform-category-vocabulary.rdf"     -- 9 preflabels,  no narrower, has narrowMatch
   storeConcepts conn s
 
-  s <- readFile "./vocab/aodn_aodn-platform-category-vocabulary.rdf" 
-  storeScheme conn s
+
+  -- this looks reasonably correct
+  -- psql -h postgres.localnet -U harvest -c 'select * from concept left join scheme on concept.id = scheme.narrower_id '
 
 
   close conn
   putStrLn "  finished"
 
-  
+

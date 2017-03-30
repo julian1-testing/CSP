@@ -1,12 +1,12 @@
 
 
-select 
-  concept.label,
-  narrower.label
+select * from concept 
+  left join narrower on     concept.id = narrower.narrower_id 
+  left join narrow_match on concept.id = narrow_match.narrower_id 
 
-from scheme 
-left join concept on concept.id = scheme.concept_id
-left join concept as narrower on narrower.id = scheme.narrower_id
+  order by url
 
 ;
+
+
 
