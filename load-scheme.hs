@@ -62,6 +62,8 @@ isCoreConcept = do
 isDescription = do 
   isElem >>> hasName "rdf:Description"
 
+--------------------------
+-- scheme stuff
 
 parseNarrower = 
   deep isDescription >>> 
@@ -90,23 +92,45 @@ parseCategories =
     returnA -< (resource, label)
 
 
-
 storeConcept conn (url,label) = 
   execute conn "insert into concept(url,label) values (?, ?)" [url, label]
 
---   concept_id  integer references concept(id), 
---   narrower_id integer references concept(id)
--- )
 
-storeScheme conn (url,narrower_url) = 
+storeSchemeRel conn (url,narrower_url) = 
   execute conn "insert into scheme(concept_id, narrower_id) values ((select id from concept where concept.url = ?), (select id from concept where concept.url = ?))" [url, narrower_url]
 
+--------------------------
+-- concept stuff
+
+parseConcept = 
+  deep (isElem >>> hasName "rdf:Description") >>> 
+  proc e -> do
+    isCoreConcept -< e
+    about <- getAttrValue "rdf:about" -< e
+    prefLabel <- getChildren >>> hasName "skos:prefLabel" >>> getChildren >>> getText -< e
+    returnA -< (about, prefLabel)
+
+
+storeConcepts conn s = do
+    -- parse 
+    dataParameters <- runX (parseXML s  >>> parseConcept)
+    -- print 
+    let lst = Prelude.map show dataParameters
+    mapM putStrLn lst
+    putStrLn $ "count " ++ (show. length) dataParameters
+    -- store to db
+    let storeToDB (url,label) = execute conn "insert into concept(url,label) values (?, ?)" [url, label]
+    mapM storeToDB dataParameters
+
+
+--------------------------
 
 
 
-loadConcepts conn s = do
+
+storeScheme conn s = do
     let storeConcept' = storeConcept conn
-    let storeScheme' = storeScheme conn
+    let storeSchemeRel' = storeSchemeRel conn
 
     -- categories
     categories <- runX (parseXML s >>> parseCategories)
@@ -124,7 +148,7 @@ loadConcepts conn s = do
     putStrLn $ "count " ++ (show. length) narrower
 
     -- store narrower relationships
-    mapM storeScheme' narrower
+    mapM storeSchemeRel' narrower
 
     -- narrowermatch
     narrower <- runX (parseXML s >>> parseNarrowMatch)
@@ -136,6 +160,7 @@ loadConcepts conn s = do
 
 
 
+ 
 
 
 main :: IO ()
@@ -145,10 +170,13 @@ main = do
   -- should we be using plural?
   execute conn "truncate concept, scheme;" ()
 
-  s <- readFile "./vocab/aodn_aodn-parameter-category-vocabulary.rdf" 
+  s <- readFile "./vocab/aodn_aodn-discovery-parameter-vocabulary.rdf" 
+  storeConcepts conn s
 
-  -- putStrLn s 
-  loadConcepts conn s
+
+  s <- readFile "./vocab/aodn_aodn-parameter-category-vocabulary.rdf" 
+  storeScheme conn s
+
   close conn
   putStrLn "  finished"
 
