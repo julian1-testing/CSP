@@ -53,55 +53,75 @@ parseXML s = readString [ withValidate no
     ] s
 
 
+isCoreConcept = do 
+  getChildren 
+  >>> hasName "rdf:type" 
+  >>> getAttrValue "rdf:resource" 
+  >>> isA ((==) "http://www.w3.org/2004/02/skos/core#Concept") 
 
 
+isDescription = do 
+  isElem >>> hasName "rdf:Description"
 
-parseNarrower =
-  deep (isElem >>> hasName "skos:narrower") >>> 
+
+parseNarrower = 
+  deep isDescription >>> 
   proc e -> do
-    narrower <- getChildren -< e
-    returnA -< (narrower)
-
-
--- parseNarrower2 =
---  -- deep (isElem >>> hasName "skos:narrower") >>> 
---  deep (isElem >>> hasName "skos:narrower" >>> getAttrValue "rdf:resource"  )
--- so we have a problem that we have 
----- or maybe we don't need it????
----- and we can just write clever sql...
-
-
-
-parseConcept = 
-  deep (isElem >>> hasName "rdf:Description") >>> 
-  proc e -> do
-    -- only core#Concept
-    getChildren 
-        >>> hasName "rdf:type" 
-        >>> getAttrValue "rdf:resource" 
-        >>> isA ((==) "http://www.w3.org/2004/02/skos/core#Concept") -< e
-    
-    -- this stuff gets short-circuited if doesn't exist 
+    isCoreConcept -< e
     resource <- getAttrValue "rdf:about" -< e
-    prefLabel <- getChildren >>> hasName "skos:prefLabel" >>> getChildren >>> getText -< e
-    narrowerResource <- getChildren >>> isElem >>> hasName "skos:narrower" >>> getAttrValue "rdf:resource"  -< e
+    narrower <- getChildren >>> isElem >>> hasName "skos:narrower" >>> getAttrValue "rdf:resource" -< e
+    returnA -< (resource, narrower)
 
-    returnA -< (resource, narrowerResource)
+
+parseNarrowMatch = 
+  deep isDescription >>> 
+  proc e -> do
+    isCoreConcept -< e
+    resource <- getAttrValue "rdf:about" -< e
+    narrowMatch <- getChildren >>> isElem >>> hasName "skos:narrowMatch" >>> getAttrValue "rdf:resource" -< e
+    returnA -< (resource, narrowMatch)
+
+
+
+
+parseCategories = 
+  deep isDescription >>> 
+  proc e -> do
+    isCoreConcept -< e
+    resource <- getAttrValue "rdf:about" -< e
+    label    <- getChildren >>> hasName "skos:prefLabel" >>> getChildren >>> getText -< e
+    returnA -< (resource, label)
+
+
+
 
 
 loadConcepts conn s = do
-    -- parse 
-    dataParameters <- runX (parseXML s >>> parseConcept)
-
-    -- print 
-    let lst = Prelude.map show dataParameters
+    -- categories
+    categories <- runX (parseXML s >>> parseCategories)
+    let lst = Prelude.map show categories
     mapM putStrLn lst
+    putStrLn $ "count " ++ (show. length) categories
 
-    putStrLn $ "count " ++ (show. length) dataParameters
+
+    -- narrower
+    narrower <- runX (parseXML s >>> parseNarrower)
+    let lst = Prelude.map show narrower
+    mapM putStrLn lst
+    putStrLn $ "count " ++ (show. length) narrower
+
+    -- narrowermatch
+    narrower <- runX (parseXML s >>> parseNarrowMatch)
+    let lst = Prelude.map show narrower
+    mapM putStrLn lst
+    putStrLn $ "count " ++ (show. length) narrower
+
+
+
 
     -- store to db
-    let storeToDB (url,label) = execute conn "insert into concept(url,label) values (?, ?)" [url, label]
-    mapM storeToDB dataParameters
+    -- let storeToDB (url,label) = execute conn "insert into concept(url,label) values (?, ?)" [url, label]
+    -- mapM storeToDB dataParameters
 
 
 

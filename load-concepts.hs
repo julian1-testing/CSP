@@ -49,15 +49,22 @@ parseXML s = readString [ withValidate no
 
 
 
+
+isCoreConcept = do 
+  getChildren 
+  >>> hasName "rdf:type" 
+  >>> getAttrValue "rdf:resource" 
+  >>> isA ((==) "http://www.w3.org/2004/02/skos/core#Concept") 
+
+
+
+
 parseConcept = 
   deep (isElem >>> hasName "rdf:Description") >>> 
   proc e -> do
     -- only core#Concept
-    getChildren 
-        >>> hasName "rdf:type" 
-        >>> getAttrValue "rdf:resource" 
-        >>> isA ((==) "http://www.w3.org/2004/02/skos/core#Concept") -< e
-    
+    isCoreConcept -< e
+       
     -- this stuff gets short-circuited if doesn't exist 
     about <- getAttrValue "rdf:about" -< e
     prefLabel <- getChildren >>> hasName "skos:prefLabel" >>> getChildren >>> getText -< e
