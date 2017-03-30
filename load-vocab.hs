@@ -52,18 +52,29 @@ parseXML s = readString [ withValidate no
 
 
 -- atTag tag = deep (isElem >>> hasName tag)
-
-
 -- need to load terms, then load relationships.
 -- <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+-- <+> is or
+-- >>> is and - and  shortCircuit 
+-- >>> ( getChildren >>> hasName "rdf:type")  >>>
+
+
+
+
+significant :: String -> Bool
+significant s = False
 
 parseDescription = 
-  deep (isElem >>> hasName "rdf:Description" ) >>>
-
+  deep (isElem >>> hasName "rdf:Description") >>> 
   -- atTag "rdf:Description" >>>
-
   proc l -> do
 
+    -- GOOD this limits to having a type
+    -- 	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	
+    (getChildren >>> hasName "rdf:type" >>> getAttrValue "rdf:resource1" >>> isA significant    )  -< l
+    
+    -- if we haven't got these it will just short-circuit,
     about <- getAttrValue "rdf:about" -< l
     prefLabel <- getChildren >>> hasName "skos:prefLabel" >>> getChildren >>> getText -< l
 
