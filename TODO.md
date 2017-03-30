@@ -4,7 +4,8 @@
 - wms - wfs association. 
 
 
-
+- get the vocab - represented and then try to spit it out again...
+  - maybe if get the list in sql, then do the recusion in haskell?
 
 
 Catalog services for Web  (CSW).

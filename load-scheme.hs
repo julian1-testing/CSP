@@ -173,7 +173,7 @@ main = do
 
 
 
-
+{-
   param         <- readFile "./vocab/aodn_aodn-discovery-parameter-vocabulary.rdf"   -- 174 prefLabels, no narrower, 1 narrowMatch - prefLabels are detail
   paramCategory <- readFile "./vocab/aodn_aodn-parameter-category-vocabulary.rdf"   -- 32 prefLabels, with 29 narrower, has narrowMatch   - prefLabels are high level
 
@@ -185,6 +185,22 @@ main = do
 
   storeNarrower conn param
   storeNarrower conn paramCategory
+-}
+
+  platform <- readFile "./vocab/aodn_aodn-platform-vocabulary.rdf"              -- 396 prefLabels, with narrower, no narrowMatch - prefLabels are detail 
+  platformCategory <- readFile "./vocab/aodn_aodn-platform-category-vocabulary.rdf"     -- 9 preflabels,  no narrower, has 1narrowMatch    - prefLabels are high level
+
+  storeConcepts conn platform
+  storeConcepts conn platformCategory
+
+  storeNarrowMatchs conn platform          -- 1 entry but can't see it
+  storeNarrowMatchs conn platformCategory -- 174 
+
+  storeNarrower conn platform
+  storeNarrower conn platformCategory
+
+
+ 
 
 -- 1. parse all the pref labels out from both files.
 -- then fill in the narrower an narrowMatch
