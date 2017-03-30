@@ -65,6 +65,26 @@ isDescription = do
 --------------------------
 -- scheme stuff
 
+
+
+{-
+parseCategories =
+  deep isDescription >>>
+  proc e -> do
+    isCoreConcept -< e
+    resource <- getAttrValue "rdf:about" -< e
+    label    <- getChildren >>> hasName "skos:prefLabel" >>> getChildren >>> getText -< e
+    returnA -< (resource, label)
+-}
+
+
+{-
+storeConcept conn (url,label) =
+  execute conn "insert into concept(url,label) values (?, ?)" [url, label]
+-}
+
+
+
 parseNarrower =
   deep isDescription >>>
   proc e -> do
@@ -74,37 +94,17 @@ parseNarrower =
     returnA -< (resource, narrower)
 
 
-parseNarrowMatch =
-  deep isDescription >>>
-  proc e -> do
-    isCoreConcept -< e
-    resource <- getAttrValue "rdf:about" -< e
-    narrowMatch <- getChildren >>> isElem >>> hasName "skos:narrowMatch" >>> getAttrValue "rdf:resource" -< e
-    returnA -< (resource, narrowMatch)
-
-
-parseCategories =
-  deep isDescription >>>
-  proc e -> do
-    isCoreConcept -< e
-    resource <- getAttrValue "rdf:about" -< e
-    label    <- getChildren >>> hasName "skos:prefLabel" >>> getChildren >>> getText -< e
-    returnA -< (resource, label)
-
-
-storeConcept conn (url,label) =
-  execute conn "insert into concept(url,label) values (?, ?)" [url, label]
-
-
-storeNarrowerRel conn (url,narrower_url) =
-  execute conn "insert into narrower(concept_id, narrower_id) values ((select id from concept where concept.url = ?), (select id from concept where concept.url = ?))" [url, narrower_url]
-
 
 storeNarrower conn s = do
-    let storeConcept' = storeConcept conn
+--    let storeConcept' = storeConcept conn
 
-    let storeNarrowerRel' = storeNarrowerRel conn
+    -- let storeNarrowerRel' = storeNarrowerRel conn
 
+    let store conn (url,narrower_url) = execute conn "insert into narrower(concept_id, narrower_id) values ((select id from concept where concept.url = ?), (select id from concept where concept.url = ?))" [url, narrower_url]
+    let store' = store conn
+
+
+{-
     -- categories
 
     putStrLn $ "doing categories"
@@ -115,7 +115,7 @@ storeNarrower conn s = do
 
     -- store categories as concepts to db
     mapM storeConcept' categories
-
+-}
     -- narrower
     putStrLn $ "doing narrower"
     narrower <- runX (parseXML s >>> parseNarrower)
@@ -124,7 +124,7 @@ storeNarrower conn s = do
     putStrLn $ "narrower count " ++ (show.length) narrower
 
     -- store narrower relationships
-    mapM storeNarrowerRel' narrower
+    mapM store' narrower
 
     -- narrowerMatchmatch
 {-
@@ -145,16 +145,12 @@ storeNarrower conn s = do
 --------------------------
 -- concept stuff
 
-storeNarrowMatch conn (url,narrower_url) =
-  execute conn "insert into narrow_match(concept_id, narrower_id) values ((select id from concept where concept.url = ?), (select id from concept where concept.url = ?))" [url, narrower_url]
-
 
 
 parseConcept =
   deep (isElem >>> hasName "rdf:Description") >>>
   proc e -> do
     isCoreConcept -< e
-    -- has prefLabel
     about <- getAttrValue "rdf:about" -< e
     prefLabel <- getChildren >>> hasName "skos:prefLabel" >>> getChildren >>> getText -< e
     returnA -< (about, prefLabel)
@@ -162,30 +158,43 @@ parseConcept =
 
 storeConcepts conn s = do
     -- parse
-
     putStrLn $ "doing concepts"
     concepts <- runX (parseXML s  >>> parseConcept)
     -- print
-    let lst = Prelude.map show concepts
-    mapM putStrLn lst
-    putStrLn $ "count " ++ (show.length) concepts
+    -- let lst = Prelude.map show concepts
+    -- mapM putStrLn lst
+    putStrLn $ "concept count " ++ (show.length) concepts
     -- store to db
-    let storeToDB (url,label) = execute conn "insert into concept(url,label) values (?, ?)" [url, label]
-    mapM storeToDB concepts
+    let store (url,label) = execute conn "insert into concept(url,label) values (?, ?)" [url, label]
+    mapM store concepts
 
 
-    let storeNarrowMatch' = storeNarrowMatch conn
+------
+
+parseNarrowMatch =
+  deep isDescription >>>
+  proc e -> do
+    isCoreConcept -< e
+    resource <- getAttrValue "rdf:about" -< e
+    narrowMatch <- getChildren >>> isElem >>> hasName "skos:narrowMatch" >>> getAttrValue "rdf:resource" -< e
+    returnA -< (resource, narrowMatch)
+
+
+storeNarrowMatchs conn s = do
+
+    let store conn (url,narrower_url) = execute conn "insert into narrow_match(concept_id, narrower_id) values ((select id from concept where concept.url = ?), (select id from concept where concept.url = ?))" [url, narrower_url]
+
+    let store' = store conn
 
     putStrLn $ "doing narrowMatch"
     narrowMatch <- runX (parseXML s >>> parseNarrowMatch)
-    let lst = Prelude.map show narrowMatch
-    mapM putStrLn lst
+    -- let lst = Prelude.map show narrowMatch
+    -- mapM putStrLn lst
     putStrLn $ "narrowMatch count " ++ (show.length) narrowMatch
 
-    -- store narrowerMatch match
-    mapM storeNarrowMatch' narrowMatch
+    mapM store' narrowMatch
 
-
+------
 
 --------------------------
 
@@ -216,14 +225,17 @@ main = do
 
 
 
-  s <- readFile "./vocab/aodn_aodn-discovery-parameter-vocabulary.rdf"   -- 174 prefLabels, no narrower, 1 narrowMatch - prefLabels are detail
-  storeNarrower conn s
+  param         <- readFile "./vocab/aodn_aodn-discovery-parameter-vocabulary.rdf"   -- 174 prefLabels, no narrower, 1 narrowMatch - prefLabels are detail
+  paramCategory <- readFile "./vocab/aodn_aodn-parameter-category-vocabulary.rdf"   -- 32 prefLabels, with 29 narrower, has narrowMatch   - prefLabels are high level
 
-  s <- readFile "./vocab/aodn_aodn-parameter-category-vocabulary.rdf"   -- 32 prefLabels, with 29 narrower, has narrowMatch   - prefLabels are high level
-  storeConcepts conn s
+  storeConcepts conn param
+  storeConcepts conn paramCategory
 
+  storeNarrowMatchs conn param          -- 1 entry but can't see it
+  storeNarrowMatchs conn paramCategory  -- 174 
 
-
+  storeNarrower conn param
+  storeNarrower conn paramCategory
 
 -- 1. parse all the pref labels out from both files.
 -- then fill in the narrower an narrowMatch
@@ -234,7 +246,7 @@ main = do
   s <- readFile "./vocab/aodn_aodn-platform-vocabulary.rdf"              -- 396 prefLabels, with narrower, no narrowMatch - prefLabels are detail 
   storeNarrower conn s
 
-  s <- readFile "./vocab/aodn_aodn-platform-category-vocabulary.rdf"     -- 9 preflabels,  no narrower, has narrowMatch    - prefLabels are high level
+  s <- readFile "./vocab/aodn_aodn-platform-category-vocabulary.rdf"     -- 9 preflabels,  no narrower, has 1narrowMatch    - prefLabels are high level
   storeConcepts conn s
 -}
 
