@@ -1,7 +1,7 @@
 *.o
 *.hi
 harvest
-load-concepts
+load-scheme
 examples/parse
 examples/psql
 examples/psql2

@@ -12,12 +12,10 @@ ghc -outputdir output examples/transform.hs || exit
 rm output -rf
 ghc -outputdir output examples/parse.hs || exit
 
-
+############
 rm output -rf
 ghc -outputdir output harvest.hs || exit
 
-rm output -rf
-ghc -outputdir output load-concepts.hs || exit
 
 rm output -rf
 ghc -outputdir output load-scheme.hs || exit

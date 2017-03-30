@@ -171,12 +171,23 @@ main = do
   -- should we be using plural?
   execute conn "truncate concept, scheme;" ()
 
+  -- parameter
   s <- readFile "./vocab/aodn_aodn-discovery-parameter-vocabulary.rdf" 
   storeConcepts conn s
 
-
   s <- readFile "./vocab/aodn_aodn-parameter-category-vocabulary.rdf" 
   storeScheme conn s
+
+  -- platform
+  s <- readFile "./vocab/aodn_aodn-platform-vocabulary.rdf" 
+  storeConcepts conn s
+
+  -- 
+  s <- readFile "./vocab/aodn_aodn-platform-category-vocabulary.rdf" 
+  storeScheme conn s
+
+
+-- aodn_aodn-platform-category-vocabulary.rdf  aodn_aodn-platform-vocabulary.rdf
 
   close conn
   putStrLn "  finished"
