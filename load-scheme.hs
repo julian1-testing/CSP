@@ -108,7 +108,7 @@ storeScheme conn s = do
     categories <- runX (parseXML s >>> parseCategories)
     let lst = Prelude.map show categories
     mapM putStrLn lst
-    putStrLn $ "count " ++ (show. length) categories
+    putStrLn $ "count " ++ (show.length) categories
 
     -- store categories as concepts to db
     mapM storeConcept' categories
@@ -117,7 +117,7 @@ storeScheme conn s = do
     narrower <- runX (parseXML s >>> parseNarrower)
     let lst = Prelude.map show narrower
     mapM putStrLn lst
-    putStrLn $ "count " ++ (show. length) narrower
+    putStrLn $ "count " ++ (show.length) narrower
 
     -- store narrower relationships
     mapM storeSchemeRel' narrower
@@ -126,7 +126,7 @@ storeScheme conn s = do
     narrowerMatch <- runX (parseXML s >>> parseNarrowMatch)
     let lst = Prelude.map show narrowerMatch
     mapM putStrLn lst
-    putStrLn $ "count " ++ (show. length) narrowerMatch
+    putStrLn $ "count " ++ (show.length) narrowerMatch
 
     -- store narrowerMatch match
     mapM storeSchemeRel' narrowerMatch
@@ -148,14 +148,14 @@ parseConcept =
 
 storeConcepts conn s = do
     -- parse 
-    dataParameters <- runX (parseXML s  >>> parseConcept)
+    concepts <- runX (parseXML s  >>> parseConcept)
     -- print 
-    let lst = Prelude.map show dataParameters
+    let lst = Prelude.map show concepts
     mapM putStrLn lst
-    putStrLn $ "count " ++ (show. length) dataParameters
+    putStrLn $ "count " ++ (show.length) concepts
     -- store to db
     let storeToDB (url,label) = execute conn "insert into concept(url,label) values (?, ?)" [url, label]
-    mapM storeToDB dataParameters
+    mapM storeToDB concepts
 
 
 --------------------------
