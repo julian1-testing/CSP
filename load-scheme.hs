@@ -182,12 +182,9 @@ main = do
   s <- readFile "./vocab/aodn_aodn-platform-vocabulary.rdf" 
   storeConcepts conn s
 
-  -- 
   s <- readFile "./vocab/aodn_aodn-platform-category-vocabulary.rdf" 
   storeScheme conn s
 
-
--- aodn_aodn-platform-category-vocabulary.rdf  aodn_aodn-platform-vocabulary.rdf
 
   close conn
   putStrLn "  finished"
