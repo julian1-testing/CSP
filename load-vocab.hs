@@ -52,8 +52,7 @@ parseXML s = readString [ withValidate no
 atTag tag = deep (isElem >>> hasName tag)
 
 
-
-
+-- need to load terms, then load relationships.
 
 
 parseDescription = atTag "rdf:Description" >>>
@@ -68,10 +67,6 @@ parseDescription = atTag "rdf:Description" >>>
 
 loadVocab conn s = do
  
-    putStrLn "###############"
-    putStrLn "parsing the parameters"
-
-    -- parse data parameters,
     dataParameters <- runX (parseXML s  >>> parseDescription)
 
     putStrLn $  (show. length) dataParameters
@@ -86,7 +81,7 @@ main :: IO ()
 main = do
   conn <- connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
 
-  execute conn "truncate catalog, resource;"  ()
+  -- execute conn "truncate terms, relationships;"  ()
 
   s <- readFile "./vocab/aodn_aodn-discovery-parameter-vocabulary.rdf" 
 
