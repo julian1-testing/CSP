@@ -56,11 +56,13 @@ atTag tag = deep (isElem >>> hasName tag)
 
 
 
-parseDataParameters = atTag "rdf:Description" >>>
+parseDescription = atTag "rdf:Description" >>>
   proc l -> do
     about <- getAttrValue "rdf:about" -< l
 
-    returnA -< about
+    prefLabel <- getChildren >>> hasName "skos:prefLabel" >>> getChildren >>> getText -< l
+
+    returnA -< (about, prefLabel)
 
 
 
@@ -70,7 +72,7 @@ loadVocab conn s = do
     putStrLn "parsing the parameters"
 
     -- parse data parameters,
-    dataParameters <- runX (parseXML s  >>> parseDataParameters)
+    dataParameters <- runX (parseXML s  >>> parseDescription)
 
     putStrLn $  (show. length) dataParameters
  
