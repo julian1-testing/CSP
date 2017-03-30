@@ -66,38 +66,33 @@ parseXML s = readString [ withValidate no
 
 parseDescription = 
   deep (isElem >>> hasName "rdf:Description") >>> 
-  proc l -> do
-    -- GOOD - limit to core#Concept
-    (getChildren 
+  proc e -> do
+    -- only core#Concept
+    getChildren 
         >>> hasName "rdf:type" 
         >>> getAttrValue "rdf:resource" 
-        >>> isA ((==) "http://www.w3.org/2004/02/skos/core#Concept")  -< l)
+        >>> isA ((==) "http://www.w3.org/2004/02/skos/core#Concept") -< e
     
     -- this stuff gets short-circuited if doesn't exist 
-    about <- getAttrValue "rdf:about" -< l
-    prefLabel <- getChildren >>> hasName "skos:prefLabel" >>> getChildren >>> getText -< l
+    about <- getAttrValue "rdf:about" -< e
+    prefLabel <- getChildren >>> hasName "skos:prefLabel" >>> getChildren >>> getText -< e
 
     returnA -< (about, prefLabel)
 
-
-
-
--- loadConcepts
 
 loadConcepts conn s = do
     -- parse 
     dataParameters <- runX (parseXML s  >>> parseDescription)
 
-    -- print count,
-    putStrLn $  (show. length) dataParameters
-
     -- print 
     let lst = Prelude.map show dataParameters
     mapM putStrLn lst
 
+    putStrLn $ "count " ++ (show. length) dataParameters
+
     -- store to db
-    -- let storeToDB (url,label) = execute conn "insert into term(url,label) values (?, ?)" [url, label]
-    -- mapM storeToDB dataParameters
+    let storeToDB (url,label) = execute conn "insert into term(url,label) values (?, ?)" [url, label]
+    mapM storeToDB dataParameters
 
 
 
