@@ -143,13 +143,12 @@ storeNarrowMatchs conn s = do
     -- store
     mapM store' narrowMatch
 
-------
 
 --------------------------
 
--- think we want to take anything with a prefLabel
 
--- We need to separate out the parsing...
+
+-- want to try to pull out the top concept.
 
 main :: IO ()
 main = do
@@ -157,20 +156,6 @@ main = do
 
   -- should we be using plural?
   execute conn "truncate concept, narrower, narrow_match ;" ()
-{-
-  -- parameter
-  s <- readFile "./vocab/aodn_aodn-discovery-parameter-vocabulary.rdf"
-  storeConcepts conn s
-
-  s <- readFile "./vocab/aodn_aodn-parameter-category-vocabulary.rdf"
-  storeNarrower conn s
--}
-  -- platform
---  s <- readFile "./vocab/aodn_aodn-platform-vocabulary.rdf"
---  storeConcepts conn s
-
-  -- TODO the parsing should be done once only...
-
 
 
 {-
@@ -201,23 +186,6 @@ main = do
 
 
  
-
--- 1. parse all the pref labels out from both files.
--- then fill in the narrower an narrowMatch
--- why not just parse everything to get the pref labels....  first.... and store them...
-
-
-{-
-  s <- readFile "./vocab/aodn_aodn-platform-vocabulary.rdf"              -- 396 prefLabels, with narrower, no narrowMatch - prefLabels are detail 
-  storeNarrower conn s
-
-  s <- readFile "./vocab/aodn_aodn-platform-category-vocabulary.rdf"     -- 9 preflabels,  no narrower, has 1narrowMatch    - prefLabels are high level
-  storeConcepts conn s
--}
-
-  -- this looks reasonably correct
-  -- psql -h postgres.localnet -U harvest -c 'select * from concept left join scheme on concept.id = scheme.narrower_id '
-
 
   close conn
   putStrLn "finished"
