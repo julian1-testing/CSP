@@ -251,13 +251,13 @@ processRecord conn s = do
     putStrLn "###############"
     putStrLn "parsing the parameters"
 
-    -- parse data parameters,
+
+processDataParameters conn s = do
+
     dataParameters <- runX (parseXML s  >>> parseDataParameters)
+    putStrLn $ (show.length) dataParameters
 
-    putStrLn $  (show. length) dataParameters
-
-    let lst = Prelude.map (\term -> show term ) dataParameters
-    mapM putStrLn lst
+    mapM (putStrLn.show) dataParameters
 
 
 
@@ -290,7 +290,7 @@ main = do
 
   record <- getCSWGetRecordById "4402cb50-e20a-44ee-93e6-4728259250d2" "my argo"
 
-  processRecord conn record
+  processDataParameters conn record
 
   return ()
 
