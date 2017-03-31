@@ -1,8 +1,8 @@
 
 begin;
-drop view facet;
+drop view vocab;
 
-create view facet as
+create view vocab as
 select 
   concept.id    as concept_id,
   concept.label as concept_label,

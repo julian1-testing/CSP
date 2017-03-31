@@ -213,13 +213,15 @@ processOnlineResources conn s = do
 
 processDataParameter conn uuid dataParameter = do
 
-    xs :: [ (Integer, String) ] <- query conn "select concept_id, concept_label from facet where concept_url = ?" [ (dataParameter :: String) ]
+    -- don't want to use the general view - here, since it may chnage 
+
+    xs :: [ (Integer, String) ] <- query conn "select id, label from concept where url = ?" [ (dataParameter :: String) ]
 
     -- TODO should always be one.
     putStrLn $ (show.length) xs 
 
     case length xs of
-      1 ->  do
+      1 -> do
         putStrLn "got 1"
 
         let (concept_id, concept_label) : _ = xs
@@ -273,6 +275,8 @@ main = do
   -- execute conn "truncate resource;"  ()
   -- note that the sequence will update -
   execute conn "delete from record *" ()
+  execute conn "delete from resource *" ()
+  execute conn "delete from facet *" ()
 
   -- doCSWGetRecords conn
   -- https://github.com/aodn/chef-private/blob/master/data_bags/imos_webapps_geonetwork_harvesters/catalogue_imos.json
