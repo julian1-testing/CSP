@@ -130,16 +130,6 @@ doCSWGetRecords = do
       |]
 
 
--- OLD storing code
--- store to db
--- let storeToDB (identifier,title) = execute conn "insert into catalog(uuid,title) values (?, ?)" [identifier, title]
--- mapM storeToDB identifiers
-
--- further process each record,
--- TODO this should return the list of identifiers - rather than use continuation pasing style
-
--- mapM (\(identifier,title) -> doCSWGetRecordById conn identifier title) identifiers
-
 
 
 
@@ -148,7 +138,8 @@ doCSWGetRecords = do
 
 
 
-parseOnlineResources = atTag "gmd:CI_OnlineResource" >>>
+parseOnlineResources = 
+  atTag "gmd:CI_OnlineResource" >>>
   proc l -> do
     protocol    <- atChildName "gmd:protocol" >>> atChildName "gco:CharacterString" >>> getChildText  -< l
     linkage     <- atChildName "gmd:linkage"  >>> atChildName "gmd:URL" >>> getChildText -< l
@@ -157,7 +148,8 @@ parseOnlineResources = atTag "gmd:CI_OnlineResource" >>>
 
 -- https://catalogue-portal.aodn.org.au/geonetwork/srv/eng/csw?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&id=0a21e0b9-8acb-4dc2-8c82-57c3ea94dd85&outputSchema=http://www.isotc211.org/2005/gmd
 
-parseDataParameters = atTag "mcp:dataParameter" >>>
+parseDataParameters = 
+  atTag "mcp:dataParameter" >>>
   proc l -> do
     term <- atChildName "mcp:DP_DataParameter" >>> atChildName "mcp:parameterName" >>> atChildName "mcp:DP_Term" -< l
     txt  <- atChildName "mcp:term"  >>> atChildName "gco:CharacterString" >>> getChildText -< term
@@ -165,11 +157,7 @@ parseDataParameters = atTag "mcp:dataParameter" >>>
     returnA -< (txt, url)
 
 
--- Or combine the parsing, and the sql actions.
--- we need to have the vocab imported - before we can do the lookups.
--- only need broader and narrower,
 
--- use hask. rdf library, or sql. - shouldn't be too hard to capture this stuff relationally. it's just one table.
 
 -- TODO separate out retrieving the record and decoding the xml document,.
 -- eg. separate out the online resource from the facet search term stuff.
