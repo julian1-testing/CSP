@@ -32,11 +32,14 @@ select
 
 -- should this be by record,  
 
+-- this is badly named - should be facet_index or something
+
 drop view if exists facet_view;
 
 create view facet_view as
 select 
   record.uuid,
+  record.title,
   concept.url,
   concept.label
   from record
