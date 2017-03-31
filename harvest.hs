@@ -102,18 +102,20 @@ parseIdentifiers = atTag "csw:SummaryRecord" >>>
 -- DO NOT COMBINE DATABASSE WITH RETRIEVAL
 
 doCSWGetRecords = do
-    let url = "https://catalogue-portal.aodn.org.au/geonetwork/srv/eng/csw"
+    let url = "https://catalogue-imos.aodn.org.au/geonetwork/srv/eng/csw"
     -- putStrLn query
-    response <- doHTTPPost url query
+    response <- doHTTPPost url queryWMS
     let s = BLC.unpack $ responseBody response
     identifiers <- runX (parseXML s  >>> parseIdentifiers)
     -- print
     mapM (putStrLn.format) identifiers
+
+    putStrLn $ "count: " ++ ((show.length) identifiers)
     return identifiers
     where
       format (identifier,title) = identifier ++ " -> " ++ title
 
-      query = [r|<?xml version="1.0" encoding="UTF-8"?>
+      queryAll = [r|<?xml version="1.0" encoding="UTF-8"?>
         <csw:GetRecords xmlns:csw="http://www.opengis.net/cat/csw/2.0.2" service="CSW" version="2.0.2"
             resultType="results" startPosition="1" maxRecords="5" outputFormat="application/xml"  >
           <csw:Query typeNames="csw:Record">
@@ -129,7 +131,40 @@ doCSWGetRecords = do
         </csw:GetRecords>
       |]
 
+      queryWMS = [r|<?xml version="1.0" encoding="UTF-8"?>
+        <csw:GetRecords xmlns:csw="http://www.opengis.net/cat/csw/2.0.2" service="CSW" version="2.0.2"
+            resultType="results" startPosition="1" maxRecords="200" outputFormat="application/xml"  >
+          <csw:Query typeNames="csw:Record">
 
+            <csw:Constraint version="1.1.0">
+              <Filter xmlns="http://www.opengis.net/ogc" xmlns:gml="http://www.opengis.net/gml">
+                <PropertyIsLike wildCard="%" singleChar="_" escape="\\">
+                  <PropertyName>OnlineResourceType</PropertyName>
+                  <Literal>%WMS%</Literal>
+                </PropertyIsLike>
+              </Filter>
+            </csw:Constraint>
+
+            <csw:Constraint version="1.1.0">
+              <Filter xmlns="http://www.opengis.net/ogc" xmlns:gml="http://www.opengis.net/gml">
+                <PropertyIsLike wildCard="%" singleChar="_" escape="\\">
+                  <PropertyName>PointOfTruth</PropertyName>
+                  <Literal>%catalogue-imos.aodn.org1.au%</Literal>
+                </PropertyIsLike>
+              </Filter>
+            </csw:Constraint>
+
+          </csw:Query>
+        </csw:GetRecords>
+      |]
+
+
+-- the combination of filters isn't working ...
+
+-- GetCapabilities
+-- https://catalogue-portal.aodn.org.au/geonetwork/srv/eng/csw?request=GetCapabilities&service=CSW
+
+-- has PointOfTruth and OnlineResourceType 
 
 
 
