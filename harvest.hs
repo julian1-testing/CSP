@@ -104,7 +104,7 @@ getCSWIdentifiers s = do
     -- mapM (putStrLn.format) identifiers
     mapM (putStrLn.show) identifiers
 
-    putStrLn $ (++) "count: " $ (show.length) identifiers
+    putStrLn $ (++) "cws identifiers count: " $ (show.length) identifiers
     return identifiers
 
 
@@ -118,17 +118,6 @@ doCSWGetRecords = do
     response <- doHTTPPost url queryWMSAndIMOS
     let s = BLC.unpack $ responseBody response
     return s
-{-
-    identifiers <- runX (parseXML s  >>> parseCSWSummaryRecord)
-    -- print
-    -- mapM (putStrLn.format) identifiers
-    mapM (putStrLn.show) identifiers
-
-    putStrLn $ (++) "count: " $ (show.length) identifiers
-    return identifiers
-
-    s
--}
     where
       -- format (identifier,title) = identifier ++ " -> " ++ title
 
@@ -150,7 +139,7 @@ doCSWGetRecords = do
 
       queryWMSAndIMOS = [r|<?xml version="1.0" encoding="UTF-8"?>
         <csw:GetRecords xmlns:csw="http://www.opengis.net/cat/csw/2.0.2" service="CSW" version="2.0.2"
-            resultType="results" startPosition="1" maxRecords="5" outputFormat="application/xml"  >
+            resultType="results" startPosition="1" maxRecords="1000" outputFormat="application/xml"  >
           <csw:Query typeNames="csw:Record">
             <csw:Constraint version="1.1.0">
               <Filter xmlns="http://www.opengis.net/ogc" xmlns:gml="http://www.opengis.net/gml">
@@ -252,12 +241,11 @@ processOnlineResource conn uuid (protocol,linkage, description) = do
       )
     |] (uuid :: String, protocol :: String, linkage, description)
 
-    putStrLn "stored resource"
 
 
 processOnlineResources conn uuid recordText = do
     onlineResources <- runX (parseXML recordText >>> parseOnlineResources)
-    putStrLn $ (show.length) onlineResources
+    putStrLn $ (++) "resource count: " $ (show.length) onlineResources
     mapM (putStrLn.show) onlineResources
     mapM (processOnlineResource conn uuid) onlineResources
 
@@ -285,7 +273,7 @@ processDataParameter conn uuid (term, url) = do
 
 processDataParameters conn uuid recordText = do
     dataParameters <- runX (parseXML recordText >>> parseDataParameters)
-    putStrLn $ (show.length) dataParameters
+    putStrLn $ (++) "data parameter count: " $ (show.length) dataParameters
     mapM (putStrLn.show) dataParameters
     mapM (processDataParameter conn uuid) dataParameters
 
@@ -294,21 +282,17 @@ processDataParameters conn uuid recordText = do
 ----------------
 
 processRecord conn (uuid, title) = do
-
-    -- let uuid = "4402cb50-e20a-44ee-93e6-4728259250d2"
-    record <- getCSWGetRecordById uuid title -- "my argo"
-
+    record <- getCSWGetRecordById uuid title 
     processRecordUUID conn uuid title 
     processDataParameters conn uuid record
     processOnlineResources conn uuid record
-
     return ()
 
 
 -- TODO - store the origin catalog .... that we scanned . in fact that 
 -- might be stored in the db, and is ther
 
--- OK. we should probably let it go to completion
+-- OK. we should probably let it go to completion - just to test...
 ----------------
 
 
