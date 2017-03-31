@@ -1,5 +1,7 @@
 
-- do resources
+- done - do resources
+
+- refine selection criteria - to harvest several files - and then try to implement search
 - need more indexing. (refine query to mcp2)
   - separate out the index into an independent action - so that can run it again?
 - try to construct return value - with loop.

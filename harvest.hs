@@ -45,6 +45,10 @@ parseXML s = readString [ withValidate no
 
 atTag tag = deep (isElem >>> hasName tag)
 
+atChildName s = getChildren >>> hasName s
+
+getChildText = getChildren >>> getText
+
 
 -- limit to just the wms/wfs stuff.
 --
@@ -85,10 +89,11 @@ doHTTPPost url body = do
     return response
 
 
+
 parseIdentifiers = atTag "csw:SummaryRecord" >>>
   proc l -> do
-    identifier <- getChildren >>> hasName "dc:identifier" >>> getChildren >>> getText -< l
-    title      <- getChildren >>> hasName "dc:title" >>> getChildren >>> getText -< l
+    identifier <- atChildName "dc:identifier" >>> getChildText  -< l
+    title      <- atChildName "dc:title" >>> getChildText -< l
     returnA -< (identifier, title)
 
 
@@ -142,24 +147,21 @@ doCSWGetRecords = do
 -- ok now we want to go through the actual damn records,
 
 
+
 parseOnlineResources = atTag "gmd:CI_OnlineResource" >>>
   proc l -> do
-    protocol    <- atTag "gmd:protocol" >>> getChildren >>> hasName "gco:CharacterString" >>> getChildren >>> getText -< l
-    linkage     <- atTag "gmd:linkage"  >>> getChildren >>> hasName "gmd:URL" >>> getChildren >>> getText -< l
-    description <- atTag "gmd:description" >>> getChildren >>> hasName "gco:CharacterString" >>> getChildren >>> getText -< l
+    protocol    <- atChildName "gmd:protocol" >>> atChildName "gco:CharacterString" >>> getChildText  -< l
+    linkage     <- atChildName "gmd:linkage"  >>> atChildName "gmd:URL" >>> getChildText -< l
+    description <- atChildName "gmd:description" >>> atChildName "gco:CharacterString" >>> getChildText -< l
     returnA -< (protocol, linkage, description)
 
 -- https://catalogue-portal.aodn.org.au/geonetwork/srv/eng/csw?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&id=0a21e0b9-8acb-4dc2-8c82-57c3ea94dd85&outputSchema=http://www.isotc211.org/2005/gmd
 
 parseDataParameters = atTag "mcp:dataParameter" >>>
   proc l -> do
-    term <- atTag "mcp:DP_DataParameter"
-      >>> getChildren >>> hasName "mcp:parameterName"
-      >>> getChildren >>> hasName "mcp:DP_Term" -< l
-
-    txt  <- getChildren >>> hasName "mcp:term"  >>> getChildren >>> hasName "gco:CharacterString" >>> getChildren >>> getText -< term
-    url  <- getChildren >>> hasName "mcp:vocabularyTermURL"  >>> getChildren >>> hasName "gmd:URL" >>> getChildren >>> getText -< term
-
+    term <- atChildName "mcp:DP_DataParameter" >>> atChildName "mcp:parameterName" >>> atChildName "mcp:DP_Term" -< l
+    txt  <- atChildName "mcp:term"  >>> atChildName "gco:CharacterString" >>> getChildText -< term
+    url  <- atChildName "mcp:vocabularyTermURL"  >>> atChildName "gmd:URL" >>> getChildText -< term
     returnA -< (txt, url)
 
 

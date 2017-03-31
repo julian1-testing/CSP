@@ -40,9 +40,24 @@ select
   concept.url,
   concept.label
   from facet 
+
   left join record on record.id = facet.record_id 
   left join concept on concept.id = facet.concept_id
+;
 
+------
+
+drop view if exists resource_view;
+
+create view resource_view as
+select 
+  record.uuid,
+  resource.url,
+  resource.label
+  from resource
+
+  left join record on record.id = facet.record_id 
+  left join resource on resource.id = facet.resource_id
 ;
 
 commit;
