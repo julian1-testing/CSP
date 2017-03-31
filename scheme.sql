@@ -1,10 +1,10 @@
 
 
 select 
-  concept.label,
+  concept.label as concept_label,
   narrower_concept.label as narrower_label,
   narrow_match_concept.label as narrow_match_label,
-  scheme.title 
+  scheme.title as scheme_title 
 
   from concept 
   left join narrower on     concept.id = narrower.narrower_id 

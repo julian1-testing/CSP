@@ -205,8 +205,8 @@ storeInScheme conn s = do
     -- inScheme
     putStrLn $ "doing inScheme"
     inScheme <- runX (parseXML s >>> parseInScheme)
-    let lst = Prelude.map show inScheme
-    mapM putStrLn lst
+    -- let lst = Prelude.map show inScheme
+    -- mapM putStrLn lst
     putStrLn $ "  inScheme count " ++ (show.length) inScheme
     -- store
     mapM store' inScheme
@@ -247,12 +247,7 @@ main = do
   platformCategory <- readFile "./vocab/aodn_aodn-platform-category-vocabulary.rdf"     -- 9 preflabels,  no narrower, has 1narrowMatch    - prefLabels are high level
 
 {-
-  storeNarrowMatchs conn platform          -- 1 entry but can't see it
-  storeNarrowMatchs conn platformCategory -- 174 
-
-  storeNarrower conn platform
-  storeNarrower conn platformCategory
--}
+ -}
 
   storeSchemes conn  platform
   storeSchemes conn platformCategory
@@ -261,7 +256,13 @@ main = do
   storeConcepts conn platformCategory
 
   storeInScheme conn  platform
---  storeInScheme conn platformCategory
+  storeInScheme conn platformCategory
+
+  storeNarrowMatchs conn platform          -- 1 entry but can't see it
+  storeNarrowMatchs conn platformCategory -- 174 
+
+  storeNarrower conn platform
+  storeNarrower conn platformCategory
 
 
 -- TODO change storeNarrower to storeNarrowers, 
