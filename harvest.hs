@@ -207,17 +207,26 @@ processRecordUUID conn uuid title = do
 
 
 
-processOnlineResource conn uuid recordText = do
 
-    putStrLn "stub"
+-- store resources to db
+--    let storeToDB (protocol,url) = execute conn "insert into resource(catalog_id,protocol,linkage) values ((select id from catalog where uuid = ?), ?, ?)" [uuid, protocol, url]
+--    mapM storeToDB onlineResources
 
 
-processOnlineResources conn s = do
-    onlineResources <- runX (parseXML s >>> parseOnlineResources)
+
+processOnlineResource conn uuid (protocol,url) = do
+
+    execute conn "insert into resource(record_id,protocol,linkage) values ((select id from record where uuid = ?), ?, ?)" (uuid :: String, protocol :: String, url)
+
+    putStrLn "stored resource"
+
+
+processOnlineResources conn uuid recordText = do
+    onlineResources <- runX (parseXML recordText >>> parseOnlineResources)
     putStrLn $ (show.length) onlineResources
     mapM (putStrLn.show) onlineResources
 
-    -- let storeToDB (identifier,title) = execute conn "insert into catalog(uuid,title) values (?, ?)" [identifier, title]
+    mapM (processOnlineResource conn uuid) onlineResources
 
 
 
@@ -256,6 +265,7 @@ processDataParameter conn uuid dataParameter = do
       1 -> do
         -- store the concept
         let (concept_id, concept_label) : _ = xs
+        -- TODO QQ?
         execute conn "insert into facet(concept_id, record_id) values (?, (select record.id from record where record.uuid = ?))" (concept_id :: Integer, uuid :: String) 
         return ()
         
@@ -273,10 +283,6 @@ processDataParameters conn uuid recordText = do
 
 
 
-
--- store resources to db
---    let storeToDB (protocol,url) = execute conn "insert into resource(catalog_id,protocol,linkage) values ((select id from catalog where uuid = ?), ?, ?)" [uuid, protocol, url]
---    mapM storeToDB onlineResources
 
 -- So how do we do this...
 -- get the data - then store in sql?  can probably do it. relationally...
@@ -307,6 +313,9 @@ main = do
   processRecordUUID conn uuid "my argo"
 
   processDataParameters conn uuid record
+
+  -- processOnlineResources conn uuid recordText = do
+  processOnlineResources conn uuid record
 
   return ()
 
