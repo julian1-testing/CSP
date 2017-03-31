@@ -16,18 +16,19 @@ cabal install warp
 cabal install http-client-tls
 cabal install raw-strings-qq
 
-
-
-
-ghc parse.hs
-./parse
-
-# for postgres,
 apt-get install libpq-dev
 cabal install postgresql-simple
 
 
-# http clietn
+#### create the db
+psql -h postgres.localnet -U admin -d postgres -f create-db.sql
+
+
+
+
+
+
+# Notes, on libraries
 
 http-client 
     https://haskell-lang.org/library/http-client 

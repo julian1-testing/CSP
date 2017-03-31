@@ -219,7 +219,8 @@ main = do
   conn <- connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
 
   -- should we be using plural?
-  execute conn "truncate scheme, concept, narrower, narrow_match, in_scheme ;" ()
+  -- cannot rebuild the facets from out under - actually we can we just need to reindex,..
+  execute conn "truncate record, facet, resource,  scheme, concept, narrower, narrow_match, in_scheme ;" ()
 
   -- platform
   platform <- readFile "./vocab/aodn_aodn-platform-vocabulary.rdf"              -- 396 prefLabels, with narrower, no narrowMatch - prefLabels are detail

@@ -9,29 +9,8 @@ create database harvest owner harvest;
 
 \c harvest
 
--- TODO change name to record, or metadata,   catalog is the particular catalog instance that we scan.
-create table catalog (
 
-  id          serial primary key not null,
-  uuid        text not null unique,
-  title       text not null
-);
-
-alter table catalog owner to harvest;
-
--- TODO add uniqueness constraints
-
-create table resource (
-
-  id serial   primary key not null,
-  catalog_id  integer references catalog(id), 
-
-  protocol    text not null,
-  linkage     text not null,
-  description text 
-);
-
-alter table resource owner to harvest;
+begin;
 
 
 --------
@@ -65,7 +44,7 @@ create table narrower (
 );
 alter table narrower owner to harvest;
 
--- TODO uniqueness constraint on the combination 
+-- TODO uniqueness constraint on the combination  that link things,
 
 
 create table narrow_match (
@@ -89,5 +68,43 @@ alter table in_scheme owner to harvest;
 
 --------------
 
+-- want a catalog table as well - dependening on harvest source?
+-- actually may not even need...
+
+create table record (
+
+  id          serial primary key not null,
+  uuid        text not null unique,
+  title       text not null
+);
+
+alter table record owner to harvest;
+
+-- TODO add uniqueness constraints - dd
+
+create table resource (
+
+  id serial   primary key not null,
+  record_id  integer references record(id), 
+
+  protocol    text not null,
+  linkage     text not null,
+  description text 
+);
+
+alter table resource owner to harvest;
 
 
+-- its actually not facet - but the facet index...
+
+create table facet (
+
+  id serial   primary key not null,
+
+  record_id  integer references record(id), 
+  concept_id  integer references concept(id)
+);
+
+alter table facet owner to harvest;
+
+commit;

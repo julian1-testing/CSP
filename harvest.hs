@@ -216,18 +216,34 @@ processDataParameter conn uuid dataParameter = do
     xs :: [ (Int, String) ] <- query conn "select concept_id, concept_label from facet where concept_url = ?" [ (dataParameter :: String) ]
 
     -- TODO should always be one.
-    putStrLn $  (show.length) xs 
-
+    putStrLn $ (show.length) xs 
 
     case length xs of
-      1 -> putStrLn "got 1"
-      0 -> putStrLn "whoot no good"
-      _ -> putStrLn "whoot"
+      1 ->  do
+        putStrLn "got 1"
+
+        let (concept_id, concept_label) : _ = xs
+
+        execute conn "insert into facet(record_id,concept_id) values (?, ?)" [123 :: Integer, 456 :: Integer]
+
+        putStrLn "got 1"
+        
+      0 -> putStrLn "dataParameter not found"
+      _ -> putStrLn "multiple dataParameters?"
  
 
-    let formatRow (concept_id,concept_label) = concatMap id [ "id ", show concept_id, " -> ",  concept_label ]
-    mapM  (putStrLn.formatRow)  xs
- 
+--    let formatRow (concept_id,concept_label) = concatMap id [ "id ", show concept_id, " -> ",  concept_label ]
+--    mapM  (putStrLn.formatRow)  xs
+
+
+{-
+create table facet (
+
+  id serial   primary key not null,
+  record_id  integer references record(id), 
+  concept_id  integer references concept(id)
+)
+-} 
 
 processDataParameters conn uuid recordText = do
 
@@ -237,14 +253,7 @@ processDataParameters conn uuid recordText = do
 
     mapM (\(title,url) -> processDataParameter conn uuid url) dataParameters
 
-{-
-    let param = "http://vocab.nerc.ac.uk/collection/P01/current/TEMPPR01"
-    
-    xs :: [ (Int, String) ] <- query conn "select concept_id, concept_label from facet where concept_url = ?" [ (param :: String) ]
 
-    let formatRow (id,concept_label) = foldr (++) "" [ show id, " here -> ",  concept_label ]
-    mapM  (putStrLn.formatRow)  xs
--}
 
 
 -- store resources to db
