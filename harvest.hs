@@ -90,7 +90,7 @@ doHTTPPost url body = do
 
 
 
-parseIdentifiers = atTag "csw:SummaryRecord" >>>
+parseCSWSummaryRecord = atTag "csw:SummaryRecord" >>>
   proc l -> do
     identifier <- atChildName "dc:identifier" >>> getChildText  -< l
     title      <- atChildName "dc:title" >>> getChildText -< l
@@ -106,14 +106,16 @@ doCSWGetRecords = do
     -- putStrLn query
     response <- doHTTPPost url queryWMSAndIMOS
     let s = BLC.unpack $ responseBody response
-    identifiers <- runX (parseXML s  >>> parseIdentifiers)
-    -- print
-    mapM (putStrLn.format) identifiers
 
-    putStrLn $ "count: " ++ ((show.length) identifiers)
+    identifiers <- runX (parseXML s  >>> parseCSWSummaryRecord)
+    -- print
+    -- mapM (putStrLn.format) identifiers
+    mapM (putStrLn.show) identifiers
+
+    putStrLn $ (++) "count: " $ (show.length) identifiers
     return identifiers
     where
-      format (identifier,title) = identifier ++ " -> " ++ title
+      -- format (identifier,title) = identifier ++ " -> " ++ title
 
       queryAll = [r|<?xml version="1.0" encoding="UTF-8"?>
         <csw:GetRecords xmlns:csw="http://www.opengis.net/cat/csw/2.0.2" service="CSW" version="2.0.2"
@@ -156,14 +158,6 @@ doCSWGetRecords = do
 
 -- ok, we god a 120 records which is pretty nice.
 
--- PropertyName  may need to be qualified...
-
--- the combination of filters isn't working ...
-
--- GetCapabilities
--- https://catalogue-portal.aodn.org.au/geonetwork/srv/eng/csw?request=GetCapabilities&service=CSW
-
--- has PointOfTruth and OnlineResourceType 
 
 
 
@@ -281,6 +275,21 @@ processDataParameters conn uuid recordText = do
     mapM (processDataParameter conn uuid) dataParameters
 
 
+
+----------------
+
+processRecord conn (uuid, title) = do
+
+    let uuid = "4402cb50-e20a-44ee-93e6-4728259250d2"
+    record <- getCSWGetRecordById uuid "my argo"
+
+    processRecordUUID conn uuid "my argo"
+    processDataParameters conn uuid record
+    processOnlineResources conn uuid record
+
+    return ()
+
+
 ----------------
 
 
@@ -293,21 +302,11 @@ main = do
   execute conn "delete from facet *" ()
   execute conn "delete from record *" ()
 
-  -- doCSWGetRecords conn
-  -- https://github.com/aodn/chef-private/blob/master/data_bags/imos_webapps_geonetwork_harvesters/catalogue_imos.json
-  -- actually
-
+  -- TODO - seperate out query and parse action - 
+  -- do query and get records
   identifiers <- doCSWGetRecords
 
-
-  let uuid = "4402cb50-e20a-44ee-93e6-4728259250d2"
-  record <- getCSWGetRecordById uuid "my argo"
-
-  processRecordUUID conn uuid "my argo"
-
-  processDataParameters conn uuid record
-
-  processOnlineResources conn uuid record
+  mapM (processRecord conn) identifiers
 
   return ()
 

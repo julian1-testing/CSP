@@ -43,6 +43,14 @@ psql -h postgres.localnet -U harvest -d harvest -f views.sql
 - parameter vocabulary
   https://s3-ap-southeast-2.amazonaws.com/content.aodn.org.au/Vocabularies/parameter-category/aodn_aodn-parameter-category-vocabulary.rdf
 
+-- CSW GetCapabilities
+-- https://catalogue-portal.aodn.org.au/geonetwork/srv/eng/csw?request=GetCapabilities&service=CSW
+
+-- Good CSW examples,
+-- https://gist.github.com/kalxas/5ab6237b4163b0fdc930
+
+-- has PointOfTruth and OnlineResourceType 
+
 
 
 
