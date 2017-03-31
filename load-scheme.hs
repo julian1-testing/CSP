@@ -215,9 +215,29 @@ storeInScheme conn s = do
 
 
 
+
+storeAll conn platform platformCategory = do
+  -- do everything
+  storeSchemes conn  platform
+  storeSchemes conn platformCategory
+
+  storeConcepts conn platform
+  storeConcepts conn platformCategory
+
+  storeInScheme conn  platform
+  storeInScheme conn platformCategory
+
+  storeNarrowMatchs conn platform          -- 1 entry but can't see it
+  storeNarrowMatchs conn platformCategory -- 174 
+
+  storeNarrower conn platform
+  storeNarrower conn platformCategory
+
+
+
 --------------------------
 
-
+-- 
 
 -- want to try to pull out the top concept.
 
@@ -230,8 +250,6 @@ main = do
 
 
 {-
-  param         <- readFile "./vocab/aodn_aodn-discovery-parameter-vocabulary.rdf"   -- 174 prefLabels, no narrower, 1 narrowMatch - prefLabels are detail
-  paramCategory <- readFile "./vocab/aodn_aodn-parameter-category-vocabulary.rdf"   -- 32 prefLabels, with 29 narrower, has narrowMatch   - prefLabels are high level
 
   storeConcepts conn param
   storeConcepts conn paramCategory
@@ -246,8 +264,15 @@ main = do
   platform <- readFile "./vocab/aodn_aodn-platform-vocabulary.rdf"              -- 396 prefLabels, with narrower, no narrowMatch - prefLabels are detail 
   platformCategory <- readFile "./vocab/aodn_aodn-platform-category-vocabulary.rdf"     -- 9 preflabels,  no narrower, has 1narrowMatch    - prefLabels are high level
 
+
+  storeAll conn platform platformCategory
+
+  param         <- readFile "./vocab/aodn_aodn-discovery-parameter-vocabulary.rdf"   -- 174 prefLabels, no narrower, 1 narrowMatch - prefLabels are detail
+  paramCategory <- readFile "./vocab/aodn_aodn-parameter-category-vocabulary.rdf"   -- 32 prefLabels, with 29 narrower, has narrowMatch   - prefLabels are high level
+
+  storeAll conn param paramCategory
+
 {-
- -}
 
   storeSchemes conn  platform
   storeSchemes conn platformCategory
@@ -263,6 +288,7 @@ main = do
 
   storeNarrower conn platform
   storeNarrower conn platformCategory
+ -}
 
 
 -- TODO change storeNarrower to storeNarrowers, 
