@@ -52,6 +52,9 @@ parseXML s = readString [ withValidate no
     ] s
 
 
+isDescription = do
+  isElem >>> hasName "rdf:Description"
+
 
 isCoreScheme = do
   getChildren
@@ -68,17 +71,11 @@ isCoreConcept = do
   >>> isA ((==) "http://www.w3.org/2004/02/skos/core#Concept")
 
 
-isDescription = do
-  isElem >>> hasName "rdf:Description"
-
-
-
 
 
 
 --------------------------
 -- scheme stuff
-
 
 parseScheme =
   deep (isElem >>> hasName "rdf:Description") >>>
@@ -86,7 +83,7 @@ parseScheme =
     isCoreScheme -< e
     about <- getAttrValue "rdf:about" -< e
     title <- getChildren >>> hasName "dcterms:title" >>> getChildren >>> getText -< e
-    -- description, etc. 
+    -- description, etc.
     returnA -< (about, title)
 
 
@@ -94,18 +91,19 @@ storeSchemes conn s = do
     -- parse
     putStrLn $ "doing schemes"
     schemes <- runX (parseXML s  >>> parseScheme)
-    let lst = Prelude.map show schemes
-    mapM putStrLn lst
+    -- mapM (putStrLn.show) schemes
+
     putStrLn $ "  scheme count " ++ (show.length) schemes
     -- store to db
-    let store (url,title) = execute conn "insert into scheme(url,title) values (?, ?)" [url, title]
     mapM store schemes
+
+    where 
+      store (url,title) = execute conn "insert into scheme(url,title) values (?, ?)" [url, title]
 
 
 
 --------------------------
 -- concept stuff
-
 
 parseConcept =
   deep (isElem >>> hasName "rdf:Description") >>>
@@ -117,14 +115,13 @@ parseConcept =
 
 
 storeConcepts conn s = do
+    let store (url,label) = execute conn "insert into concept(url,label) values (?, ?)" [url, label]
     -- parse
     putStrLn $ "doing concepts"
     concepts <- runX (parseXML s  >>> parseConcept)
-    -- let lst = Prelude.map show concepts
-    -- mapM putStrLn lst
+    -- mapM (putStrLn.show) concepts
     putStrLn $ "  concept count " ++ (show.length) concepts
     -- store to db
-    let store (url,label) = execute conn "insert into concept(url,label) values (?, ?)" [url, label]
     mapM store concepts
 
 
@@ -145,11 +142,9 @@ storeNarrower conn s = do
 
     let store conn (url,narrower_url) = execute conn "insert into narrower(concept_id, narrower_id) values ((select id from concept where concept.url = ?), (select id from concept where concept.url = ?))" [url, narrower_url]
     let store' = store conn
-    -- narrower
     putStrLn $ "doing narrower"
     narrower <- runX (parseXML s >>> parseNarrower)
-    -- let lst = Prelude.map show narrower
-    -- mapM putStrLn lst
+    -- mapM (putStrLn.show) narrower
     putStrLn $ "  narrower count " ++ (show.length) narrower
     -- store
     mapM store' narrower
@@ -157,7 +152,7 @@ storeNarrower conn s = do
 
 
 --------------------------
--- narrowMatch 
+-- narrowMatch
 
 parseNarrowMatch =
   deep isDescription >>>
@@ -188,7 +183,6 @@ storeNarrowMatchs conn s = do
 --------------------------
 -- scheme membership
 --	<skos:inScheme rdf:resource="http://vocab.aodn.org.au/def/discovery_parameter/1"/>
-	
 
 parseInScheme =
   deep isDescription >>>
@@ -213,11 +207,11 @@ storeInScheme conn s = do
 
 
 
-
-
+--------------------------
+-- store everything
 
 storeAll conn platform platformCategory = do
-  -- do everything
+
   storeSchemes conn  platform
   storeSchemes conn platformCategory
 
@@ -227,8 +221,8 @@ storeAll conn platform platformCategory = do
   storeInScheme conn  platform
   storeInScheme conn platformCategory
 
-  storeNarrowMatchs conn platform          -- 1 entry but can't see it
-  storeNarrowMatchs conn platformCategory -- 174 
+  storeNarrowMatchs conn platform
+  storeNarrowMatchs conn platformCategory
 
   storeNarrower conn platform
   storeNarrower conn platformCategory
@@ -237,9 +231,6 @@ storeAll conn platform platformCategory = do
 
 --------------------------
 
--- 
-
--- want to try to pull out the top concept.
 
 main :: IO ()
 main = do
@@ -248,52 +239,19 @@ main = do
   -- should we be using plural?
   execute conn "truncate scheme, concept, narrower, narrow_match, in_scheme ;" ()
 
-
-{-
-
-  storeConcepts conn param
-  storeConcepts conn paramCategory
-
-  storeNarrowMatchs conn param          -- 1 entry but can't see it
-  storeNarrowMatchs conn paramCategory  -- 174 
-
-  storeNarrower conn param
-  storeNarrower conn paramCategory
--}
-
-  platform <- readFile "./vocab/aodn_aodn-platform-vocabulary.rdf"              -- 396 prefLabels, with narrower, no narrowMatch - prefLabels are detail 
+  -- platform
+  platform <- readFile "./vocab/aodn_aodn-platform-vocabulary.rdf"              -- 396 prefLabels, with narrower, no narrowMatch - prefLabels are detail
   platformCategory <- readFile "./vocab/aodn_aodn-platform-category-vocabulary.rdf"     -- 9 preflabels,  no narrower, has 1narrowMatch    - prefLabels are high level
-
 
   storeAll conn platform platformCategory
 
+  -- parameter
   param         <- readFile "./vocab/aodn_aodn-discovery-parameter-vocabulary.rdf"   -- 174 prefLabels, no narrower, 1 narrowMatch - prefLabels are detail
   paramCategory <- readFile "./vocab/aodn_aodn-parameter-category-vocabulary.rdf"   -- 32 prefLabels, with 29 narrower, has narrowMatch   - prefLabels are high level
 
   storeAll conn param paramCategory
 
-{-
-
-  storeSchemes conn  platform
-  storeSchemes conn platformCategory
-
-  storeConcepts conn platform
-  storeConcepts conn platformCategory
-
-  storeInScheme conn  platform
-  storeInScheme conn platformCategory
-
-  storeNarrowMatchs conn platform          -- 1 entry but can't see it
-  storeNarrowMatchs conn platformCategory -- 174 
-
-  storeNarrower conn platform
-  storeNarrower conn platformCategory
- -}
-
-
--- TODO change storeNarrower to storeNarrowers, 
--- the storeConcepts can also do the scheme membership... 
-
+  -- are there any other resources? 
   close conn
   putStrLn "finished"
 
