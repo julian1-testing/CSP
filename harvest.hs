@@ -209,6 +209,7 @@ processRecordUUID conn uuid title = do
 
 
 ----------------
+-- resources
 
 processOnlineResource conn uuid (protocol,linkage, description) = do
     execute conn [r|
@@ -225,48 +226,24 @@ processOnlineResources conn uuid recordText = do
     onlineResources <- runX (parseXML recordText >>> parseOnlineResources)
     putStrLn $ (show.length) onlineResources
     mapM (putStrLn.show) onlineResources
-
     mapM (processOnlineResource conn uuid) onlineResources
 
 
-
-
-
-
-{-
-create table resource (
-  -- mcp2 resource
-
-  id serial   primary key not null,
-  record_id  integer references record(id), 
-
-  protocol    text not null,
-  linkage     text not null,
-  description text 
-);
-
-create table facet (
-
-  id serial   primary key not null,
-  record_id  integer references record(id), 
-  concept_id  integer references concept(id)
-)
--} 
-
-
-
+----------------
+-- data parameters
 
 processDataParameter conn uuid (term, url) = do
     -- look up the required concept
-    -- xs :: [ (Integer, String) ] <- query conn "select id, label from concept where url = ?" [ (dataParameter :: String) ]
-    xs :: [ (Integer, String) ] <- query conn "select id, label from concept where url = ?" (Only url )
+    xs :: [ (Integer, String) ] <- query conn "select id, label from concept where url = ?" (Only url)
     -- putStrLn $ (show.length) xs 
     case length xs of
       1 -> do
         -- store the concept
         let (concept_id, concept_label) : _ = xs
-        -- TODO QQ?
-        execute conn "insert into facet(concept_id, record_id) values (?, (select record.id from record where record.uuid = ?))" (concept_id :: Integer, uuid :: String) 
+        execute conn [r|
+          insert into facet(concept_id, record_id) 
+          values (?, (select record.id from record where record.uuid = ?))
+        |] (concept_id :: Integer, uuid :: String) 
         return ()
         
       0 -> putStrLn "dataParameter not found"
@@ -274,22 +251,13 @@ processDataParameter conn uuid (term, url) = do
 
 
 processDataParameters conn uuid recordText = do
-
     dataParameters <- runX (parseXML recordText >>> parseDataParameters)
     putStrLn $ (show.length) dataParameters
     mapM (putStrLn.show) dataParameters
-
-    -- mapM (\(title,url) -> processDataParameter conn uuid url) dataParameters
     mapM (processDataParameter conn uuid) dataParameters
 
 
-
-
--- So how do we do this...
--- get the data - then store in sql?  can probably do it. relationally...
--- update...
---
-
+----------------
 
 
 main :: IO ()
