@@ -261,11 +261,10 @@ main = do
   storeConcepts conn platformCategory
 
   storeInScheme conn  platform
-  storeInScheme conn platformCategory
+--  storeInScheme conn platformCategory
 
 
 -- TODO change storeNarrower to storeNarrowers, 
-
 -- the storeConcepts can also do the scheme membership... 
 
   close conn

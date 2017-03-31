@@ -81,7 +81,7 @@ create table in_scheme (
 
   id serial   primary key not null,
   concept_id  integer references concept(id), 
-  scheme_id   integer references concept(id)
+  scheme_id   integer references scheme(id)
 );
 alter table in_scheme owner to harvest;
 
