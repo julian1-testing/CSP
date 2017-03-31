@@ -86,36 +86,8 @@ parseScheme =
     isCoreScheme -< e
     about <- getAttrValue "rdf:about" -< e
     title <- getChildren >>> hasName "dcterms:title" >>> getChildren >>> getText -< e
+    -- description, etc. 
     returnA -< (about, title)
-
-
-{-
-<rdf:Description rdf:about="http://vocab.aodn.org.au/def/platform_classes/1">
-  <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
-  <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#ConceptScheme"/>
-  <dcterms:title xml:lang="en">AODN Platform Category Vocabulary</dcterms:title>
-  <dcterms:description xml:lang="en">A classification scheme to support faceted searching across platform types in the IMOS 123 Portal.</dcterms:description>
-  <dcterms:subject xml:lang="en">platform category</dcterms:subject>
-  <dcterms:creator xml:lang="en">Sebastien Mancini</dcterms:creator>
-  <dcterms:publisher xml:lang="en">eMarine Information Infrastructure (eMII)</dcterms:publisher>
-  <dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2014-06-01T00:00:00Z</dcterms:created>
-  <dc:rights rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Freely Available For Reuse</dc:rights>
-  <dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2015-09-16T03:50:11Z</dcterms:modified>
-  <identifier xmlns="http://schema.semantic-web.at/ppt/" rdf:datatype="http://www.w3.org/2001/XMLSchema#string">category</identifier>
-  <dcterms:contributor rdf:datatype="http://www.w3.org/2001/XMLSchema#string">eMII_Finney.Kim_Admin</dcterms:contributor>
-  <skos:hasTopConcept rdf:resource="http://vocab.aodn.org.au/def/platform_classes/category/43"/>
-  <skos:hasTopConcept rdf:resource="http://vocab.aodn.org.au/def/platform_classes/category/35"/>
-  <skos:hasTopConcept rdf:resource="http://vocab.aodn.org.au/def/platform_classes/category/36"/>
-  <skos:hasTopConcept rdf:resource="http://vocab.aodn.org.au/def/platform_classes/category/37"/>
-  <skos:hasTopConcept rdf:resource="http://vocab.aodn.org.au/def/platform_classes/category/40"/>
-  <skos:hasTopConcept rdf:resource="http://vocab.aodn.org.au/def/platform_classes/category/41"/>
-  <skos:hasTopConcept rdf:resource="http://vocab.aodn.org.au/def/platform_classes/category/42"/>
-  <skos:hasTopConcept rdf:resource="http://vocab.aodn.org.au/def/platform_classes/category/44"/>
-  <skos:hasTopConcept rdf:resource="http://vocab.aodn.org.au/def/platform_classes/category/39"/>
-  <dcterms:issued rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2015-09-23</dcterms:issued>
-  <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Version 1.0</owl:versionInfo>
-</rdf:Description>
--}
 
 
 storeSchemes conn s = do
@@ -211,6 +183,38 @@ storeNarrowMatchs conn s = do
     mapM store' narrowMatch
 
 
+
+
+--------------------------
+-- scheme membership
+--	<skos:inScheme rdf:resource="http://vocab.aodn.org.au/def/discovery_parameter/1"/>
+	
+
+parseInScheme =
+  deep isDescription >>>
+  proc e -> do
+    isCoreConcept -< e
+    resource <- getAttrValue "rdf:about" -< e
+    inScheme <- getChildren >>> isElem >>> hasName "skos:inScheme" >>> getAttrValue "rdf:resource" -< e
+    returnA -< (resource, inScheme)
+
+
+storeInScheme conn s = do
+    let store conn (url,inScheme_url) = execute conn "insert into in_scheme(concept_id, scheme_id) values ((select id from concept where concept.url = ?), (select id from scheme where scheme.url = ?))" [url, inScheme_url]
+    let store' = store conn
+    -- inScheme
+    putStrLn $ "doing inScheme"
+    inScheme <- runX (parseXML s >>> parseInScheme)
+    let lst = Prelude.map show inScheme
+    mapM putStrLn lst
+    putStrLn $ "  inScheme count " ++ (show.length) inScheme
+    -- store
+    mapM store' inScheme
+
+
+
+
+
 --------------------------
 
 
@@ -222,7 +226,7 @@ main = do
   conn <- connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
 
   -- should we be using plural?
-  execute conn "truncate concept, narrower, narrow_match, scheme ;" ()
+  execute conn "truncate scheme, concept, narrower, narrow_match, in_scheme ;" ()
 
 
 {-
@@ -243,9 +247,6 @@ main = do
   platformCategory <- readFile "./vocab/aodn_aodn-platform-category-vocabulary.rdf"     -- 9 preflabels,  no narrower, has 1narrowMatch    - prefLabels are high level
 
 {-
-  storeConcepts conn platform
-  storeConcepts conn platformCategory
-
   storeNarrowMatchs conn platform          -- 1 entry but can't see it
   storeNarrowMatchs conn platformCategory -- 174 
 
@@ -255,7 +256,17 @@ main = do
 
   storeSchemes conn  platform
   storeSchemes conn platformCategory
- 
+
+  storeConcepts conn platform
+  storeConcepts conn platformCategory
+
+  storeInScheme conn  platform
+  storeInScheme conn platformCategory
+
+
+-- TODO change storeNarrower to storeNarrowers, 
+
+-- the storeConcepts can also do the scheme membership... 
 
   close conn
   putStrLn "finished"

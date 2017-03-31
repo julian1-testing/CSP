@@ -38,13 +38,22 @@ alter table resource owner to harvest;
 
 -- facet search stuff?
 
+
+create table scheme (
+
+  id serial   primary key not null,
+  url         text not null unique,
+  title       text not null
+);
+alter table scheme owner to harvest;
+
+
 create table concept (
 
   id serial   primary key not null,
   url         text not null unique,
   label       text not null
 );
-
 alter table concept owner to harvest;
 
 
@@ -54,7 +63,6 @@ create table narrower (
   concept_id  integer references concept(id), 
   narrower_id integer references concept(id)
 );
-
 alter table narrower owner to harvest;
 
 -- TODO uniqueness constraint on the combination 
@@ -66,21 +74,18 @@ create table narrow_match (
   concept_id  integer references concept(id), 
   narrower_id integer references concept(id)
 );
-
 alter table narrow_match owner to harvest;
 
 
--- concept scheme
-create table scheme (
+create table in_scheme (
 
   id serial   primary key not null,
-  url         text not null unique,
-  title       text not null
+  concept_id  integer references concept(id), 
+  scheme_id   integer references concept(id)
 );
+alter table in_scheme owner to harvest;
 
-alter table scheme owner to harvest;
 
--- get the concept scheme membership - and then we can ... 
 
 --------------
 
