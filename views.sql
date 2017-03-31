@@ -1,8 +1,8 @@
 
 begin;
-drop view vocab;
+drop view if exists concept_view;
 
-create view vocab as
+create view concept_view as
 select 
   concept.id    as concept_id,
   concept.label as concept_label,
@@ -25,6 +25,22 @@ select
   order by concept.url
 
   -- each thing should only have its parent, otherwise it will be be entered twice, 
+;
+
+
+
+
+drop view if exists facet_view;
+
+create view facet_view as
+select 
+  record.uuid,
+  concept.url,
+  concept.label
+  from facet 
+  left join record on record.id = facet.record_id 
+  left join concept on concept.id = facet.concept_id
+
 ;
 
 commit;

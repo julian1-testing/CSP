@@ -201,10 +201,8 @@ getCSWGetRecordById uuid title = do
 
 
 processRecordUUID conn uuid title = do
-
---  uuid        text not null unique,
---  title       text not null
-
+  --  uuid        text not null unique,
+  --  title       text not null
   execute conn "insert into record(uuid,title) values (?, ?)" [uuid :: String, title :: String]
 
 
@@ -219,30 +217,19 @@ processOnlineResources conn s = do
 
 
 processDataParameter conn uuid dataParameter = do
-
     -- don't want to use the general view - here, since it may chnage 
-
     xs :: [ (Integer, String) ] <- query conn "select id, label from concept where url = ?" [ (dataParameter :: String) ]
-
-    -- TODO should always be one.
-    putStrLn $ (show.length) xs 
-
+    -- putStrLn $ (show.length) xs 
     case length xs of
       1 -> do
-        putStrLn "got 1"
-
         let (concept_id, concept_label) : _ = xs
-        -- does the uuid already exist?
-        execute conn "insert into facet(record_id,concept_id) values (?, ?)" [123 :: Integer, concept_id]
-
-        putStrLn "got 1"
+        -- concept_id should be an integer not a string?
+        execute conn "insert into facet(concept_id, record_id) values (?, (select record.id from record where record.uuid = ?))" [ show concept_id , uuid :: String]
+        return ()
         
       0 -> putStrLn "dataParameter not found"
       _ -> putStrLn "multiple dataParameters?"
  
-
---    let formatRow (concept_id,concept_label) = concatMap id [ "id ", show concept_id, " -> ",  concept_label ]
---    mapM  (putStrLn.formatRow)  xs
 
 
 {-
@@ -281,9 +268,9 @@ main = do
   conn <- connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
   -- execute conn "truncate resource;"  ()
   -- note that the sequence will update -
-  execute conn "delete from record *" ()
   execute conn "delete from resource *" ()
   execute conn "delete from facet *" ()
+  execute conn "delete from record *" ()
 
   -- doCSWGetRecords conn
   -- https://github.com/aodn/chef-private/blob/master/data_bags/imos_webapps_geonetwork_harvesters/catalogue_imos.json
