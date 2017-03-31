@@ -30,7 +30,7 @@ select
 ;
 
 
-
+-- should this be by record,  
 
 drop view if exists facet_view;
 
@@ -39,26 +39,45 @@ select
   record.uuid,
   concept.url,
   concept.label
-  from facet 
+  from record
 
-  left join record on record.id = facet.record_id 
+  left join facet on facet.record_id = record.id
   left join concept on concept.id = facet.concept_id
 ;
 
 ------
 
+drop view if exists wms;
+drop view if exists wfs;
 drop view if exists resource_view;
 
 create view resource_view as
 select 
   record.uuid,
-  resource.url,
-  resource.label
-  from resource
+  resource.protocol,
+  resource.linkage,
+  resource.description
+  from record
 
-  left join record on record.id = facet.record_id 
-  left join resource on resource.id = facet.resource_id
+  left join resource on resource.record_id = record.id
 ;
+
+-----
+
+-- quite cool
+
+create view wms as
+select * from resource_view where protocol = 'OGC:WMS-1.1.1-http-get-map'
+;
+
+-- select * from resource where protocol ~ 'WFS';
+
+create view wfs as
+select * from resource_view where protocol = 'OGC:WFS-1.0.0-http-get-capabilities'
+;
+
+
+
 
 commit;
 
