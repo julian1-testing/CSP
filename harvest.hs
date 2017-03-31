@@ -211,18 +211,31 @@ processOnlineResources conn s = do
 
 
 
-processDataParameters conn s = do
+processDataParameter conn uuid dataParameter = do
 
-    dataParameters <- runX (parseXML s >>> parseDataParameters)
+    xs :: [ (Int, String) ] <- query conn "select concept_id, concept_label from facet where concept_url = ?" [ (dataParameter :: String) ]
+
+    -- should only be one of them
+    let formatRow (id,concept_label) = foldr (++) "" [ show id, " here -> ",  concept_label ]
+    mapM  (putStrLn.formatRow)  xs
+ 
+
+processDataParameters conn uuid recordText = do
+
+    dataParameters <- runX (parseXML recordText >>> parseDataParameters)
     putStrLn $ (show.length) dataParameters
     mapM (putStrLn.show) dataParameters
 
-    let param = "http://vocab.nerc.ac.uk/collection/P01/current/TEMPPR01"
+    mapM (\(title,url) -> processDataParameter conn uuid url) dataParameters
 
+{-
+    let param = "http://vocab.nerc.ac.uk/collection/P01/current/TEMPPR01"
+    
     xs :: [ (Int, String) ] <- query conn "select concept_id, concept_label from facet where concept_url = ?" [ (param :: String) ]
 
     let formatRow (id,concept_label) = foldr (++) "" [ show id, " here -> ",  concept_label ]
     mapM  (putStrLn.formatRow)  xs
+-}
 
 
 -- store resources to db
@@ -249,9 +262,11 @@ main = do
 
   identifiers <- doCSWGetRecords
 
-  record <- getCSWGetRecordById "4402cb50-e20a-44ee-93e6-4728259250d2" "my argo"
 
-  processDataParameters conn record
+  let uuid = "4402cb50-e20a-44ee-93e6-4728259250d2"
+  record <- getCSWGetRecordById uuid "my argo"
+
+  processDataParameters conn uuid record
 
   return ()
 
