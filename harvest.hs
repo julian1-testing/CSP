@@ -215,8 +215,17 @@ processDataParameter conn uuid dataParameter = do
 
     xs :: [ (Int, String) ] <- query conn "select concept_id, concept_label from facet where concept_url = ?" [ (dataParameter :: String) ]
 
-    -- should only be one of them
-    let formatRow (id,concept_label) = foldr (++) "" [ show id, " here -> ",  concept_label ]
+    -- TODO should always be one.
+    putStrLn $  (show.length) xs 
+
+
+    case length xs of
+      1 -> putStrLn "got 1"
+      0 -> putStrLn "whoot no good"
+      _ -> putStrLn "whoot"
+ 
+
+    let formatRow (concept_id,concept_label) = concatMap id [ "id ", show concept_id, " -> ",  concept_label ]
     mapM  (putStrLn.formatRow)  xs
  
 
