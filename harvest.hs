@@ -91,32 +91,6 @@ parseIdentifiers = atTag "csw:SummaryRecord" >>>
     title      <- getChildren >>> hasName "dc:title" >>> getChildren >>> getText -< l
     returnA -< (identifier, title)
 
-{-
--- QuasiQuotes may be cleaner,
--- http://kseo.github.io/posts/2014-02-06-multi-line-strings-in-haskell.html
--- alternatively use the xml constructor stuff from HXT
-getRecordsQuery :: String
-getRecordsQuery = unlines [
-    "<?xml version=\"1.0\" encoding=\"UTF-8\"?>",
-    "<csw:GetRecords xmlns:csw=\"http://www.opengis.net/cat/csw/2.0.2\" service=\"CSW\" version=\"2.0.2\"    ",
-    "    resultType=\"results\" startPosition=\"1\" maxRecords=\"5\" outputFormat=\"application/xml\"  >",
-    "  <csw:Query typeNames=\"csw:Record\">",
-    "    <csw:Constraint version=\"1.1.0\">",
-    "      <Filter xmlns=\"http://www.opengis.net/ogc\" xmlns:gml=\"http://www.opengis.net/gml\">",
-    "        <PropertyIsLike wildCard=\"%\" singleChar=\"_\" escape=\"\\\">",
-    "          <PropertyName>AnyText</PropertyName>",
-    "          <Literal>%</Literal>",
-    "        </PropertyIsLike>",
-    "      </Filter>",
-    "    </csw:Constraint>",
-    "  </csw:Query>",
-    "</csw:GetRecords>"
-    ]
--}
-
--- getRecordsQuery :: String
-
-
 
 
 -- TODO need to think about the transaction boundary
@@ -124,42 +98,36 @@ getRecordsQuery = unlines [
 -- Also partially bind in the parameters like conn?
 -- or pass in the processing function... eg. continuation passing style
 
--- might use a tuple arg, ...
-
 -- DO NOT COMBINE DATABASSE WITH RETRIEVAL
 
 doCSWGetRecords = do
-    -- retrieve all record items
     let url = "https://catalogue-portal.aodn.org.au/geonetwork/srv/eng/csw"
-
-    let query = [r|<?xml version="1.0" encoding="UTF-8"?>
-      <csw:GetRecords xmlns:csw="http://www.opengis.net/cat/csw/2.0.2" service="CSW" version="2.0.2"
-          resultType="results" startPosition="1" maxRecords="5" outputFormat="application/xml"  >
-        <csw:Query typeNames="csw:Record">
-          <csw:Constraint version="1.1.0">
-            <Filter xmlns="http://www.opengis.net/ogc" xmlns:gml="http://www.opengis.net/gml">
-              <PropertyIsLike wildCard="%" singleChar="_" escape="\\">
-                <PropertyName>AnyText</PropertyName>
-                <Literal>%</Literal>
-              </PropertyIsLike>
-            </Filter>
-          </csw:Constraint>
-        </csw:Query>
-      </csw:GetRecords>
-    |]
-
-    putStrLn query
-
+    -- putStrLn query
     response <- doHTTPPost url query
     let s = BLC.unpack $ responseBody response
-
-    -- parse out the metadata identifier/title
-    -- TODO add description
     identifiers <- runX (parseXML s  >>> parseIdentifiers)
+    -- print
+    mapM (putStrLn.format) identifiers
+    return identifiers
+    where
+      format (identifier,title) = identifier ++ " -> " ++ title
 
-    -- print the records,
-    let formattedlst = Prelude.map (\(identifier,title) -> identifier ++ " -> " ++ title) identifiers
-    mapM putStrLn formattedlst
+      query = [r|<?xml version="1.0" encoding="UTF-8"?>
+        <csw:GetRecords xmlns:csw="http://www.opengis.net/cat/csw/2.0.2" service="CSW" version="2.0.2"
+            resultType="results" startPosition="1" maxRecords="5" outputFormat="application/xml"  >
+          <csw:Query typeNames="csw:Record">
+            <csw:Constraint version="1.1.0">
+              <Filter xmlns="http://www.opengis.net/ogc" xmlns:gml="http://www.opengis.net/gml">
+                <PropertyIsLike wildCard="%" singleChar="_" escape="\\">
+                  <PropertyName>AnyText</PropertyName>
+                  <Literal>%</Literal>
+                </PropertyIsLike>
+              </Filter>
+            </csw:Constraint>
+          </csw:Query>
+        </csw:GetRecords>
+      |]
+
 
     -- store to db
     -- let storeToDB (identifier,title) = execute conn "insert into catalog(uuid,title) values (?, ?)" [identifier, title]
@@ -169,8 +137,6 @@ doCSWGetRecords = do
     -- TODO this should return the list of identifiers - rather than use continuation pasing style
 
     -- mapM (\(identifier,title) -> doCSWGetRecordById conn identifier title) identifiers
-    putStrLn "finished"
-    return identifiers
 
 
 
@@ -181,7 +147,6 @@ doCSWGetRecords = do
 
 parseOnlineResources = atTag "gmd:CI_OnlineResource" >>>
   proc l -> do
-    -- leagName <- getAttrValue "NAME"   -< l
     protocol <- atTag "gmd:protocol" >>> getChildren >>> hasName "gco:CharacterString" >>> getChildren >>> getText -< l
     url      <- atTag "gmd:linkage"  >>> getChildren >>> hasName "gmd:URL" >>> getChildren >>> getText -< l
     returnA -< (protocol, url)
@@ -219,44 +184,38 @@ stripSpace = filter $ not.isSpace
 
 getCSWGetRecordById uuid title = do
     -- TODO - pass the catalog as a parameter - or pre-apply the whole thing.
-
-    let url = stripSpace $ [r|
-      https://catalogue-portal.aodn.org.au
-      /geonetwork/srv/eng/csw
-      ?request=GetRecordById
-      &service=CSW
-      &version=2.0.2
-      &elementSetName=full
-      &outputSchema=http://www.isotc211.org/2005/gmd
-      &id= |] ++ uuid
-
     putStrLn $ concatMap id [ title, " ", uuid, " ", url ]
-
     response <- doHTTPGET url
     putStrLn $ "  The status code was: " ++ (show $ statusCode $ responseStatus response)
     let s = BLC.unpack $ responseBody response
     -- putStrLn s
     return s
+    where
+      url = stripSpace $ [r|
+        https://catalogue-portal.aodn.org.au
+        /geonetwork/srv/eng/csw
+        ?request=GetRecordById
+        &service=CSW
+        &version=2.0.2
+        &elementSetName=full
+        &outputSchema=http://www.isotc211.org/2005/gmd
+        &id= |] ++ uuid
 
 
 
-processRecord conn s = do
 
-    -- parse for resources,
-    onlineResources <- runX (parseXML s  >>> parseOnlineResources)
-    -- print resources
-    let lst = Prelude.map (\(protocol,url) -> "  " ++ protocol ++ " -> " ++ url) onlineResources
-    mapM putStrLn lst
 
-    putStrLn "###############"
-    putStrLn "parsing the parameters"
+processOnlineResources conn s = do
+    onlineResources <- runX (parseXML s >>> parseOnlineResources)
+
+    putStrLn $ (show.length) onlineResources
+    mapM (putStrLn.show) onlineResources
 
 
 processDataParameters conn s = do
+    dataParameters <- runX (parseXML s >>> parseDataParameters)
 
-    dataParameters <- runX (parseXML s  >>> parseDataParameters)
     putStrLn $ (show.length) dataParameters
-
     mapM (putStrLn.show) dataParameters
 
 
