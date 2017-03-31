@@ -33,9 +33,20 @@ import Data.Char (isSpace)
 {-
   catalogue-imos, pot, and WMS
   https://github.com/aodn/chef-private/blob/master/data_bags/imos_webapps_geonetwork_harvesters/catalogue_imos.json
+
+  csw getrecordbyid request,
+  https://catalogue-portal.aodn.org.au/geonetwork/srv/eng/csw?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&id=4402cb50-e20a-44ee-93e6-4728259250d2&outputSchema=http://www.isotc211.org/2005/gmd
+
+-- ok now we want to go through the actual damn records,
+
+
+
 -}
 
 -- import qualified Prelude as P
+
+-- IMPORTANT must close!!!
+-- responseClose :: Response a -> IO ()
 
 
 parseXML s = readString [ withValidate no
@@ -49,9 +60,7 @@ atChildName s = getChildren >>> hasName s
 
 getChildText = getChildren >>> getText
 
-
--- limit to just the wms/wfs stuff.
---
+stripSpace = filter $ not.isSpace
 
 
 
@@ -65,9 +74,6 @@ doHTTPGET url = do
 
 
 
-
--- IMPORTANT must close!!!
--- responseClose :: Response a -> IO ()
 
 doHTTPPost url body = do
     let settings = tlsManagerSettings  {
@@ -165,11 +171,6 @@ doCSWGetRecords = do
 
 
 
--- https://catalogue-portal.aodn.org.au/geonetwork/srv/eng/csw?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&id=4402cb50-e20a-44ee-93e6-4728259250d2&outputSchema=http://www.isotc211.org/2005/gmd
--- ok now we want to go through the actual damn records,
-
-
-
 parseOnlineResources = 
   atTag "gmd:CI_OnlineResource" >>>
   proc l -> do
@@ -178,7 +179,6 @@ parseOnlineResources =
     description <- atChildName "gmd:description" >>> atChildName "gco:CharacterString" >>> getChildText -< l
     returnA -< (protocol, linkage, description)
 
--- https://catalogue-portal.aodn.org.au/geonetwork/srv/eng/csw?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&id=0a21e0b9-8acb-4dc2-8c82-57c3ea94dd85&outputSchema=http://www.isotc211.org/2005/gmd
 
 parseDataParameters = 
   atTag "mcp:dataParameter" >>>
@@ -191,15 +191,6 @@ parseDataParameters =
 
 
 
--- TODO separate out retrieving the record and decoding the xml document,.
--- eg. separate out the online resource from the facet search term stuff.
-
--- function is wrongly named, since it is decoding the online resources also,
--- should we pass both title the uuid
-
-
-
-stripSpace = filter $ not.isSpace
 
 
 getCSWGetRecordById uuid title = do
