@@ -217,14 +217,15 @@ processDataParameters conn s = do
     putStrLn $ (show.length) dataParameters
     mapM (putStrLn.show) dataParameters
 
-    
-    xs :: [ (Int, String) ] <- query_ conn "select concept_id, concept_label from facet where concept_url = 'http://vocab.nerc.ac.uk/collection/P01/current/TEMPPR01'"
+    let param = "http://vocab.nerc.ac.uk/collection/P01/current/TEMPPR01"
 
-    let formatRow (id,concept_label) = foldr (++) "" [ show id, " ",  concept_label ]
+    xs :: [ (Int, String) ] <- query conn "select concept_id, concept_label from facet where concept_url = ?" [ (param :: String) ]
+
+    let formatRow (id,concept_label) = foldr (++) "" [ show id, " here -> ",  concept_label ]
     mapM  (putStrLn.formatRow)  xs
 
 
-    -- store resources to db
+-- store resources to db
 --    let storeToDB (protocol,url) = execute conn "insert into resource(catalog_id,protocol,linkage) values ((select id from catalog where uuid = ?), ?, ?)" [uuid, protocol, url]
 --    mapM storeToDB onlineResources
 
