@@ -114,23 +114,7 @@ getRecordsQuery = unlines [
     ]
 -}
 
-getRecordsQuery :: String
-
-getRecordsQuery = [r|<?xml version="1.0" encoding="UTF-8"?>
-  <csw:GetRecords xmlns:csw="http://www.opengis.net/cat/csw/2.0.2" service="CSW" version="2.0.2"
-      resultType="results" startPosition="1" maxRecords="5" outputFormat="application/xml"  >
-    <csw:Query typeNames="csw:Record">
-      <csw:Constraint version="1.1.0">
-        <Filter xmlns="http://www.opengis.net/ogc" xmlns:gml="http://www.opengis.net/gml">
-          <PropertyIsLike wildCard="%" singleChar="_" escape="\\">
-            <PropertyName>AnyText</PropertyName>
-            <Literal>%</Literal>
-          </PropertyIsLike>
-        </Filter>
-      </csw:Constraint>
-    </csw:Query>
-  </csw:GetRecords>
-|]
+-- getRecordsQuery :: String
 
 
 
@@ -148,9 +132,25 @@ doCSWGetRecords = do
     -- retrieve all record items
     let url = "https://catalogue-portal.aodn.org.au/geonetwork/srv/eng/csw"
 
-    putStrLn getRecordsQuery
+    let query = [r|<?xml version="1.0" encoding="UTF-8"?>
+      <csw:GetRecords xmlns:csw="http://www.opengis.net/cat/csw/2.0.2" service="CSW" version="2.0.2"
+          resultType="results" startPosition="1" maxRecords="5" outputFormat="application/xml"  >
+        <csw:Query typeNames="csw:Record">
+          <csw:Constraint version="1.1.0">
+            <Filter xmlns="http://www.opengis.net/ogc" xmlns:gml="http://www.opengis.net/gml">
+              <PropertyIsLike wildCard="%" singleChar="_" escape="\\">
+                <PropertyName>AnyText</PropertyName>
+                <Literal>%</Literal>
+              </PropertyIsLike>
+            </Filter>
+          </csw:Constraint>
+        </csw:Query>
+      </csw:GetRecords>
+    |]
 
-    response <- doHTTPPost url getRecordsQuery
+    putStrLn query
+
+    response <- doHTTPPost url query
     let s = BLC.unpack $ responseBody response
 
     -- parse out the metadata identifier/title
@@ -230,26 +230,17 @@ getCSWGetRecordById uuid title = do
       &outputSchema=http://www.isotc211.org/2005/gmd
       &id= |] ++ uuid
 
-    putStrLn $ title ++ uuid ++ url
+    putStrLn $ concatMap id [ title, " ", uuid, " ", url ]
 
     response <- doHTTPGET url
     putStrLn $ "  The status code was: " ++ (show $ statusCode $ responseStatus response)
     let s = BLC.unpack $ responseBody response
-    putStrLn s
+    -- putStrLn s
     return s
 
 
 
-doCSWGetRecordById conn uuid title = do
-    -- retrieve record
-    putStrLn $ title ++ uuid
-    let url = "https://catalogue-portal.aodn.org.au/geonetwork/srv/eng/csw?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&id=" ++ uuid ++ "&outputSchema=http://www.isotc211.org/2005/gmd"
-
-    putStrLn url
-
-    response <- doHTTPGET url
-    putStrLn $ "  The status code was: " ++ (show $ statusCode $ responseStatus response)
-    let s = BLC.unpack $ responseBody response
+processRecord conn s = do
 
     -- parse for resources,
     onlineResources <- runX (parseXML s  >>> parseOnlineResources)
@@ -295,9 +286,11 @@ main = do
   -- https://github.com/aodn/chef-private/blob/master/data_bags/imos_webapps_geonetwork_harvesters/catalogue_imos.json
   -- actually
 
---  record <- getCSWGetRecordById "4402cb50-e20a-44ee-93e6-4728259250d2" "my argo"
-
   identifiers <- doCSWGetRecords
+
+  record <- getCSWGetRecordById "4402cb50-e20a-44ee-93e6-4728259250d2" "my argo"
+
+  processRecord conn record
 
   return ()
 
