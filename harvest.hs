@@ -305,6 +305,10 @@ processRecord conn (uuid, title) = do
     return ()
 
 
+-- TODO - store the origin catalog .... that we scanned . in fact that 
+-- might be stored in the db, and is ther
+
+-- OK. we should probably let it go to completion
 ----------------
 
 

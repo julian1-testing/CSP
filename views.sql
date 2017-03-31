@@ -47,8 +47,9 @@ select
 
 ------
 
-drop view if exists wms;
-drop view if exists wfs;
+-- change name wms_view
+drop view if exists wms_view;
+drop view if exists wfs_view;
 drop view if exists resource_view;
 
 create view resource_view as
@@ -66,13 +67,13 @@ select
 
 -- quite cool
 
-create view wms as
+create view wms_view as
 select * from resource_view where protocol = 'OGC:WMS-1.1.1-http-get-map'
 ;
 
 -- select * from resource where protocol ~ 'WFS';
 
-create view wfs as
+create view wfs_view as
 select * from resource_view where protocol = 'OGC:WFS-1.0.0-http-get-capabilities'
 ;
 
