@@ -63,7 +63,7 @@ doHTTPGET url = do
 
 
 -- IMPORTANT must close!!!
--- responseClose :: Response a -> IO () 
+-- responseClose :: Response a -> IO ()
 
 doHTTPPost url body = do
     let settings = tlsManagerSettings  {
@@ -91,7 +91,7 @@ parseIdentifiers = atTag "csw:SummaryRecord" >>>
     title      <- getChildren >>> hasName "dc:title" >>> getChildren >>> getText -< l
     returnA -< (identifier, title)
 
-
+{-
 -- QuasiQuotes may be cleaner,
 -- http://kseo.github.io/posts/2014-02-06-multi-line-strings-in-haskell.html
 -- alternatively use the xml constructor stuff from HXT
@@ -110,38 +110,67 @@ getRecordsQuery = unlines [
     "      </Filter>",
     "    </csw:Constraint>",
     "  </csw:Query>",
-    "</csw:GetRecords>" 
+    "</csw:GetRecords>"
     ]
+-}
+
+getRecordsQuery :: String
+
+getRecordsQuery = [r|<?xml version="1.0" encoding="UTF-8"?>
+  <csw:GetRecords xmlns:csw="http://www.opengis.net/cat/csw/2.0.2" service="CSW" version="2.0.2"
+      resultType="results" startPosition="1" maxRecords="5" outputFormat="application/xml"  >
+    <csw:Query typeNames="csw:Record">
+      <csw:Constraint version="1.1.0">
+        <Filter xmlns="http://www.opengis.net/ogc" xmlns:gml="http://www.opengis.net/gml">
+          <PropertyIsLike wildCard="%" singleChar="_" escape="\\">
+            <PropertyName>AnyText</PropertyName>
+            <Literal>%</Literal>
+          </PropertyIsLike>
+        </Filter>
+      </csw:Constraint>
+    </csw:Query>
+  </csw:GetRecords>
+|]
+
+
 
 
 -- TODO need to think about the transaction boundary
 
 -- Also partially bind in the parameters like conn?
--- or pass in the processing function... eg. continuation passing style 
+-- or pass in the processing function... eg. continuation passing style
 
 -- might use a tuple arg, ...
 
-doCSWGetRecords conn = do
+-- DO NOT COMBINE DATABASSE WITH RETRIEVAL
+
+doCSWGetRecords = do
     -- retrieve all record items
     let url = "https://catalogue-portal.aodn.org.au/geonetwork/srv/eng/csw"
+
+    putStrLn getRecordsQuery
+
     response <- doHTTPPost url getRecordsQuery
     let s = BLC.unpack $ responseBody response
 
-    -- parse out the metadata identifier/title  
+    -- parse out the metadata identifier/title
     -- TODO add description
     identifiers <- runX (parseXML s  >>> parseIdentifiers)
 
     -- print the records,
-    let formattedlst = Prelude.map (\(identifier,title) -> identifier ++ " -> " ++ title) identifiers 
+    let formattedlst = Prelude.map (\(identifier,title) -> identifier ++ " -> " ++ title) identifiers
     mapM putStrLn formattedlst
 
     -- store to db
-    let storeToDB (identifier,title) = execute conn "insert into catalog(uuid,title) values (?, ?)" [identifier, title]
-    mapM storeToDB identifiers
+    -- let storeToDB (identifier,title) = execute conn "insert into catalog(uuid,title) values (?, ?)" [identifier, title]
+    -- mapM storeToDB identifiers
 
     -- further process each record,
-    mapM (\(identifier,title) -> doCSWGetRecordById conn identifier title) identifiers 
+    -- TODO this should return the list of identifiers - rather than use continuation pasing style
+
+    -- mapM (\(identifier,title) -> doCSWGetRecordById conn identifier title) identifiers
     putStrLn "finished"
+    return identifiers
 
 
 
@@ -161,14 +190,14 @@ parseOnlineResources = atTag "gmd:CI_OnlineResource" >>>
 
 parseDataParameters = atTag "mcp:dataParameter" >>>
   proc l -> do
-    term <- atTag "mcp:DP_DataParameter" 
-      >>> getChildren >>> hasName "mcp:parameterName" 
+    term <- atTag "mcp:DP_DataParameter"
+      >>> getChildren >>> hasName "mcp:parameterName"
       >>> getChildren >>> hasName "mcp:DP_Term" -< l
 
     txt <- getChildren >>> hasName "mcp:term"  >>> getChildren >>> hasName "gco:CharacterString" >>> getChildren >>> getText -< term
     url <- getChildren >>> hasName "mcp:vocabularyTermURL"  >>> getChildren >>> hasName "gmd:URL" >>> getChildren >>> getText -< term
 
-    returnA -< (txt, url) 
+    returnA -< (txt, url)
 
 
 -- Or combine the parsing, and the sql actions.
@@ -180,22 +209,18 @@ parseDataParameters = atTag "mcp:dataParameter" >>>
 -- TODO separate out retrieving the record and decoding the xml document,.
 -- eg. separate out the online resource from the facet search term stuff.
 
--- function is wrongly named, since it is decoding the online resources also,  
--- should we pass both title the uuid 
+-- function is wrongly named, since it is decoding the online resources also,
+-- should we pass both title the uuid
 
 
 
-
-
--- trim :: String -> String
--- trim = f . f
---   where f = reverse . dropWhile isSpace
 stripSpace = filter $ not.isSpace
 
 
 getCSWGetRecordById uuid title = do
+    -- TODO - pass the catalog as a parameter - or pre-apply the whole thing.
 
-    let url = stripSpace $ [r| 
+    let url = stripSpace $ [r|
       https://catalogue-portal.aodn.org.au
       /geonetwork/srv/eng/csw
       ?request=GetRecordById
@@ -203,7 +228,7 @@ getCSWGetRecordById uuid title = do
       &version=2.0.2
       &elementSetName=full
       &outputSchema=http://www.isotc211.org/2005/gmd
-      &id= |] ++ uuid 
+      &id= |] ++ uuid
 
     putStrLn $ title ++ uuid ++ url
 
@@ -218,20 +243,7 @@ getCSWGetRecordById uuid title = do
 doCSWGetRecordById conn uuid title = do
     -- retrieve record
     putStrLn $ title ++ uuid
-    -- let url = "https://catalogue-portal.aodn.org.au/geonetwork/srv/eng/csw?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&id=" ++ uuid ++ "&outputSchema=http://www.isotc211.org/2005/gmd"
-
-    let url = [r| 
-      https://catalogue-portal.aodn.org.au
-      /geonetwork/srv/eng/csw
-      ?request=GetRecordById
-      &service=CSW
-      &version=2.0.2
-      &elementSetName=full
-      &id= |] ++ uuid ++ [r| 
-      &outputSchema=http://www.isotc211.org/2005/gmd
-    |]
-
-
+    let url = "https://catalogue-portal.aodn.org.au/geonetwork/srv/eng/csw?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&id=" ++ uuid ++ "&outputSchema=http://www.isotc211.org/2005/gmd"
 
     putStrLn url
 
@@ -252,11 +264,11 @@ doCSWGetRecordById conn uuid title = do
     dataParameters <- runX (parseXML s  >>> parseDataParameters)
 
     putStrLn $  (show. length) dataParameters
- 
+
     let lst = Prelude.map (\term -> show term ) dataParameters
     mapM putStrLn lst
 
-   
+
 
     -- store resources to db
 --    let storeToDB (protocol,url) = execute conn "insert into resource(catalog_id,protocol,linkage) values ((select id from catalog where uuid = ?), ?, ?)" [uuid, protocol, url]
@@ -268,7 +280,7 @@ doCSWGetRecordById conn uuid title = do
 -- So how do we do this...
 -- get the data - then store in sql?  can probably do it. relationally...
 -- update...
--- 
+--
 
 
 
@@ -276,14 +288,16 @@ main :: IO ()
 main = do
   conn <- connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
   -- execute conn "truncate resource;"  ()
-  -- note that the sequence will update - 
+  -- note that the sequence will update -
   execute conn "truncate catalog, resource;"  ()
 
   -- doCSWGetRecords conn
-  -- https://github.com/aodn/chef-private/blob/master/data_bags/imos_webapps_geonetwork_harvesters/catalogue_imos.json  
-  -- actually 
+  -- https://github.com/aodn/chef-private/blob/master/data_bags/imos_webapps_geonetwork_harvesters/catalogue_imos.json
+  -- actually
 
-  record <- getCSWGetRecordById "4402cb50-e20a-44ee-93e6-4728259250d2" "my argo"
-  
+--  record <- getCSWGetRecordById "4402cb50-e20a-44ee-93e6-4728259250d2" "my argo"
+
+  identifiers <- doCSWGetRecords
+
   return ()
 
