@@ -213,7 +213,7 @@ processOnlineResources conn s = do
 
 processDataParameter conn uuid dataParameter = do
 
-    xs :: [ (Int, String) ] <- query conn "select concept_id, concept_label from facet where concept_url = ?" [ (dataParameter :: String) ]
+    xs :: [ (Integer, String) ] <- query conn "select concept_id, concept_label from facet where concept_url = ?" [ (dataParameter :: String) ]
 
     -- TODO should always be one.
     putStrLn $ (show.length) xs 
@@ -223,8 +223,8 @@ processDataParameter conn uuid dataParameter = do
         putStrLn "got 1"
 
         let (concept_id, concept_label) : _ = xs
-
-        execute conn "insert into facet(record_id,concept_id) values (?, ?)" [123 :: Integer, 456 :: Integer]
+        -- does the uuid already exist?
+        execute conn "insert into facet(record_id,concept_id) values (?, ?)" [123 :: Integer, concept_id]
 
         putStrLn "got 1"
         
@@ -272,7 +272,7 @@ main = do
   conn <- connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
   -- execute conn "truncate resource;"  ()
   -- note that the sequence will update -
-  execute conn "truncate catalog, resource;" ()
+  execute conn "delete from record *" ()
 
   -- doCSWGetRecords conn
   -- https://github.com/aodn/chef-private/blob/master/data_bags/imos_webapps_geonetwork_harvesters/catalogue_imos.json
