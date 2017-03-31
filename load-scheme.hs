@@ -89,14 +89,10 @@ parseScheme =
 
 storeSchemes conn s = do
     -- parse
-    putStrLn $ "doing schemes"
     schemes <- runX (parseXML s  >>> parseScheme)
     -- mapM (putStrLn.show) schemes
-
     putStrLn $ "  scheme count " ++ (show.length) schemes
-    -- store to db
     mapM store schemes
-
     where 
       store (url,title) = execute conn "insert into scheme(url,title) values (?, ?)" [url, title]
 
@@ -115,15 +111,13 @@ parseConcept =
 
 
 storeConcepts conn s = do
-    let store (url,label) = execute conn "insert into concept(url,label) values (?, ?)" [url, label]
-    -- parse
-    putStrLn $ "doing concepts"
     concepts <- runX (parseXML s  >>> parseConcept)
     -- mapM (putStrLn.show) concepts
     putStrLn $ "  concept count " ++ (show.length) concepts
     -- store to db
     mapM store concepts
-
+    where
+      store (url,label) = execute conn "insert into concept(url,label) values (?, ?)" [url, label]
 
 
 --------------------------
@@ -139,16 +133,12 @@ parseNarrower =
 
 
 storeNarrower conn s = do
-
-    let store conn (url,narrower_url) = execute conn "insert into narrower(concept_id, narrower_id) values ((select id from concept where concept.url = ?), (select id from concept where concept.url = ?))" [url, narrower_url]
-    let store' = store conn
-    putStrLn $ "doing narrower"
     narrower <- runX (parseXML s >>> parseNarrower)
     -- mapM (putStrLn.show) narrower
     putStrLn $ "  narrower count " ++ (show.length) narrower
-    -- store
-    mapM store' narrower
-
+    mapM store narrower
+    where
+      store (url,narrower_url) = execute conn "insert into narrower(concept_id, narrower_id) values ((select id from concept where concept.url = ?), (select id from concept where concept.url = ?))" [url, narrower_url]
 
 
 --------------------------
@@ -164,18 +154,12 @@ parseNarrowMatch =
 
 
 storeNarrowMatchs conn s = do
-
-    let store conn (url,narrower_url) = execute conn "insert into narrow_match(concept_id, narrower_id) values ((select id from concept where concept.url = ?), (select id from concept where concept.url = ?))" [url, narrower_url]
-
-    let store' = store conn
-
-    putStrLn $ "doing narrowMatch"
     narrowMatch <- runX (parseXML s >>> parseNarrowMatch)
-    -- let lst = Prelude.map show narrowMatch
-    -- mapM putStrLn lst
+    -- mapM (putStrLn.show) narrowMatch
     putStrLn $ "  narrowMatch count " ++ (show.length) narrowMatch
-    -- store
-    mapM store' narrowMatch
+    mapM store narrowMatch
+    where 
+      store (url,narrower_url) = execute conn "insert into narrow_match(concept_id, narrower_id) values ((select id from concept where concept.url = ?), (select id from concept where concept.url = ?))" [url, narrower_url]
 
 
 
@@ -194,16 +178,12 @@ parseInScheme =
 
 
 storeInScheme conn s = do
-    let store conn (url,inScheme_url) = execute conn "insert into in_scheme(concept_id, scheme_id) values ((select id from concept where concept.url = ?), (select id from scheme where scheme.url = ?))" [url, inScheme_url]
-    let store' = store conn
-    -- inScheme
-    putStrLn $ "doing inScheme"
     inScheme <- runX (parseXML s >>> parseInScheme)
-    -- let lst = Prelude.map show inScheme
-    -- mapM putStrLn lst
+    -- mapM (putStrLn.show) inScheme
     putStrLn $ "  inScheme count " ++ (show.length) inScheme
-    -- store
-    mapM store' inScheme
+    mapM store inScheme
+    where
+      store (url,inScheme_url) = execute conn "insert into in_scheme(concept_id, scheme_id) values ((select id from concept where concept.url = ?), (select id from scheme where scheme.url = ?))" [url, inScheme_url]
 
 
 
