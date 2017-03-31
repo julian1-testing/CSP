@@ -138,26 +138,31 @@ doCSWGetRecords = do
 
             <csw:Constraint version="1.1.0">
               <Filter xmlns="http://www.opengis.net/ogc" xmlns:gml="http://www.opengis.net/gml">
-                <PropertyIsLike wildCard="%" singleChar="_" escape="\\">
-                  <PropertyName>OnlineResourceType</PropertyName>
-                  <Literal>%WMS%</Literal>
-                </PropertyIsLike>
+
+                <And>
+                  <PropertyIsLike wildCard="%" singleChar="_" escape="\\">
+                    <PropertyName>OnlineResourceType</PropertyName>
+                    <Literal>%WMS%</Literal>
+                  </PropertyIsLike>
+
+                  <PropertyIsLike wildCard="%" singleChar="_" escape="\\">
+                    <PropertyName>PointOfTruth</PropertyName>
+                    <Literal>%catalogue-imos.aodn.org.au%</Literal>
+                  </PropertyIsLike>
+                </And>
+
               </Filter>
             </csw:Constraint>
 
-            <csw:Constraint version="1.1.0">
-              <Filter xmlns="http://www.opengis.net/ogc" xmlns:gml="http://www.opengis.net/gml">
-                <PropertyIsLike wildCard="%" singleChar="_" escape="\\">
-                  <PropertyName>PointOfTruth</PropertyName>
-                  <Literal>%catalogue-imos.aodn.org1.au%</Literal>
-                </PropertyIsLike>
-              </Filter>
-            </csw:Constraint>
 
           </csw:Query>
         </csw:GetRecords>
       |]
 
+
+-- ok, we god a 120 records which is pretty nice.
+
+-- PropertyName  may need to be qualified...
 
 -- the combination of filters isn't working ...
 
