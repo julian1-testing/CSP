@@ -98,6 +98,17 @@ parseCSWSummaryRecord = atTag "csw:SummaryRecord" >>>
 
 
 
+getCSWIdentifiers s = do
+    identifiers <- runX (parseXML s  >>> parseCSWSummaryRecord)
+    -- print
+    -- mapM (putStrLn.format) identifiers
+    mapM (putStrLn.show) identifiers
+
+    putStrLn $ (++) "count: " $ (show.length) identifiers
+    return identifiers
+
+
+
 -- TODO need to think about the transaction boundary
 -- DO NOT COMBINE DATABASSE WITH RETRIEVAL
 
@@ -106,7 +117,8 @@ doCSWGetRecords = do
     -- putStrLn query
     response <- doHTTPPost url queryWMSAndIMOS
     let s = BLC.unpack $ responseBody response
-
+    return s
+{-
     identifiers <- runX (parseXML s  >>> parseCSWSummaryRecord)
     -- print
     -- mapM (putStrLn.format) identifiers
@@ -114,6 +126,9 @@ doCSWGetRecords = do
 
     putStrLn $ (++) "count: " $ (show.length) identifiers
     return identifiers
+
+    s
+-}
     where
       -- format (identifier,title) = identifier ++ " -> " ++ title
 
@@ -135,7 +150,7 @@ doCSWGetRecords = do
 
       queryWMSAndIMOS = [r|<?xml version="1.0" encoding="UTF-8"?>
         <csw:GetRecords xmlns:csw="http://www.opengis.net/cat/csw/2.0.2" service="CSW" version="2.0.2"
-            resultType="results" startPosition="1" maxRecords="1000" outputFormat="application/xml"  >
+            resultType="results" startPosition="1" maxRecords="5" outputFormat="application/xml"  >
           <csw:Query typeNames="csw:Record">
             <csw:Constraint version="1.1.0">
               <Filter xmlns="http://www.opengis.net/ogc" xmlns:gml="http://www.opengis.net/gml">
@@ -280,10 +295,10 @@ processDataParameters conn uuid recordText = do
 
 processRecord conn (uuid, title) = do
 
-    let uuid = "4402cb50-e20a-44ee-93e6-4728259250d2"
-    record <- getCSWGetRecordById uuid "my argo"
+    -- let uuid = "4402cb50-e20a-44ee-93e6-4728259250d2"
+    record <- getCSWGetRecordById uuid title -- "my argo"
 
-    processRecordUUID conn uuid "my argo"
+    processRecordUUID conn uuid title 
     processDataParameters conn uuid record
     processOnlineResources conn uuid record
 
@@ -305,6 +320,10 @@ main = do
   -- TODO - seperate out query and parse action - 
   -- do query and get records
   identifiers <- doCSWGetRecords
+
+  s <- doCSWGetRecords 
+
+  identifiers <- getCSWIdentifiers s 
 
   mapM (processRecord conn) identifiers
 
