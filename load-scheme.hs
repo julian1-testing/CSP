@@ -6,6 +6,8 @@
 -- needed for disambiguating types,
 {-# LANGUAGE ScopedTypeVariables, OverloadedStrings #-}
 
+{-# LANGUAGE QuasiQuotes #-}
+
 import Text.XML.HXT.Core
 
 import qualified Data.ByteString as B
@@ -13,6 +15,9 @@ import qualified Data.ByteString.Char8 as BC
 import qualified Data.ByteString.Lazy.Char8 as BLC
 
 import Database.PostgreSQL.Simple
+
+import Text.RawString.QQ
+
 
 {-
   http://vocabs.ands.org.au/repository/api/lda/aodn/aodn-discovery-parameter-vocabulary/version-1-2/resource.xml?uri=http://vocab.aodn.org.au/def/discovery_parameter/894
@@ -23,27 +28,6 @@ import Database.PostgreSQL.Simple
 
   https://s3-ap-southeast-2.amazonaws.com/content.aodn.org.au/Vocabularies/parameter-category/aodn_aodn-parameter-category-vocabulary.rdf
 
-
-<rdf:Description rdf:about="http://vocab.aodn.org.au/def/parameter_classes/category/53">
-	<rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
-	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
-	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2014-06-01T00:00:00Z</dcterms:created>
-	<dcterms:creator xml:lang="en">Sebastien Mancini</dcterms:creator>
-	<dc:publisher rdf:datatype="http://www.w3.org/2001/XMLSchema#string">eMarine Information Infrastructure (eMII)</dc:publisher>
-	<dc:source rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Australian Ocean Data Network parameter category register</dc:source>
-	<skos:definition xml:lang="en">This category contains vocabulary terms describing physical atmosphere parameters</skos:definition>
-	<skos:inScheme rdf:resource="http://vocab.aodn.org.au/def/parameter_classes/1"/>
-	<skos:prefLabel xml:lang="en">Physical-Atmosphere</skos:prefLabel>
-	<skos:narrower rdf:resource="http://vocab.aodn.org.au/def/parameter_classes/category/10"/>
-	<skos:narrower rdf:resource="http://vocab.aodn.org.au/def/parameter_classes/category/22"/>
-	<skos:narrower rdf:resource="http://vocab.aodn.org.au/def/parameter_classes/category/30"/>
-	<skos:narrower rdf:resource="http://vocab.aodn.org.au/def/parameter_classes/category/48"/>
-	<skos:narrower rdf:resource="http://vocab.aodn.org.au/def/parameter_classes/category/6"/>
-	<skos:narrower rdf:resource="http://vocab.aodn.org.au/def/parameter_classes/category/7"/>
-	<skos:narrower rdf:resource="http://vocab.aodn.org.au/def/parameter_classes/category/8"/>
-	<skos:narrower rdf:resource="http://vocab.aodn.org.au/def/parameter_classes/category/9"/>
-	<skos:topConceptOf rdf:resource="http://vocab.aodn.org.au/def/parameter_classes/1"/>
-</rdf:Description>
 
 -}
 
@@ -88,14 +72,13 @@ parseScheme =
 
 
 storeSchemes conn s = do
-    -- parse
     schemes <- runX (parseXML s  >>> parseScheme)
     -- mapM (putStrLn.show) schemes
     putStrLn $ "  scheme count " ++ (show.length) schemes
     mapM store schemes
     where 
-      store (url,title) = execute conn "insert into scheme(url,title) values (?, ?)" [url, title]
-
+      query = "insert into scheme(url,title) values (?, ?)"
+      store (url,title) = execute conn query [url, title]
 
 
 --------------------------
@@ -117,7 +100,8 @@ storeConcepts conn s = do
     -- store to db
     mapM store concepts
     where
-      store (url,label) = execute conn "insert into concept(url,label) values (?, ?)" [url, label]
+      query = "insert into concept(url,label) values (?, ?)"
+      store (url,label) = execute conn query [url, label]
 
 
 --------------------------
@@ -138,7 +122,14 @@ storeNarrower conn s = do
     putStrLn $ "  narrower count " ++ (show.length) narrower
     mapM store narrower
     where
-      store (url,narrower_url) = execute conn "insert into narrower(concept_id, narrower_id) values ((select id from concept where concept.url = ?), (select id from concept where concept.url = ?))" [url, narrower_url]
+      query = [r|
+        insert into narrower(concept_id, narrower_id) 
+        values (
+          (select id from concept where concept.url = ?), 
+          (select id from concept where concept.url = ?)
+        )
+      |]
+      store (url,narrower_url) = execute conn query [url, narrower_url]
 
 
 --------------------------
@@ -159,8 +150,14 @@ storeNarrowMatchs conn s = do
     putStrLn $ "  narrowMatch count " ++ (show.length) narrowMatch
     mapM store narrowMatch
     where 
-      store (url,narrower_url) = execute conn "insert into narrow_match(concept_id, narrower_id) values ((select id from concept where concept.url = ?), (select id from concept where concept.url = ?))" [url, narrower_url]
-
+      query = [r|
+        insert into narrow_match(concept_id, narrower_id) 
+        values (
+          (select id from concept where concept.url = ?), 
+          (select id from concept where concept.url = ?)
+        )
+      |]
+      store (url,narrower_url) = execute conn query [url, narrower_url]
 
 
 
@@ -183,7 +180,14 @@ storeInScheme conn s = do
     putStrLn $ "  inScheme count " ++ (show.length) inScheme
     mapM store inScheme
     where
-      store (url,inScheme_url) = execute conn "insert into in_scheme(concept_id, scheme_id) values ((select id from concept where concept.url = ?), (select id from scheme where scheme.url = ?))" [url, inScheme_url]
+      query = [r|
+        insert into in_scheme(concept_id, scheme_id) 
+        values (
+          (select id from concept where concept.url = ?), 
+          (select id from scheme where scheme.url = ?)
+        )
+      |]
+      store (url,inScheme_url) = execute conn query [url, inScheme_url]
 
 
 

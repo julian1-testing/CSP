@@ -14,6 +14,8 @@ cabal install warp
 
 # cabal install http-client
 cabal install http-client-tls
+cabal install raw-strings-qq
+
 
 
 
