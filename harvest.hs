@@ -249,15 +249,13 @@ create table facet (
 
 processDataParameter conn uuid dataParameter = do
     -- look up the required concept
-    xs :: [ (Integer, String) ] <- query conn "select id, label from concept where url = ?" [ (dataParameter :: String) ]
+    -- xs :: [ (Integer, String) ] <- query conn "select id, label from concept where url = ?" [ (dataParameter :: String) ]
+    xs :: [ (Integer, String) ] <- query conn "select id, label from concept where url = ?" (Only dataParameter)
     -- putStrLn $ (show.length) xs 
     case length xs of
       1 -> do
         -- store the concept
-        -- TODO why is concept_id a string here - rather than a typed integer? -- hmmm because it's an array which means everything would need to be the same type 
         let (concept_id, concept_label) : _ = xs
-        -- execute conn "insert into facet(concept_id, record_id) values (?, (select record.id from record where record.uuid = ?))" [ (concept_id :: Integer, uuid :: String) ]
-        -- execute conn "insert into facet(concept_id, record_id) values (?, (select record.id from record where record.uuid = ?))" [ show concept_id , uuid :: String ]
         execute conn "insert into facet(concept_id, record_id) values (?, (select record.id from record where record.uuid = ?))" (concept_id :: Integer, uuid :: String) 
         return ()
         

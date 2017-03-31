@@ -36,6 +36,10 @@ psql -h postgres.localnet -U harvest -d harvest -f views.sql
 
 #### refs
 
+
+- postgresql simple
+  https://hackage.haskell.org/package/postgresql-simple-0.5.2.1/docs/Database-PostgreSQL-Simple.html
+
 - parameter vocabulary
   https://s3-ap-southeast-2.amazonaws.com/content.aodn.org.au/Vocabularies/parameter-category/aodn_aodn-parameter-category-vocabulary.rdf
 
