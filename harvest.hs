@@ -6,6 +6,7 @@
 -- needed for disambiguating types,
 {-# LANGUAGE ScopedTypeVariables, OverloadedStrings #-}
 
+{-# LANGUAGE QuasiQuotes #-}
 
 
 import Text.XML.HXT.Core
@@ -25,6 +26,14 @@ import qualified Data.ByteString.Lazy.Char8 as BLC
 
 import Database.PostgreSQL.Simple
 
+import Text.RawString.QQ
+
+import Data.Char (isSpace)
+
+{-
+  catalogue-imos, pot, and WMS
+  https://github.com/aodn/chef-private/blob/master/data_bags/imos_webapps_geonetwork_harvesters/catalogue_imos.json
+-}
 
 -- import qualified Prelude as P
 
@@ -173,10 +182,62 @@ parseDataParameters = atTag "mcp:dataParameter" >>>
 
 -- function is wrongly named, since it is decoding the online resources also,  
 -- should we pass both title the uuid 
+
+
+
+
+
+-- trim :: String -> String
+-- trim = f . f
+--   where f = reverse . dropWhile isSpace
+stripSpace = filter $ not.isSpace
+
+
+getCSWGetRecordById uuid title = do
+    -- retrieve record
+    putStrLn $ title ++ uuid
+
+    -- let url = "https://catalogue-portal.aodn.org.au/geonetwork/srv/eng/csw?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&id=" ++ uuid ++ "&outputSchema=http://www.isotc211.org/2005/gmd"
+
+    let url = stripSpace $ [r| 
+      https://catalogue-portal.aodn.org.au
+      /geonetwork/srv/eng/csw
+      ?request=GetRecordById
+      &service=CSW
+      &version=2.0.2
+      &elementSetName=full
+      &outputSchema=http://www.isotc211.org/2005/gmd
+      &id= |] ++ uuid 
+
+    putStrLn url
+
+    response <- doHTTPGET url
+    putStrLn $ "  The status code was: " ++ (show $ statusCode $ responseStatus response)
+    -- s <- BLC.unpack $ responseBody response
+
+    let s = BLC.unpack $ responseBody response
+    putStrLn s
+    return s
+
+
+
 doCSWGetRecordById conn uuid title = do
     -- retrieve record
     putStrLn $ title ++ uuid
-    let url = "https://catalogue-portal.aodn.org.au/geonetwork/srv/eng/csw?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&id=" ++ uuid ++ "&outputSchema=http://www.isotc211.org/2005/gmd"
+    -- let url = "https://catalogue-portal.aodn.org.au/geonetwork/srv/eng/csw?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&id=" ++ uuid ++ "&outputSchema=http://www.isotc211.org/2005/gmd"
+
+    let url = [r| 
+      https://catalogue-portal.aodn.org.au
+      /geonetwork/srv/eng/csw
+      ?request=GetRecordById
+      &service=CSW
+      &version=2.0.2
+      &elementSetName=full
+      &id= |] ++ uuid ++ [r| 
+      &outputSchema=http://www.isotc211.org/2005/gmd
+    |]
+
+
 
     putStrLn url
 
@@ -224,7 +285,11 @@ main = do
   -- note that the sequence will update - 
   execute conn "truncate catalog, resource;"  ()
 
-  doCSWGetRecords conn
+  -- doCSWGetRecords conn
+  -- https://github.com/aodn/chef-private/blob/master/data_bags/imos_webapps_geonetwork_harvesters/catalogue_imos.json  
+  -- actually 
 
+  record <- getCSWGetRecordById "4402cb50-e20a-44ee-93e6-4728259250d2" "my argo"
   
+  return ()
 

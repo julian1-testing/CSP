@@ -28,7 +28,6 @@ import Text.RawString.QQ
 
   https://s3-ap-southeast-2.amazonaws.com/content.aodn.org.au/Vocabularies/parameter-category/aodn_aodn-parameter-category-vocabulary.rdf
 
-
 -}
 
 parseXML s = readString [ withValidate no
@@ -188,7 +187,6 @@ storeInScheme conn s = do
         )
       |]
       store (url,inScheme_url) = execute conn query [url, inScheme_url]
-
 
 
 --------------------------
