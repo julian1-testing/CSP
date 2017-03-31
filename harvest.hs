@@ -194,10 +194,6 @@ stripSpace = filter $ not.isSpace
 
 
 getCSWGetRecordById uuid title = do
-    -- retrieve record
-    putStrLn $ title ++ uuid
-
-    -- let url = "https://catalogue-portal.aodn.org.au/geonetwork/srv/eng/csw?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&id=" ++ uuid ++ "&outputSchema=http://www.isotc211.org/2005/gmd"
 
     let url = stripSpace $ [r| 
       https://catalogue-portal.aodn.org.au
@@ -209,12 +205,10 @@ getCSWGetRecordById uuid title = do
       &outputSchema=http://www.isotc211.org/2005/gmd
       &id= |] ++ uuid 
 
-    putStrLn url
+    putStrLn $ title ++ uuid ++ url
 
     response <- doHTTPGET url
     putStrLn $ "  The status code was: " ++ (show $ statusCode $ responseStatus response)
-    -- s <- BLC.unpack $ responseBody response
-
     let s = BLC.unpack $ responseBody response
     putStrLn s
     return s
