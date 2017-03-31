@@ -200,6 +200,13 @@ getCSWGetRecordById uuid title = do
 
 
 
+processRecordUUID conn uuid title = do
+
+--  uuid        text not null unique,
+--  title       text not null
+
+  execute conn "insert into record(uuid,title) values (?, ?)" [uuid :: String, title :: String]
+
 
 
 processOnlineResources conn s = do
@@ -287,6 +294,8 @@ main = do
 
   let uuid = "4402cb50-e20a-44ee-93e6-4728259250d2"
   record <- getCSWGetRecordById uuid "my argo"
+
+  processRecordUUID conn uuid "my argo"
 
   processDataParameters conn uuid record
 
