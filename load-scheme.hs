@@ -18,6 +18,7 @@ import Database.PostgreSQL.Simple
 
 import Text.RawString.QQ
 
+-- TODO change name - load-vocab-scheme? 
 
 {-
   http://vocabs.ands.org.au/repository/api/lda/aodn/aodn-discovery-parameter-vocabulary/version-1-2/resource.xml?uri=http://vocab.aodn.org.au/def/discovery_parameter/894

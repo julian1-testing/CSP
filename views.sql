@@ -1,4 +1,6 @@
 
+-- separate from create tables - to allow easier change
+
 begin;
 drop view if exists concept_view;
 

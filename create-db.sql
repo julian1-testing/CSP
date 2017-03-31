@@ -80,9 +80,10 @@ create table record (
 
 alter table record owner to harvest;
 
--- TODO add uniqueness constraints - dd
+-- TODO need uniqueness constraints - dd
 
 create table resource (
+  -- mcp2 resource
 
   id serial   primary key not null,
   record_id  integer references record(id), 

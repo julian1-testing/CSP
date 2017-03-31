@@ -1,5 +1,12 @@
 
+### Vim
 
+from,
+vim /usr/share/vim/vim80/syntax/haskell.vim
+
+:let hs_highlight_delimiters = 1
+:let hs_highlight_types = 1
+:let hs_highlight_more_types = 1
 
 ### Build,
 

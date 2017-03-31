@@ -1,4 +1,12 @@
 
+- do resources
+- need more indexing. (refine query to mcp2)
+  - separate out the index into an independent action - so that can run it again?
+- try to construct return value - with loop.
+  - maybe able to do this without full indexing.
+
+------
+
 - online resources
 - vocab/ skos - facet - and search term
 - wms - wfs association. 

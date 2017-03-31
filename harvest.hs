@@ -207,6 +207,11 @@ processRecordUUID conn uuid title = do
 
 
 
+processOnlineResource conn uuid recordText = do
+
+    putStrLn "stub"
+
+
 processOnlineResources conn s = do
     onlineResources <- runX (parseXML s >>> parseOnlineResources)
     putStrLn $ (show.length) onlineResources
@@ -216,23 +221,21 @@ processOnlineResources conn s = do
 
 
 
-processDataParameter conn uuid dataParameter = do
-    -- don't want to use the general view - here, since it may chnage 
-    xs :: [ (Integer, String) ] <- query conn "select id, label from concept where url = ?" [ (dataParameter :: String) ]
-    -- putStrLn $ (show.length) xs 
-    case length xs of
-      1 -> do
-        let (concept_id, concept_label) : _ = xs
-        -- concept_id should be an integer not a string?
-        execute conn "insert into facet(concept_id, record_id) values (?, (select record.id from record where record.uuid = ?))" [ show concept_id , uuid :: String]
-        return ()
-        
-      0 -> putStrLn "dataParameter not found"
-      _ -> putStrLn "multiple dataParameters?"
- 
+
 
 
 {-
+create table resource (
+  -- mcp2 resource
+
+  id serial   primary key not null,
+  record_id  integer references record(id), 
+
+  protocol    text not null,
+  linkage     text not null,
+  description text 
+);
+
 create table facet (
 
   id serial   primary key not null,
@@ -240,6 +243,27 @@ create table facet (
   concept_id  integer references concept(id)
 )
 -} 
+
+
+
+
+processDataParameter conn uuid dataParameter = do
+    -- look up the required concept
+    xs :: [ (Integer, String) ] <- query conn "select id, label from concept where url = ?" [ (dataParameter :: String) ]
+    -- putStrLn $ (show.length) xs 
+    case length xs of
+      1 -> do
+        -- store the concept
+        -- TODO why is concept_id a string here - rather than a typed integer? -- hmmm because it's an array which means everything would need to be the same type 
+        let (concept_id, concept_label) : _ = xs
+        -- execute conn "insert into facet(concept_id, record_id) values (?, (select record.id from record where record.uuid = ?))" [ (concept_id :: Integer, uuid :: String) ]
+        -- execute conn "insert into facet(concept_id, record_id) values (?, (select record.id from record where record.uuid = ?))" [ show concept_id , uuid :: String ]
+        execute conn "insert into facet(concept_id, record_id) values (?, (select record.id from record where record.uuid = ?))" (concept_id :: Integer, uuid :: String) 
+        return ()
+        
+      0 -> putStrLn "dataParameter not found"
+      _ -> putStrLn "multiple dataParameters?"
+
 
 processDataParameters conn uuid recordText = do
 
