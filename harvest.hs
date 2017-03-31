@@ -144,9 +144,10 @@ doCSWGetRecords = do
 
 parseOnlineResources = atTag "gmd:CI_OnlineResource" >>>
   proc l -> do
-    protocol <- atTag "gmd:protocol" >>> getChildren >>> hasName "gco:CharacterString" >>> getChildren >>> getText -< l
-    url      <- atTag "gmd:linkage"  >>> getChildren >>> hasName "gmd:URL" >>> getChildren >>> getText -< l
-    returnA -< (protocol, url)
+    protocol    <- atTag "gmd:protocol" >>> getChildren >>> hasName "gco:CharacterString" >>> getChildren >>> getText -< l
+    linkage     <- atTag "gmd:linkage"  >>> getChildren >>> hasName "gmd:URL" >>> getChildren >>> getText -< l
+    description <- atTag "gmd:description" >>> getChildren >>> hasName "gco:CharacterString" >>> getChildren >>> getText -< l
+    returnA -< (protocol, linkage, description)
 
 -- https://catalogue-portal.aodn.org.au/geonetwork/srv/eng/csw?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&id=0a21e0b9-8acb-4dc2-8c82-57c3ea94dd85&outputSchema=http://www.isotc211.org/2005/gmd
 
@@ -156,8 +157,8 @@ parseDataParameters = atTag "mcp:dataParameter" >>>
       >>> getChildren >>> hasName "mcp:parameterName"
       >>> getChildren >>> hasName "mcp:DP_Term" -< l
 
-    txt <- getChildren >>> hasName "mcp:term"  >>> getChildren >>> hasName "gco:CharacterString" >>> getChildren >>> getText -< term
-    url <- getChildren >>> hasName "mcp:vocabularyTermURL"  >>> getChildren >>> hasName "gmd:URL" >>> getChildren >>> getText -< term
+    txt  <- getChildren >>> hasName "mcp:term"  >>> getChildren >>> hasName "gco:CharacterString" >>> getChildren >>> getText -< term
+    url  <- getChildren >>> hasName "mcp:vocabularyTermURL"  >>> getChildren >>> hasName "gmd:URL" >>> getChildren >>> getText -< term
 
     returnA -< (txt, url)
 
@@ -200,23 +201,22 @@ getCSWGetRecordById uuid title = do
 
 
 
+----------------
+
 processRecordUUID conn uuid title = do
-  --  uuid        text not null unique,
-  --  title       text not null
-  execute conn "insert into record(uuid,title) values (?, ?)" [uuid :: String, title :: String]
+  execute conn "insert into record(uuid,title) values (?, ?)"   
+    (uuid :: String, title :: String)
 
 
+----------------
 
-
--- store resources to db
---    let storeToDB (protocol,url) = execute conn "insert into resource(catalog_id,protocol,linkage) values ((select id from catalog where uuid = ?), ?, ?)" [uuid, protocol, url]
---    mapM storeToDB onlineResources
-
-
-
-processOnlineResource conn uuid (protocol,url) = do
-
-    execute conn "insert into resource(record_id,protocol,linkage) values ((select id from record where uuid = ?), ?, ?)" (uuid :: String, protocol :: String, url)
+processOnlineResource conn uuid (protocol,linkage, description) = do
+    execute conn [r|
+      insert into resource(record_id,protocol,linkage, description) 
+      values (
+        (select id from record where uuid = ?), ?, ?, ?
+      )
+    |] (uuid :: String, protocol :: String, linkage, description)
 
     putStrLn "stored resource"
 
@@ -256,10 +256,10 @@ create table facet (
 
 
 
-processDataParameter conn uuid dataParameter = do
+processDataParameter conn uuid (term, url) = do
     -- look up the required concept
     -- xs :: [ (Integer, String) ] <- query conn "select id, label from concept where url = ?" [ (dataParameter :: String) ]
-    xs :: [ (Integer, String) ] <- query conn "select id, label from concept where url = ?" (Only dataParameter)
+    xs :: [ (Integer, String) ] <- query conn "select id, label from concept where url = ?" (Only url )
     -- putStrLn $ (show.length) xs 
     case length xs of
       1 -> do
@@ -279,7 +279,8 @@ processDataParameters conn uuid recordText = do
     putStrLn $ (show.length) dataParameters
     mapM (putStrLn.show) dataParameters
 
-    mapM (\(title,url) -> processDataParameter conn uuid url) dataParameters
+    -- mapM (\(title,url) -> processDataParameter conn uuid url) dataParameters
+    mapM (processDataParameter conn uuid) dataParameters
 
 
 
@@ -314,7 +315,6 @@ main = do
 
   processDataParameters conn uuid record
 
-  -- processOnlineResources conn uuid recordText = do
   processOnlineResources conn uuid record
 
   return ()
