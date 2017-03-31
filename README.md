@@ -20,7 +20,7 @@ cabal install postgresql-simple
 ```
 
 
-#### create the db
+### create the db
 ```
 psql -h postgres.localnet -U admin -d postgres -f create-db.sql
 psql -h postgres.localnet -U harvest -d harvest -f views.sql
@@ -35,7 +35,7 @@ psql -h postgres.localnet -U harvest -d harvest -f views.sql
 
 
 
-#### Notes, on libraries
+### Old - Notes, on libraries
 
 http-client 
     https://haskell-lang.org/library/http-client 
