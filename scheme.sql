@@ -1,7 +1,12 @@
 
+begin;
+drop view facet;
 
+create view facet as
 select 
+  concept.id    as concept_id,
   concept.label as concept_label,
+  concept.url as concept_url,
   narrower_concept.label as narrower_label,
   narrow_match_concept.label as narrow_match_label,
   scheme.title as scheme_title 
@@ -15,12 +20,12 @@ select
   left join concept as narrower_concept on narrower_concept.id = narrower.concept_id
   left join concept as narrow_match_concept on narrow_match_concept.id = narrow_match.concept_id
 
-
   left join scheme on scheme.id = in_scheme.scheme_id
 
   order by concept.url
 
+  -- each thing should only have its parent, otherwise it will be be entered twice, 
 ;
 
-
+commit;
 

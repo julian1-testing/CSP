@@ -94,10 +94,6 @@ parseIdentifiers = atTag "csw:SummaryRecord" >>>
 
 
 -- TODO need to think about the transaction boundary
-
--- Also partially bind in the parameters like conn?
--- or pass in the processing function... eg. continuation passing style
-
 -- DO NOT COMBINE DATABASSE WITH RETRIEVAL
 
 doCSWGetRecords = do
@@ -129,14 +125,15 @@ doCSWGetRecords = do
       |]
 
 
-    -- store to db
-    -- let storeToDB (identifier,title) = execute conn "insert into catalog(uuid,title) values (?, ?)" [identifier, title]
-    -- mapM storeToDB identifiers
+-- OLD storing code
+-- store to db
+-- let storeToDB (identifier,title) = execute conn "insert into catalog(uuid,title) values (?, ?)" [identifier, title]
+-- mapM storeToDB identifiers
 
-    -- further process each record,
-    -- TODO this should return the list of identifiers - rather than use continuation pasing style
+-- further process each record,
+-- TODO this should return the list of identifiers - rather than use continuation pasing style
 
-    -- mapM (\(identifier,title) -> doCSWGetRecordById conn identifier title) identifiers
+-- mapM (\(identifier,title) -> doCSWGetRecordById conn identifier title) identifiers
 
 
 
@@ -207,25 +204,29 @@ getCSWGetRecordById uuid title = do
 
 processOnlineResources conn s = do
     onlineResources <- runX (parseXML s >>> parseOnlineResources)
-
     putStrLn $ (show.length) onlineResources
     mapM (putStrLn.show) onlineResources
 
+    -- let storeToDB (identifier,title) = execute conn "insert into catalog(uuid,title) values (?, ?)" [identifier, title]
+
+
 
 processDataParameters conn s = do
-    dataParameters <- runX (parseXML s >>> parseDataParameters)
 
+    dataParameters <- runX (parseXML s >>> parseDataParameters)
     putStrLn $ (show.length) dataParameters
     mapM (putStrLn.show) dataParameters
 
+    
+    xs :: [ (Int, String) ] <- query_ conn "select concept_id, concept_label from facet where concept_url = 'http://vocab.nerc.ac.uk/collection/P01/current/TEMPPR01'"
+
+    let formatRow (id,concept_label) = foldr (++) "" [ show id, " ",  concept_label ]
+    mapM  (putStrLn.formatRow)  xs
 
 
     -- store resources to db
 --    let storeToDB (protocol,url) = execute conn "insert into resource(catalog_id,protocol,linkage) values ((select id from catalog where uuid = ?), ?, ?)" [uuid, protocol, url]
 --    mapM storeToDB onlineResources
-
-    putStrLn "  finished"
-
 
 -- So how do we do this...
 -- get the data - then store in sql?  can probably do it. relationally...
@@ -239,7 +240,7 @@ main = do
   conn <- connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
   -- execute conn "truncate resource;"  ()
   -- note that the sequence will update -
-  execute conn "truncate catalog, resource;"  ()
+  execute conn "truncate catalog, resource;" ()
 
   -- doCSWGetRecords conn
   -- https://github.com/aodn/chef-private/blob/master/data_bags/imos_webapps_geonetwork_harvesters/catalogue_imos.json
