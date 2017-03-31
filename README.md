@@ -1,11 +1,9 @@
 
 
-### parameter vocabulary
-https://s3-ap-southeast-2.amazonaws.com/content.aodn.org.au/Vocabularies/parameter-category/aodn_aodn-parameter-category-vocabulary.rdf
-
 
 ### Build,
 
+```
 apt-get install cabal-install
 cabal install hxt
 cabal install hxt-curl
@@ -19,16 +17,25 @@ cabal install raw-strings-qq
 apt-get install libpq-dev
 cabal install postgresql-simple
 
+```
+
 
 #### create the db
+```
 psql -h postgres.localnet -U admin -d postgres -f create-db.sql
+psql -h postgres.localnet -U admin -d postgres -f views.sql
+```
+
+
+#### refs
+
+- parameter vocabulary
+  https://s3-ap-southeast-2.amazonaws.com/content.aodn.org.au/Vocabularies/parameter-category/aodn_aodn-parameter-category-vocabulary.rdf
 
 
 
 
-
-
-# Notes, on libraries
+#### Notes, on libraries
 
 http-client 
     https://haskell-lang.org/library/http-client 
