@@ -23,7 +23,7 @@ cabal install postgresql-simple
 #### create the db
 ```
 psql -h postgres.localnet -U admin -d postgres -f create-db.sql
-psql -h postgres.localnet -U admin -d postgres -f views.sql
+psql -h postgres.localnet -U harvest -d harvest -f views.sql
 ```
 
 
