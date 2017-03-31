@@ -135,26 +135,20 @@ doCSWGetRecords = do
         <csw:GetRecords xmlns:csw="http://www.opengis.net/cat/csw/2.0.2" service="CSW" version="2.0.2"
             resultType="results" startPosition="1" maxRecords="1000" outputFormat="application/xml"  >
           <csw:Query typeNames="csw:Record">
-
             <csw:Constraint version="1.1.0">
               <Filter xmlns="http://www.opengis.net/ogc" xmlns:gml="http://www.opengis.net/gml">
-
                 <And>
                   <PropertyIsLike wildCard="*" singleChar="_" escape="\\">
                     <PropertyName>OnlineResourceType</PropertyName>
                     <Literal>*WMS*</Literal>
                   </PropertyIsLike>
-
                   <PropertyIsLike wildCard="*" singleChar="_" escape="\\">
                     <PropertyName>PointOfTruth</PropertyName>
                     <Literal>*catalogue-imos.aodn.org.au*</Literal>
                   </PropertyIsLike>
                 </And>
-
               </Filter>
             </csw:Constraint>
-
-
           </csw:Query>
         </csw:GetRecords>
       |]
