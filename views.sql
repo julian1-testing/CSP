@@ -7,19 +7,16 @@
 
 begin;
 
--- drop view if exists concept_view
--- drop view if exists parent_view;
 drop view if exists concept_count_view;
 drop view if exists facet_count_view;
 drop view if exists wms_view;
 drop view if exists wfs_view;
 drop view if exists resource_view;
 drop view if exists concept_view;
-
 drop view if exists parent_view;
 
 
--- associate child/ parent relationships between concepts via skos:narrower and skos:narrowMatch
+-- associate concept parent (eg. skos:broader) relationships between concepts via skos:narrower and skos:narrowMatch
 
 create view parent_view as
 select 
@@ -50,7 +47,7 @@ select
 
 
 
-
+-- view of concept parent relationships with more detail provided
 
 create view concept_view as
 select 
@@ -83,9 +80,9 @@ select
 
 -- this is badly named - should be facet_index or something
 
-drop view if exists facet_view;
+drop view if exists facet_match_view;
 
-create view facet_view as
+create view facet_match_view as
 select 
   record.uuid,
   record.title,
@@ -129,12 +126,12 @@ select * from resource_view where protocol = 'OGC:WFS-1.0.0-http-get-capabilitie
 ;
 
 
--- gets counts on leaf nodes - eg matching concepts,
--- TODO change name matching ???? record_matching? 
+
 
 create view facet_count_view as
 select  
   concept.id as concept_id, 
+  concept.label as concept_label, 
   concept.url as concept_url, 
   count(facet.record_id) 
   from concept 
@@ -142,8 +139,23 @@ select
   group by concept.id
 ;
 
--- sum the damn counts 
 
+-- gets counts on leaf nodes - eg matching concepts,
+-- TODO change name matching ???? record_matching? 
+
+-- create view facet_count_view as
+-- select  
+--   parent_view.id, 
+  -- concept.url as concept_url, 
+--  count(facet.record_id) 
+-- 
+--  from parent_view
+--   left join facet on facet.concept_id = concept.id 
+--  group by concept.id
+-- ;
+
+-- sum the damn counts 
+-- not sure if it's possible because it would mean a bottom up - like traversal
 
 
 

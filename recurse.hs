@@ -48,12 +48,12 @@ recurse conn depth (parent_id, label) = do
 
 
 getAllConcepts conn  = do
-
+  -- this has nulls for the parent relatinship for top-level stuff....
   let query1 = [r|
         select id, parent_id
         from concept_view
   |]
-  xs :: [ (Integer, Integer) ] <- query conn query1 ()
+  xs :: [ (Integer, Prelude.Just Integer) ] <- query conn query1 ()
 
   mapM print xs
 
