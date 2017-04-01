@@ -19,6 +19,15 @@ import Text.RawString.QQ
 -- So it will always require a custom query....
 -- also we need to be returning for all vocab not just parameter
 
+-- IMPORTANT
+-- getting everything in one query is fast - 20ms
+-- lets try to join on the counts
+
+-- IMPORTANT
+-- are we sure we cannot use a groupby on the facet_count_view to get the counts ...
+-- this would make client side stuff a lot simpler.
+
+
 pad s count =
   case count == 0 of
     True -> s
@@ -38,12 +47,31 @@ recurse conn depth (parent_id, label) = do
   return ()
 
 
+getAllConcepts conn  = do
+
+  let query1 = [r|
+        select id, parent_id
+        from concept_view
+  |]
+  xs :: [ (Integer, Integer) ] <- query conn query1 ()
+
+  mapM print xs
+
+  return ()
+
+
+
+
 
 main :: IO ()
 main = do
 
   conn <- connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
 
+
+  getAllConcepts conn
+
+{-
   let query1 = [r|
         select id, label
         from concept_view
@@ -58,7 +86,7 @@ main = do
   xs :: [ (Integer, String) ] <- query conn query1 () -- (Only url)
 
   mapM (recurse conn 0) xs
-
+-}
   return ()
 
 
