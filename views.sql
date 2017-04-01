@@ -7,8 +7,10 @@
 
 begin;
 
+drop view if exists concept_count_view2;
 drop view if exists concept_count_view;
 drop view if exists facet_count_view;
+drop view if exists facet_match_view;
 drop view if exists wms_view;
 drop view if exists wfs_view;
 drop view if exists resource_view;
@@ -75,24 +77,21 @@ select
 
 
 
-
+-- TODO remove this - do we use it...
 -- should this be by record,  
-
--- this is badly named - should be facet_index or something
-
-drop view if exists facet_match_view;
-
-create view facet_match_view as
-select 
-  record.uuid,
-  record.title,
-  concept.url,
-  concept.label
-  from record
-
-  left join facet on facet.record_id = record.id
-  left join concept on concept.id = facet.concept_id
-;
+-- drop view if exists facet_match_view;
+-- 
+-- create view facet_match_view as
+-- select 
+--   record.uuid,
+--  record.title,
+--  concept.url,
+--  concept.label
+--  from record
+--
+--  left join facet on facet.record_id = record.id
+--  left join concept on concept.id = facet.concept_id
+-- ;
 
 ------
 
@@ -111,9 +110,7 @@ select
 ;
 
 -----
-
 -- quite cool
--- TODO - IMPORTANT - looks broken - however - we need to iterate the records?????
 
 create view wms_view as
 select * from resource_view where protocol = 'OGC:WMS-1.1.1-http-get-map'
@@ -126,13 +123,16 @@ select * from resource_view where protocol = 'OGC:WFS-1.0.0-http-get-capabilitie
 ;
 
 
-
+-- 
+-- count the matching records for a leaf facet 
+-- may need to be turned into a function - so that we can filter by resource and scheme
+-- which means we cannot use views...
 
 create view facet_count_view as
 select  
-  concept.id as id, 
-  concept.label as label, 
-  concept.url as url, 
+  concept.id as concept_id,           -- rename to concept id? 
+  -- concept.label as label,     -- should remove all this because we can get it by joining on view 
+  -- concept.url as url,         -- I think we do want the url  - so that we have the term to search on....
   count(facet.record_id) as count 
   from concept 
   left join facet on facet.concept_id = concept.id 
@@ -140,22 +140,20 @@ select
 ;
 
 
--- gets counts on leaf nodes - eg matching concepts,
--- TODO change name matching ???? record_matching? 
 
--- create view facet_count_view as
--- select  
---   parent_view.id, 
-  -- concept.url as concept_url, 
---  count(facet.record_id) 
--- 
---  from parent_view
---   left join facet on facet.concept_id = concept.id 
---  group by concept.id
--- ;
+-- now we want a view with the full parent...  to return to the client
+-- even if we have to use a function later.
 
--- sum the damn counts 
--- not sure if it's possible because it would mean a bottom up - like traversal
+create view facet_count_view2 as
+select  
+  * 
+  from facet_count_view
+  left join concept_view on concept_view.id = facet_count_view.concept_id
+
+;
+
+
+
 
 
 
