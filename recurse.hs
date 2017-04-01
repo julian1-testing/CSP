@@ -25,9 +25,25 @@ import Text.RawString.QQ
 -- to make it easy to print...
 -- think we should pass 
 
+{-
+    case length xs of
+      1 -> do
+        -- store the concept
+        let (concept_id, concept_label) : _ = xs
+        execute conn [r|
+-}
+ 
+
+pad s count = 
+  case count == 0 of 
+    True -> s
+    False -> pad (" " ++ s) (count - 1)
+
+
+
 recurse conn (parent_id, label) = do 
 
-  print $ "doing id "  ++ show parent_id
+  putStrLn $ (pad "" 3) ++  "doing id "  ++ show (parent_id, label)
 
   let query1 = [r|
         select id, label 
@@ -37,7 +53,12 @@ recurse conn (parent_id, label) = do
 
   xs :: [ (Integer, String) ] <- query conn query1 (Only parent_id)
 
-  mapM print xs
+  -- mapM (recurse conn) xs
+  mapM print  xs
+
+  mapM (\(a,b) -> recurse conn (a,b) )  xs
+
+  return ()
 
 
 
