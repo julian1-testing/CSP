@@ -12,6 +12,12 @@ import Database.PostgreSQL.Simple
 
 import Text.RawString.QQ
 
+-- rather than doing multiple db queries - it may be easier to just load everything into memory and then
+-- query. 
+-- BUT - first - we need to get the counts being returned and then propagating up
+
+-- So it will always require a custom query....
+-- also we need to be returning for all vocab not just parameter
 
 pad s count =
   case count == 0 of
@@ -42,13 +48,14 @@ main = do
         select id, label
         from concept_view
         where parent_id is null
-        and scheme_title ~ ?
   |]
+
+        -- and scheme_title ~ ?
 
   -- let url = "Platform"  :: String
   let url = "Parameter"  :: String
 
-  xs :: [ (Integer, String) ] <- query conn query1 (Only url)
+  xs :: [ (Integer, String) ] <- query conn query1 () -- (Only url)
 
   mapM (recurse conn 0) xs
 
