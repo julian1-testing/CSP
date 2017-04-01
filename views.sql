@@ -130,10 +130,10 @@ select * from resource_view where protocol = 'OGC:WFS-1.0.0-http-get-capabilitie
 
 create view facet_count_view as
 select  
-  concept.id as concept_id, 
-  concept.label as concept_label, 
-  concept.url as concept_url, 
-  count(facet.record_id) 
+  concept.id as id, 
+  concept.label as label, 
+  concept.url as url, 
+  count(facet.record_id) as count 
   from concept 
   left join facet on facet.concept_id = concept.id 
   group by concept.id
