@@ -78,6 +78,7 @@ storeSchemes conn s = do
     mapM store schemes
     where 
       query = "insert into scheme(url,title) values (?, ?)"
+      -- TODO - make it a tuple instead... of array
       store (url,title) = execute conn query [url, title]
 
 
@@ -100,6 +101,7 @@ storeConcepts conn s = do
     -- store to db
     mapM store concepts
     where
+    -- TODO tuple not array
       query = "insert into concept(url,label) values (?, ?)"
       store (url,label) = execute conn query [url, label]
 
@@ -129,6 +131,7 @@ storeNarrower conn s = do
           (select id from concept where concept.url = ?)
         )
       |]
+      -- TODO tuple not array
       store (url,narrower_url) = execute conn query [url, narrower_url]
 
 
