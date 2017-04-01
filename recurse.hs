@@ -50,27 +50,18 @@ recurse conn depth (parent_id, label) = do
 
 
 getAllConcepts conn  = do
-  -- this has nulls for the parent relatinship for top-level stuff....
   let query1 = [r|
         select 
-          id, 
+          concept_id, 
+          count,
+          label,
           parent_id
         from facet_count_view2
-        -- where parent_id is null
   |]
-  -- xs :: [ (Integer, Only Integer) ] <- query conn query1 ()
 
-  -- Only is just a disambiguating for a single arg
-
-  -- OK - with Only it compiles - but it is not handling
-  xs :: [ (Integer, Maybe Integer) ] <- query conn query1 ()
-
-  -- FUCK...
-  -- xs :: [ (Maybe Integer) ] <- query conn query1 ()
-
-
+  -- note the parent may be null! beautiful...
+  xs :: [ (Integer, Integer, String, Maybe Integer) ] <- query conn query1 ()
   mapM print xs
-
   return ()
 
 
