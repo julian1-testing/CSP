@@ -1,30 +1,44 @@
 
 -- separate from create tables - to allow easier change
 
+-- provide an aggregated view of parent relationships... eg. a simple tree.
+
+-- might be better as a union...
+
 begin;
 drop view if exists concept_view;
 
 create view concept_view as
 select 
-  concept.id    as concept_id,
-  concept.label as concept_label,
-  concept.url as concept_url,
+  concept.id    as id,
+  concept.label as label,
+  concept.url   as url,
 
-  parent_concept.id    as parent_id,
-  parent_concept.label as parent_label,
+  case 
+    when parent_concept.id is not null then parent_concept.id
+    when parent_match_concept.id is not null then parent_match_concept.id
+    else null
+  end as parent_id,
 
-  parent_match_concept.id    as parent_match_id,
-  parent_match_concept.label as parent_match_label,
+  case 
+    when parent_concept.id is not null then parent_concept.label
+    when parent_match_concept.id is not null then parent_match_concept.label
+    else null
+  end as parent_label,
+
+  -- parent_concept.id    as parent_id,
+  -- parent_concept.label as parent_label,
+  -- parent_match_concept.label as parent_match_label,
 
   scheme.title as scheme_title 
-
   from concept 
+
   left join narrower on     concept.id = narrower.narrower_id 
   left join narrow_match on concept.id = narrow_match.narrower_id 
   left join in_scheme on    concept.id = in_scheme.concept_id 
 
 
-  left join concept as parent_concept on parent_concept.id = narrower.concept_id
+  left join concept as parent_concept       on parent_concept.id = narrower.concept_id
   left join concept as parent_match_concept on parent_match_concept.id = narrow_match.concept_id
 
   left join scheme on scheme.id = in_scheme.scheme_id
@@ -33,6 +47,10 @@ select
 
   -- each thing should only have its parent, otherwise it will be be entered twice, 
 ;
+
+
+
+
 
 
 -- should this be by record,  
