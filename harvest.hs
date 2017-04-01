@@ -39,7 +39,8 @@ import Data.Char (isSpace)
 
 -- ok now we want to go through the actual damn records,
 
-
+  selecting matches by facets,
+  select uuid,title from facet_view where url = 'http://vocab.nerc.ac.uk/collection/P01/current/TEMPPR01' ; 
 
 -}
 
@@ -164,10 +165,6 @@ doCSWGetRecords = do
           </csw:Query>
         </csw:GetRecords>
       |]
-
-
--- ok, we god a 120 records which is pretty nice.
-
 
 
 

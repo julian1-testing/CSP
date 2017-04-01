@@ -9,8 +9,13 @@ select
   concept.id    as concept_id,
   concept.label as concept_label,
   concept.url as concept_url,
-  narrower_concept.label as narrower_label,
-  narrow_match_concept.label as narrow_match_label,
+
+  parent_concept.id    as parent_id,
+  parent_concept.label as parent_label,
+
+  parent_match_concept.id    as parent_match_id,
+  parent_match_concept.label as parent_match_label,
+
   scheme.title as scheme_title 
 
   from concept 
@@ -19,8 +24,8 @@ select
   left join in_scheme on    concept.id = in_scheme.concept_id 
 
 
-  left join concept as narrower_concept on narrower_concept.id = narrower.concept_id
-  left join concept as narrow_match_concept on narrow_match_concept.id = narrow_match.concept_id
+  left join concept as parent_concept on parent_concept.id = narrower.concept_id
+  left join concept as parent_match_concept on parent_match_concept.id = narrow_match.concept_id
 
   left join scheme on scheme.id = in_scheme.scheme_id
 
@@ -51,6 +56,7 @@ select
 ------
 
 -- change name wms_view
+drop view if exists facet_count;
 drop view if exists wms_view;
 drop view if exists wfs_view;
 drop view if exists resource_view;
@@ -81,7 +87,15 @@ select * from resource_view where protocol = 'OGC:WFS-1.0.0-http-get-capabilitie
 ;
 
 
-
+create view facet_count as
+select  
+  concept.id as concept_id, 
+  concept.url as concept_url, 
+  count(facet.record_id) 
+  from concept 
+  left join facet on facet.concept_id = concept.id 
+  group by concept.id
+;
 
 commit;
 
