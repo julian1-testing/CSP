@@ -41,9 +41,9 @@ pad s count =
 
 
 
-recurse conn (parent_id, label) = do 
+recurse conn depth (parent_id, label) = do 
 
-  putStrLn $ (pad "" 3) ++  "doing id "  ++ show (parent_id, label)
+  putStrLn $ (pad "" $ depth * 3) ++  "doing id "  ++ show (parent_id, label)
 
   let query1 = [r|
         select id, label 
@@ -54,9 +54,9 @@ recurse conn (parent_id, label) = do
   xs :: [ (Integer, String) ] <- query conn query1 (Only parent_id)
 
   -- mapM (recurse conn) xs
-  mapM print  xs
+  -- mapM print  xs
 
-  mapM (\(a,b) -> recurse conn (a,b) )  xs
+  mapM (\(a,b) -> recurse  conn (depth + 1 :: Integer) (a,b) )  xs
 
   return ()
 
@@ -74,13 +74,14 @@ main = do
         and scheme_title ~ ?
   |]
 
-  let url = "Platform"  :: String
+  -- let url = "Platform"  :: String
+  let url = "Parameter"  :: String
 
   xs :: [ (Integer, String) ] <- query conn query1 (Only url)
 
-  mapM print xs
+  -- mapM print xs
   -- mapM (\(id,label) -> recurse conn id) xs
-  mapM (recurse conn ) xs
+  mapM (recurse conn 0) xs
 
   -- now we want to recurse... and propagate up.... 
   -- hmmmm it's a bit messy to get the counts.
