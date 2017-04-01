@@ -7,7 +7,8 @@
 
 begin;
 
-drop view if exists parent_view;
+-- drop view if exists concept_view
+-- drop view if exists parent_view;
 drop view if exists concept_count_view;
 drop view if exists facet_count_view;
 drop view if exists wms_view;
@@ -15,23 +16,32 @@ drop view if exists wfs_view;
 drop view if exists resource_view;
 drop view if exists concept_view;
 
+drop view if exists parent_view;
 
+
+-- associate child/ parent relationships between concepts via skos:narrower and skos:narrowMatch
 
 create view parent_view as
 select 
-  concept.id    as id,
-
+  concept.id as id,
   case 
-    when parent_concept.id is not null then parent_concept.id
-    when parent_match_concept.id is not null then parent_match_concept.id
-    else null
+    -- TODO another test to ensure not both narrower and narrowMatch
+    when 
+        parent_concept.id is not null and parent_match_concept.id is null 
+        then parent_concept.id
+    when 
+        parent_match_concept.id is not null and parent_concept.id is null
+        then parent_match_concept.id
+    when parent_match_concept.id is null and parent_concept.id is null
+        then null
+    -- error case - concept has both narrower and narrowMatch
+    else -9999
   end as parent_id
 
   from concept 
 
   left join narrower on     concept.id = narrower.narrower_id 
   left join narrow_match on concept.id = narrow_match.narrower_id 
-  -- left join in_scheme on    concept.id = in_scheme.concept_id 
 
   left join concept as parent_concept       on parent_concept.id = narrower.concept_id
   left join concept as parent_match_concept on parent_match_concept.id = narrow_match.concept_id
@@ -48,38 +58,20 @@ select
   concept.label as label,
   concept.url   as url,
 
-  case 
-    when parent_concept.id is not null then parent_concept.id
-    when parent_match_concept.id is not null then parent_match_concept.id
-    else null
-  end as parent_id,
+  parent_concept.id as parent_id,
+  parent_concept.url as parent_url,
+  parent_concept.label as parent_label,
 
-  case 
-    when parent_concept.id is not null then parent_concept.label
-    when parent_match_concept.id is not null then parent_match_concept.label
-    else null
-  end as parent_label,
+  scheme.title as scheme_title
 
-  -- parent_concept.id    as parent_id,
-  -- parent_concept.label as parent_label,
-  -- parent_match_concept.label as parent_match_label,
+  from parent_view
 
-  scheme.title as scheme_title 
-  from concept 
+  left join concept on concept.id = parent_view.id
+  left join concept as parent_concept on parent_concept.id = parent_view.parent_id
 
-  left join narrower on     concept.id = narrower.narrower_id 
-  left join narrow_match on concept.id = narrow_match.narrower_id 
-  left join in_scheme on    concept.id = in_scheme.concept_id 
-
-
-  left join concept as parent_concept       on parent_concept.id = narrower.concept_id
-  left join concept as parent_match_concept on parent_match_concept.id = narrow_match.concept_id
-
+  -- Careful - could have more than one scheme ?
+  left join in_scheme on in_scheme.concept_id = concept.id
   left join scheme on scheme.id = in_scheme.scheme_id
-
-  order by concept.url
-
-  -- each thing should only have its parent, otherwise it will be be entered twice, 
 ;
 
 
