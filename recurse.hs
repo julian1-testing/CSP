@@ -116,17 +116,15 @@ buildFacetGraph xs =
 recurseFacetGraph g =
 
   let rootNode = (Nothing, "dummy", -999  ) in
-
-
-  -- let children = mapGet g parent_id in  -- why the fuck doesn't this work?????
-  -- let testChildren  = mapGet g rootNode in
   recurse g rootNode 
 
   where
   recurse g (parent_id, label, count) = 
 
-    let children = mapGet g parent_id in  -- why the fuck doesn't this work?????
-    g 
+    let children = mapGet g parent_id in
+    let children' = map id children in
+    Map.insert parent_id children' g
+--    g 
 
     -- the key thing is that it's a flat map - which makes it kind of harder to maniplate...
     -- we just want a simple transform... but it's a graph. which potentially multiple children
