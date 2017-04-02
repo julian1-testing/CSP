@@ -63,22 +63,18 @@ getAllConcepts conn  = do
 
   -- recurse facetMap (Just 583) 0
 
+mapGet = (Map.!)
 
-processFacets xs = do
+buildFacetGraph xs =
+  -- non monadic
 
   -- https://hackage.haskell.org/package/containers-0.4.2.0/docs/Data-Map.html
-  let emptyMap'     = foldl initParents Map.empty xs
-  let emptyMap     = foldl initConcepts emptyMap' xs
+  let emptyMap'     = foldl initParents Map.empty xs in
+  let emptyMap     = foldl initConcepts emptyMap' xs in
 
-  let facetMap = foldl insertToList emptyMap xs
-
-  -- recurse facetMap (Nothing, "dummy", -999  ) 0
-
-  return facetMap
+  let facetMap = foldl insertToList emptyMap xs in
+  facetMap
   where
-
-    mapGet = (Map.!)
-
     initParents m (_,parent_id,_,_) =
       Map.insert (parent_id) [] m
 
@@ -91,7 +87,12 @@ processFacets xs = do
       let newChildren = (concept_id, label, count) : childLst in
       Map.insert parent_id newChildren m
 
-    {-
+
+processFacetGraph facetMap = do
+
+  recurse facetMap (Nothing, "dummy", -999  ) 0
+
+  where
     -- this just prints everything and is monadic
     recurse m (parent_id, label, count) depth = do
 
@@ -101,14 +102,13 @@ processFacets xs = do
 
       mapM (\(concept_id, label, count)  -> recurse m (Just concept_id, label, count) (depth + 1)) children
       return ()
-    -}
 
 {-
 ------
 ---- we're not thinking ....
 --- our structure hasn't been returned 
 
-processFacets' facetMap =
+buildFacetGraph' facetMap =
 
   recurse' facetMap (Nothing, "dummy", -999  ) 0
 
@@ -134,7 +134,10 @@ main = do
 
   facetList <- getAllConcepts conn
 
-  facetMap <- processFacets facetList
+  let facetMap = buildFacetGraph facetList
+
+
+  processFacetGraph facetMap
 
   return ()
 
