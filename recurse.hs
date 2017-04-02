@@ -132,13 +132,25 @@ recurseFacetGraph g =
       -- we have to drill/ recurse  down first
       let children = mapGet g parent_id in
 
-
-      let f g' (concept_id, label, count) = recurse g' (Just concept_id, label, count) (depth + 1) in
+      -- this 
+      -- process all the children
+      let f g' (concept_id, label, count) = recurse g' (Just concept_id, label, count + 1000) (depth + 1) in
       let result = foldl f g children in
 
-       
 
-      Map.insert parent_id [ ] g
+      let newChildren = map (\(a,b,c) -> (a,b,c + 1000)) children in 
+     
+      -- look up the children again...
+--      let newChildren = mapGet result parent_id in
+
+      -- and replace this node with - the new children...
+
+      Map.insert parent_id newChildren result
+
+--      result
+ 
+      -- result 
+      -- Map.insert parent_id [ ] result
 
       --Map.insert parent_id [ ] g
     
@@ -226,15 +238,14 @@ main = do
 
 
   let facetCounts = buildFacetCounts facetList
-
   print facetCounts
 
   let facetGraph = buildFacetGraph facetList
 
 
-  -- let x = recurseFacetGraph facetGraph 
+  let x = recurseFacetGraph facetGraph 
 
-  printFacetGraph facetGraph 
+  printFacetGraph x 
 
   return ()
 
