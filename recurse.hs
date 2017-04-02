@@ -30,11 +30,13 @@ import qualified Data.Map as Map
 -- this would make client side stuff a lot simpler.
 
 
-pad s count =
+pad' s count =
   case count == 0 of
     True -> s
-    False -> pad (" " ++ s) (count - 1)
+    False -> pad' (" " ++ s) (count - 1)
 
+
+pad count = pad' "" count
 
 
 getAllConcepts conn  = do
@@ -64,13 +66,14 @@ getAllConcepts conn  = do
   -- putStrLn $ show $ topConcepts  -- toplevel concepts - that have no pareh. 
 
   -- 
-  recurse populatedMap (Just 583) 
+  recurse populatedMap (Just 583) 0
 
 
   return ()
   where
     mapGet = (Map.!)
     -- insert key=parent_id, value=empty list
+    -- use concept to get everything...
     insertEmptyList m (concept_id,_,_, parent_id) =
       Map.insert (Just concept_id) [] m
 
@@ -80,16 +83,19 @@ getAllConcepts conn  = do
       let newChildren = concept_id : children in
       Map.insert parent_id newChildren m
 
+
+
     -- this is going to be monadic... needs depth....
-    recurse m parent_id = do
-      putStrLn $ show parent_id
+    recurse m parent_id depth = do
+
+      putStrLn $ (pad $ depth * 3) ++ (show parent_id)
       let children = mapGet m parent_id
 
       -- ok, an entry - may not have any children - in which case 
 
       -- this call isn't correct
       -- hang on.... why is the element not there
-      mapM (\e -> recurse m $ Just e) children
+      mapM (\e -> recurse m (Just e) (depth + 1)) children
       return ()
 
 
