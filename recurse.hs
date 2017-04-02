@@ -115,17 +115,21 @@ buildFacetGraph xs =
 
 recurseFacetGraph g =
 
-  let rootNode = (Nothing, "dummy", -999  ) in
+  let rootNode = (Nothing, "dummy", -999) in
   recurse g rootNode 
 
   where
   recurse g (parent_id, label, count) = 
 
     let children = mapGet g parent_id in
-    let newChildren = map id children in
-    let newGraph = Map.insert parent_id newChildren g in
 
-    newGraph
+    -- it shouldn't be map it should be fold?
+    -- let newChildren = map (recurse id) children in
+    -- let newGraph = Map.insert parent_id newChildren g in
+
+    -- we can't use map here . it must be a fold 
+
+    foldl (\g' (a,b,c) -> recurse g' (Just a,b,c)) g children
 
 
 
