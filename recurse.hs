@@ -122,14 +122,19 @@ recurseFacetGraph g =
   recurse g (parent_id, label, count) = 
 
     let children = mapGet g parent_id in
-    let children' = map id children in
-    Map.insert parent_id children' g
---    g 
+    let newChildren = map id children in
+    let newGraph = Map.insert parent_id newChildren g in
 
-    -- the key thing is that it's a flat map - which makes it kind of harder to maniplate...
-    -- we just want a simple transform... but it's a graph. which potentially multiple children
-    -- this just prints everything and is monadic
+    newGraph
 
+
+
+-- this is fucking complicated.
+
+
+-- we don't actually have the recurse working ... 
+
+-- ok, uggh, the node doesn't actually have count associated with it....
 
 
 {-
