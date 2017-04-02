@@ -68,11 +68,20 @@ mapGet = (Map.!)
 {-
   VERY IMPORTNAT
   IT HAS TO BE A FLAT MAP - because it's a graph not a tree
+
+  mapping from concept_id -> children
+
+  I think we will create another one 
+
+  concept_id -> counts
+
+  therefore we should remove the count from here.
 -}
 
 buildFacetGraph :: Foldable t =>
      t (Integer, Maybe Integer, t1, t2)
      -> Map.Map (Maybe Integer) [(Integer, t1, t2)]
+
 
 buildFacetGraph xs =
   -- takes a 
@@ -88,6 +97,7 @@ buildFacetGraph xs =
     addConceptId m (concept_id,_,_,_) =
       Map.insert (Just concept_id) [] m
 
+    -- TODO - do this explicitly for the root node
     -- insert empty list for parent_id
     addParentId m (_,parent_id,_,_) =
       Map.insert (parent_id) [] m
@@ -98,57 +108,33 @@ buildFacetGraph xs =
       let newChildren = (concept_id, label, count) : childLst in
       Map.insert parent_id newChildren m
 
+{-
+  Important - after calculating creating thie . we can probably go back and map the list again... 
+      and just update the counts....
+-}
 
 
+buildFacetCounts xs =
+  -- let e' = foldl addParentId Map.empty xs in
+  let e' = Map.empty in
 
-recurseFacetGraph g =
-
-  let rootNode = (Nothing, "dummy", -999) in
-  recurse g rootNode 
-
+  let e'' = Map.insert (Nothing) 0 e' in -- add entry for root
+  let e  = foldl addConceptId e'' xs in
+  foldl insertToList e xs
   where
-  recurse g (parent_id, label, count) = 
+    -- setting the thing to 0 is not correct for the leaf nodes...
+    -- add 0 for concept_id
+    addConceptId m (concept_id,_,_,_) =
+      Map.insert (Just concept_id) 0 m
 
-    let children = mapGet g parent_id in
-    let newChildren = map (\(a,b,c) -> (a,b,c + 1000)) children in
+    -- add 0 for parent_id
+--    addParentId m (_,parent_id,_,_) =
+--      Map.insert (parent_id) 0 m
 
-    Map.insert parent_id newChildren g
-
-{-
-    foldl (\g' (a,b,c) -> 
-        -- we have to modify g here
-        -- recurse in further... 
-        let newGraph = recurse g' (Just a, b,c) in
-        -- ok, we have to concat on to the existing children...
-        -- we don't know the paren
-        Map.insert (parent_id) [ (a,b,c)] newGraph 
-    ) g children 
--}
-
-
-
--- this isn't fucking woking at all...
--- this is recursing but not creating a new map....
-
-
--- this is fucking complicated.
--- we don't actually have the recurse working ... 
--- ok, uggh, the node doesn't actually have count associated with it....
-
-{-
-      -- putStrLn $ concatMap id [ (pad $ depth * 3), (show parent_id), " ",  (show label), " ", (show count) ]
-      -- g is a Map, key Maybe Int, and the value  is a list - of other maps
-      let children = mapGet g parent_id in
-
-      -- i think we just need to remove the element... 
-      -- and then append
-      -- this isn't a list... or is it?
-      -- this is a list...
-      let x = map (\(concept_id, label, count)  -> recurse g (Just concept_id, label, count) ) children in
-      -- so we need to keep passing a new map down and inserting elements into it...
-      -- let _ = map ( recurse g ) children in
-      let g1 = foldl (m c -> Map.insert   g1 children in
--}
+    -- populate the list associated with graph node with children
+    insertToList m (concept_id, parent_id, label, count) =
+      let parentCount = mapGet m parent_id in
+      Map.insert parent_id (parentCount + count)  m
 
 
 
@@ -179,12 +165,17 @@ main = do
 
   facetList <- getAllFacets conn
 
+
+  let facetCounts = buildFacetCounts facetList
+
+  print facetCounts
+
   let facetGraph = buildFacetGraph facetList
 
 
-  let x = recurseFacetGraph facetGraph 
+  -- let x = recurseFacetGraph facetGraph 
 
-  printFacetGraph x 
+  printFacetGraph facetGraph 
 
   return ()
 
