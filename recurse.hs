@@ -112,21 +112,6 @@ buildFacetGraph xs =
       let newChildren = (concept_id, label, count) : childLst in
       Map.insert parent_id newChildren m
 
-{-
-  Important - after calculating creating thie . we can probably go back and map the list again... 
-      and just update the counts....
-
-  Ok, so we can recurse the graph... although it's pretty har
-  
-  it should be pretty easy if we just return the damn count each time.... 
-  and store it...
-      done.
--}    
-
-{-
-    So rather than store it directly we should create another Map from concept 
--}
-
 
 
 
@@ -142,47 +127,8 @@ buildDepthMap g =
       let children = mapGet g parent_id in
       -- recurse/process the children
       let f depthMap' (concept_id, label, count) = recurse g depthMap' (Just concept_id, label, count) (depth + 1) in
-      let (result) = foldl f (depthMap') children in
+      foldl f (depthMap') children
 
-      result 
-
-
-
-{-
--- 1. build a level - from the facetGraph
-
-buildFacetCounts xs =
-  -- iteratively go through the list and create facet counts.
-  -- but this doesn't work - unless we do leaf nodes then other nodes etc in order
-  -- eg. have to do all the nodes at a particular level before we consider the next level...
-  -- holy hell.
-  -- introduce a recursion level.... and propagate them up?
-  -- OK, but with the graph - we have the depth, level. so we just need to transform to the level...
-
-  -- if we can work work out the depth - then we can sort - by level and process...
-
-  -- let e' = foldl addParentId Map.empty xs in
-  let e' = Map.empty in
-
-  let e'' = Map.insert (Nothing) 0 e' in -- add entry for root
-  let e  = foldl addConceptId e'' xs in
-  foldl insertToList e xs
-  where
-    -- setting the thing to 0 is not correct for the leaf nodes...
-    -- add 0 for concept_id
-    addConceptId m (concept_id,_,_,_) =
-      Map.insert (Just concept_id) 0 m
-
-    -- add 0 for parent_id
---    addParentId m (_,parent_id,_,_) =
---      Map.insert (parent_id) 0 m
-
-    -- populate the list associated with graph node with children
-    insertToList m (concept_id, parent_id, label, count) =
-      let parentCount = mapGet m parent_id in
-      Map.insert parent_id (parentCount + count)  m
-
--}
 
 
 
