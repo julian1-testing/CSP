@@ -65,6 +65,10 @@ getAllFacets conn  = do
 
 mapGet = (Map.!)
 
+{-
+  VERY IMPORTNAT
+  IT HAS TO BE A FLAT MAP - because it's a graph not a tree
+-}
 
 buildFacetGraph :: Foldable t =>
      t (Integer, Maybe Integer, t1, t2)
@@ -105,21 +109,44 @@ buildFacetGraph xs =
 
 -- it's the damn return type
 
+--recurseFacetGraph :: t -> t
+
+recurse g (parent_id, label, count) = 
+
+  let children = mapGet g parent_id in  -- why the fuck doesn't this work?????
+  g 
+
 
 recurseFacetGraph g =
+
   let rootNode = (Nothing, "dummy", -999  ) in
-  recurse g rootNode  0 
 
-  where
+
+  -- let children = mapGet g parent_id in  -- why the fuck doesn't this work?????
+  -- let testChildren  = mapGet g rootNode in
+  recurse g rootNode 
+
+  -- where
+    -- the key thing is that it's a flat map - which makes it kind of harder to maniplate...
+    -- we just want a simple transform... but it's a graph. which potentially multiple children
     -- this just prints everything and is monadic
-    recurse g (parent_id, label, count) depth = -- do
 
+
+
+{-
       -- putStrLn $ concatMap id [ (pad $ depth * 3), (show parent_id), " ",  (show label), " ", (show count) ]
-
+      -- g is a Map, key Maybe Int, and the value  is a list - of other maps
       let children = mapGet g parent_id in
 
-      let _ = map (\(concept_id, label, count)  -> recurse g (Just concept_id, label, count) (depth + 1)) children in
-      ()
+      -- i think we just need to remove the element... 
+      -- and then append
+      -- this isn't a list... or is it?
+      -- this is a list...
+      let x = map (\(concept_id, label, count)  -> recurse g (Just concept_id, label, count) ) children in
+      -- so we need to keep passing a new map down and inserting elements into it...
+      -- let _ = map ( recurse g ) children in
+      let g1 = foldl (m c -> Map.insert   g1 children in
+-}
 
 
 
@@ -139,6 +166,8 @@ printFacetGraph g = do
       mapM (\(concept_id, label, count)  -> recurse g (Just concept_id, label, count) (depth + 1)) children
       return ()
 
+
+
 -- need mineral water
 
 main :: IO ()
@@ -148,10 +177,12 @@ main = do
 
   facetList <- getAllFacets conn
 
-  let facetMap = buildFacetGraph facetList
+  let facetGraph = buildFacetGraph facetList
 
 
-  printFacetGraph facetMap
+  let x = recurseFacetGraph facetGraph 
+
+  printFacetGraph x 
 
   return ()
 
