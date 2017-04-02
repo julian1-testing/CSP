@@ -115,12 +115,16 @@ buildFacetGraph xs =
 
   append is modify
   where is
+
+  IMPORTNAT
+  TODO change name depth to nestingLevel 
 -}
 
 zipFacetListWithDepth xs depthMap = 
-  map f xs
+  sortOn  (map f) $ xs
+  
   where
-    -- f (a,b,c,d) = (a,b,c,d, mapGet a depthMap)
+    compare (a,b,c,d,e) (a,b,c,d,e) = 
     f (a,b,c,d) = (a,b,c,d, mapGet depthMap (Just a))
 
 
@@ -185,6 +189,7 @@ main = do
 
   let zipped = zipFacetListWithDepth facetList depthMap
 
+  mapM print zipped
 
   return ()
 

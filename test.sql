@@ -20,18 +20,6 @@ INSERT INTO data values ( 6, 4, 'Red Rose', 12 );
 INSERT INTO data values ( 7, 3, 'Television', 100 );
 INSERT INTO data values ( 8, 3, 'Radio', 70 );
 INSERT INTO data values ( 9, 8, 'Webradio', 90 );
-/*
-  1, Null, 'Root', NULL) ;
-  SELECT 2, 1, 'Flowers', NULL
-  SELECT 3, 1, 'Electro', NULL
-  SELECT 4, 2, 'Rose', 10
-  SELECT 5, 2, 'Violet', 5
-  SELECT 6, 4, 'Red Rose', 12
-  SELECT 7, 3, 'Television', 100
-  SELECT 8, 3, 'Radio', 70
-  SELECT 9, 8, 'Webradio', 90
-*/
-
 
 
 -- SQL Statement
