@@ -37,7 +37,8 @@ pad' s count =
 pad count = pad' "" count
 
 {-
-  we need 
+    - we need to recurse twice - once to propagate the counts up the tree nodes. 
+    - this should be non monadic...
 
 -}
 
@@ -55,6 +56,15 @@ getAllConcepts conn  = do
   xs :: [ (Integer, Maybe Integer, String, Integer ) ] <- query conn query1 ()
 
   -- mapM print xs
+  return xs
+
+  -- eg.
+  -- let physicalWaterChildren = mapGet facetMap (Just 583) -- eg. physical water
+
+  -- recurse facetMap (Just 583) 0
+
+
+processFacets xs = do
 
   -- https://hackage.haskell.org/package/containers-0.4.2.0/docs/Data-Map.html
   let emptyMap'     = foldl initParents Map.empty xs
@@ -62,16 +72,11 @@ getAllConcepts conn  = do
 
   let facetMap = foldl insertToList emptyMap xs
 
-  -- eg.
-  -- let physicalWaterChildren = mapGet facetMap (Just 583) -- eg. physical water
+  -- recurse facetMap (Nothing, "dummy", -999  ) 0
 
-  -- recurse facetMap (Just 583) 0
-  recurse facetMap (Nothing, "dummy", -999  ) 0
-
-  -- it's not a map - its actually a graph
-
-  return ()
+  return facetMap
   where
+
     mapGet = (Map.!)
 
     initParents m (_,parent_id,_,_) =
@@ -80,22 +85,45 @@ getAllConcepts conn  = do
     initConcepts m (concept_id,_,_,_) =
       Map.insert (Just concept_id) [] m
 
-    -- insert key=parent_id, and const the concept_id to the list
+    -- this inserts stuff...
     insertToList m (concept_id, parent_id, label,count) =
-      let childLst = (Map.!) m parent_id in
+      let childLst = mapGet m parent_id in
       let newChildren = (concept_id, label, count) : childLst in
       Map.insert parent_id newChildren m
 
-
-
+    {-
+    -- this just prints everything and is monadic
     recurse m (parent_id, label, count) depth = do
 
-      putStrLn $ (pad $ depth * 3) ++ (show parent_id) ++ " " ++ (show label) ++ " " ++ (show count)
+      putStrLn $ concatMap id [ (pad $ depth * 3), (show parent_id), " ",  (show label), " ", (show count) ]
+
       let children = mapGet m parent_id
 
-      -- mapM (\(concept_id, label)  -> recurse m (Just concept_id) (depth + 1)) children
       mapM (\(concept_id, label, count)  -> recurse m (Just concept_id, label, count) (depth + 1)) children
       return ()
+    -}
+
+{-
+------
+---- we're not thinking ....
+--- our structure hasn't been returned 
+
+processFacets' facetMap =
+
+  recurse' facetMap (Nothing, "dummy", -999  ) 0
+
+  where
+  recurse' m (parent_id, label, count) depth = 
+
+    -- look up the children...
+    -- hmmmm we are going to have to generate a new map?
+    let children = mapGet m parent_id in
+
+    let f (concept_id, label, count) = recurse' m (Just concept_id, label, count) (depth + 1) in
+
+    map f children
+
+-}
 
 
 
@@ -104,7 +132,9 @@ main = do
 
   conn <- connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
 
-  getAllConcepts conn
+  facetList <- getAllConcepts conn
+
+  facetMap <- processFacets facetList
 
   return ()
 
