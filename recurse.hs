@@ -55,7 +55,9 @@ getAllConcepts conn  = do
   -- mapM print xs
 
   -- https://hackage.haskell.org/package/containers-0.4.2.0/docs/Data-Map.html
-  let emptyMap     = foldl insertEmptyList Map.empty xs
+  let emptyMap'     = foldl insertEmptyList Map.empty xs
+  let emptyMap     = foldl insertEmptyList2 emptyMap' xs
+
   let populatedMap = foldl insertToList emptyMap xs
 
   -- eg.
@@ -76,7 +78,13 @@ getAllConcepts conn  = do
     -- insert key=parent_id, value=empty list
     -- use concept to get everything...
     insertEmptyList m (concept_id,_,_, parent_id) =
+      Map.insert (parent_id) [] m
+
+    insertEmptyList2 m (concept_id,_,_, parent_id) =
       Map.insert (Just concept_id) [] m
+
+
+    -- think we should be recording parents - because 
 
     -- insert key=parent_id, and const the concept_id to the list
     insertToList m (concept_id,count,label, parent_id) =
