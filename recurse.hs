@@ -62,7 +62,7 @@ getAllConcepts conn  = do
   -- let physicalWaterChildren = mapGet populatedMap (Just 583) -- eg. physical water
 
   -- recurse populatedMap (Just 583) 0
-  recurse populatedMap (Nothing ) 0
+  recurse populatedMap (Nothing, "dummy" ) 0
 
   -- it's not a map - its actually a graph
 
@@ -79,16 +79,20 @@ getAllConcepts conn  = do
     -- insert key=parent_id, and const the concept_id to the list
     insertToList m (concept_id,count,label, parent_id) =
       let children = (Map.!) m parent_id in
-      let newChildren = concept_id : children in
+      let newChildren = (concept_id, label) : children in
       Map.insert parent_id newChildren m
 
-    -- this is monadic - but we could reduce it to a tree...
-    recurse m parent_id depth = do
 
-      putStrLn $ (pad $ depth * 3) ++ (show parent_id)
+
+    -- this is monadic - but we could reduce it to a tree...
+    -- 
+    recurse m (parent_id, label) depth = do
+
+      putStrLn $ (pad $ depth * 3) ++ (show parent_id) ++ " " ++ (show label)
       let children = mapGet m parent_id
 
-      mapM (\e -> recurse m (Just e) (depth + 1)) children
+      -- mapM (\(concept_id, label)  -> recurse m (Just concept_id) (depth + 1)) children
+      mapM (\(concept_id, label)  -> recurse m (Just concept_id, label) (depth + 1)) children
       return ()
 
 
