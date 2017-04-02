@@ -42,7 +42,10 @@ pad count = pad' "" count
 
 -}
 
-getAllFacets conn  = do
+
+
+
+getFacetList conn  = do
   -- get all facets and facet count from db and return as flat list
   let query1 = [r|
         select 
@@ -132,56 +135,17 @@ buildDepths g =
   -- let depthMap = Map.empty xs in
   recurse g Map.empty rootNode 0 
   where
-
     recurse g depthMap (parent_id, label, count) depth =
-
       -- set depth for this current id,
       let depthMap' = Map.insert parent_id depth depthMap in
-
       -- get children and drill 
       let children = mapGet g parent_id in
-
       -- recurse/process the children
       let f depthMap' (concept_id, label, count) = recurse g depthMap' (Just concept_id, label, count) (depth + 1) in
       let (result) = foldl f (depthMap') children in
 
       result 
 
-
-
-
--- we just need the fucking depth....
--- we have to update the fucking children...
--- if we have the count. we are still screwed.... - we need to associate it
--- we have to build a separate map
--- we're still stuffed.... unless we can transform to a node...
--- look up the children again...
--- let newChildren = mapGet result parent_id in
--- and replace this node with - the new children...
--- result
- 
-      -- result 
-      -- Map.insert parent_id [ ] result
-
-      --Map.insert parent_id [ ] g
-    
-      -- just thread another damn variable through it?
- 
-      -- we cannot mapulate the graph in place.... 
-      -- we need to decide of this function returns a translated graph, or translated children.
-
-      -- we could pass in a mempty each time...
-      -- we can only create a new graph
-      -- it has to be an empty graph -- but that makes concatenating too difficult?
-      -- foldl      children 
-      -- remove item
-      -- insertNew item with children...
-      -- and because it's so damn hard... 
-      -- let sumCount = foldl (\sum (a,b,c) -> sum + c) 0 children in 
-      -- ()
-
-      -- VERY important - can we not return the children and a modified graph?
-      -- as a tuple?
 
 
 
@@ -245,7 +209,7 @@ main = do
 
   conn <- connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
 
-  facetList <- getAllFacets conn
+  facetList <- getFacetList conn
 
 
 --  let facetCounts = buildFacetCounts facetList
