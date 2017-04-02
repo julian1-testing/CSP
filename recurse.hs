@@ -176,7 +176,6 @@ main = do
 
   let depths = buildDepthMap g 
 
-  -- mapM (\key -> print key ) List.yydepths.keys
   mapM print (Map.toList depths) 
 
   return ()
