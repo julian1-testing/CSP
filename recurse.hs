@@ -116,21 +116,21 @@ recurseFacetGraph g =
         -- we have to modify g here
         let newChild = (a,"whoot" ++ b, c) in
   
-        -- let newGraph = Map.insert (parent_id) newChild  g' in
-        recurse g' (Just a, b,c)
+        -- let newGraph = Map.insert (Just parent_id) newChild  g' in
+        let newGraph = recurse g' (Just a, b,c) in
+  
+        newGraph
 
     ) g children 
+
+  -- this isn't fucking woking at all...
 
     -- this is recursing but not creating a new map....
 
 
 -- this is fucking complicated.
-
-
 -- we don't actually have the recurse working ... 
-
 -- ok, uggh, the node doesn't actually have count associated with it....
-
 
 {-
       -- putStrLn $ concatMap id [ (pad $ depth * 3), (show parent_id), " ",  (show label), " ", (show count) ]
