@@ -124,30 +124,41 @@ buildFacetGraph xs =
     So rather than store it directly we should create another Map from concept 
 -}
 
-recurseFacetGraph g =
+
+
+
+buildDepths g =
   let rootNode = (Nothing, "dummy", -999) in
-  recurse g rootNode  0 
+  -- let depthMap = Map.empty xs in
+  recurse g Map.empty rootNode 0 
   where
-    recurse g (parent_id, label, count) depth =
-      -- we have to drill/ recurse  down first
+
+    recurse g depthMap (parent_id, label, count) depth =
+
+      -- set depth for this current id,
+      let depthMap' = Map.insert parent_id depth depthMap in
+
+      -- get children and drill 
       let children = mapGet g parent_id in
 
-      -- this 
-      -- process all the children
-      let f g' (concept_id, label, count) = recurse g' (Just concept_id, label, count + 1000) (depth + 1) in
-      let result = foldl f g children in
+      -- recurse/process the children
+      let f depthMap' (concept_id, label, count) = recurse g depthMap' (Just concept_id, label, count) (depth + 1) in
+      let (result) = foldl f (depthMap') children in
+
+      result 
 
 
-      let newChildren = map (\(a,b,c) -> (a,b,c + 1000)) children in 
-     
-      -- look up the children again...
---      let newChildren = mapGet result parent_id in
 
-      -- and replace this node with - the new children...
 
-      Map.insert parent_id newChildren result
-
---      result
+-- we just need the fucking depth....
+-- we have to update the fucking children...
+-- if we have the count. we are still screwed.... - we need to associate it
+-- we have to build a separate map
+-- we're still stuffed.... unless we can transform to a node...
+-- look up the children again...
+-- let newChildren = mapGet result parent_id in
+-- and replace this node with - the new children...
+-- result
  
       -- result 
       -- Map.insert parent_id [ ] result
@@ -237,15 +248,16 @@ main = do
   facetList <- getAllFacets conn
 
 
-  let facetCounts = buildFacetCounts facetList
-  print facetCounts
+--  let facetCounts = buildFacetCounts facetList
+--  print facetCounts
 
-  let facetGraph = buildFacetGraph facetList
+  let g = buildFacetGraph facetList
 
+  printFacetGraph g 
 
-  let x = recurseFacetGraph facetGraph 
+  let depths = buildDepths g 
 
-  printFacetGraph x 
+  print depths
 
   return ()
 
