@@ -78,14 +78,15 @@ getAllConcepts conn  = do
 
     -- insert key=parent_id, and const the concept_id to the list
     insertToList m (concept_id,count,label, parent_id) =
-      let children = (Map.!) m parent_id in
-      let newChildren = (concept_id, label) : children in
+      let childLst = (Map.!) m parent_id in
+      let newChildren = (concept_id, label) : childLst in
       Map.insert parent_id newChildren m
 
 
 
     -- this is monadic - but we could reduce it to a tree...
-    -- 
+    -- it would be better to destructure this???? 
+
     recurse m (parent_id, label) depth = do
 
       putStrLn $ (pad $ depth * 3) ++ (show parent_id) ++ " " ++ (show label)
