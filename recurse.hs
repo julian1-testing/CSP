@@ -36,19 +36,23 @@ pad' s count =
 
 pad count = pad' "" count
 
+{-
+  we need 
+
+-}
 
 getAllConcepts conn  = do
   -- get facets with record count as flat list from db
   let query1 = [r|
         select 
           concept_id, 
-          count,
           label,
+          count,
           parent_id
         from facet_count_view2
   |]
   -- note the parent may be null! beautiful...
-  xs :: [ (Integer, Integer, String, Maybe Integer) ] <- query conn query1 ()
+  xs :: [ (Integer, String, Integer, Maybe Integer) ] <- query conn query1 ()
 
   -- mapM print xs
 
@@ -56,13 +60,13 @@ getAllConcepts conn  = do
   let emptyMap'     = foldl initParents Map.empty xs
   let emptyMap     = foldl initConcepts emptyMap' xs
 
-  let populatedMap = foldl insertToList emptyMap xs
+  let facetMap = foldl insertToList emptyMap xs
 
   -- eg.
-  -- let physicalWaterChildren = mapGet populatedMap (Just 583) -- eg. physical water
+  -- let physicalWaterChildren = mapGet facetMap (Just 583) -- eg. physical water
 
-  -- recurse populatedMap (Just 583) 0
-  recurse populatedMap (Nothing, "dummy" ) 0
+  -- recurse facetMap (Just 583) 0
+  recurse facetMap (Nothing, "dummy", -999  ) 0
 
   -- it's not a map - its actually a graph
 
@@ -77,23 +81,20 @@ getAllConcepts conn  = do
       Map.insert (Just concept_id) [] m
 
     -- insert key=parent_id, and const the concept_id to the list
-    insertToList m (concept_id,count,label, parent_id) =
+    insertToList m (concept_id,label,count, parent_id) =
       let childLst = (Map.!) m parent_id in
-      let newChildren = (concept_id, label) : childLst in
+      let newChildren = (concept_id, label, count) : childLst in
       Map.insert parent_id newChildren m
 
 
 
-    -- this is monadic - but we could reduce it to a tree...
-    -- it would be better to destructure this???? 
+    recurse m (parent_id, label, count) depth = do
 
-    recurse m (parent_id, label) depth = do
-
-      putStrLn $ (pad $ depth * 3) ++ (show parent_id) ++ " " ++ (show label)
+      putStrLn $ (pad $ depth * 3) ++ (show parent_id) ++ " " ++ (show label) ++ " " ++ (show count)
       let children = mapGet m parent_id
 
       -- mapM (\(concept_id, label)  -> recurse m (Just concept_id) (depth + 1)) children
-      mapM (\(concept_id, label)  -> recurse m (Just concept_id, label) (depth + 1)) children
+      mapM (\(concept_id, label, count)  -> recurse m (Just concept_id, label, count) (depth + 1)) children
       return ()
 
 
