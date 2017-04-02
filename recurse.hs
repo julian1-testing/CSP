@@ -52,23 +52,46 @@ getAllConcepts conn  = do
 
   -- mapM print xs
 
-  let emptyMap = foldl insertEmptyList Map.empty xs
+  -- https://hackage.haskell.org/package/containers-0.4.2.0/docs/Data-Map.html
+  let emptyMap     = foldl insertEmptyList Map.empty xs
   let populatedMap = foldl insertToList emptyMap xs
 
-  -- find children of node,
-  putStrLn $ show $ (Map.!) populatedMap (Just 583) -- eg. physical water
+  -- eg.
+  let physicalWaterChildren = mapGet populatedMap (Just 583) -- eg. physical water
+  putStrLn $ show physicalWaterChildren
+
+  -- let topConcepts = mapGet populatedMap (Nothing) -- toplevel concepts - that have no pareh. 
+  -- putStrLn $ show $ topConcepts  -- toplevel concepts - that have no pareh. 
+
+  -- 
+  recurse populatedMap (Just 583) 
+
 
   return ()
   where
+    mapGet = (Map.!)
     -- insert key=parent_id, value=empty list
-    insertEmptyList m (_,_,_, parent_id) =
-      Map.insert parent_id [] m
+    insertEmptyList m (concept_id,_,_, parent_id) =
+      Map.insert (Just concept_id) [] m
 
     -- insert key=parent_id, and const the concept_id to the list
     insertToList m (concept_id,count,label, parent_id) =
       let children = (Map.!) m parent_id in
       let newChildren = concept_id : children in
       Map.insert parent_id newChildren m
+
+    -- this is going to be monadic... needs depth....
+    recurse m parent_id = do
+      putStrLn $ show parent_id
+      let children = mapGet m parent_id
+
+      -- ok, an entry - may not have any children - in which case 
+
+      -- this call isn't correct
+      -- hang on.... why is the element not there
+      mapM (\e -> recurse m $ Just e) children
+      return ()
+
 
 
 main :: IO ()
