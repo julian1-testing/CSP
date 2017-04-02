@@ -49,6 +49,21 @@ getAllConcepts conn  = do
 
   -- note the parent may be null! beautiful...
   xs :: [ (Integer, Integer, String, Maybe Integer) ] <- query conn query1 ()
+
+
+  -- hmmmmm - this 
+  -- parent id might be null..... 
+
+  -- we can always find the parent. what we want is all the children...
+  -- problem if there is no parent_id????
+
+  let mapInsert m (concept_id,count,label, parent_id) = Map.insert parent_id concept_id m
+
+  let m = foldl  mapInsert Map.empty xs -- [ (123, 456) ] 
+
+  putStrLn $ show $ (Map.!) m (Just 583)
+
+
   mapM print xs
   return ()
 
@@ -64,14 +79,15 @@ main = do
 
 
 
-  let m = Map.empty
+  -- let m = Map.empty
   -- let m' = m
   -- let m' = Map.insert 5 123 m
   -- can pass a tuple in....
 
-  let m' = foldl  (\m (a,b) ->  Map.insert a b m) Map.empty [ (123, 456) ] 
+  let mapInsert m (k,v) = Map.insert k v m
+  let m = foldl  mapInsert Map.empty [ (123, 456) ] 
 
-  putStrLn $ show $ (Map.!) m' 123 
+  putStrLn $ show $ (Map.!) m 123 
 
   conn <- connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
 
