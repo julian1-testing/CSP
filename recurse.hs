@@ -56,16 +56,47 @@ getAllConcepts conn  = do
 
   -- we can always find the parent. what we want is all the children...
   -- problem if there is no parent_id????
+  -- ok, the entry may already be there....
+  -- actually can be an ampty list...
 
-  let mapInsert m (concept_id,count,label, parent_id) = Map.insert parent_id concept_id m
 
-  let m = foldl  mapInsert Map.empty xs -- [ (123, 456) ] 
+      -- = Map.insert parent_id concept_id m
+
+
+  -- let mEmpty = foldl (m  mapInsert Map.empty xs
+
+
+  let emptyMap = foldl  mapEmpty Map.empty xs
+
+  let m = foldl  mapInsert emptyMap  xs
 
   putStrLn $ show $ (Map.!) m (Just 583)
+  -- putStrLn $ show $ (Map.!) m (Just 583)
 
 
   mapM print xs
   return ()
+  where
+    -- create empty list for each entry
+    mapEmpty m (concept_id,count,label, parent_id) =
+      let newChildren = [ ]  in
+      Map.insert parent_id newChildren m
+
+
+
+
+    mapInsert m (concept_id,count,label, parent_id) =
+
+      -- rather than starting with empty map
+      -- why not initialize with empty set -- 
+      -- this might be empty
+      let children = (Map.!) m parent_id in
+
+
+      let newChildren = concept_id : children in
+      
+      Map.insert parent_id newChildren m
+
 
 
 
@@ -79,15 +110,11 @@ main = do
 
 
 
-  -- let m = Map.empty
-  -- let m' = m
-  -- let m' = Map.insert 5 123 m
-  -- can pass a tuple in....
-
+{-
   let mapInsert m (k,v) = Map.insert k v m
   let m = foldl  mapInsert Map.empty [ (123, 456) ] 
-
   putStrLn $ show $ (Map.!) m 123 
+-}
 
   conn <- connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
 
