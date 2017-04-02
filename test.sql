@@ -4,8 +4,8 @@ begin;
 drop table if exists data;
 
 create table data (
-  ID INTEGER PRIMARY KEY
-  , ParentID INTEGER
+  id INTEGER PRIMARY KEY
+  , parent_id INTEGER
   , Text VARCHAR(32)
   , Price INTEGER
 );
@@ -25,20 +25,20 @@ INSERT INTO data values ( 9, 8, 'Webradio', 90 );
 -- SQL Statement
 
 WITH recursive ChildrenCTE AS (
-  SELECT  ID as RootID , ID
+  SELECT  id as Rootid , id
   FROM    data
   UNION ALL
-  SELECT  cte.RootID, d.ID
+  SELECT  cte.Rootid, d.id
   FROM    ChildrenCTE cte
-          INNER JOIN data d ON d.ParentID = cte.ID
+          INNER JOIN data d ON d.parent_id = cte.id
 )
-SELECT  d.ID, d.ParentID, d.Text, d.Price, cnt.Children
+SELECT  d.id, d.parent_id, d.Text, d.Price, cnt.Children
 FROM    data d
         INNER JOIN (
-          SELECT  RootID as ID , COUNT(*) - 1 as Children 
+          SELECT  Rootid as id , COUNT(*) - 1 as Children 
           FROM    ChildrenCTE
-          GROUP BY RootID
-        ) cnt ON cnt.ID = d.ID
+          GROUP BY Rootid
+        ) cnt ON cnt.id = d.id
 ;
 
 commit;
