@@ -130,7 +130,7 @@ buildFacetGraph xs =
 
 
 
-buildDepths g =
+buildDepthMap g =
   let rootNode = (Nothing, "dummy", -999) in
   -- let depthMap = Map.empty xs in
   recurse g Map.empty rootNode 0 
@@ -148,7 +148,7 @@ buildDepths g =
 
 
 
-
+{-
 -- 1. build a level - from the facetGraph
 
 buildFacetCounts xs =
@@ -182,7 +182,7 @@ buildFacetCounts xs =
       let parentCount = mapGet m parent_id in
       Map.insert parent_id (parentCount + count)  m
 
-
+-}
 
 
 
@@ -219,7 +219,7 @@ main = do
 
   printFacetGraph g 
 
-  let depths = buildDepths g 
+  let depths = buildDepthMap g 
 
   print depths
 
