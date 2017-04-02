@@ -110,22 +110,25 @@ recurseFacetGraph g =
   recurse g (parent_id, label, count) = 
 
     let children = mapGet g parent_id in
-    -- let newChildren = map (\(a,b,c) -> (a,b,c + 1000)) children in
+    let newChildren = map (\(a,b,c) -> (a,b,c + 1000)) children in
 
+    Map.insert parent_id newChildren g
+
+{-
     foldl (\g' (a,b,c) -> 
         -- we have to modify g here
         -- recurse in further... 
         let newGraph = recurse g' (Just a, b,c) in
-
+        -- ok, we have to concat on to the existing children...
         -- we don't know the paren
         Map.insert (parent_id) [ (a,b,c)] newGraph 
-  
-
     ) g children 
+-}
 
-  -- this isn't fucking woking at all...
 
-    -- this is recursing but not creating a new map....
+
+-- this isn't fucking woking at all...
+-- this is recursing but not creating a new map....
 
 
 -- this is fucking complicated.
