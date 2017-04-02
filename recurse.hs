@@ -114,12 +114,12 @@ recurseFacetGraph g =
 
     foldl (\g' (a,b,c) -> 
         -- we have to modify g here
-        let newChild = (a,"whoot" ++ b, c) in
-  
-        -- let newGraph = Map.insert (Just parent_id) newChild  g' in
+        -- recurse in further... 
         let newGraph = recurse g' (Just a, b,c) in
+
+        -- we don't know the paren
+        Map.insert (parent_id) [ (a,b,c)] newGraph 
   
-        newGraph
 
     ) g children 
 
