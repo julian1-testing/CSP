@@ -86,16 +86,19 @@ buildFacetGraph :: Foldable t =>
      -> Map.Map (Maybe Integer) [(Integer, t1, t2)]
 
 
+
+
+
 buildFacetGraph xs =
+  -- this isn't a recursion and there is no depth...
   -- takes a 
   -- build a graph of the facet nodes
+  -- concept_id -> array 
   -- https://hackage.haskell.org/package/containers-0.4.2.0/docs/Data-Map.html
 
   let e' = foldl emptyList Map.empty xs in
   let e = Map.insert Nothing [] e' in  
-
   foldl insertToList e xs
-
   where
     -- insert empty list for concept_id
     emptyList m (concept_id,_,_,_) =
@@ -107,12 +110,23 @@ buildFacetGraph xs =
       let newChildren = (concept_id, label, count) : childLst in
       Map.insert parent_id newChildren m
 
+{-
+  ok, so we have the map...  lets try to now we want to transform the original list 
+-}
+
+appendDepthToFacetList xs depthMap = 
+  map f xs
+  where
+  f (a,b,c,d) = (a,b,c,d)
+
+
 
 
 
 buildDepthMap g =
+  -- this is a recursion
+  -- build a Map from Graph indexed by concept id with depth of the facet
   let rootNode = (Nothing, "dummy", -999) in
-  -- let depthMap = Map.empty xs in
   recurse g Map.empty rootNode 0 
   where
     recurse g depthMap (parent_id, label, count) depth =
@@ -162,7 +176,8 @@ main = do
 
   let depths = buildDepthMap g 
 
-  print depths
+  -- mapM (\key -> print key ) List.yydepths.keys
+  mapM print (Map.toList depths) 
 
   return ()
 
