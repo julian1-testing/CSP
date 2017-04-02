@@ -138,14 +138,13 @@ buildDepths g =
       -- set depth for this current id,
       let depthMap' = Map.insert parent_id depth depthMap in
 
-      -- get children and drill 
+      -- get children
       let children = mapGet g parent_id in
 
       -- recurse/process the children
       let f depthMap' (concept_id, label, count) = recurse g depthMap' (Just concept_id, label, count) (depth + 1) in
-      let (result) = foldl f (depthMap') children in
+      foldl f (depthMap') children
 
-      result 
 
 
 
