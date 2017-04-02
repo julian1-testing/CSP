@@ -12,6 +12,8 @@ import Database.PostgreSQL.Simple
 
 import Text.RawString.QQ
 
+import qualified Data.Map as Map
+
 -- rather than doing multiple db queries - it may be easier to just load everything into memory and then
 -- query. 
 -- BUT - first - we need to get the counts being returned and then propagating up
@@ -34,20 +36,6 @@ pad s count =
     False -> pad (" " ++ s) (count - 1)
 
 
-recurse conn depth (parent_id, label) = do
-  putStrLn $ (pad "" $ depth * 3) ++ "- " ++ show parent_id ++ " " ++ label
-
-  let query1 = [r|
-        select id, label
-        from concept_view
-        where parent_id = ?
-  |]
-  xs :: [ (Integer, String) ] <- query conn query1 (Only parent_id)
-  mapM (recurse conn $ depth + 1) xs
-  return ()
-
-
-
 
 getAllConcepts conn  = do
   let query1 = [r|
@@ -68,8 +56,20 @@ getAllConcepts conn  = do
 
 
 
+
+
+
+
 main :: IO ()
 main = do
+
+
+
+  let m = Map.empty 
+  let m' = Map.insert 5 "123" m
+  -- let m'' = Map.insert 6 456 m'
+
+  putStrLn $ (Map.!) m'  5  
 
   conn <- connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
 
@@ -95,5 +95,19 @@ main = do
   return ()
 
 
+{-
+
+recurse conn depth (parent_id, label) = do
+  putStrLn $ (pad "" $ depth * 3) ++ "- " ++ show parent_id ++ " " ++ label
+
+  let query1 = [r|
+        select id, label
+        from concept_view
+        where parent_id = ?
+  |]
+  xs :: [ (Integer, String) ] <- query conn query1 (Only parent_id)
+  mapM (recurse conn $ depth + 1) xs
+  return ()
 
 
+-}
