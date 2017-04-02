@@ -112,12 +112,16 @@ buildFacetGraph xs =
 
 {-
   ok, so we have the map...  lets try to now we want to transform the original list 
+
+  append is modify
+  where is
 -}
 
-appendDepthToFacetList xs depthMap = 
+zipFacetListWithDepth xs depthMap = 
   map f xs
   where
-  f (a,b,c,d) = (a,b,c,d)
+    -- f (a,b,c,d) = (a,b,c,d, mapGet a depthMap)
+    f (a,b,c,d) = (a,b,c,d, mapGet depthMap (Just a))
 
 
 
@@ -174,11 +178,18 @@ main = do
 
   printFacetGraph g 
 
-  let depths = buildDepthMap g 
+  let depthMap = buildDepthMap g 
 
-  mapM print (Map.toList depths) 
+  mapM print (Map.toList depthMap) 
+
+
+  let zipped = zipFacetListWithDepth facetList depthMap
+
 
   return ()
+
+
+
 
 
 {-
