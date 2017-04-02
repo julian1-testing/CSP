@@ -66,7 +66,8 @@ getAllConcepts conn  = do
   -- putStrLn $ show $ topConcepts  -- toplevel concepts - that have no pareh. 
 
   -- 
-  recurse populatedMap (Just 583) 0
+  -- recurse populatedMap (Just 583) 0
+  recurse populatedMap (Nothing ) 0
 
 
   return ()
@@ -91,10 +92,6 @@ getAllConcepts conn  = do
       putStrLn $ (pad $ depth * 3) ++ (show parent_id)
       let children = mapGet m parent_id
 
-      -- ok, an entry - may not have any children - in which case 
-
-      -- this call isn't correct
-      -- hang on.... why is the element not there
       mapM (\e -> recurse m (Just e) (depth + 1)) children
       return ()
 
