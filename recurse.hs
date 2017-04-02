@@ -111,10 +111,63 @@ buildFacetGraph xs =
 {-
   Important - after calculating creating thie . we can probably go back and map the list again... 
       and just update the counts....
+
+  Ok, so we can recurse the graph... although it's pretty har
+  
+  it should be pretty easy if we just return the damn count each time.... 
+  and store it...
+      done.
+-}    
+
+{-
+    So rather than store it directly we should create another Map from concept 
 -}
 
+recurseFacetGraph g =
+  let rootNode = (Nothing, "dummy", -999) in
+  recurse g rootNode  0 
+  where
+    recurse g (parent_id, label, count) depth =
+      -- we have to drill/ recurse  down first
+      let children = mapGet g parent_id in
+
+      -- we can't use recurse here....
+      -- recurse either returns a list. or it returns a graph.
+      -- i think it wants to be a fold
+      
+
+      let f (concept_id, label, count) = recurse g (Just concept_id, label, count) (depth + 1) in
+      let newChildren = map f children in
+      Map.insert parent_id [ ] g
+      
+
+      -- it has to be an empty graph -- but that makes concatenating too difficult?
+      -- foldl      children 
+ 
+
+      -- remove item
+      -- insertNew item with children...
+      -- and because it's so damn hard... 
+      -- i don't think a map will 
+      -- 
+      -- let sumCount = foldl (\sum (a,b,c) -> sum + c) 0 children in 
+      -- ()
+
+
+
+
+
+-- 1. build a level - from the facetGraph
 
 buildFacetCounts xs =
+  -- iteratively go through the list and create facet counts.
+  -- but this doesn't work - unless we do leaf nodes then other nodes etc in order
+  -- eg. have to do all the nodes at a particular level before we consider the next level...
+  -- holy hell.
+  -- introduce a recursion level.... and propagate them up?
+
+  -- OK, but with the graph - we have the depth, level. so we just need to transform to the level...
+
   -- let e' = foldl addParentId Map.empty xs in
   let e' = Map.empty in
 
