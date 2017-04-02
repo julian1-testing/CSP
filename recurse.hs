@@ -14,20 +14,18 @@ import Text.RawString.QQ
 
 import qualified Data.Map as Map
 
--- rather than doing multiple db queries - it may be easier to just load everything into memory and then
--- query. 
+{-
+-- using multiple db queries to extract the tree is slow - quicker to get everything flat and then destructure to a tree
 -- BUT - first - we need to get the counts being returned and then propagating up
 
 -- So it will always require a custom query....
 -- also we need to be returning for all vocab not just parameter
 
--- IMPORTANT
--- getting everything in one query is fast - 20ms
--- lets try to join on the counts
 
 -- IMPORTANT
 -- are we sure we cannot use a groupby on the facet_count_view to get the counts ...
 -- this would make client side stuff a lot simpler.
+-}
 
 
 pad' s count =
@@ -55,36 +53,28 @@ getAllConcepts conn  = do
   -- mapM print xs
 
   -- https://hackage.haskell.org/package/containers-0.4.2.0/docs/Data-Map.html
-  let emptyMap'     = foldl insertEmptyList Map.empty xs
-  let emptyMap     = foldl insertEmptyList2 emptyMap' xs
+  let emptyMap'     = foldl initParents Map.empty xs
+  let emptyMap     = foldl initConcepts emptyMap' xs
 
   let populatedMap = foldl insertToList emptyMap xs
 
   -- eg.
-  let physicalWaterChildren = mapGet populatedMap (Just 583) -- eg. physical water
-  putStrLn $ show physicalWaterChildren
+  -- let physicalWaterChildren = mapGet populatedMap (Just 583) -- eg. physical water
 
-  -- let topConcepts = mapGet populatedMap (Nothing) -- toplevel concepts - that have no pareh. 
-  -- putStrLn $ show $ topConcepts  -- toplevel concepts - that have no pareh. 
-
-  -- 
   -- recurse populatedMap (Just 583) 0
   recurse populatedMap (Nothing ) 0
 
+  -- it's not a map - its actually a graph
 
   return ()
   where
     mapGet = (Map.!)
-    -- insert key=parent_id, value=empty list
-    -- use concept to get everything...
-    insertEmptyList m (concept_id,_,_, parent_id) =
+
+    initParents m (_,_,_, parent_id) =
       Map.insert (parent_id) [] m
 
-    insertEmptyList2 m (concept_id,_,_, parent_id) =
+    initConcepts m (concept_id,_,_,_) =
       Map.insert (Just concept_id) [] m
-
-
-    -- think we should be recording parents - because 
 
     -- insert key=parent_id, and const the concept_id to the list
     insertToList m (concept_id,count,label, parent_id) =
@@ -92,9 +82,7 @@ getAllConcepts conn  = do
       let newChildren = concept_id : children in
       Map.insert parent_id newChildren m
 
-
-
-    -- this is going to be monadic... needs depth....
+    -- this is monadic - but we could reduce it to a tree...
     recurse m parent_id depth = do
 
       putStrLn $ (pad $ depth * 3) ++ (show parent_id)
@@ -108,20 +96,12 @@ getAllConcepts conn  = do
 main :: IO ()
 main = do
 
-
--- ok, - now I think we want to recurse... do we have an order or something ? 
-
-
-{-
-  let mapInsert m (k,v) = Map.insert k v m
-  let m = foldl  mapInsert Map.empty [ (123, 456) ] 
-  putStrLn $ show $ (Map.!) m 123 
--}
-
   conn <- connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
 
-
   getAllConcepts conn
+
+  return ()
+
 
 {-
   let query1 = [r|
@@ -130,19 +110,7 @@ main = do
         where parent_id is null
   |]
 
-        -- and scheme_title ~ ?
 
-  -- let url = "Platform"  :: String
-  let url = "Parameter"  :: String
-
-  xs :: [ (Integer, String) ] <- query conn query1 () -- (Only url)
-
-  mapM (recurse conn 0) xs
--}
-  return ()
-
-
-{-
 
 recurse conn depth (parent_id, label) = do
   putStrLn $ (pad "" $ depth * 3) ++ "- " ++ show parent_id ++ " " ++ label
@@ -155,6 +123,5 @@ recurse conn depth (parent_id, label) = do
   xs :: [ (Integer, String) ] <- query conn query1 (Only parent_id)
   mapM (recurse conn $ depth + 1) xs
   return ()
-
 
 -}
