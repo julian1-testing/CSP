@@ -111,10 +111,6 @@ buildFacetGraph xs =
 
 --recurseFacetGraph :: t -> t
 
-recurse g (parent_id, label, count) = 
-
-  let children = mapGet g parent_id in  -- why the fuck doesn't this work?????
-  g 
 
 
 recurseFacetGraph g =
@@ -126,7 +122,12 @@ recurseFacetGraph g =
   -- let testChildren  = mapGet g rootNode in
   recurse g rootNode 
 
-  -- where
+  where
+  recurse g (parent_id, label, count) = 
+
+    let children = mapGet g parent_id in  -- why the fuck doesn't this work?????
+    g 
+
     -- the key thing is that it's a flat map - which makes it kind of harder to maniplate...
     -- we just want a simple transform... but it's a graph. which potentially multiple children
     -- this just prints everything and is monadic
