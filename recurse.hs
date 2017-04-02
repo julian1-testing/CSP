@@ -59,17 +59,19 @@ getAllConcepts conn  = do
 
 
 
-
 main :: IO ()
 main = do
 
 
 
-  let m = Map.empty 
-  let m' = Map.insert 5 "123" m
-  -- let m'' = Map.insert 6 456 m'
+  let m = Map.empty
+  -- let m' = m
+  -- let m' = Map.insert 5 123 m
+  -- can pass a tuple in....
 
-  putStrLn $ (Map.!) m'  5  
+  let m' = foldl  (\m (a,b) ->  Map.insert a b m) Map.empty [ (123, 456) ] 
+
+  putStrLn $ show $ (Map.!) m' 123 
 
   conn <- connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
 
