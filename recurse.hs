@@ -38,6 +38,7 @@ pad s count =
 
 
 getAllConcepts conn  = do
+  -- get facets with record count as flat list from db
   let query1 = [r|
         select 
           concept_id, 
@@ -46,27 +47,25 @@ getAllConcepts conn  = do
           parent_id
         from facet_count_view2
   |]
-
   -- note the parent may be null! beautiful...
   xs :: [ (Integer, Integer, String, Maybe Integer) ] <- query conn query1 ()
 
-
-  let emptyMap = foldl addEmptyList Map.empty xs
-
-  let populatedMap = foldl addToList emptyMap xs
-
-  putStrLn $ show $ (Map.!) populatedMap (Just 583)
-
   -- mapM print xs
+
+  let emptyMap = foldl insertEmptyList Map.empty xs
+  let populatedMap = foldl insertToList emptyMap xs
+
+  -- find children of node,
+  putStrLn $ show $ (Map.!) populatedMap (Just 583) -- eg. physical water
 
   return ()
   where
-    -- create empty list for parent_id
-    addEmptyList m (_,_,_, parent_id) =
+    -- insert key=parent_id, value=empty list
+    insertEmptyList m (_,_,_, parent_id) =
       Map.insert parent_id [] m
 
-    -- add concept_id to list associated with parent_id
-    addToList m (concept_id,count,label, parent_id) =
+    -- insert key=parent_id, and const the concept_id to the list
+    insertToList m (concept_id,count,label, parent_id) =
       let children = (Map.!) m parent_id in
       let newChildren = concept_id : children in
       Map.insert parent_id newChildren m
@@ -75,6 +74,8 @@ getAllConcepts conn  = do
 main :: IO ()
 main = do
 
+
+-- ok, - now I think we want to recurse... do we have an order or something ? 
 
 
 {-
