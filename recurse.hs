@@ -89,26 +89,17 @@ buildFacetGraph :: Foldable t =>
 buildFacetGraph xs =
   -- takes a 
   -- build a graph of the facet nodes
-  -- non monadic
   -- https://hackage.haskell.org/package/containers-0.4.2.0/docs/Data-Map.html
-  -- this has no concept of depth...
---  let e' = foldl addParentId Map.empty xs in
-  let e' = foldl addConceptId Map.empty xs in
-  -- let rootNode = (Nothing, "dummy", -999) in
-  -- let e  = foldl addConceptId e' xs in
+
+  let e' = foldl emptyList Map.empty xs in
   let e = Map.insert Nothing [] e' in  
 
   foldl insertToList e xs
 
   where
     -- insert empty list for concept_id
-    addConceptId m (concept_id,_,_,_) =
+    emptyList m (concept_id,_,_,_) =
       Map.insert (Just concept_id) [] m
-
-    -- TODO - do this explicitly for the root node
-    -- insert empty list for parent_id
- --   addParentId m (_,parent_id,_,_) =
- --     Map.insert (parent_id) [] m
 
     -- populate the list associated with graph node with children
     insertToList m (concept_id, parent_id, label,count) =
