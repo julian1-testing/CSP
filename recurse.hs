@@ -54,34 +54,35 @@ getAllConcepts conn  = do
   |]
   -- note the parent may be null! beautiful...
   xs :: [ (Integer, Maybe Integer, String, Integer ) ] <- query conn query1 ()
-
   -- mapM print xs
   return xs
 
-  -- eg.
-  -- let physicalWaterChildren = mapGet facetMap (Just 583) -- eg. physical water
 
-  -- recurse facetMap (Just 583) 0
+-- eg.
+-- let physicalWaterChildren = mapGet facetMap (Just 583) -- eg. physical water
+-- recurse facetMap (Just 583) 0
+
 
 mapGet = (Map.!)
 
+
 buildFacetGraph xs =
   -- non monadic
-
   -- https://hackage.haskell.org/package/containers-0.4.2.0/docs/Data-Map.html
-  let emptyMap'     = foldl initParents Map.empty xs in
-  let emptyMap     = foldl initConcepts emptyMap' xs in
+  let e' = foldl addParentId Map.empty xs in
+  let e  = foldl addConceptId e' xs in
+  foldl insertToList e xs
 
-  let facetMap = foldl insertToList emptyMap xs in
-  facetMap
   where
-    initParents m (_,parent_id,_,_) =
-      Map.insert (parent_id) [] m
-
-    initConcepts m (concept_id,_,_,_) =
+    -- insert empty list for concept_id
+    addConceptId m (concept_id,_,_,_) =
       Map.insert (Just concept_id) [] m
 
-    -- this inserts stuff...
+    -- insert empty list for parent_id
+    addParentId m (_,parent_id,_,_) =
+      Map.insert (parent_id) [] m
+
+    -- populate the list associated with graph node with children
     insertToList m (concept_id, parent_id, label,count) =
       let childLst = mapGet m parent_id in
       let newChildren = (concept_id, label, count) : childLst in
