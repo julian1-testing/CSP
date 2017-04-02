@@ -51,22 +51,8 @@ getAllConcepts conn  = do
   xs :: [ (Integer, Integer, String, Maybe Integer) ] <- query conn query1 ()
 
 
-  -- hmmmmm - this 
-  -- parent id might be null..... 
-
-  -- we can always find the parent. what we want is all the children...
-  -- problem if there is no parent_id????
-  -- ok, the entry may already be there....
-  -- actually can be an ampty list...
-
-
-      -- = Map.insert parent_id concept_id m
-
-
-  -- let mEmpty = foldl (m  mapInsert Map.empty xs
-
-
-  let emptyMap = foldl  mapEmpty Map.empty xs
+  -- create a map where each value is initialized with empty set
+  let emptyMap = foldl mapEmpty Map.empty xs
 
   let m = foldl  mapInsert emptyMap  xs
 
@@ -74,27 +60,17 @@ getAllConcepts conn  = do
   -- putStrLn $ show $ (Map.!) m (Just 583)
 
 
-  mapM print xs
+  -- mapM print xs
   return ()
   where
-    -- create empty list for each entry
-    mapEmpty m (concept_id,count,label, parent_id) =
-      let newChildren = [ ]  in
-      Map.insert parent_id newChildren m
+    -- create empty list for parent_id
+    mapEmpty m (_,_,_, parent_id) =
+      Map.insert parent_id [] m
 
-
-
-
+    -- add concept_id to list associated with parent_id
     mapInsert m (concept_id,count,label, parent_id) =
-
-      -- rather than starting with empty map
-      -- why not initialize with empty set -- 
-      -- this might be empty
       let children = (Map.!) m parent_id in
-
-
       let newChildren = concept_id : children in
-      
       Map.insert parent_id newChildren m
 
 
