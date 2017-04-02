@@ -99,18 +99,6 @@ buildFacetGraph xs =
       Map.insert parent_id newChildren m
 
 
--- ok, so we should be able to propagate the counts up...
--- but this will take an input ... chli
--- so we have to translate the node...
--- which means returning the node...
-
-
--- move depth argument to a bound thing...
-
--- it's the damn return type
-
---recurseFacetGraph :: t -> t
-
 
 
 recurseFacetGraph g =
@@ -122,15 +110,18 @@ recurseFacetGraph g =
   recurse g (parent_id, label, count) = 
 
     let children = mapGet g parent_id in
+    -- let newChildren = map (\(a,b,c) -> (a,b,c + 1000)) children in
 
-    -- it shouldn't be map it should be fold?
-    -- let newChildren = map (recurse id) children in
-    -- let newGraph = Map.insert parent_id newChildren g in
+    foldl (\g' (a,b,c) -> 
+        -- we have to modify g here
+        let newChild = (a,"whoot" ++ b, c) in
+  
+        -- let newGraph = Map.insert (parent_id) newChild  g' in
+        recurse g' (Just a, b,c)
 
-    -- we can't use map here . it must be a fold 
+    ) g children 
 
-    foldl (\g' (a,b,c) -> recurse g' (Just a,b,c)) g children
-
+    -- this is recursing but not creating a new map....
 
 
 -- this is fucking complicated.
