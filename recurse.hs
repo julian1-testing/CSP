@@ -88,6 +88,7 @@ buildFacetGraph xs =
   -- build a graph of the facet nodes
   -- non monadic
   -- https://hackage.haskell.org/package/containers-0.4.2.0/docs/Data-Map.html
+  -- this has no concept of depth...
   let e' = foldl addParentId Map.empty xs in
   let e  = foldl addConceptId e' xs in
   foldl insertToList e xs
@@ -131,29 +132,33 @@ recurseFacetGraph g =
       -- we have to drill/ recurse  down first
       let children = mapGet g parent_id in
 
-      -- we can't use recurse here....
-      -- recurse either returns a list. or it returns a graph.
-      -- i think it wants to be a fold
-      
 
-      let f (concept_id, label, count) = recurse g (Just concept_id, label, count) (depth + 1) in
-      let newChildren = map f children in
+      let f g' (concept_id, label, count) = recurse g' (Just concept_id, label, count) (depth + 1) in
+      let result = foldl f g children in
+
+       
+
       Map.insert parent_id [ ] g
-      
 
+      --Map.insert parent_id [ ] g
+    
+      -- just thread another damn variable through it?
+ 
+      -- we cannot mapulate the graph in place.... 
+      -- we need to decide of this function returns a translated graph, or translated children.
+
+      -- we could pass in a mempty each time...
+      -- we can only create a new graph
       -- it has to be an empty graph -- but that makes concatenating too difficult?
       -- foldl      children 
- 
-
       -- remove item
       -- insertNew item with children...
       -- and because it's so damn hard... 
-      -- i don't think a map will 
-      -- 
       -- let sumCount = foldl (\sum (a,b,c) -> sum + c) 0 children in 
       -- ()
 
-
+      -- VERY important - can we not return the children and a modified graph?
+      -- as a tuple?
 
 
 
@@ -165,8 +170,9 @@ buildFacetCounts xs =
   -- eg. have to do all the nodes at a particular level before we consider the next level...
   -- holy hell.
   -- introduce a recursion level.... and propagate them up?
-
   -- OK, but with the graph - we have the depth, level. so we just need to transform to the level...
+
+  -- if we can work work out the depth - then we can sort - by level and process...
 
   -- let e' = foldl addParentId Map.empty xs in
   let e' = Map.empty in
