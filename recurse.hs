@@ -46,13 +46,13 @@ getAllConcepts conn  = do
   let query1 = [r|
         select 
           concept_id, 
+          parent_id,
           label,
-          count,
-          parent_id
+          count
         from facet_count_view2
   |]
   -- note the parent may be null! beautiful...
-  xs :: [ (Integer, String, Integer, Maybe Integer) ] <- query conn query1 ()
+  xs :: [ (Integer, Maybe Integer, String, Integer ) ] <- query conn query1 ()
 
   -- mapM print xs
 
@@ -74,14 +74,14 @@ getAllConcepts conn  = do
   where
     mapGet = (Map.!)
 
-    initParents m (_,_,_, parent_id) =
+    initParents m (_,parent_id,_,_) =
       Map.insert (parent_id) [] m
 
     initConcepts m (concept_id,_,_,_) =
       Map.insert (Just concept_id) [] m
 
     -- insert key=parent_id, and const the concept_id to the list
-    insertToList m (concept_id,label,count, parent_id) =
+    insertToList m (concept_id, parent_id, label,count) =
       let childLst = (Map.!) m parent_id in
       let newChildren = (concept_id, label, count) : childLst in
       Map.insert parent_id newChildren m
