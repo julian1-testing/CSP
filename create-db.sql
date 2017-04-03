@@ -97,6 +97,9 @@ alter table resource owner to harvest;
 
 
 -- its actually not facet - but the facet index...
+-- or facet_index or facet_match
+
+-- need to limit to just the online recoursce facets
 
 create table facet (
 
@@ -105,6 +108,9 @@ create table facet (
   record_id  integer references record(id), 
   concept_id  integer references concept(id)
 );
+
+-- important
+CREATE UNIQUE INDEX my_facet_unique_idx ON facet(record_id, concept_id);
 
 alter table facet owner to harvest;
 

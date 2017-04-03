@@ -1,23 +1,18 @@
 #!/bin/bash -x
 
-rm output -rf
-ghc -outputdir output examples/psql.hs || exit
 
-rm output -rf
-ghc -outputdir output examples/psql2.hs || exit
 
-rm output -rf
-ghc -outputdir output examples/transform.hs || exit
-
-rm output -rf
-ghc -outputdir output examples/parse.hs || exit
+FLAGS="-O2 -outputdir output"
 
 ############
 rm output -rf
-ghc -outputdir output harvest.hs || exit
+ghc $FLAGS harvest.hs || exit
 
 
 rm output -rf
-ghc -outputdir output load-scheme.hs || exit
+ghc $FLAGS  load-scheme.hs || exit
+
+rm output -rf
+ghc $FLAGS recurse.hs || exit
 
 
