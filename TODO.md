@@ -1,4 +1,14 @@
 
+--------
+It's a graph. 
+Which makes the whole thing rather complicated.
+
+
+OK - we can't just count the records. - 
+
+
+------------
+
 IMPORTANT - in firefox filter console with 'proxy'
   - it's one request and then a bunch of logos,
 

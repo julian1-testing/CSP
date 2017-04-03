@@ -26,16 +26,15 @@ import qualified Data.Map as Map
 
 
 getFacetList conn  = do
-  -- get all facets and facet count from db and return as flat list
+  -- we want the concept_id, parent_id, record_id 
   let query1 = [r|
 
           select 
-            concept_id, 
-            parent_id,
-            record_id 
+            facet.concept_id, 
+            concept_view.parent_id,  -- parent concept
+            facet.record_id           -- the record
           from facet 
           left join concept_view on concept_view.id = facet.concept_id  
-    
           order by concept_id
           -- where concept_id = 576 ;
 
@@ -45,15 +44,45 @@ getFacetList conn  = do
   -- mapM print xs
   return xs
 
--- we want the concept_id, parent_id, record_id 
+-- now we want to condense this into a list -> list ....
+-- it does need to be a map so that we can insert into it easily
+
+
+--   let e = Map.insert Nothing [] e' in  
+
+
+buildFacetMap xs =
+
+  -- let m = Map.empty in 
+
+  let f m (concept_id, parent_id, record_id) = Map.insert concept_id [ record_id ] m in 
+  
+  foldl f Map.empty xs
+ 
+{-
+  foldl insertToList e xs
+
+  let e' = foldl emptyList Map.empty xs in
+  let e = Map.insert Nothing [] e' in  
+  foldl insertToList e xs
+  where
+    -- insert empty list for concept_id
+-}
+
+
 
 main :: IO ()
 main = do
-
   conn <- connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
   facetList <- getFacetList conn
 
   mapM print $ facetList
+
+  let m = buildFacetMap facetList
+
+  
+  -- mapM print $ facetList
+  print m 
 
   return ()
 
