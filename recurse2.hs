@@ -97,7 +97,7 @@ buildFacetMap xs =
   where
     --  insert an empty list for concept_id
     conceptEmpty m (concept_id, _, _) = 
-      Map.insert concept_id [] m
+      Map.insert (Just concept_id) [] m
 
 --    -- the same - except for parent_id
 --    f' m (_, parent_id, _) = 
@@ -106,18 +106,16 @@ buildFacetMap xs =
 
     -- populate concept list with the records
     f m (concept_id, _, record_id) =
-      let current = mapGet m concept_id in
+      let current = mapGet m (Just concept_id) in
       let new = record_id : current in 
-      Map.insert concept_id new m 
+      Map.insert (Just concept_id) new m 
 
 
 
 propagateFacetMap m relationships =
   
   -- changename of m to input
-
   -- use this for leaf nodes....
-
   -- relationships are all the possible propagations...
 
   Map.empty
@@ -134,13 +132,15 @@ propagateFacetMap m relationships =
 
       -- trace  ("here -> " ++ show (concept_id, parent_id)  ) $
 
-      case Map.member concept_id m of
+      case Map.member (Just concept_id) m of
         True ->
           -- get from m
-          let newSet = mapGet m concept_id in
+          let newSet = mapGet m (Just concept_id) in
           let currentParentLst = mapGet newMap parent_id in
           let newParentLst  = mkUniq (currentParentLst ++ newSet)  in 
 
+          -- parent_id will be nullble 
+          -- or the conceptchild....
           Map.insert parent_id newParentLst newMap
 
         False -> 
@@ -149,8 +149,8 @@ propagateFacetMap m relationships =
     parentEmpty m (_, parent_id) = 
       Map.insert parent_id [] m
 
-    childEmpty m (concept_id, _) = 
-      Map.insert (Just concept_id)  [] m
+    -- childEmpty m (concept_id, _) = 
+    --  Map.insert (Just concept_id)  [] m
 
 
 
@@ -199,9 +199,11 @@ main = do
 
   relationships <- getConceptRelationships conn 
 
+  -- mapM print relationships 
+
   facetList <- getFacetList conn
 
-  mapM print $ facetList
+  -- mapM print $ facetList
 
 
   -- build mapping from concept -> records
@@ -210,9 +212,9 @@ main = do
 
 
   print "########################"
-
   let m'  = propagateFacetMap m relationships 
   printMap m'
+
 
 {-
   print "########################"
