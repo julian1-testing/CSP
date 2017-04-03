@@ -8,4 +8,5 @@ examples/psql2
 examples/transform
 output
 recurse
+recurse2
 

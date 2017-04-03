@@ -2,6 +2,8 @@
 {-# LANGUAGE ScopedTypeVariables, OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes #-}
 
+-- {-#  NoMonomorphismRestriction #-}
+
 import Database.PostgreSQL.Simple
 import Text.RawString.QQ
 import qualified Data.Map as Map
@@ -11,6 +13,7 @@ import qualified Data.Map as Map
   - remember it's not a tree - and we cannot necessarily easily recurse.
 
   - instead sweep through as flat lists - and move the items to their parents.  
+  - can be a list that we de-duplicate.... or another map
 
   - until we get to the top node.
 
@@ -44,20 +47,37 @@ getFacetList conn  = do
   -- mapM print xs
   return xs
 
--- now we want to condense this into a list -> list ....
--- it does need to be a map so that we can insert into it easily
 
 
---   let e = Map.insert Nothing [] e' in  
+mapGet = (Map.!)
+
+
 
 
 buildFacetMap xs =
+  -- build a map from concept_id to list of records
 
-  -- let m = Map.empty in 
+  let m = foldl f Map.empty xs in
+  let m' = foldl f2 m xs in
+  m'
+  where
+    --  create an empty list
+    f m (concept_id, _, _) = 
+      Map.insert concept_id [ ] m
 
-  let f m (concept_id, parent_id, record_id) = Map.insert concept_id [ record_id ] m in 
-  
-  foldl f Map.empty xs
+    -- populate the damn thing,
+    f2 m (concept_id, _, record_id) =
+      let current = mapGet m concept_id in
+      let new = record_id : current in 
+      Map.insert concept_id new m 
+      -- m
+
+
+
+--       let childLst = mapGet m parent_id in
+ 
+
+
  
 {-
   foldl insertToList e xs
@@ -80,9 +100,10 @@ main = do
 
   let m = buildFacetMap facetList
 
+  mapM print (Map.toList m) 
   
   -- mapM print $ facetList
-  print m 
+  -- print m 
 
   return ()
 
