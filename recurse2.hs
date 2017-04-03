@@ -62,21 +62,22 @@ a $> b = b a
 buildFacetMap xs =
 
   Map.empty
-  & \m -> foldl f  m xs
-  & \m -> foldl f' m xs
-  & \m -> foldl f2 m xs
+  & \m -> foldl conceptEmpty  m xs
+  -- & \m -> foldl f' m xs
+  & \m -> foldl f m xs
 
   where
     --  insert an empty list for concept_id
-    f m (concept_id, _, _) = 
+    conceptEmpty m (concept_id, _, _) = 
       Map.insert concept_id [] m
 
-    -- the same - except for parent_id
-    f' m (_, parent_id, _) = 
-      Map.insert parent_id [] m
+--    -- the same - except for parent_id
+--    f' m (_, parent_id, _) = 
+--      Map.insert parent_id [] m
+--      m
 
     -- populate concept list with the records
-    f2 m (concept_id, _, record_id) =
+    f m (concept_id, _, record_id) =
       let current = mapGet m concept_id in
       let new = record_id : current in 
       Map.insert concept_id new m 
@@ -84,33 +85,32 @@ buildFacetMap xs =
 
 
 propagateFacetMap m xs =
-
-  -- hang on the list that we want to process is from the map?????
-  -- we will just iterate for all concepts... o
-  -- it's simply a transition from one map to the parent map 
-
+  -- propagate the records into the next level up...
   -- we don't even need to carry the thing through the recursion
   -- only the one that we might be changing.
 
-  foldl f Map.empty xs
+  -- TODO make sure they are unique...
+
+  Map.empty
+  & \m -> foldl parentEmpty m xs
+  & \m -> foldl f m xs
 
   where
     --  insert an empty list for concept_id
     f newMap (concept_id, parent_id, _) = 
+      -- get from m
+      let newSet = mapGet m concept_id in
+     -- insert in parent 
+      -- this isn't quite right - we have to get the existing... and then append to it.
+      -- which i think also means we have to start with empty maps...
+      -- and deduplicate - to get the correct count
 
-      let current = mapGet m concept_id in
-
-      -- clear out old map
-      -- let m' = Map.insert concept_id [] m in
-
-      -- insert in parent 
-      Map.insert parent_id current newMap
-      --m'
-
+      Map.insert parent_id newSet newMap
 
 
-      -- m -- Map.insert concept_id [ ] m
 
+    parentEmpty m (_, parent_id, _) = 
+      Map.insert parent_id [] m
 
 
 
