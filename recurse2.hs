@@ -44,6 +44,20 @@ mkUniq = toList . fromList
 -}
 
 
+getConceptRelationships conn  = do
+  -- we want the concept_id, parent_id, record_id 
+  let query1 = [r|
+      select 
+        id as concept_id, 
+        parent_id
+      from concept_view ;
+  |]
+  xs :: [ (Integer, Maybe Integer ) ] <- query conn query1 ()
+  return xs
+
+
+
+
 getFacetList conn  = do
   -- we want the concept_id, parent_id, record_id 
   let query1 = [r|
@@ -66,7 +80,7 @@ getFacetList conn  = do
 
 -- ease syntax
 mapGet a b = 
-  -- trace  ("mytrace - mapGet b: " ++ show b ++ " a: " ++ show a) $ 
+  trace  ("mytrace - mapGet b: " ++ show b ++ " a: " ++ show a) $ 
   (Map.!) a b
 
 -- http://stackoverflow.com/questions/4090168/is-there-an-inverse-of-the-haskell-operator
@@ -98,52 +112,42 @@ buildFacetMap xs =
 
 
 
-propagateFacetMap m xs =
-  -- propagate the records into the next level up...
-  -- we don't even need to carry the thing through the recursion
-  -- only the one that we might be changing.
+propagateFacetMap m relationships =
+  
+  -- changename of m to input
 
-  -- TODO make sure they are unique...
+  -- use this for leaf nodes....
 
-  -- VERY IMPORTANT - the XS set will have to be generated from the current list
-  -- let xs = Map. 
-  -- this is not so easy....
-  -- let xs = Map.toList m in
-
-  -- ok, it's more complicated - because we need concept_id
-  -- ok converting to 
-
-  -- HANG on. If we are not using the list.... 
-  -- NO. it may be ok. we just loop through everythign to 
+  -- relationships are all the possible propagations...
 
   Map.empty
-  & \m -> foldl parentEmpty m xs
-  & \m -> foldl childEmpty m xs
-  & \m -> foldl f m xs
+  & \m -> foldl parentEmpty m relationships
+  & \m -> foldl childEmpty  m relationships
+  & \m -> foldl f m relationships 
 
   where
     --  insert an empty list for concept_id
-    f newMap (concept_id, parent_id, _) =  
+    f newMap (concept_id, parent_id) =  
 
-      trace  ("mytrace " ++ show (concept_id, parent_id)  ) $
-      -- get from m
-      let newSet = mapGet m concept_id in
-     -- insert in parent 
-      -- this isn't quite right - we have to get the existing... and then append to it.
-      -- which i think also means we have to start with empty maps...
-      -- and deduplicate - to get the correct count
+      -- trace  ("here -> " ++ show (concept_id, parent_id)  ) $
 
-      let currentParentLst = mapGet newMap parent_id in
+      case Map.member concept_id m of
+        True ->
+          -- get from m
+          let newSet = mapGet m concept_id in
+          let currentParentLst = mapGet newMap parent_id in
+          let newParentLst  = mkUniq (currentParentLst ++ newSet)  in 
 
-      let newParentLst  = mkUniq (currentParentLst ++ newSet)  in 
+          Map.insert parent_id newParentLst newMap
 
-      Map.insert parent_id newParentLst newMap
+        False -> 
+          newMap
 
-    parentEmpty m (_, parent_id, _) = 
+    parentEmpty m (_, parent_id) = 
       Map.insert parent_id [] m
 
-    childEmpty m (concept_id, _, _) = 
-      Map.insert concept_id [] m
+    childEmpty m (concept_id, _) = 
+      Map.insert (Just concept_id)  [] m
 
 
 
@@ -187,25 +191,32 @@ printMap m = do
 main :: IO ()
 main = do
   conn <- connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
+
+
+
+  relationships <- getConceptRelationships conn 
+
   facetList <- getFacetList conn
 
-  -- mapM print $ facetList
+  mapM print $ facetList
+
+
   -- build mapping from concept -> records
   let m = buildFacetMap facetList
-
-  -- mapM print (Map.toList m) 
   printMap m
+
 
   print "########################"
 
-  let m'  = propagateFacetMap m facetList 
+  let m'  = propagateFacetMap m relationships 
   printMap m'
 
+{-
   print "########################"
 
   let m''  = propagateFacetMap m' facetList 
   printMap m''
- 
+-} 
   
   return ()
 
@@ -225,4 +236,20 @@ main = do
 {- 
   (\m' -> foldl f2 m' xs) $  (\m -> foldl f' m xs) $  (foldl f Map.empty xs)
 -}
+  -- propagate the records into the next level up...
+  -- we don't even need to carry the thing through the recursion
+  -- only the one that we might be changing.
+
+  -- TODO make sure they are unique...
+
+  -- VERY IMPORTANT - the XS set will have to be generated from the current list
+  -- let xs = Map. 
+  -- this is not so easy....
+  -- let xs = Map.toList m in
+
+  -- ok, it's more complicated - because we need concept_id
+  -- ok converting to 
+
+  -- HANG on. If we are not using the list.... 
+  -- NO. it may be ok. we just loop through everythign to 
 
