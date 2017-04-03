@@ -18,19 +18,7 @@ import qualified Data.Map as Map
 import Data.Function( (&) )
 
 
-
-{-
--- using multiple db queries to extract the tree is slow - quicker to get everything flat and then destructure to a tree
--- BUT - first - we need to get the counts being returned and then propagating up
-
--- So it will always require a custom query....
--- also we need to be returning for all vocab not just parameter
-
-
--- IMPORTANT
--- are we sure we cannot use a groupby on the facet_count_view to get the counts ...
--- this would make client side stuff a lot simpler.
--}
+-- ok,
 
 
 pad' s count =
@@ -41,11 +29,6 @@ pad' s count =
 
 pad count = pad' "" count
 
-{-
-    - we need to recurse twice - once to propagate the counts up the tree nodes. 
-    - this should be non monadic...
-
--}
 
 
 
@@ -77,25 +60,22 @@ buildFacetGraph :: Foldable t =>
 
 
 
-
-
 buildFacetGraph xs =
   -- stores nesting relationships in a map to enable easy lookup
   -- concept_id -> array 
   -- https://hackage.haskell.org/package/containers-0.4.2.0/docs/Data-Map.html
 
+  Map.empty
+  & \m -> Map.insert Nothing [] m    -- insert a root node
+  & \m -> foldl emptyList m xs
+  & \m -> foldl insertToList m xs
 
-
-  let e' = foldl emptyList Map.empty xs in
-  -- 
-  let e = Map.insert Nothing [] e' in  
-  foldl insertToList e xs
   where
     -- insert empty list for concept_id
     emptyList m (concept_id,_,_,_) =
       Map.insert (Just concept_id) [] m
 
-    -- populate the list associated with graph node with children
+    -- add items to the list associated with graph node with children
     insertToList m (concept_id, parent_id, label,count) =
       let childLst = mapGet m parent_id in
       let newChildren = (concept_id, label, count) : childLst in
@@ -252,5 +232,22 @@ buildDepthMap g =
   concept_id -> counts
 
   therefore we should remove the count from here.
+-}
+{-
+    - we need to recurse twice - once to propagate the counts up the tree nodes. 
+    - this should be non monadic...
+
+-}
+{-
+-- using multiple db queries to extract the tree is slow - quicker to get everything flat and then destructure to a tree
+-- BUT - first - we need to get the counts being returned and then propagating up
+
+-- So it will always require a custom query....
+-- also we need to be returning for all vocab not just parameter
+
+
+-- IMPORTANT
+-- are we sure we cannot use a groupby on the facet_count_view to get the counts ...
+-- this would make client side stuff a lot simpler.
 -}
 

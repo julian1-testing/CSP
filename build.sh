@@ -15,4 +15,7 @@ ghc $FLAGS  load-scheme.hs || exit
 rm output -rf
 ghc $FLAGS recurse.hs || exit
 
+rm output -rf
+ghc $FLAGS recurse2.hs || exit
+
 
