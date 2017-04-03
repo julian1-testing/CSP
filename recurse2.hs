@@ -52,15 +52,26 @@ getFacetList conn  = do
 mapGet = (Map.!)
 
 
-
+a $> b = b a
 
 buildFacetMap xs =
   -- build a map from concept_id to list of records
+  {-
+    let m = foldl f Map.empty xs in
+    let m' = foldl f' m xs in
+    let m'' = foldl f2 m' xs in
+    m''
+  -}
 
-  let m = foldl f Map.empty xs in
-  let m' = foldl f' m xs in
-  let m'' = foldl f2 m' xs in
-  m''
+  -- (\m -> foldl f2 m' xs ).  (\m -> foldl f' m xs ) . (\m -> foldl f m xs )  Map.empty
+{- 
+  (\m' -> foldl f2 m' xs) $  (\m -> foldl f' m xs) $  (foldl f Map.empty xs)
+-}
+
+  foldl f Map.empty xs
+  $> \m -> foldl f' m xs
+  $> \m -> foldl f2 m xs
+
   where
     --  create an empty list for concept_id
     f m (concept_id, _, _) = 
@@ -70,19 +81,18 @@ buildFacetMap xs =
     f' m (_, parent_id, _) = 
       Map.insert parent_id [ ] m
 
-
     -- populate the damn thing,
     f2 m (concept_id, _, record_id) =
       let current = mapGet m concept_id in
       let new = record_id : current in 
       Map.insert concept_id new m 
-      -- m
 
 
 
  
 {-
-  -- we have only done this 
+  -- only now we want to propagate everything to the parent 
+  -- and perhaps 
 
 -}
 
