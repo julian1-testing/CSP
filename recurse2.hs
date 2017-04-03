@@ -210,18 +210,19 @@ main = do
   let m = buildFacetMap facetList
   printMap m
 
-
   print "########################"
   let m'  = propagateFacetMap m relationships 
   printMap m'
 
-
-{-
   print "########################"
-
   let m''  = propagateFacetMap m' relationships 
   printMap m''
- -} 
+
+  print "########################"
+  let m''  = propagateFacetMap m' relationships 
+  printMap m''
+
+
   return ()
 
 
