@@ -56,7 +56,7 @@ FROM    facet_count_view2 d
           SELECT  
             Rootid as id , 
             COUNT(*) - 1 as node_count,
-            SUM("count")  as count_sum
+            cast( SUM("count")  as integer)  as count_sum
           FROM    ChildrenCTE
           GROUP BY Rootid
         ) cnt ON cnt.id = d.id

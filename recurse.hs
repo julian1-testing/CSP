@@ -49,11 +49,12 @@ getFacetList conn  = do
   -- get all facets and facet count from db and return as flat list
   let query1 = [r|
         select 
-          concept_id, 
+          id as concept_id, 
           parent_id,
           label,
-          count
-        from facet_count_view2
+          -- node_count as count
+          count_sum as count
+        from facet_view_3 
   |]
   -- note the parent may be null! beautiful...
   xs :: [ (Integer, Maybe Integer, String, Integer ) ] <- query conn query1 ()
@@ -120,16 +121,17 @@ buildFacetGraph xs =
   TODO change name depth to nestingLevel 
 -}
 
+{-
 zipFacetListWithDepth xs depthMap = 
   sortOn  (map f) $ xs
   
   where
     compare (a,b,c,d,e) (a,b,c,d,e) = 
     f (a,b,c,d) = (a,b,c,d, mapGet depthMap (Just a))
+-}
 
 
-
-
+{-
 
 buildDepthMap g =
   -- this is a recursion
@@ -145,7 +147,7 @@ buildDepthMap g =
       -- recurse/process the children
       let f depthMap' (concept_id, label, count) = recurse g depthMap' (Just concept_id, label, count) (depth + 1) in
       foldl f (depthMap') children
-
+-}
 
 
 
@@ -182,14 +184,15 @@ main = do
 
   printFacetGraph g 
 
+{-
   let depthMap = buildDepthMap g 
 
   mapM print (Map.toList depthMap) 
 
-
   let zipped = zipFacetListWithDepth facetList depthMap
 
   mapM print zipped
+-}
 
   return ()
 
