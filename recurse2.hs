@@ -89,19 +89,22 @@ propagateFacetMap m xs =
   -- we will just iterate for all concepts... o
   -- it's simply a transition from one map to the parent map 
 
-  foldl f m xs
+  -- we don't even need to carry the thing through the recursion
+  -- only the one that we might be changing.
+
+  foldl f Map.empty xs
 
   where
     --  insert an empty list for concept_id
-    f m (concept_id, parent_id, _) = 
+    f newMap (concept_id, parent_id, _) = 
 
       let current = mapGet m concept_id in
 
       -- clear out old map
-      let m' = Map.insert concept_id [] m in
+      -- let m' = Map.insert concept_id [] m in
 
       -- insert in parent 
-      Map.insert parent_id current m'
+      Map.insert parent_id current newMap
       --m'
 
 
