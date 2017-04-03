@@ -48,44 +48,47 @@ getFacetList conn  = do
   return xs
 
 
-
+-- ease syntax
 mapGet = (Map.!)
 
-
+-- http://stackoverflow.com/questions/4090168/is-there-an-inverse-of-the-haskell-operator
 a $> b = b a
 
+
 buildFacetMap xs =
-  -- build a map from concept_id to list of records
-  {-
-    let m = foldl f Map.empty xs in
-    let m' = foldl f' m xs in
-    let m'' = foldl f2 m' xs in
-    m''
-  -}
 
-  -- (\m -> foldl f2 m' xs ).  (\m -> foldl f' m xs ) . (\m -> foldl f m xs )  Map.empty
-{- 
-  (\m' -> foldl f2 m' xs) $  (\m -> foldl f' m xs) $  (foldl f Map.empty xs)
--}
-
-  foldl f Map.empty xs
+  Map.empty
+  $> \m -> foldl f  m xs
   $> \m -> foldl f' m xs
   $> \m -> foldl f2 m xs
 
   where
-    --  create an empty list for concept_id
+    --  insert an empty list for concept_id
     f m (concept_id, _, _) = 
       Map.insert concept_id [ ] m
 
-    -- the same except for parent_id
+    -- the same - except for parent_id
     f' m (_, parent_id, _) = 
       Map.insert parent_id [ ] m
 
-    -- populate the damn thing,
+    -- populate concept list with the records
     f2 m (concept_id, _, record_id) =
       let current = mapGet m concept_id in
       let new = record_id : current in 
       Map.insert concept_id new m 
+
+
+
+propagateFacetMap m xs =
+
+  m 
+  $> (\m -> foldl f m xs)
+
+  where
+    --  insert an empty list for concept_id
+    f m (concept_id, _, _) = 
+      id -- Map.insert concept_id [ ] m
+
 
 
 
@@ -111,4 +114,20 @@ main = do
   
   return ()
 
+
+
+
+
+  -- build a map from concept_id to list of records
+  {-
+    let m = foldl f Map.empty xs in
+    let m' = foldl f' m xs in
+    let m'' = foldl f2 m' xs in
+    m''
+  -}
+
+  -- (\m -> foldl f2 m' xs ).  (\m -> foldl f' m xs ) . (\m -> foldl f m xs )  Map.empty
+{- 
+  (\m' -> foldl f2 m' xs) $  (\m -> foldl f' m xs) $  (foldl f Map.empty xs)
+-}
 
