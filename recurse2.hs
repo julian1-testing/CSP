@@ -19,32 +19,30 @@ import Data.Set(toList, fromList)
 import Debug.Trace(trace)
 
 
+{-
+  - remember it's not a tree - and we cannot necessarily easily recurse.
+  - instead sweep through as flat lists - and move the items to their parents.  
+  - can be a list that we de-duplicate.... or another map
+  - until we get to the top node.
+
+-}
+
 
 -- O log n
 -- http://stackoverflow.com/questions/16108714/haskell-removing-duplicates-from-a-list
 mkUniq :: Ord a => [a] -> [a]
 mkUniq = toList . fromList
 
-{-
-  - remember it's not a tree - and we cannot necessarily easily recurse.
 
-  - instead sweep through as flat lists - and move the items to their parents.  
-  - can be a list that we de-duplicate.... or another map
+-- ease syntax
+mapGet a b = 
+  -- trace  ("mytrace - mapGet b: " ++ show b ++ " a: " ++ show a) $ 
+  (Map.!) a b
 
-  - until we get to the top node.
-
-  ------------
-
-    select all the facets and records
-
-    select * from facet left join concept_view on concept_view.id = facet.concept_id  where concept_id = 576 ;
-
-    select record_id, concept_id, parent_id from facet left join concept_view on concept_view.id = facet.concept_id  where concept_id = 576 ;
-
--}
 
 
 getConceptRelationships conn  = do
+  -- get parent child concept relationships
   -- we want the concept_id, parent_id, record_id 
   let query1 = [r|
       select 
@@ -61,16 +59,14 @@ getConceptRelationships conn  = do
 getFacetList conn  = do
   -- we want the concept_id, parent_id, record_id 
   let query1 = [r|
-
-          select 
-            facet.concept_id, 
-            concept_view.parent_id,  -- parent concept
-            facet.record_id           -- the record
-          from facet 
-          left join concept_view on concept_view.id = facet.concept_id  
-          order by concept_id
-          -- where concept_id = 576 ;
-
+      select 
+        facet.concept_id, 
+        concept_view.parent_id,  -- parent concept
+        facet.record_id           -- the record
+      from facet 
+      left join concept_view on concept_view.id = facet.concept_id  
+      order by concept_id
+      -- where concept_id = 576 ;
   |]
   -- note the parent may be null! beautiful...
   xs :: [ (Integer, Integer, Integer ) ] <- query conn query1 ()
@@ -78,10 +74,6 @@ getFacetList conn  = do
   return xs
 
 
--- ease syntax
-mapGet a b = 
-  -- trace  ("mytrace - mapGet b: " ++ show b ++ " a: " ++ show a) $ 
-  (Map.!) a b
 
 -- http://stackoverflow.com/questions/4090168/is-there-an-inverse-of-the-haskell-operator
 -- a $> b = b a
