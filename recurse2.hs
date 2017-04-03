@@ -125,27 +125,23 @@ propagateFacetMap m nesting =
         True ->
           -- get the set for this concept
           let newSet = mapGet m (Just concept_id) in
-          -- get the set for the current map
-          -- let currentParentLst = mapGet newMap parent_id in
+          -- get the list of records for the parent
           let currentParentLst = ( 
-
                 case Map.member (parent_id) newMap of
-                      False -> []
-                --       True -> [] 
-                      True -> mapGet newMap parent_id 
+                  False -> []
+                  True -> mapGet newMap parent_id 
                 ) 
           in
-
+          -- combine them
           let newParentLst  = mkUniq (currentParentLst ++ newSet)  in 
-
-          -- parent_id will be nullble 
+          -- and store against the parent
           Map.insert parent_id newParentLst newMap
 
         False -> 
           newMap
 
-    parentEmpty m (_, parent_id) = 
-      Map.insert parent_id [] m
+    -- parentEmpty m (_, parent_id) = 
+    --  Map.insert parent_id [] m
 
   
 
