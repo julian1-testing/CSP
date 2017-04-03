@@ -96,7 +96,9 @@ buildFacetMap xs =
 --    f' m (_, parent_id, _) = 
 --      Map.insert parent_id [] m
 --      m
-
+   
+    -- TODO - maybe don't populate everything - not sure... - decide later - 
+    
     -- populate concept list with the records
     f m (concept_id, _, record_id) =
       let current = mapGet m (Just concept_id) in
@@ -105,23 +107,17 @@ buildFacetMap xs =
 
 
 
-propagateFacetMap m nesting =
-
-  -- Why do we have the damn predicate ....  
-  -- changename of m to input
-
-  Map.empty
---  & \m -> foldl parentEmpty m nesting
-  & \m -> foldl f m nesting 
+propagateToParent m nesting =
+  -- change name to propgateUp
+  -- fold over the concept/parent relationships and push the record_id into their parent concept
+  foldl f Map.empty nesting 
 
   where
     --  insert an empty list for concept_id
     f newMap (concept_id, parent_id) =  
       -- trace  ("here -> " ++ show (concept_id, parent_id)  ) $
 
-      -- this is correct - if we don't have it recorded
       case Map.member (Just concept_id) m of
-      -- case True of
         True ->
           -- get the set for this concept
           let newSet = mapGet m (Just concept_id) in
@@ -137,11 +133,9 @@ propagateFacetMap m nesting =
           -- and store against the parent
           Map.insert parent_id newParentLst newMap
 
+        -- ignore - if no records associated with this concept
         False -> 
           newMap
-
-    -- parentEmpty m (_, parent_id) = 
-    --  Map.insert parent_id [] m
 
   
 
@@ -182,20 +176,20 @@ main = do
   printMap m
 
   print "######################## 1"
-  let m'  = propagateFacetMap m nesting 
+  let m'  = propagateToParent m nesting 
   printMap m'
 
-{-
+
   print "######################## 2"
-  let m''  = propagateFacetMap m' nesting 
+  let m''  = propagateToParent m' nesting 
   printMap m''
 
   print "######################## 3"
-  let m''  = propagateFacetMap m' nesting 
+  let m''  = propagateToParent m' nesting 
   printMap m''
-
+{-
   print "######################## 4"
-  let m''  = propagateFacetMap m' nesting 
+  let m''  = propagateToParent m' nesting 
   printMap m''
 
 -}
