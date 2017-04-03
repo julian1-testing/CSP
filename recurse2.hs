@@ -35,14 +35,14 @@ mkUniq = toList . fromList
 
 
 -- ease syntax
-mapGet a b = 
-  -- trace  ("mytrace - mapGet b: " ++ show b ++ " a: " ++ show a) $ 
-  (Map.!) a b
+mapGet m e = 
+  -- trace  ("mytrace - mapGet e: " ++ show e ++ " m: " ++ show m) $ 
+  (Map.!) m e
 
 
 
-getConceptRelationships conn  = do
-  -- get parent child concept relationships
+getConceptNesting conn  = do
+  -- get parent child concept nesting
   -- we want the concept_id, parent_id, record_id 
   let query1 = [r|
       select 
@@ -55,6 +55,7 @@ getConceptRelationships conn  = do
 
 
 
+-- doesn't have a null parent_id because - it's only the terms that actually appear in the record 
 
 getFacetList conn  = do
   -- we want the concept_id, parent_id, record_id 
@@ -104,13 +105,14 @@ buildFacetMap xs =
 
 
 
-propagateFacetMap m relationships =
-  
+propagateFacetMap m nesting =
+
+  -- Why do we have the damn predicate ....  
   -- changename of m to input
 
   Map.empty
-  & \m -> foldl parentEmpty m relationships
-  & \m -> foldl f m relationships 
+  & \m -> foldl parentEmpty m nesting
+  & \m -> foldl f m nesting 
 
   where
     --  insert an empty list for concept_id
@@ -124,7 +126,6 @@ propagateFacetMap m relationships =
           let newParentLst  = mkUniq (currentParentLst ++ newSet)  in 
 
           -- parent_id will be nullble 
-          -- or the conceptchild....
           Map.insert parent_id newParentLst newMap
 
         False -> 
@@ -147,32 +148,50 @@ main :: IO ()
 main = do
   conn <- connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
 
+  print "nesting"
+  nesting <- getConceptNesting conn 
+  mapM print nesting 
 
+  -- ok, we have the link with nothing... 
 
-  relationships <- getConceptRelationships conn 
+  -- there is no concept with id nothing ... -- ahhh but we can remove the item.... 
 
-  -- mapM print relationships 
+  -- but there may be in the map
 
+  -- TODO change name of table to facetIndex or facet - postgres join table name
+  -- conceptRecord --- as the assocation.... or conceptRecordMap
+  -- get the facet associations from 
+  print "facet list"
   facetList <- getFacetList conn
+  mapM print $ facetList
 
-  -- mapM print $ facetList
 
+{-
 
+  print "######################## 0"
   -- build mapping from concept -> records
   let m = buildFacetMap facetList
   printMap m
 
-  print "########################"
-  let m'  = propagateFacetMap m relationships 
+  print "######################## 1"
+  let m'  = propagateFacetMap m nesting 
   printMap m'
 
-  print "########################"
-  let m''  = propagateFacetMap m' relationships 
+  print "######################## 2"
+  let m''  = propagateFacetMap m' nesting 
   printMap m''
 
-  print "########################"
-  let m''  = propagateFacetMap m' relationships 
+  print "######################## 3"
+  let m''  = propagateFacetMap m' nesting 
   printMap m''
+
+  print "######################## 4"
+  let m''  = propagateFacetMap m' nesting 
+  printMap m''
+
+-}
+
+  -- ok, i think it doesn't propagate up, because we don't have it in the nesting....
 
 
   return ()

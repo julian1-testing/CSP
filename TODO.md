@@ -1,4 +1,22 @@
 
+0. why doesn't the fucking thing, propagate to the parent Nothing node?....
+  - we need to check that we actually have a relationship to the parent.
+
+1. fix platform indexing
+
+2. get recusion and tree output working again? - on subset?
+  - we only need the counts on the category - so we
+      store the coutn associated with the node.
+      and then do the monadic recursion.
+
+
+3. output xml
+
+
+
+Thing we should perhaps 
+
+
 --------
 It's a graph. 
 Which makes the whole thing rather complicated.

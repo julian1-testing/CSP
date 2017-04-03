@@ -15,7 +15,7 @@ begin;
 
 --------
 
--- facet search stuff?
+-- this is all vocab - distinct from facet or relationship with records 
 
 
 create table scheme (
@@ -95,11 +95,12 @@ create table resource (
 
 alter table resource owner to harvest;
 
+--------------
 
--- its actually not facet - but the facet index...
--- or facet_index or facet_match
+-- facet is the relationship between the concept and record table.
 
--- need to limit to just the online recoursce facets
+-- TODO MAYBE change name of table to facetIndex or facet - postgres join table name
+-- conceptRecord --- as the assocation.... or conceptRecordMap
 
 create table facet (
 
