@@ -81,13 +81,16 @@ buildFacetMap xs =
 
 propagateFacetMap m xs =
 
-  m 
-  $> (\m -> foldl f m xs)
+  -- hang on the list that we want to process is from the map?????
+  -- we will just iterate for all concepts... o
+  -- it's simply a transition from one map to the parent map 
+
+  foldl f m xs
 
   where
     --  insert an empty list for concept_id
-    f m (concept_id, _, _) = 
-      id -- Map.insert concept_id [ ] m
+    f m (concept_id, parent_id, _) = 
+      m -- Map.insert concept_id [ ] m
 
 
 
@@ -111,6 +114,9 @@ main = do
   -- build mapping from concept -> records
   let m = buildFacetMap facetList
   mapM print (Map.toList m) 
+
+
+  let m' = propagateFacetMap m facetList
   
   return ()
 
