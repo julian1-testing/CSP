@@ -69,11 +69,11 @@ buildFacetMap xs =
   where
     --  insert an empty list for concept_id
     f m (concept_id, _, _) = 
-      Map.insert concept_id [ ] m
+      Map.insert concept_id [] m
 
     -- the same - except for parent_id
     f' m (_, parent_id, _) = 
-      Map.insert parent_id [ ] m
+      Map.insert parent_id [] m
 
     -- populate concept list with the records
     f2 m (concept_id, _, record_id) =
@@ -94,7 +94,19 @@ propagateFacetMap m xs =
   where
     --  insert an empty list for concept_id
     f m (concept_id, parent_id, _) = 
-      m -- Map.insert concept_id [ ] m
+
+      let current = mapGet m concept_id in
+
+      -- clear out old map
+      let m' = Map.insert concept_id [] m in
+
+      -- insert in parent 
+      -- Map.insert parent_id current m'
+      m'
+
+
+
+      -- m -- Map.insert concept_id [ ] m
 
 
 
@@ -122,7 +134,7 @@ main = do
   print "########################"
 
   let m' = propagateFacetMap m facetList
-  mapM print (Map.toList m) 
+  mapM print (Map.toList m') 
   
   return ()
 
