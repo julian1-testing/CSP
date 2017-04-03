@@ -1,7 +1,6 @@
 
 begin;
 
-/*
 drop table if exists data;
 
 create table data (
@@ -21,49 +20,27 @@ INSERT INTO data values ( 6, 4, 'Red Rose', 12 );
 INSERT INTO data values ( 7, 3, 'Television', 100 );
 INSERT INTO data values ( 8, 3, 'Radio', 70 );
 INSERT INTO data values ( 9, 8, 'Webradio', 90 );
-*/
--- 
+
+
 -- SQL Statement
 
-drop view if exists facet_view_3 ;
-
-create view facet_view_3 as
-
 WITH recursive ChildrenCTE AS (
-  SELECT  
-    id as Rootid, 
-    id,
-    "count"
+  SELECT  id as Rootid , id
   FROM    facet_count_view2
   UNION ALL
-  SELECT  
-    cte.Rootid, 
-    d.id,
-    -- cte."count" 
-    d."count"
+  SELECT  cte.Rootid, d.id
   FROM    ChildrenCTE cte
-  INNER JOIN facet_count_view2 d ON d.parent_id = cte.id
+          INNER JOIN facet_count_view2 d ON d.parent_id = cte.id
 )
-SELECT  
-  d.id, 
-  d.parent_id, 
-  d.label, 
-  d."count", 
-  cnt.node_count,
-  cnt.count_sum
+SELECT  d.id, d.parent_id, d.label, d.count, cnt.Children
 FROM    facet_count_view2 d
-INNER JOIN (
-  SELECT  
-    Rootid as id , 
-    COUNT(*) - 1 as node_count,
-    cast( SUM("count")  as integer)  as count_sum
-  FROM    ChildrenCTE
-  GROUP BY Rootid
-) cnt ON cnt.id = d.id
+        INNER JOIN (
+          SELECT  Rootid as id , COUNT(*) - 1 as Children 
+          FROM    ChildrenCTE
+          GROUP BY Rootid
+        ) cnt ON cnt.id = d.id
 ;
 
 commit;
 
--- we should keep this as simple as possible. 
 
--- I think this might be working.... 
