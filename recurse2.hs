@@ -115,23 +115,15 @@ buildFacetMap xs =
 propagateFacetMap m relationships =
   
   -- changename of m to input
-  -- use this for leaf nodes....
-  -- relationships are all the possible propagations...
 
   Map.empty
   & \m -> foldl parentEmpty m relationships
-  -- & \m -> foldl childEmpty  m relationships
   & \m -> foldl f m relationships 
-
-  -- the relationships have just in them
-  -- but the input map doesn't?
 
   where
     --  insert an empty list for concept_id
     f newMap (concept_id, parent_id) =  
-
       -- trace  ("here -> " ++ show (concept_id, parent_id)  ) $
-
       case Map.member (Just concept_id) m of
         True ->
           -- get from m
@@ -149,39 +141,7 @@ propagateFacetMap m relationships =
     parentEmpty m (_, parent_id) = 
       Map.insert parent_id [] m
 
-    -- childEmpty m (concept_id, _) = 
-    --  Map.insert (Just concept_id)  [] m
-
-
-
- 
-{-
-  case count == 0 of
-    True -> s
-    False -> pad' (" " ++ s) (count - 1)
-
-
-  -- only now we want to propagate everything to the parent 
-  -- and perhaps 
-
-  -- issue in propagating up --- is that we may propagate more than once....
-  -- depending on the ordering....
-
-  -- holy hell....
-
-  -- is there not a simpler way to do this...
- 
-  -- IMPORTANT... 
-  -- create a new map ...
-
--}
-
-{-
-      case length  newParentLst of
-        0 -> newMap 
-        _ -> Map.insert parent_id newParentLst newMap
--}
-
+  
 
 printMap m = do 
     m
@@ -257,4 +217,33 @@ main = do
 
   -- HANG on. If we are not using the list.... 
   -- NO. it may be ok. we just loop through everythign to 
+
+ 
+{-
+  case count == 0 of
+    True -> s
+    False -> pad' (" " ++ s) (count - 1)
+
+
+  -- only now we want to propagate everything to the parent 
+  -- and perhaps 
+
+  -- issue in propagating up --- is that we may propagate more than once....
+  -- depending on the ordering....
+
+  -- holy hell....
+
+  -- is there not a simpler way to do this...
+ 
+  -- IMPORTANT... 
+  -- create a new map ...
+
+-}
+
+{-
+      case length  newParentLst of
+        0 -> newMap 
+        _ -> Map.insert parent_id newParentLst newMap
+-}
+
 
