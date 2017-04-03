@@ -8,6 +8,10 @@ import Database.PostgreSQL.Simple
 import Text.RawString.QQ
 import qualified Data.Map as Map
 
+import Control.Arrow ((>>>), (<<<))
+
+-- https://www.reddit.com/r/haskell/comments/4gmw1u/reverse_function_application/
+import Data.Function( (&) )
 
 {-
   - remember it's not a tree - and we cannot necessarily easily recurse.
@@ -58,9 +62,9 @@ a $> b = b a
 buildFacetMap xs =
 
   Map.empty
-  $> \m -> foldl f  m xs
-  $> \m -> foldl f' m xs
-  $> \m -> foldl f2 m xs
+  & \m -> foldl f  m xs
+  & \m -> foldl f' m xs
+  & \m -> foldl f2 m xs
 
   where
     --  insert an empty list for concept_id
@@ -109,14 +113,16 @@ main = do
   conn <- connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
   facetList <- getFacetList conn
 
-  mapM print $ facetList
+  -- mapM print $ facetList
 
   -- build mapping from concept -> records
   let m = buildFacetMap facetList
   mapM print (Map.toList m) 
 
+  print "########################"
 
   let m' = propagateFacetMap m facetList
+  mapM print (Map.toList m) 
   
   return ()
 
