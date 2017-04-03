@@ -101,8 +101,8 @@ propagateFacetMap m xs =
       let m' = Map.insert concept_id [] m in
 
       -- insert in parent 
-      -- Map.insert parent_id current m'
-      m'
+      Map.insert parent_id current m'
+      --m'
 
 
 
@@ -116,6 +116,16 @@ propagateFacetMap m xs =
   -- only now we want to propagate everything to the parent 
   -- and perhaps 
 
+  -- issue in propagating up --- is that we may propagate more than once....
+  -- depending on the ordering....
+
+  -- holy hell....
+
+  -- is there not a simpler way to do this...
+ 
+  -- IMPORTANT... 
+  -- create a new map ...
+
 -}
 
 
@@ -126,15 +136,18 @@ main = do
   facetList <- getFacetList conn
 
   -- mapM print $ facetList
-
   -- build mapping from concept -> records
   let m = buildFacetMap facetList
+
   mapM print (Map.toList m) 
 
   print "########################"
 
-  let m' = propagateFacetMap m facetList
-  mapM print (Map.toList m') 
+  -- let m' = propagateFacetMap m facetList
+  -- mapM print (Map.toList m') 
+
+  propagateFacetMap m facetList & Map.toList & mapM print 
+ 
   
   return ()
 
