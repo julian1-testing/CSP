@@ -17,7 +17,20 @@ helloWorld
   ]
 
 
+
+application = do
+ root [] [helloWorld]                         -- (1)
+      >>>
+      writeDocument [withIndent yes] "hello.xml"   -- (2)
+       
+
+
 main :: IO ()
 main = do
   print "hi"
+
  
+  x <- runX (application )
+
+  return ()
+
