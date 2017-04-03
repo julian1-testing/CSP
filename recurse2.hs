@@ -102,6 +102,15 @@ propagateFacetMap m xs =
   -- VERY IMPORTANT - the XS set will have to be generated from the current list
   -- let xs = Map. 
   -- this is not so easy....
+  -- let xs = Map.toList m in
+
+  -- ok, it's more complicated - because we need concept_id
+  -- ok converting to 
+
+
+  -- HANG on. If we are not using the list.... 
+
+  -- NO. it may be ok. we just loop through everythign to 
 
   Map.empty
   & \m -> foldl parentEmpty m xs
@@ -117,11 +126,11 @@ propagateFacetMap m xs =
       -- which i think also means we have to start with empty maps...
       -- and deduplicate - to get the correct count
 
-      let currentParent = mapGet newMap parent_id in
+      let currentParentLst = mapGet newMap parent_id in
 
-      let newParent  = mkUniq ( currentParent ++ newSet)  in 
+      let newParentLst  = mkUniq ( currentParentLst ++ newSet)  in 
 
-      Map.insert parent_id newParent newMap
+      Map.insert parent_id newParentLst newMap
 
 
 
@@ -148,6 +157,13 @@ propagateFacetMap m xs =
 -}
 
 
+printMap m = do 
+    m
+    & Map.toList 
+    & map (\(concept_id, xs) -> (concept_id, length xs, xs)) -- add length
+    & mapM print 
+ 
+
 
 main :: IO ()
 main = do
@@ -158,17 +174,20 @@ main = do
   -- build mapping from concept -> records
   let m = buildFacetMap facetList
 
-  mapM print (Map.toList m) 
+  -- mapM print (Map.toList m) 
+  printMap m
 
   print "########################"
 
   -- let m' = propagateFacetMap m facetList
   -- mapM print (Map.toList m') 
 
-  propagateFacetMap m facetList 
-    & Map.toList 
-    & map (\(concept_id, xs) -> (concept_id, length xs, xs)) -- add length
-    & mapM print 
+  let m'  = propagateFacetMap m facetList 
+  printMap m'
+
+
+  let m''  = propagateFacetMap m' facetList 
+  printMap m''
  
   
   return ()
