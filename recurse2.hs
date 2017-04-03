@@ -110,27 +110,35 @@ buildFacetMap xs =
 propagateToParent m nesting =
   -- change name to propgateUp
   -- fold over the concept/parent relationships and push the record_id into their parent concept
+
+  trace  "trace RRRRRR" $
   foldl f Map.empty nesting 
 
   where
     --  insert an empty list for concept_id
     f newMap (concept_id, parent_id) =  
-      -- trace  ("here -> " ++ show (concept_id, parent_id)  ) $
+      trace  ("trace relationship -> " ++ show (concept_id, parent_id)) $
+
+      -- hang on.... are destructuring here? here ...
+      -- it's not a member?  why not?
 
       case Map.member (Just concept_id) m of
         True ->
+          -- this is weird - why isn't the parent of Nothing in there....
+          trace  ("trace here2 -> " ++ show (concept_id, parent_id)) $
+
           -- get the set for this concept
           let newSet = mapGet m (Just concept_id) in
-          -- get the list of records for the parent
+          -- get the list of records for the parent - might be top level - Nothing
           let currentParentLst = ( 
-                case Map.member (parent_id) newMap of
+                case Map.member parent_id newMap of
                   False -> []
                   True -> mapGet newMap parent_id 
                 ) 
           in
           -- combine them
           let newParentLst  = mkUniq (currentParentLst ++ newSet)  in 
-          -- and store against the parent
+          -- and store in terms of the parent_id
           Map.insert parent_id newParentLst newMap
 
         -- ignore - if no records associated with this concept
@@ -164,9 +172,9 @@ main = do
   -- TODO change name of table to facetIndex or facet - postgres join table name
   -- conceptRecord --- as the assocation.... or conceptRecordMap
   -- get the facet associations from 
-  print "facet list"
   facetList <- getFacetList conn
-  mapM print $ facetList
+  -- print "facet list"
+  -- mapM print $ facetList
 
 
 
@@ -185,8 +193,8 @@ main = do
   printMap m''
 
   print "######################## 3"
-  let m''  = propagateToParent m' nesting 
-  printMap m''
+  let m'''  = propagateToParent m'' nesting 
+  printMap m'''
 {-
   print "######################## 4"
   let m''  = propagateToParent m' nesting 
