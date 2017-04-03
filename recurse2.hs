@@ -16,6 +16,10 @@ import Data.Function( (&) )
 
 import Data.Set(toList, fromList) 
 
+import Debug.Trace(trace)
+
+
+
 -- O log n
 -- http://stackoverflow.com/questions/16108714/haskell-removing-duplicates-from-a-list
 mkUniq :: Ord a => [a] -> [a]
@@ -61,7 +65,9 @@ getFacetList conn  = do
 
 
 -- ease syntax
-mapGet = (Map.!)
+mapGet a b = 
+  -- trace  ("mytrace - mapGet b: " ++ show b ++ " a: " ++ show a) $ 
+  (Map.!) a b
 
 -- http://stackoverflow.com/questions/4090168/is-there-an-inverse-of-the-haskell-operator
 -- a $> b = b a
@@ -107,18 +113,19 @@ propagateFacetMap m xs =
   -- ok, it's more complicated - because we need concept_id
   -- ok converting to 
 
-
   -- HANG on. If we are not using the list.... 
-
   -- NO. it may be ok. we just loop through everythign to 
 
   Map.empty
   & \m -> foldl parentEmpty m xs
+  & \m -> foldl childEmpty m xs
   & \m -> foldl f m xs
 
   where
     --  insert an empty list for concept_id
-    f newMap (concept_id, parent_id, _) = 
+    f newMap (concept_id, parent_id, _) =  
+
+      trace  ("mytrace " ++ show (concept_id, parent_id)  ) $
       -- get from m
       let newSet = mapGet m concept_id in
      -- insert in parent 
@@ -128,19 +135,25 @@ propagateFacetMap m xs =
 
       let currentParentLst = mapGet newMap parent_id in
 
-      let newParentLst  = mkUniq ( currentParentLst ++ newSet)  in 
+      let newParentLst  = mkUniq (currentParentLst ++ newSet)  in 
 
       Map.insert parent_id newParentLst newMap
 
-
-
     parentEmpty m (_, parent_id, _) = 
       Map.insert parent_id [] m
+
+    childEmpty m (concept_id, _, _) = 
+      Map.insert concept_id [] m
 
 
 
  
 {-
+  case count == 0 of
+    True -> s
+    False -> pad' (" " ++ s) (count - 1)
+
+
   -- only now we want to propagate everything to the parent 
   -- and perhaps 
 
@@ -154,6 +167,12 @@ propagateFacetMap m xs =
   -- IMPORTANT... 
   -- create a new map ...
 
+-}
+
+{-
+      case length  newParentLst of
+        0 -> newMap 
+        _ -> Map.insert parent_id newParentLst newMap
 -}
 
 
@@ -179,12 +198,10 @@ main = do
 
   print "########################"
 
-  -- let m' = propagateFacetMap m facetList
-  -- mapM print (Map.toList m') 
-
   let m'  = propagateFacetMap m facetList 
   printMap m'
 
+  print "########################"
 
   let m''  = propagateFacetMap m' facetList 
   printMap m''
