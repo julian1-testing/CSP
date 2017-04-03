@@ -8,8 +8,8 @@
 begin;
 
 drop view if exists facet_view_3 ;
-drop view if exists facet_count_view2;
 drop view if exists facet_count_view;
+drop view if exists facet_count_basic_view;
 drop view if exists wms_view;
 drop view if exists wfs_view;
 drop view if exists resource_view;
@@ -20,14 +20,14 @@ drop view if exists parent_view;
 -- associate concept parent (eg. skos:broader) relationships between concepts via skos:narrower and skos:narrowMatch
 
 create view parent_view as
-select 
+select
   concept.id as id,
-  case 
+  case
     -- TODO another test to ensure not both narrower and narrowMatch
-    when 
-        parent_concept.id is not null and parent_match_concept.id is null 
+    when
+        parent_concept.id is not null and parent_match_concept.id is null
         then parent_concept.id
-    when 
+    when
         parent_match_concept.id is not null and parent_concept.id is null
         then parent_match_concept.id
     when parent_match_concept.id is null and parent_concept.id is null
@@ -36,10 +36,10 @@ select
     else -9999
   end as parent_id
 
-  from concept 
+  from concept
 
-  left join narrower on     concept.id = narrower.narrower_id 
-  left join narrow_match on concept.id = narrow_match.narrower_id 
+  left join narrower on     concept.id = narrower.narrower_id
+  left join narrow_match on concept.id = narrow_match.narrower_id
 
   left join concept as parent_concept       on parent_concept.id = narrower.concept_id
   left join concept as parent_match_concept on parent_match_concept.id = narrow_match.concept_id
@@ -51,7 +51,7 @@ select
 -- view of concept parent relationships with more detail provided
 
 create view concept_view as
-select 
+select
   concept.id    as id,
   concept.label as label,
   concept.url   as url,
@@ -77,11 +77,11 @@ select
 
 
 -- TODO remove this - do we use it...
--- should this be by record,  
+-- should this be by record,
 -- drop view if exists facet_match_view;
--- 
+--
 -- create view facet_match_view as
--- select 
+-- select
 --   record.uuid,
 --  record.title,
 --  concept.url,
@@ -98,7 +98,7 @@ select
 
 
 create view resource_view as
-select 
+select
   record.uuid,
   resource.protocol,
   resource.linkage,
@@ -122,32 +122,26 @@ select * from resource_view where protocol = 'OGC:WFS-1.0.0-http-get-capabilitie
 ;
 
 
--- 
--- count the matching records for a leaf facet 
+--
+-- count the matching records for a leaf facet
 -- may need to be turned into a function - so that we can filter by resource and scheme
 -- which means we cannot use views...
 
-create view facet_count_view as
-select  
-  concept.id as concept_id,           -- rename to concept id? 
-  -- concept.label as label,     -- should remove all this because we can get it by joining on view 
-  -- concept.url as url,         -- I think we do want the url  - so that we have the term to search on....
-  count(facet.record_id) as count 
-  from concept 
-  left join facet on facet.concept_id = concept.id 
+create view facet_count_basic_view as
+select
+  concept.id as concept_id,
+  count(facet.record_id) as count
+  from concept
+  left join facet on facet.concept_id = concept.id
   group by concept.id
 ;
 
 
-
--- now we want a view with the full parent...  to return to the client
--- even if we have to use a function later.
-
-create view facet_count_view2 as
-select  
-  * 
-  from facet_count_view
-  left join concept_view on concept_view.id = facet_count_view.concept_id
+create view facet_count_view as
+select
+  *
+  from facet_count_basic_view
+  left join concept_view on concept_view.id = facet_count_basic_view.concept_id
 
 ;
 
@@ -175,38 +169,38 @@ INSERT INTO data values ( 7, 3, 'Television', 100 );
 INSERT INTO data values ( 8, 3, 'Radio', 70 );
 INSERT INTO data values ( 9, 8, 'Webradio', 90 );
 */
--- 
+--
 -- SQL Statement
 
 
 create view facet_view_3 as
 
 WITH recursive ChildrenCTE AS (
-  SELECT  
-    id as Rootid, 
+  SELECT
+    id as Rootid,
     id,
     "count"
-  FROM    facet_count_view2
+  FROM    facet_count_view
   UNION ALL
-  SELECT  
-    cte.Rootid, 
+  SELECT
+    cte.Rootid,
     d.id,
-    -- cte."count" 
+    -- cte."count"
     d."count"
   FROM    ChildrenCTE cte
-  INNER JOIN facet_count_view2 d ON d.parent_id = cte.id
+  INNER JOIN facet_count_view d ON d.parent_id = cte.id
 )
-SELECT  
-  d.id, 
-  d.parent_id, 
-  d.label, 
-  d."count", 
+SELECT
+  d.id,
+  d.parent_id,
+  d.label,
+  d."count",
   cnt.node_count,
   cnt.count_sum
-FROM    facet_count_view2 d
+FROM    facet_count_view d
 INNER JOIN (
-  SELECT  
-    Rootid as id , 
+  SELECT
+    Rootid as id ,
     COUNT(*) - 1 as node_count,
     cast( SUM("count")  as integer)  as count_sum
   FROM    ChildrenCTE
