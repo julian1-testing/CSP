@@ -103,6 +103,35 @@ printFacetGraph m = do
 
 
 
+
+
+printXMLFacetGraph m = do
+  -- we will recurse from the root node down...
+  let rootNode = (Nothing, "dummy", -999  )
+  recurse m rootNode  0 
+  where
+    -- this just prints everything and is monadic
+    recurse m (parent_id, label, count) depth = do
+
+      printRow (parent_id, label, count) depth  
+
+      -- continue recursion
+      let children = mapGet m parent_id
+      mapM (\(concept_id, label, count)  -> recurse m (Just concept_id, label, count) (depth + 1)) children
+      return ()
+
+    printRow (parent_id, label, count) depth  = do
+      putStrLn $ concatMap id [ 
+        (pad $ depth * 3), 
+        "<dimension ",  
+        (show parent_id), 
+        " ",  (show label), " ", (show count) 
+        ]
+
+
+
+
+
 -- need mineral water
 
 main :: IO ()
@@ -113,7 +142,8 @@ main = do
   facetList <- getFacetList conn
 
   let m = buildFacetGraph facetList
-  printFacetGraph m 
+  -- printFacetGraph m 
+  printXMLFacetGraph m
 
   return ()
 
