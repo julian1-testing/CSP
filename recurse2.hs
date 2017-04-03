@@ -13,6 +13,14 @@ import Control.Arrow ((>>>), (<<<))
 -- https://www.reddit.com/r/haskell/comments/4gmw1u/reverse_function_application/
 import Data.Function( (&) )
 
+
+import Data.Set(toList, fromList) 
+
+-- O log n
+-- http://stackoverflow.com/questions/16108714/haskell-removing-duplicates-from-a-list
+mkUniq :: Ord a => [a] -> [a]
+mkUniq = toList . fromList
+
 {-
   - remember it's not a tree - and we cannot necessarily easily recurse.
 
@@ -91,6 +99,10 @@ propagateFacetMap m xs =
 
   -- TODO make sure they are unique...
 
+  -- VERY IMPORTANT - the XS set will have to be generated from the current list
+  -- let xs = Map. 
+  -- this is not so easy....
+
   Map.empty
   & \m -> foldl parentEmpty m xs
   & \m -> foldl f m xs
@@ -105,7 +117,11 @@ propagateFacetMap m xs =
       -- which i think also means we have to start with empty maps...
       -- and deduplicate - to get the correct count
 
-      Map.insert parent_id newSet newMap
+      let currentParent = mapGet newMap parent_id in
+
+      let newParent  = mkUniq ( currentParent ++ newSet)  in 
+
+      Map.insert parent_id newParent newMap
 
 
 
