@@ -6,8 +6,8 @@ drop table if exists data;
 create table data (
   id INTEGER PRIMARY KEY
   , parent_id INTEGER
-  , Text VARCHAR(32)
-  , Price INTEGER
+  , label VARCHAR(32)
+  , count INTEGER
 );
 
 
@@ -26,14 +26,14 @@ INSERT INTO data values ( 9, 8, 'Webradio', 90 );
 
 WITH recursive ChildrenCTE AS (
   SELECT  id as Rootid , id
-  FROM    data
+  FROM    facet_count_view2
   UNION ALL
   SELECT  cte.Rootid, d.id
   FROM    ChildrenCTE cte
-          INNER JOIN data d ON d.parent_id = cte.id
+          INNER JOIN facet_count_view2 d ON d.parent_id = cte.id
 )
-SELECT  d.id, d.parent_id, d.Text, d.Price, cnt.Children
-FROM    data d
+SELECT  d.id, d.parent_id, d.label, d.count, cnt.Children
+FROM    facet_count_view2 d
         INNER JOIN (
           SELECT  Rootid as id , COUNT(*) - 1 as Children 
           FROM    ChildrenCTE
