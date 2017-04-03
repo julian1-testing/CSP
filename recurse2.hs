@@ -80,7 +80,7 @@ getFacetList conn  = do
 
 -- ease syntax
 mapGet a b = 
-  trace  ("mytrace - mapGet b: " ++ show b ++ " a: " ++ show a) $ 
+  -- trace  ("mytrace - mapGet b: " ++ show b ++ " a: " ++ show a) $ 
   (Map.!) a b
 
 -- http://stackoverflow.com/questions/4090168/is-there-an-inverse-of-the-haskell-operator
@@ -122,8 +122,11 @@ propagateFacetMap m relationships =
 
   Map.empty
   & \m -> foldl parentEmpty m relationships
-  & \m -> foldl childEmpty  m relationships
+  -- & \m -> foldl childEmpty  m relationships
   & \m -> foldl f m relationships 
+
+  -- the relationships have just in them
+  -- but the input map doesn't?
 
   where
     --  insert an empty list for concept_id
@@ -214,10 +217,9 @@ main = do
 {-
   print "########################"
 
-  let m''  = propagateFacetMap m' facetList 
+  let m''  = propagateFacetMap m' relationships 
   printMap m''
--} 
-  
+ -} 
   return ()
 
 
