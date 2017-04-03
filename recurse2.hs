@@ -64,7 +64,7 @@ getFacetList conn  = do
 mapGet = (Map.!)
 
 -- http://stackoverflow.com/questions/4090168/is-there-an-inverse-of-the-haskell-operator
-a $> b = b a
+-- a $> b = b a
 
 
 buildFacetMap xs =
@@ -165,7 +165,10 @@ main = do
   -- let m' = propagateFacetMap m facetList
   -- mapM print (Map.toList m') 
 
-  propagateFacetMap m facetList & Map.toList & mapM print 
+  propagateFacetMap m facetList 
+    & Map.toList 
+    & map (\(concept_id, xs) -> (concept_id, length xs, xs)) -- add length
+    & mapM print 
  
   
   return ()
