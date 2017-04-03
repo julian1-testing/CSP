@@ -252,6 +252,8 @@ processDataParameter conn uuid (term, url) = do
         execute conn [r|
           insert into facet(concept_id, record_id) 
           values (?, (select record.id from record where record.uuid = ?))
+          on conflict
+          do nothing
         |] (concept_id :: Integer, uuid :: String) 
         return ()
         
