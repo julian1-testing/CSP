@@ -14,6 +14,11 @@ import Text.RawString.QQ
 
 import qualified Data.Map as Map
 
+-- https://www.reddit.com/r/haskell/comments/4gmw1u/reverse_function_application/
+import Data.Function( (&) )
+
+
+
 {-
 -- using multiple db queries to extract the tree is slow - quicker to get everything flat and then destructure to a tree
 -- BUT - first - we need to get the counts being returned and then propagating up
@@ -44,7 +49,6 @@ pad count = pad' "" count
 
 
 
-
 getFacetList conn  = do
   -- get all facets and facet count from db and return as flat list
   let query1 = [r|
@@ -53,8 +57,9 @@ getFacetList conn  = do
           parent_id,
           label,
           -- node_count as count
-          count_sum as count
-        from facet_view_3 
+          -- count_sum as count
+          count 
+        from facet_count_view
   |]
   -- note the parent may be null! beautiful...
   xs :: [ (Integer, Maybe Integer, String, Integer ) ] <- query conn query1 ()
@@ -62,25 +67,9 @@ getFacetList conn  = do
   return xs
 
 
--- eg.
--- let physicalWaterChildren = mapGet facetMap (Just 583) -- eg. physical water
--- recurse facetMap (Just 583) 0
-
-
 mapGet = (Map.!)
 
-{-
-  VERY IMPORTNAT
-  IT HAS TO BE A FLAT MAP - because it's a graph not a tree
 
-  mapping from concept_id -> children
-
-  I think we will create another one 
-
-  concept_id -> counts
-
-  therefore we should remove the count from here.
--}
 
 buildFacetGraph :: Foldable t =>
      t (Integer, Maybe Integer, t1, t2)
@@ -91,13 +80,14 @@ buildFacetGraph :: Foldable t =>
 
 
 buildFacetGraph xs =
-  -- this isn't a recursion and there is no depth...
-  -- takes a 
-  -- build a graph of the facet nodes
+  -- stores nesting relationships in a map to enable easy lookup
   -- concept_id -> array 
   -- https://hackage.haskell.org/package/containers-0.4.2.0/docs/Data-Map.html
 
+
+
   let e' = foldl emptyList Map.empty xs in
+  -- 
   let e = Map.insert Nothing [] e' in  
   foldl insertToList e xs
   where
@@ -111,59 +101,25 @@ buildFacetGraph xs =
       let newChildren = (concept_id, label, count) : childLst in
       Map.insert parent_id newChildren m
 
-{-
-  ok, so we have the map...  lets try to now we want to transform the original list 
-
-  append is modify
-  where is
-
-  IMPORTNAT
-  TODO change name depth to nestingLevel 
--}
-
-{-
-zipFacetListWithDepth xs depthMap = 
-  sortOn  (map f) $ xs
-  
-  where
-    compare (a,b,c,d,e) (a,b,c,d,e) = 
-    f (a,b,c,d) = (a,b,c,d, mapGet depthMap (Just a))
--}
 
 
-{-
-
-buildDepthMap g =
-  -- this is a recursion
-  -- build a Map from Graph indexed by concept id with depth of the facet
-  let rootNode = (Nothing, "dummy", -999) in
-  recurse g Map.empty rootNode 0 
-  where
-    recurse g depthMap (parent_id, label, count) depth =
-      -- set depth for this current id,
-      let depthMap' = Map.insert parent_id depth depthMap in
-      -- get children and drill 
-      let children = mapGet g parent_id in
-      -- recurse/process the children
-      let f depthMap' (concept_id, label, count) = recurse g depthMap' (Just concept_id, label, count) (depth + 1) in
-      foldl f (depthMap') children
--}
-
-
-
-printFacetGraph g = do
+printFacetGraph m = do
+  -- we will recurse from the root node down...
   let rootNode = (Nothing, "dummy", -999  )
-  recurse g rootNode  0 
+  recurse m rootNode  0 
   where
     -- this just prints everything and is monadic
-    recurse g (parent_id, label, count) depth = do
+    recurse m (parent_id, label, count) depth = do
 
-      putStrLn $ concatMap id [ (pad $ depth * 3), (show parent_id), " ",  (show label), " ", (show count) ]
+      printRow (parent_id, label, count) depth  
 
-      let children = mapGet g parent_id
-
-      mapM (\(concept_id, label, count)  -> recurse g (Just concept_id, label, count) (depth + 1)) children
+      -- continue recursion
+      let children = mapGet m parent_id
+      mapM (\(concept_id, label, count)  -> recurse m (Just concept_id, label, count) (depth + 1)) children
       return ()
+
+    printRow (parent_id, label, count) depth  = do
+      putStrLn $ concatMap id [ (pad $ depth * 3), (show parent_id), " ",  (show label), " ", (show count) ]
 
 
 
@@ -176,13 +132,18 @@ main = do
 
   facetList <- getFacetList conn
 
+  let m = buildFacetGraph facetList
+  printFacetGraph m 
 
---  let facetCounts = buildFacetCounts facetList
---  print facetCounts
+  return ()
 
-  let g = buildFacetGraph facetList
 
-  printFacetGraph g 
+
+
+
+
+
+
 
 {-
   let depthMap = buildDepthMap g 
@@ -193,10 +154,6 @@ main = do
 
   mapM print zipped
 -}
-
-  return ()
-
-
 
 
 
@@ -245,4 +202,55 @@ buildFacetGraph' facetMap =
 
 -}
 
+{-
+  ok, so we have the map...  lets try to now we want to transform the original list 
+
+  append is modify
+  where is
+
+  IMPORTNAT
+  TODO change name depth to nestingLevel 
+-}
+
+{-
+zipFacetListWithDepth xs depthMap = 
+  sortOn  (map f) $ xs
+  
+  where
+    compare (a,b,c,d,e) (a,b,c,d,e) = 
+    f (a,b,c,d) = (a,b,c,d, mapGet depthMap (Just a))
+-}
+
+
+{-
+
+buildDepthMap g =
+  -- this is a recursion
+  -- build a Map from Graph indexed by concept id with depth of the facet
+  let rootNode = (Nothing, "dummy", -999) in
+  recurse g Map.empty rootNode 0 
+  where
+    recurse g depthMap (parent_id, label, count) depth =
+      -- set depth for this current id,
+      let depthMap' = Map.insert parent_id depth depthMap in
+      -- get children and drill 
+      let children = mapGet g parent_id in
+      -- recurse/process the children
+      let f depthMap' (concept_id, label, count) = recurse g depthMap' (Just concept_id, label, count) (depth + 1) in
+      foldl f (depthMap') children
+-}
+
+
+{-
+  VERY IMPORTNAT
+  IT HAS TO BE A FLAT MAP - because it's a graph not a tree
+
+  mapping from concept_id -> children
+
+  I think we will create another one 
+
+  concept_id -> counts
+
+  therefore we should remove the count from here.
+-}
 

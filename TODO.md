@@ -1,5 +1,5 @@
 
-0. why doesn't the fucking thing, propagate to the parent Nothing node?....
+0. done - why doesn't the fucking thing, propagate to the parent Nothing node?....
   - we need to check that we actually have a relationship to the parent.
 
 1. fix platform indexing
