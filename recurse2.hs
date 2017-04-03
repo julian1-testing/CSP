@@ -111,18 +111,31 @@ propagateFacetMap m nesting =
   -- changename of m to input
 
   Map.empty
-  & \m -> foldl parentEmpty m nesting
+--  & \m -> foldl parentEmpty m nesting
   & \m -> foldl f m nesting 
 
   where
     --  insert an empty list for concept_id
     f newMap (concept_id, parent_id) =  
       -- trace  ("here -> " ++ show (concept_id, parent_id)  ) $
+
+      -- this is correct - if we don't have it recorded
       case Map.member (Just concept_id) m of
+      -- case True of
         True ->
-          -- get from m
+          -- get the set for this concept
           let newSet = mapGet m (Just concept_id) in
-          let currentParentLst = mapGet newMap parent_id in
+          -- get the set for the current map
+          -- let currentParentLst = mapGet newMap parent_id in
+          let currentParentLst = ( 
+
+                case Map.member (parent_id) newMap of
+                      False -> []
+                --       True -> [] 
+                      True -> mapGet newMap parent_id 
+                ) 
+          in
+
           let newParentLst  = mkUniq (currentParentLst ++ newSet)  in 
 
           -- parent_id will be nullble 
@@ -166,7 +179,6 @@ main = do
   mapM print $ facetList
 
 
-{-
 
   print "######################## 0"
   -- build mapping from concept -> records
@@ -177,6 +189,7 @@ main = do
   let m'  = propagateFacetMap m nesting 
   printMap m'
 
+{-
   print "######################## 2"
   let m''  = propagateFacetMap m' nesting 
   printMap m''
