@@ -58,12 +58,18 @@ buildFacetMap xs =
   -- build a map from concept_id to list of records
 
   let m = foldl f Map.empty xs in
-  let m' = foldl f2 m xs in
-  m'
+  let m' = foldl f' m xs in
+  let m'' = foldl f2 m' xs in
+  m''
   where
-    --  create an empty list
+    --  create an empty list for concept_id
     f m (concept_id, _, _) = 
       Map.insert concept_id [ ] m
+
+    -- the same except for parent_id
+    f' m (_, parent_id, _) = 
+      Map.insert parent_id [ ] m
+
 
     -- populate the damn thing,
     f2 m (concept_id, _, record_id) =
@@ -74,19 +80,10 @@ buildFacetMap xs =
 
 
 
---       let childLst = mapGet m parent_id in
- 
-
-
  
 {-
-  foldl insertToList e xs
+  -- we have only done this 
 
-  let e' = foldl emptyList Map.empty xs in
-  let e = Map.insert Nothing [] e' in  
-  foldl insertToList e xs
-  where
-    -- insert empty list for concept_id
 -}
 
 
@@ -98,13 +95,10 @@ main = do
 
   mapM print $ facetList
 
+  -- build mapping from concept -> records
   let m = buildFacetMap facetList
-
   mapM print (Map.toList m) 
   
-  -- mapM print $ facetList
-  -- print m 
-
   return ()
 
 
