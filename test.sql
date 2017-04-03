@@ -25,6 +25,10 @@ INSERT INTO data values ( 9, 8, 'Webradio', 90 );
 -- 
 -- SQL Statement
 
+drop view if exists facet_view_3 ;
+
+create view facet_view_3 as
+
 WITH recursive ChildrenCTE AS (
   SELECT  
     id as Rootid, 
