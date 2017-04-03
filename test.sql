@@ -28,12 +28,15 @@ INSERT INTO data values ( 9, 8, 'Webradio', 90 );
 WITH recursive ChildrenCTE AS (
   SELECT  
     id as Rootid, 
-    id
+    id,
+    "count"
   FROM    facet_count_view2
   UNION ALL
   SELECT  
     cte.Rootid, 
-    d.id
+    d.id,
+    -- cte."count" 
+    d."count"
   FROM    ChildrenCTE cte
           INNER JOIN facet_count_view2 d ON d.parent_id = cte.id
 )
@@ -41,13 +44,15 @@ SELECT
   d.id, 
   d.parent_id, 
   d.label, 
-  d.count, 
-  cnt.Children
+  d."count", 
+  cnt.node_count,
+  cnt.count_sum
 FROM    facet_count_view2 d
         INNER JOIN (
           SELECT  
             Rootid as id , 
-            COUNT(*) - 1 as Children 
+            COUNT(*) - 1 as node_count,
+            SUM("count")  as count_sum
           FROM    ChildrenCTE
           GROUP BY Rootid
         ) cnt ON cnt.id = d.id
@@ -55,4 +60,6 @@ FROM    facet_count_view2 d
 
 commit;
 
+-- we should keep this as simple as possible. 
 
+-- I think this might be working.... 
