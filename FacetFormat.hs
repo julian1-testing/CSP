@@ -31,7 +31,7 @@ pad count =
 
 
 
-getFacetList conn  = do
+getFacetList conn = do
   -- get all facets and facet count from db and return as flat list
   let query = [r|
         select 
@@ -43,39 +43,24 @@ getFacetList conn  = do
   |]
   -- note the parent may be null! beautiful...
   xs :: [ (Integer, Maybe Integer, String, Integer  ) ] <- PG.query conn query ()
-  -- mapM print xs
   return xs
 
 
 
 
-{-
-buildFacetGraph :: Foldable t =>
-     t (Integer, Maybe Integer, t1, t2)
-     -> Map.Map (Maybe Integer) [(Integer, t1, t2)]
--}
-
-
 buildFacetGraph xs =
-  -- Map concept_id -> list of child concepts
+  -- Map concept_id -> [ child concepts ]
   -- store nesting relationships in a map to enable easy lookup of children
-  -- 
-  -- TODO change name buildNestingMap 
-  -- IMPORTANT - we SHOULD USE THE one in Facet.hs
-      -- I think the only difference is that we don't store the label...
-  -- https://hackage.haskell.org/package/containers-0.4.2.0/docs/Data-Map.html
-
-  -- this is still a map....
-  -- TODO ... empty  
 
   Map.empty
   & \m -> Map.insert Nothing [] m    -- insert a root node
-  & \m -> foldl emptyList m xs
+  & \m -> foldl createEmptyList m xs
   & \m -> foldl insertToList m xs
 
   where
     -- insert empty list for concept_id
-    emptyList m (concept_id,_,_,_) =
+    -- this is ok.
+    createEmptyList m (concept_id,_,_,_) =
       Map.insert (Just concept_id) [] m
 
     -- add items to the list associated with graph node with children
@@ -93,19 +78,17 @@ printFacetGraph m = do
   where
     -- this just prints everything and is monadic
     recurse m (parent_id, label, count) depth = do
-
       printRow (parent_id, label, count) depth  
 
       -- continue recursion
       let children = mapGet m parent_id
-      mapM (\(concept_id, label, count)  -> recurse m (Just concept_id, label, count) (depth + 1)) children
+      mapM (\(concept_id, label, count) -> recurse m (Just concept_id, label, count) (depth + 1)) children
       return ()
 
     printRow (parent_id, label, count) depth  = do
       putStrLn $ concatMap id [ (pad $ depth * 3), (show parent_id), " ",  (show label), " ", (show count) ]
 
 
--- WE SHOULD PUT EVERYTHING IN ONE LIST STRUCTURE HERE
 
 
 printXMLFacetGraph m = do
