@@ -66,6 +66,7 @@ getFacetList conn  = do
   return xs
 
 
+--
 
 buildFacetMap xs =
 
@@ -92,6 +93,7 @@ buildFacetMap xs =
       Map.insert (Just concept_id) new m
 
 
+-- TODO move the nestings argument so it's first - to make it easier to partially bind
 
 propagateToParent m nestings =
   {-
@@ -131,7 +133,7 @@ propagateToParent m nestings =
 
 
 
-printMap m = do
+printFacetMap m = do
     m
     & Map.toList
     & map (\(concept_id, xs) -> (concept_id, length xs, xs)) -- add length
@@ -145,10 +147,75 @@ printMap m = do
 
 -- no it's still a graph...  we just want mappings to get the counts
 -- conceptCounts
-
-
 -- do want to call it until everything has been propagated...
 -- Rather than use tuples everywhere can use separate mappings for the things we are interested in,
+
+
+
+
+
+extractCounts m a  =
+  {-
+    m is the map concept_id -> [ record_ids ]
+    a is the aggregated map concept_id to length [ record_ids ]
+  -}
+  Map.foldlWithKey f a m
+  where
+    f m concept_id record_ids = Map.insert concept_id (length record_ids) m
+
+
+-- Ugghh.... if nodes are at different levels then it might be more complicated...
+-- need to know the terminating condition...
+
+-- terminating condition should be when all elements have been propagated to the root node.
+-- so we should be testing that the could of all elements is zero except for the root node.
+-- ok, we can work out the terminating condition later,
+
+-- getCountsForNestingLevel
+-- getAllCounts
+
+{-
+--- IMPORTANT
+-- there's an issue - in that if the records are not matched by concepts at the same level
+-- then the concepts will propagate up and have different values 
+
+-- can we handle this better?  -- so that we propagate up by adding each time....
+-- no - because once it's been propagated then we don't want it to be counted again.
+
+-- SO - why not - maintain the list and the count
+-- and when we move up... we will be left with the count
+
+-- and this solves the problem.... of getting the counts all correct
+
+-}
+
+extractAllCounts nestings m a =
+
+  trace ("whoot  " ) $
+  -- m doesn't change
+  -- yes m does
+  -- nothing node may not be in there to begin with...
+  -- will a case short-circuit ... yes...
+
+  -- case length (mapGet m Nothing) of
+  case terminateCondition m of
+      False ->
+          trace ("whoot") $
+
+          -- extract counts for current level
+          let a' = extractCounts m a in
+          let m' = propagateToParent m nestings in
+          extractAllCounts nestings m' a'
+      True -> a
+  where
+    terminateCondition m =
+      True
+
+{-
+  let current = mapGet m (Just concept_id) in
+  Map.empty
+  & extractCounts m
+-}
 
 
 -- change name to test?
@@ -166,24 +233,31 @@ main = do
   -- mapM print $ facetList
 
 
-  print "######################## 0"
+  print "########################"
   let m = buildFacetMap facetList
-  -- printMap m
 
-  -- we need the keys
 
-  -- let conceptCounts = Map.foldl (\v ->  "value" )  m
-  -- let conceptCounts = Map.foldl (\m (k,v) -> Map.insert "key" "value" m)  m
+  let a = extractAllCounts nestings m Map.empty
+  mapM print $ Map.toList a
 
-  ---- AHHHHHH - we want fold with key....
 
-  let conceptCounts = Map.foldlWithKey (\m x v ->  Map.insert x "whoot" m) Map.empty  m
+{-
+  let a = extractCounts m Map.empty
+  mapM print $ Map.toList a
+-}
 
-  print $ show conceptCounts
 
---       Map.insert (Just concept_id) [] m
---  Map.
 
+--  Map.foldlWithKey (\m k v -> m >> print (k,v)) (return ())  conceptCounts
+
+
+
+  -- so we just keep iterating ...
+  -- what we want is to add the count - it shouldn't exist anyway
+
+
+  -- Map.insert (Just concept_id) [] m
+  --  Map.
   -- we want to fold over the elements of the map - and we don't really care...
   -- fold
   -- Map
@@ -192,15 +266,15 @@ main = do
 
   print "######################## 1"
   let m'  = propagateToParent m nestings
-  printMap m'
+  printFacetMap m'
 
   print "######################## 2"
   let m''  = propagateToParent m' nestings
-  printMap m''
+  printFacetMap m''
 
   print "######################## 3"
   let m'''  = propagateToParent m'' nestings
-  printMap m'''
+  printFacetMap m'''
 
 -}
 
