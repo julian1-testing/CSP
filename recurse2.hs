@@ -107,7 +107,8 @@ buildFacetMap xs =
 
 
 propagateToParent m nesting =
-  -- fold over the concept/parent nesting relationships and push the record_id's up into their parent concept
+  -- a little bit like a topological sort,
+  -- fold over the concept/parent nesting relationships and push the list of record_id's into their parent concept list
 
   foldl f Map.empty nesting
   where

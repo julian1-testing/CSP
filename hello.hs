@@ -12,6 +12,15 @@ genNode x =
   mkelem "div" []
      [ txt x ]
 
+-- where b is a list 
+
+myMap :: ArrowXml a => String -> [ String]  -> a XmlTree XmlTree
+
+myMap e lst =
+  let a : b = lst in
+  let newLst = a <+> e in
+  myMap e b
+  
 
 helloWorld  :: ArrowXml a => a XmlTree XmlTree
 helloWorld
@@ -27,7 +36,13 @@ helloWorld
 
       <+> genNode "hi" 
       <+> genNode "there" 
+      <+> (map genNode [ "there"  ] )
+
   ]
+
+
+-- recursion is probably going to be really hard on this - because of the need to pass the root element/node down to insert under
+-- because we're making a nested tree...
 
 
 
