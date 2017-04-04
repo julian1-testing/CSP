@@ -93,36 +93,33 @@ printFacetGraph m = do
 
 printXMLFacetGraph m = do
   -- we will recurse from the root node down...
-  let rootNode = (Nothing, "dummy", -999  )
+  let rootNode = (Nothing, "dummy", -999 )
   recurse m rootNode  0 
   where
-    -- this just prints everything and is monadic
+    -- recurse down into child nodes 
     recurse m (parent_id, label, count) depth = do
 
-      printStart (parent_id, label, count) depth  
+      startTag (parent_id, label, count) depth  
 
       -- continue recursion
       -- TODO - we need to sort the children - according to the count...
       let children = mapGet m parent_id
       mapM (\(concept_id, label, count)  -> recurse m (Just concept_id, label, count) (depth + 1)) children
 
-      printFinish (parent_id, label, count) depth  
-
+      endTag (parent_id, label, count) depth  
       return ()
 
 
-    printStart (parent_id, label, count) depth  = do
+    startTag (parent_id, label, count) depth  = do
       putStrLn $ concatMap id [ 
         (pad $ depth * 3), 
         "<category value=\"", label, "\"", " count=", show count, " >"
- 
-        -- (show parent_id), 
-        -- " ",    (show count) 
         ]
 
-    printFinish (parent_id, label, count) depth = do 
+    endTag (parent_id, label, count) depth = do 
       putStrLn $ concatMap id [ 
-        (pad $ depth * 3), "</category>"
+        (pad $ depth * 3), 
+        "</category>"
         ]
  
 
