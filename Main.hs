@@ -10,14 +10,9 @@ main = do
 
   conn <- connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
 
+  -- change to getNestingFromDB
   nestings <- getConceptNesting conn
-  -- print "nestings"
-  -- mapM print nestings
-
-  -- get the facet concept and record associations from the db
   facetList <- getFacetList conn
-  -- print "facet list"
-  -- mapM print $ facetList
 
 
   print "######################## 0"

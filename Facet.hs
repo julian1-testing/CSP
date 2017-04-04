@@ -1,25 +1,18 @@
 
-
-
 {-# LANGUAGE ScopedTypeVariables, OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes #-}
-
-module Facet where 
-
 -- {-#  NoMonomorphismRestriction #-}
+
+module Facet where
+
 
 import Database.PostgreSQL.Simple
 import Text.RawString.QQ
 import qualified Data.Map as Map
 
-import Control.Arrow ((>>>), (<<<))
-
 -- https://www.reddit.com/r/haskell/comments/4gmw1u/reverse_function_application/
 import Data.Function( (&) )
-
-
 import Data.Set(toList, fromList)
-
 import Debug.Trace(trace)
 
 
@@ -32,10 +25,11 @@ import Debug.Trace(trace)
 -}
 
 
--- O log n
+-- deduplicate - O log n
 -- http://stackoverflow.com/questions/16108714/haskell-removing-duplicates-from-a-list
 mkUniq :: Ord a => [a] -> [a]
 mkUniq = toList . fromList
+
 
 
 -- ease syntax
@@ -59,14 +53,13 @@ getConceptNesting conn  = do
 
 
 
--- doesn't have a null parent_id because - it's only the terms that actually appear in the record
-
 getFacetList conn  = do
+  -- TODO - will need to be refined, where more
   -- we want the concept_id, parent_id, record_id
   let query1 = [r|
       select
         facet.concept_id,
-        concept_view.parent_id,  -- parent concept
+        concept_view.parent_id,   -- parent concept
         facet.record_id           -- the record
       from facet
       left join concept_view on concept_view.id = facet.concept_id
@@ -78,10 +71,6 @@ getFacetList conn  = do
   -- mapM print xs
   return xs
 
-
-
--- http://stackoverflow.com/questions/4090168/is-there-an-inverse-of-the-haskell-operator
--- a $> b = b a
 
 
 buildFacetMap xs =
@@ -96,11 +85,11 @@ buildFacetMap xs =
     conceptEmpty m (concept_id, _, _) =
       Map.insert (Just concept_id) [] m
 
---    -- the same - except for parent_id
---    f' m (_, parent_id, _) =
---      Map.insert parent_id [] m
---      m
--- TODO - maybe don't populate everything - not sure... - decide later -
+    --    -- the same - except for parent_id
+    --    f' m (_, parent_id, _) =
+    --      Map.insert parent_id [] m
+    --      m
+    -- TODO - maybe don't populate everything - not sure... - decide later -
 
     -- populate concept list with the records
     f m (concept_id, _, record_id) =
@@ -150,7 +139,7 @@ printMap m = do
     & mapM print
 
 
-
+-- change name to test?
 main :: IO ()
 main = do
   conn <- connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
@@ -184,63 +173,5 @@ main = do
 
   return ()
 
-
-
-  -- build a map from concept_id to list of records
-  {-
-    let m = foldl f Map.empty xs in
-    let m' = foldl f' m xs in
-    let m'' = foldl f2 m' xs in
-    m''
-  -}
-
-  -- (\m -> foldl f2 m' xs ).  (\m -> foldl f' m xs ) . (\m -> foldl f m xs )  Map.empty
-{-
-  (\m' -> foldl f2 m' xs) $  (\m -> foldl f' m xs) $  (foldl f Map.empty xs)
--}
-  -- propagate the records into the next level up...
-  -- we don't even need to carry the thing through the recursion
-  -- only the one that we might be changing.
-
-  -- TODO make sure they are unique...
-
-  -- VERY IMPORTANT - the XS set will have to be generated from the current list
-  -- let xs = Map.
-  -- this is not so easy....
-  -- let xs = Map.toList m in
-
-  -- ok, it's more complicated - because we need concept_id
-  -- ok converting to
-
-  -- HANG on. If we are not using the list....
-  -- NO. it may be ok. we just loop through everythign to
-
-
-{-
-  case count == 0 of
-    True -> s
-    False -> pad' (" " ++ s) (count - 1)
-
-
-  -- only now we want to propagate everything to the parent
-  -- and perhaps
-
-  -- issue in propagating up --- is that we may propagate more than once....
-  -- depending on the ordering....
-
-  -- holy hell....
-
-  -- is there not a simpler way to do this...
-
-  -- IMPORTANT...
-  -- create a new map ...
-
--}
-
-{-
-      case length  newParentLst of
-        0 -> newMap
-        _ -> Map.insert parent_id newParentLst newMap
--}
 
 
