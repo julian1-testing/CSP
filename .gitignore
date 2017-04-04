@@ -7,6 +7,5 @@ examples/psql
 examples/psql2
 examples/transform
 output
-recurse
-recurse2
+Main
 
