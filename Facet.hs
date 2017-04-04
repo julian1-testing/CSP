@@ -16,13 +16,6 @@ import Data.Set(toList, fromList)
 import Debug.Trace(trace)
 
 
-{-
-  - remember it's not a tree - and we cannot necessarily easily recurse.
-  - instead sweep through as flat lists - and move the items to their parents.
-  - can be a list that we de-duplicate.... or another map
-  - until we get to the top node.
-
--}
 
 
 -- deduplicate - O log n
@@ -100,8 +93,12 @@ buildFacetMap xs =
 
 
 propagateToParent m nestings =
-  -- a little bit like a topological sort,
-  -- fold over the concept/parent nestings relationships and push the list of record_id's into their parent concept list
+  {-
+      a little bit like a topological sort,
+      fold over the concept/parent nestings relationships and push the list of record_id's into their parent concept list
+      that the parent node is the union of record_id
+      also remove duplicates
+  -}
 
   foldl f Map.empty nestings
   where
