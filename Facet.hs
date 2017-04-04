@@ -177,7 +177,7 @@ main = do
 
   ---- AHHHHHH - we want fold with key....
 
-  let conceptCounts = Map.foldlWithKey (\m x v ->  Map.insert x 456 m) Map.empty  m
+  let conceptCounts = Map.foldlWithKey (\m x v ->  Map.insert x "whoot" m) Map.empty  m
 
   print $ show conceptCounts
 
