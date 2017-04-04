@@ -95,6 +95,8 @@ propagateToParent m nestings =
       fold over the concept/parent nestings relationships and push the list of record_id's into their parent concept list
       the parent node thus is the union of record_id of it's child nodes
       also remove duplicates
+
+      so we move records up.... and add to the count of records moved up....
   -}
 
   foldl f Map.empty nestings
@@ -104,29 +106,29 @@ propagateToParent m nestings =
       case Map.member (Just concept_id) m of
         True ->
 
-          -- get the set for this concept
-          let (count, newSet) = 
+          -- get the record list for this concept
+          let (countForConcept, recordsForConcept) = 
                 mapGet m (Just concept_id) 
           in
-          -- get records for the parent
-          let (count, currentParentLst) = (
+          -- get the records for the parent
+          let (countForParent, recordsForParent) = (
                 case Map.member parent_id newMap of
                   False -> (0, [])
                   True -> mapGet newMap parent_id
                 )
           in
-          -- concat the lists
-          let newParentLst  = mkUniq (currentParentLst ++ newSet)  in
+          -- add the recordsForConcept to the recordsForParent and de-duplicate
+          let newParentLst  = mkUniq (recordsForParent ++ recordsForConcept)  in
 
-          -- and store in terms of the parent_id
-          Map.insert parent_id (0, newParentLst) newMap 
+          -- and store new list for the parent concept
+          Map.insert parent_id (countForParent, newParentLst) newMap 
 
-          -- and store empty set in concept 
-          & Map.insert (Just concept_id) (999, []) 
+          -- and store the count and empty set for narrower concept 
+          & Map.insert (Just concept_id) (countForConcept + length recordsForConcept, []) 
 
-        -- nothing to do - if there were no record matches associated with this concept
-        -- we may want to populate with an empty list...
         False ->
+          -- nothing to do - if there were no record matches associated with this concept
+          -- we may want to populate with an empty list...
           newMap
 
 
@@ -180,23 +182,20 @@ main = do
   printFacetMap m
 
 
-
   print "######################## 1"
   let m'  = propagateToParent m nestings
   printFacetMap m'
 
 
-
-{-
   print "######################## 2"
   let m''  = propagateToParent m' nestings
   printFacetMap m''
+
 
   print "######################## 3"
   let m'''  = propagateToParent m'' nestings
   printFacetMap m'''
 
--}
 
   return ()
 
