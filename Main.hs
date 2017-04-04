@@ -1,10 +1,14 @@
 
 {-# LANGUAGE OverloadedStrings #-}
 
-import qualified Facet as F(getConceptNesting,main)
+import qualified Facet as Facet(getConceptNesting,main)
 import qualified FacetFormat as FF(main)
 
 import Database.PostgreSQL.Simple(connectPostgreSQL)
+
+
+
+
 
 main :: IO ()
 main = do
@@ -16,5 +20,7 @@ main = do
 
 
   -- nice!!!
-  F.main
+  Facet.main
   -- FF.main
+
+

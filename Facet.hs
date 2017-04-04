@@ -143,7 +143,12 @@ printMap m = do
 -- so we don't need to maintain in a recursion? not sure.
 -- it has to be a map
 
+-- no it's still a graph...  we just want mappings to get the counts
+-- conceptCounts
+
+
 -- do want to call it until everything has been propagated...
+-- Rather than use tuples everywhere can use separate mappings for the things we are interested in,
 
 
 -- change name to test?
@@ -164,6 +169,10 @@ main = do
   print "######################## 0"
   let m = buildFacetMap facetList
   printMap m
+
+  let conceptCounts = Map.empty 
+
+
 
   print "######################## 1"
   let m'  = propagateToParent m nestings
