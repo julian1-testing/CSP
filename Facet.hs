@@ -6,8 +6,7 @@
 module Facet where
 
 
-import Database.PostgreSQL.Simple
-import Text.RawString.QQ
+import qualified Database.PostgreSQL.Simple as PG(query, connectPostgreSQL)
 import qualified Data.Map as Map
 
 -- https://www.reddit.com/r/haskell/comments/4gmw1u/reverse_function_application/
@@ -15,6 +14,7 @@ import Data.Function( (&) )
 import Data.Set(toList, fromList)
 import Debug.Trace(trace)
 
+import Text.RawString.QQ
 
 
 
@@ -42,7 +42,7 @@ getConceptNesting conn  = do
         parent_id
       from concept_view ;
   |]
-  xs :: [ (Integer, Maybe Integer ) ] <- query conn query1 ()
+  xs :: [ (Integer, Maybe Integer ) ] <- PG.query conn query1 ()
   return xs
 
 
@@ -61,7 +61,7 @@ getFacetList conn  = do
       -- where concept_id = 576 ;
   |]
   -- note the parent may be null! beautiful...
-  xs :: [ (Integer, Integer, Integer ) ] <- query conn query1 ()
+  xs :: [ (Integer, Integer, Integer ) ] <- PG.query conn query1 ()
   -- mapM print xs
   return xs
 
@@ -154,7 +154,7 @@ printMap m = do
 -- change name to test?
 main :: IO ()
 main = do
-  conn <- connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
+  conn <- PG.connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
 
   nestings <- getConceptNesting conn
   -- print "nestings"
@@ -170,7 +170,10 @@ main = do
   let m = buildFacetMap facetList
   printMap m
 
-  let conceptCounts = Map.empty 
+  -- let conceptCounts = Map.empty  in
+  -- we want to fold over the elements of the map - and we don't really care...
+  -- fold
+  -- Map
 
 
 

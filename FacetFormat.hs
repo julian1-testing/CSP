@@ -9,13 +9,11 @@
 module FacetFormat where
 
 
-import Database.PostgreSQL.Simple
-import Text.RawString.QQ
-
 import qualified Data.Map as Map
-
--- https://www.reddit.com/r/haskell/comments/4gmw1u/reverse_function_application/
+import qualified Database.PostgreSQL.Simple as PG(query, connectPostgreSQL)
 import Data.Function( (&) )
+
+import Text.RawString.QQ
 
 
 
@@ -33,7 +31,7 @@ pad count =
 
 getFacetList conn  = do
   -- get all facets and facet count from db and return as flat list
-  let query1 = [r|
+  let query = [r|
         select 
           id as concept_id, 
           parent_id,
@@ -44,7 +42,7 @@ getFacetList conn  = do
         from facet_count_view
   |]
   -- note the parent may be null! beautiful...
-  xs :: [ (Integer, Maybe Integer, String, Integer ) ] <- query conn query1 ()
+  xs :: [ (Integer, Maybe Integer, String, Integer ) ] <- PG.query conn query ()
   -- mapM print xs
   return xs
 
@@ -153,7 +151,7 @@ printXMLFacetGraph m = do
 main :: IO ()
 main = do
 
-  conn <- connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
+  conn <- PG.connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
 
   facetList <- getFacetList conn
 

@@ -1,11 +1,10 @@
 
 {-# LANGUAGE OverloadedStrings #-}
 
+import qualified Database.PostgreSQL.Simple as PG(query, connectPostgreSQL)
+
 import qualified Facet as Facet(getConceptNesting,main)
-import qualified FacetFormat as FF(main)
-
-import Database.PostgreSQL.Simple(connectPostgreSQL)
-
+import qualified FacetFormat as FacetFormat(main)
 
 
 
@@ -13,7 +12,7 @@ import Database.PostgreSQL.Simple(connectPostgreSQL)
 main :: IO ()
 main = do
 
-  conn <- connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
+  conn <- PG.connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
   -- change to getNestingFromDB
   -- nestings <- F.getConceptNesting conn
   -- facetList <- F.getFacetList conn
