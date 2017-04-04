@@ -68,7 +68,7 @@ getFacetList conn  = do
 
 --
 
-buildFacetMap xs =
+buildLeafFacetMap xs =
   -- TODO change this so we just insert a new - maybe 
 
   Map.empty
@@ -136,10 +136,6 @@ propagateRecordsToParentConcept nestings m =
 
 
 
-printFacetMap = do
-  -- m & Map.toList & mapM print
-  (mapM print).Map.toList
-
 
 propagateAllRecordsToRoot nestings m = 
   {-
@@ -160,10 +156,13 @@ propagateAllRecordsToRoot nestings m =
           -- else just keep summing
           Just _ -> m + length recordsForConcept
 
-    
--- Map.foldlWithKey (\m k v -> m >> print (k,v)) (return ()) conceptCounts
--- OK, we want to fold all the nodes and produce a count
--- TODO we have to count everything except the root node...
+
+
+-- remove  or rename to just printMap
+printFacetMap = do
+  -- m & Map.toList & mapM print
+  (mapM print).Map.toList
+
 
 
 
@@ -189,11 +188,18 @@ main = do
 
 
   print "######################## 0"
-  let m = buildFacetMap facetList
+  let m = buildLeafFacetMap facetList
 --  printFacetMap m
 
   let m' =  propagateAllRecordsToRoot nestings m
   printFacetMap m'
+
+
+{-
+  propagateAllRecordsToRoot nestings m
+  & (return) >>= (\m -> printFacetMap m)
+-}
+
 
 {-
   print "######################## 1"

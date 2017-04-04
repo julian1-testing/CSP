@@ -16,6 +16,8 @@ import Data.Function( (&) )
 import Text.RawString.QQ
 
 
+-- ease syntax
+mapGet = (Map.!)
 
 
 pad' s count =
@@ -35,26 +37,25 @@ getFacetList conn  = do
         select 
           id as concept_id, 
           parent_id,
-          label,
+          label ,
           -- node_count as count
           -- count_sum as count
-          count 
+          -999 -- count  -- dummy value
         from facet_count_view
   |]
   -- note the parent may be null! beautiful...
-  xs :: [ (Integer, Maybe Integer, String, Integer ) ] <- PG.query conn query ()
+  xs :: [ (Integer, Maybe Integer, String, Integer  ) ] <- PG.query conn query ()
   -- mapM print xs
   return xs
 
 
--- ease syntax
-mapGet = (Map.!)
 
 
+{-
 buildFacetGraph :: Foldable t =>
      t (Integer, Maybe Integer, t1, t2)
      -> Map.Map (Maybe Integer) [(Integer, t1, t2)]
-
+-}
 
 
 buildFacetGraph xs =
@@ -64,6 +65,9 @@ buildFacetGraph xs =
       -- I think the only difference is that we don't store the label...
   -- concept_id -> array 
   -- https://hackage.haskell.org/package/containers-0.4.2.0/docs/Data-Map.html
+
+  -- this is still a map....
+  -- TODO ... empty  
 
   Map.empty
   & \m -> Map.insert Nothing [] m    -- insert a root node
@@ -102,7 +106,7 @@ printFacetGraph m = do
       putStrLn $ concatMap id [ (pad $ depth * 3), (show parent_id), " ",  (show label), " ", (show count) ]
 
 
-
+-- WE SHOULD PUT EVERYTHING IN ONE LIST STRUCTURE HERE
 
 
 printXMLFacetGraph m = do
@@ -152,11 +156,16 @@ main :: IO ()
 main = do
 
   conn <- PG.connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
-
   facetList <- getFacetList conn
 
-  let m = buildFacetGraph facetList
-  -- printFacetGraph m 
+
+  let  facetList' = map (\f (a,b,c, d) -> (a,b,c, 123) )  facetList
+  let  facetList' =  facetList
+
+  -- the graph....
+
+  let m = buildFacetGraph facetList'
+
   printXMLFacetGraph m
 
   return ()
