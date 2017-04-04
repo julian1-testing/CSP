@@ -69,28 +69,22 @@ getFacetList conn  = do
 --
 
 buildFacetMap xs =
+  -- TODO change this so we just insert a new - maybe 
 
   Map.empty
   & \m -> foldl conceptEmpty  m xs
-  -- & \m -> foldl f' m xs
   & \m -> foldl f m xs
 
   where
     --  insert an empty list for concept_id
     conceptEmpty m (concept_id, _, _) =
-      Map.insert (Just concept_id) [] m
-
-    --    -- the same - except for parent_id
-    --    f' m (_, parent_id, _) =
-    --      Map.insert parent_id [] m
-    --      m
-    -- TODO - maybe don't populate everything - not sure... - decide later -
+      Map.insert (Just concept_id) (0, []) m
 
     -- populate concept list with the records
     f m (concept_id, _, record_id) =
-      let current = mapGet m (Just concept_id) in
+      let (count, current) = mapGet m (Just concept_id) in
       let new = record_id : current in
-      Map.insert (Just concept_id) new m
+      Map.insert (Just concept_id) (count, new) m
 
 
 -- TODO move the nestings argument so it's first - to make it easier to partially bind
@@ -106,25 +100,27 @@ propagateToParent m nestings =
   foldl f Map.empty nestings
   where
     f newMap (concept_id, parent_id) =
-      -- trace  ("trace nestings -> " ++ show (concept_id, parent_id)) $
 
       case Map.member (Just concept_id) m of
         True ->
-          -- trace  ("trace here2 -> " ++ show (concept_id, parent_id)) $
 
           -- get the set for this concept
-          let newSet = mapGet m (Just concept_id) in
+          let (count, newSet) = 
+                mapGet m (Just concept_id) 
+          in
           -- get the list of records for the parent - might be top level - Nothing
-          let currentParentLst = (
+          let (count, currentParentLst) = (
                 case Map.member parent_id newMap of
-                  False -> []
+                  False -> (0, [])
                   True -> mapGet newMap parent_id
                 )
           in
           -- concat the lists
           let newParentLst  = mkUniq (currentParentLst ++ newSet)  in
           -- and store in terms of the parent_id
-          Map.insert parent_id newParentLst newMap
+          Map.insert parent_id (0, newParentLst) newMap
+
+          
 
         -- nothing to do - if there were no record matches associated with this concept
         -- we may want to populate with an empty list...
@@ -136,43 +132,12 @@ propagateToParent m nestings =
 printFacetMap m = do
     m
     & Map.toList
-    & map (\(concept_id, xs) -> (concept_id, length xs, xs)) -- add length
+    -- TODO we shouldn't need this.
+    -- & map (\(concept_id, xs) -> (concept_id, length xs, xs)) -- add length
     & mapM print
 
 
 
--- OK, now we want to convert from the graph to a tree, with labels. and perhaps depth?
--- so we don't need to maintain in a recursion? not sure.
--- it has to be a map
-
--- no it's still a graph...  we just want mappings to get the counts
--- conceptCounts
--- do want to call it until everything has been propagated...
--- Rather than use tuples everywhere can use separate mappings for the things we are interested in,
-
-
-
-
-
-extractCounts m a  =
-  {-
-    m is the map concept_id -> [ record_ids ]
-    a is the aggregated map concept_id to length [ record_ids ]
-  -}
-  Map.foldlWithKey f a m
-  where
-    f m concept_id record_ids = Map.insert concept_id (length record_ids) m
-
-
--- Ugghh.... if nodes are at different levels then it might be more complicated...
--- need to know the terminating condition...
-
--- terminating condition should be when all elements have been propagated to the root node.
--- so we should be testing that the could of all elements is zero except for the root node.
--- ok, we can work out the terminating condition later,
-
--- getCountsForNestingLevel
--- getAllCounts
 
 {-
 --- IMPORTANT
@@ -185,36 +150,11 @@ extractCounts m a  =
 -- SO - why not - maintain the list and the count
 -- and when we move up... we will be left with the count
 
--- and this solves the problem.... of getting the counts all correct
+-- and this solves the problem.... 
+    of getting the counts for all the nodes 
+    printing the damn counts
+    and knowing the terminating condition.
 
--}
-
-extractAllCounts nestings m a =
-
-  trace ("whoot  " ) $
-  -- m doesn't change
-  -- yes m does
-  -- nothing node may not be in there to begin with...
-  -- will a case short-circuit ... yes...
-
-  -- case length (mapGet m Nothing) of
-  case terminateCondition m of
-      False ->
-          trace ("whoot") $
-
-          -- extract counts for current level
-          let a' = extractCounts m a in
-          let m' = propagateToParent m nestings in
-          extractAllCounts nestings m' a'
-      True -> a
-  where
-    terminateCondition m =
-      True
-
-{-
-  let current = mapGet m (Just concept_id) in
-  Map.empty
-  & extractCounts m
 -}
 
 
@@ -233,41 +173,19 @@ main = do
   -- mapM print $ facetList
 
 
-  print "########################"
+  print "######################## 0"
   let m = buildFacetMap facetList
+  printFacetMap m
 
 
-  let a = extractAllCounts nestings m Map.empty
-  mapM print $ Map.toList a
-
-
-{-
-  let a = extractCounts m Map.empty
-  mapM print $ Map.toList a
--}
-
-
-
---  Map.foldlWithKey (\m k v -> m >> print (k,v)) (return ())  conceptCounts
-
-
-
-  -- so we just keep iterating ...
-  -- what we want is to add the count - it shouldn't exist anyway
-
-
-  -- Map.insert (Just concept_id) [] m
-  --  Map.
-  -- we want to fold over the elements of the map - and we don't really care...
-  -- fold
-  -- Map
-
-{-
 
   print "######################## 1"
   let m'  = propagateToParent m nestings
   printFacetMap m'
 
+
+
+{-
   print "######################## 2"
   let m''  = propagateToParent m' nestings
   printFacetMap m''
