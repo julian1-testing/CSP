@@ -1,5 +1,5 @@
 
-{-# LANGUAGE ScopedTypeVariables, OverloadedStrings #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 import Facet(getConceptNesting, getFacetList, buildFacetMap, propagateToParent, printMap)
 
@@ -10,9 +10,9 @@ main = do
 
   conn <- connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
 
-  nesting <- getConceptNesting conn
-  -- print "nesting"
-  -- mapM print nesting
+  nestings <- getConceptNesting conn
+  -- print "nestings"
+  -- mapM print nestings
 
   -- get the facet concept and record associations from the db
   facetList <- getFacetList conn
@@ -25,16 +25,16 @@ main = do
   printMap m
 
   print "######################## 1"
-  let m'  = propagateToParent m nesting
+  let m'  = propagateToParent m nestings
   printMap m'
 
 
   print "######################## 2"
-  let m''  = propagateToParent m' nesting
+  let m''  = propagateToParent m' nestings
   printMap m''
 
   print "######################## 3"
-  let m'''  = propagateToParent m'' nesting
+  let m'''  = propagateToParent m'' nestings
   printMap m'''
 
   return ()

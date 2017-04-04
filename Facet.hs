@@ -46,7 +46,7 @@ mapGet m e =
 
 
 getConceptNesting conn  = do
-  -- get parent child concept nesting
+  -- get parent child concept nestings
   -- we want the concept_id, parent_id, record_id
   let query1 = [r|
       select
@@ -110,14 +110,14 @@ buildFacetMap xs =
 
 
 
-propagateToParent m nesting =
+propagateToParent m nestings =
   -- a little bit like a topological sort,
-  -- fold over the concept/parent nesting relationships and push the list of record_id's into their parent concept list
+  -- fold over the concept/parent nestings relationships and push the list of record_id's into their parent concept list
 
-  foldl f Map.empty nesting
+  foldl f Map.empty nestings
   where
     f newMap (concept_id, parent_id) =
-      -- trace  ("trace nesting -> " ++ show (concept_id, parent_id)) $
+      -- trace  ("trace nestings -> " ++ show (concept_id, parent_id)) $
 
       case Map.member (Just concept_id) m of
         True ->
@@ -155,9 +155,9 @@ main :: IO ()
 main = do
   conn <- connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
 
-  nesting <- getConceptNesting conn
-  -- print "nesting"
-  -- mapM print nesting
+  nestings <- getConceptNesting conn
+  -- print "nestings"
+  -- mapM print nestings
 
   -- get the facet concept and record associations from the db
   facetList <- getFacetList conn
@@ -170,16 +170,16 @@ main = do
   printMap m
 
   print "######################## 1"
-  let m'  = propagateToParent m nesting
+  let m'  = propagateToParent m nestings
   printMap m'
 
 
   print "######################## 2"
-  let m''  = propagateToParent m' nesting
+  let m''  = propagateToParent m' nestings
   printMap m''
 
   print "######################## 3"
-  let m'''  = propagateToParent m'' nesting
+  let m'''  = propagateToParent m'' nestings
   printMap m'''
 
   return ()
