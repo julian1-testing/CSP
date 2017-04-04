@@ -49,7 +49,7 @@ getFacetList conn = do
 
 
 buildFacetGraph xs =
-  -- Map concept_id -> [ child concepts ]
+  -- Map of concept_id -> [ child concepts ]
   -- store nesting relationships in a map to enable easy lookup of children
 
   Map.empty
@@ -114,7 +114,7 @@ printXMLFacetGraph m = do
     printStart (parent_id, label, count) depth  = do
       putStrLn $ concatMap id [ 
         (pad $ depth * 3), 
-        "<category value=\"", label, "\"", " count=123 >"
+        "<category value=\"", label, "\"", " count=", show count, " >"
  
         -- (show parent_id), 
         -- " ",    (show count) 
