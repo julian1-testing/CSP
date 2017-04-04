@@ -72,19 +72,19 @@ buildFacetMap xs =
   -- TODO change this so we just insert a new - maybe 
 
   Map.empty
-  & \m -> foldl conceptEmpty  m xs
+  & \m -> foldl initForConcept m xs
   & \m -> foldl f m xs
 
   where
     --  insert an empty list for concept_id
-    conceptEmpty m (concept_id, _, _) =
+    initForConcept m (concept_id, _, _) =
       Map.insert (Just concept_id) (0, []) m
 
     -- populate concept list with the records
     f m (concept_id, _, record_id) =
       let (count, current) = mapGet m (Just concept_id) in
-      let new = record_id : current in
-      Map.insert (Just concept_id) (count, new) m
+      let newLst = record_id : current in
+      Map.insert (Just concept_id) (count, newLst) m
 
 
 -- TODO move the nestings argument so it's first - to make it easier to partially bind
@@ -108,7 +108,7 @@ propagateToParent m nestings =
           let (count, newSet) = 
                 mapGet m (Just concept_id) 
           in
-          -- get the list of records for the parent - might be top level - Nothing
+          -- get records for the parent
           let (count, currentParentLst) = (
                 case Map.member parent_id newMap of
                   False -> (0, [])
@@ -117,10 +117,12 @@ propagateToParent m nestings =
           in
           -- concat the lists
           let newParentLst  = mkUniq (currentParentLst ++ newSet)  in
-          -- and store in terms of the parent_id
-          Map.insert parent_id (0, newParentLst) newMap
 
-          
+          -- and store in terms of the parent_id
+          Map.insert parent_id (0, newParentLst) newMap 
+
+          -- and store empty set in concept 
+          & Map.insert (Just concept_id) (999, []) 
 
         -- nothing to do - if there were no record matches associated with this concept
         -- we may want to populate with an empty list...
