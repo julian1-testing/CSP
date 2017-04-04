@@ -89,7 +89,7 @@ buildFacetMap xs =
 
 -- TODO move the nestings argument so it's first - to make it easier to partially bind
 
-propagateRecordsToParentConcept m nestings =
+propagateRecordsToParentConcept nestings m =
   {-
       a little bit like a topological sort,
       fold over the concept/parent nestings relationships and push the list of record_id's into their parent concept list
@@ -97,6 +97,9 @@ propagateRecordsToParentConcept m nestings =
       also remove duplicates
 
       so we move records up.... and add to the count of records moved up....
+
+      -- TODO IMPORTANT - be careful - we don't propagate a nodes out of the root node - so it's no 
+      longer accessible. may need to test. and then not move.
   -}
 
   foldl f Map.empty nestings
@@ -133,31 +136,39 @@ propagateRecordsToParentConcept m nestings =
 
 
 
-printFacetMap m = do
-    m
-    & Map.toList
-    -- TODO we shouldn't need this.
-    -- & map (\(concept_id, xs) -> (concept_id, length xs, xs)) -- add length
-    & mapM print
+printFacetMap = do
+  -- m & Map.toList & mapM print
+  (mapM print).Map.toList
 
+
+propagateAllRecordsToRoot nestings m = 
+  {-
+      we just keep calling propagate records until we're done 
+  -}
+  case isFinished m of
+    False -> 
+      propagateRecordsToParentConcept nestings m
+      & propagateAllRecordsToRoot nestings
+    True -> 
+      m  
+
+  where
+    isFinished m = 
+      -- root node exists
+      Map.member Nothing m
+      -- and 
+      && let (rootCount, rootLst) = mapGet m Nothing in 
+      length rootLst /= 0
+
+
+
+
+-- TODO we have to count everything except the root node...
 
 
 
 {-
---- IMPORTANT
--- there's an issue - in that if the records are not matched by concepts at the same level
--- then the concepts will propagate up and have different values 
-
--- can we handle this better?  -- so that we propagate up by adding each time....
--- no - because once it's been propagated then we don't want it to be counted again.
-
--- SO - why not - maintain the list and the count
--- and when we move up... we will be left with the count
-
--- and this solves the problem.... 
-    of getting the counts for all the nodes 
-    printing the damn counts
-    and knowing the terminating condition.
+  now we want to do this until 
 
 -}
 
@@ -179,23 +190,26 @@ main = do
 
   print "######################## 0"
   let m = buildFacetMap facetList
-  printFacetMap m
+--  printFacetMap m
 
+  let m' =  propagateAllRecordsToRoot nestings m
+  printFacetMap m'
 
+{-
   print "######################## 1"
-  let m'  = propagateRecordsToParentConcept m nestings
+  let m'  = propagateRecordsToParentConcept nestings m
   printFacetMap m'
 
 
   print "######################## 2"
-  let m''  = propagateRecordsToParentConcept m' nestings
+  let m''  = propagateRecordsToParentConcept nestings m' 
   printFacetMap m''
 
 
   print "######################## 3"
-  let m'''  = propagateRecordsToParentConcept m'' nestings
+  let m'''  = propagateRecordsToParentConcept  nestings m''
   printFacetMap m'''
-
+-}
 
   return ()
 
