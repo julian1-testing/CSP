@@ -25,12 +25,36 @@ main = do
 
   -----------------------
   -- get stuff for calculating facet counts
-  nestings <- Facet.getConceptNesting conn -- is this a fast lookup
+  nestings <- Facet.getConceptNesting conn -- is this a fast lookup, should we move this out of the facet code...
   facetList <- Facet.getFacetList conn
 
   let m = Facet.buildLeafFacetMap facetList
         & Facet.propagateAllRecordsToRoot nestings 
 
+  -- print "################## nestings list"
+  -- mapM print nestings
+
+  print "################## labels list "
+
+  -- TODO change name nestings to parents, or parentNestings or something? or broader ?
+
+
+
+  labels <- Facet.getConceptLabels conn 
+  mapM print labels
+
+
+  let labels' =  Map.fromList . map (\(k, a, b) -> (k, (a,b))) $   labels
+
+  -- let labels' = (Facet.getConceptLabels conn) >>=  Map.fromList . map (\(k, a, b) -> (k, (a,b)))  
+-- labels
+
+
+  print "################## labels map"
+  mapM print . Map.toList $ labels' 
+
+
+  print "##################"
   -----------------------
 
 {-
@@ -44,7 +68,7 @@ main = do
 
   -- if we are going to desctructure this...  we'll have to match...
 
-  let nestingsMap = Map.fromList nestings
+  -- let nestingsMap = Map.fromList nestings
   -- (Map.toList nestingsMap) & mapM print  
 
   -- WE DON"T WANT map - because we don't want to have to deal with the parent node... for printing... 
@@ -70,6 +94,9 @@ main = do
 
   -- so we just need to tack in the parent and the label... again...
 -}
+  -- IMPORTANT - should we move the db code outside of the facet stuff...
+  -- if the nestings were ''
+
 
 
   let m' = 

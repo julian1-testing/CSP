@@ -33,6 +33,7 @@ mapGet m e =
 
 
 getConceptNesting conn  = do
+  -- TODO change name - get ConceptParents   conceptParents ?
   -- return a flat list of concept nestings
   -- get parent child concept nestings
   -- we want the concept_id, parent_id, record_id
@@ -44,6 +45,20 @@ getConceptNesting conn  = do
   |]
   xs :: [ (Integer, Maybe Integer ) ] <- PG.query conn query1 ()
   return xs
+
+
+getConceptLabels conn  = do
+  let query1 = [r|
+      select
+        id as concept_id,
+        parent_id,
+        label
+      from concept_view ;
+  |]
+  xs :: [ (Integer, Maybe Integer, String ) ] <- PG.query conn query1 ()
+  return xs
+
+
 
 
 
@@ -180,6 +195,9 @@ main = do
   nestings <- getConceptNesting conn
   -- print "nestings"
   -- mapM print nestings
+
+  -- IMPORTANT - should we move the db code outside of the facet stuff...
+  -- if the nestings were ''
 
   -- get the facet concept and record associations from the db
   facetList <- getFacetList conn
