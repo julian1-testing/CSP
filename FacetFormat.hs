@@ -47,8 +47,8 @@ getFacetList conn  = do
   return xs
 
 
+-- ease syntax
 mapGet = (Map.!)
-
 
 
 buildFacetGraph :: Foldable t =>

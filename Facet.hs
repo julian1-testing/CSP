@@ -168,14 +168,27 @@ main = do
 
   print "######################## 0"
   let m = buildFacetMap facetList
-  printMap m
+  -- printMap m
 
-  -- let conceptCounts = Map.empty  in
+  -- we need the keys
+
+  -- let conceptCounts = Map.foldl (\v ->  "value" )  m
+  -- let conceptCounts = Map.foldl (\m (k,v) -> Map.insert "key" "value" m)  m
+
+  ---- AHHHHHH - we want fold with key....
+
+  let conceptCounts = Map.foldlWithKey (\m x v ->  Map.insert x 456 m) Map.empty  m
+
+  print $ show conceptCounts
+
+--       Map.insert (Just concept_id) [] m
+--  Map.
+
   -- we want to fold over the elements of the map - and we don't really care...
   -- fold
   -- Map
 
-
+{-
 
   print "######################## 1"
   let m'  = propagateToParent m nestings
@@ -188,6 +201,8 @@ main = do
   print "######################## 3"
   let m'''  = propagateToParent m'' nestings
   printMap m'''
+
+-}
 
   return ()
 
