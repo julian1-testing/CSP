@@ -3,13 +3,13 @@
 -- {-# LANGUAGE Arrows, NoMonomorphismRestriction #-}
 
 -- needed for disambiguating types,
-{-# LANGUAGE ScopedTypeVariables, OverloadedStrings #-}
+{-# LANGUAGE ScopedTypeVariables, OverloadedStrings, QuasiQuotes #-}
 
-{-# LANGUAGE QuasiQuotes #-}
+
+module FacetFormat where
 
 
 import Database.PostgreSQL.Simple
-
 import Text.RawString.QQ
 
 import qualified Data.Map as Map
@@ -18,7 +18,6 @@ import qualified Data.Map as Map
 import Data.Function( (&) )
 
 
--- ok,
 
 
 pad' s count =
@@ -27,9 +26,9 @@ pad' s count =
     False -> pad' (" " ++ s) (count - 1)
 
 
-pad count = pad' "" count
+pad count = 
+  pad' "" count
 
--- change to 
 
 
 getFacetList conn  = do
@@ -61,7 +60,10 @@ buildFacetGraph :: Foldable t =>
 
 
 buildFacetGraph xs =
-  -- stores nesting relationships in a map to enable easy lookup
+  -- store nesting relationships in a map to enable easy lookup
+  -- TODO change name buildNestingMap 
+  -- IMPORTANT - we SHOULD USE THE one in Facet.hs
+      -- I think the only difference is that we don't store the label...
   -- concept_id -> array 
   -- https://hackage.haskell.org/package/containers-0.4.2.0/docs/Data-Map.html
 

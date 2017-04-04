@@ -1,6 +1,10 @@
 
 import Text.XML.HXT.Core
 
+{-
+  attempt to combine the mkelem stuff to create the structure...
+
+-}
 -- use selem for single element
 
 -- what we want is arg

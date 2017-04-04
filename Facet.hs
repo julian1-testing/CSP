@@ -33,6 +33,7 @@ mapGet m e =
 
 
 getConceptNesting conn  = do
+  -- return a flat list of concept nestings
   -- get parent child concept nestings
   -- we want the concept_id, parent_id, record_id
   let query1 = [r|
@@ -96,7 +97,7 @@ propagateToParent m nestings =
   {-
       a little bit like a topological sort,
       fold over the concept/parent nestings relationships and push the list of record_id's into their parent concept list
-      that the parent node is the union of record_id
+      the parent node thus is the union of record_id of it's child nodes
       also remove duplicates
   -}
 
@@ -118,12 +119,13 @@ propagateToParent m nestings =
                   True -> mapGet newMap parent_id
                 )
           in
-          -- combine them
+          -- concat the lists
           let newParentLst  = mkUniq (currentParentLst ++ newSet)  in
           -- and store in terms of the parent_id
           Map.insert parent_id newParentLst newMap
 
-        -- ignore - if no records associated with this concept
+        -- nothing to do - if there were no record matches associated with this concept
+        -- we may want to populate with an empty list...
         False ->
           newMap
 
@@ -134,6 +136,14 @@ printMap m = do
     & Map.toList
     & map (\(concept_id, xs) -> (concept_id, length xs, xs)) -- add length
     & mapM print
+
+
+
+-- OK, now we want to convert from the graph to a tree, with labels. and perhaps depth?
+-- so we don't need to maintain in a recursion? not sure.
+-- it has to be a map
+
+-- do want to call it until everything has been propagated...
 
 
 -- change name to test?
@@ -158,7 +168,6 @@ main = do
   print "######################## 1"
   let m'  = propagateToParent m nestings
   printMap m'
-
 
   print "######################## 2"
   let m''  = propagateToParent m' nestings

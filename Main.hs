@@ -1,8 +1,8 @@
 
 {-# LANGUAGE OverloadedStrings #-}
 
--- import qualified Facet(getConceptNesting, getFacetList, buildFacetMap, propagateToParent, printMap, main) as F
 import qualified Facet as F(getConceptNesting,main)
+import qualified FacetFormat as FF(main)
 
 import Database.PostgreSQL.Simple
 
@@ -17,4 +17,5 @@ main = do
 
 
   -- nice!!!
-  F.main
+  -- F.main
+  FF.main
