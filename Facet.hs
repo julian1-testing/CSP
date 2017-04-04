@@ -143,26 +143,26 @@ printFacetMap = do
 
 propagateAllRecordsToRoot nestings m = 
   {-
-      we just keep calling propagate records until we're done 
+      call propagateRecordsToParent until all record_ids have been moved to the root node
   -}
-  case isFinished m of
+  case unpropagatedRecords m == 0 of
+    True -> m  
     False -> 
       propagateRecordsToParentConcept nestings m
       & propagateAllRecordsToRoot nestings
-    True -> 
-      m  
-
   where
-    isFinished m = 
-      -- root node exists
-      Map.member Nothing m
-      -- and 
-      && let (rootCount, rootLst) = mapGet m Nothing in 
-      length rootLst /= 0
+    unpropagatedRecords m =
+      Map.foldlWithKey f 0 m
+        where
+        f m concept_id (_, recordsForConcept) = case concept_id of
+          -- ignore root node
+          Nothing -> m  
+          -- else just keep summing
+          Just _ -> m + length recordsForConcept
 
-
-
-
+    
+-- Map.foldlWithKey (\m k v -> m >> print (k,v)) (return ()) conceptCounts
+-- OK, we want to fold all the nodes and produce a count
 -- TODO we have to count everything except the root node...
 
 
