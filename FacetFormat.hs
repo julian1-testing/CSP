@@ -38,8 +38,6 @@ getFacetList conn  = do
           id as concept_id, 
           parent_id,
           label ,
-          -- node_count as count
-          -- count_sum as count
           -999 -- count  -- dummy value
         from facet_count_view
   |]
@@ -59,11 +57,12 @@ buildFacetGraph :: Foldable t =>
 
 
 buildFacetGraph xs =
-  -- store nesting relationships in a map to enable easy lookup
+  -- Map concept_id -> list of child concepts
+  -- store nesting relationships in a map to enable easy lookup of children
+  -- 
   -- TODO change name buildNestingMap 
   -- IMPORTANT - we SHOULD USE THE one in Facet.hs
       -- I think the only difference is that we don't store the label...
-  -- concept_id -> array 
   -- https://hackage.haskell.org/package/containers-0.4.2.0/docs/Data-Map.html
 
   -- this is still a map....

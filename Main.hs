@@ -20,6 +20,8 @@ main :: IO ()
 main = do
 
   conn <- PG.connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
+
+  -- TODO - maybe put all the DB actions into another file -- so there's a clear module interface...
   -- change to getNestingFromDB
 
 
@@ -28,34 +30,62 @@ main = do
   nestings <- Facet.getConceptNesting conn -- is this a fast lookup, should we move this out of the facet code...
   facetList <- Facet.getFacetList conn
 
+  -- compute facet counts
   let m = Facet.buildLeafFacetMap facetList
         & Facet.propagateAllRecordsToRoot nestings 
 
-  -- print "################## nestings list"
-  -- mapM print nestings
 
-  print "################## labels list "
-
-  -- TODO change name nestings to parents, or parentNestings or something? or broader ?
+  -- get the concept, parents and labels from db as a Map
+  let makePair (concept, parent, label) = (concept, (parent, label))  -- turn into key,val pairs needed for map,
+  labels <- Facet.getConceptLabels conn >>= return.(Map.fromList).(map makePair)
 
 
 
-  labels <- Facet.getConceptLabels conn 
-  mapM print labels
+  -- print "################## labels map"
+  -- (mapM print).(Map.toList) $ labels
 
 
-  let labels' =  Map.fromList . map (\(k, a, b) -> (k, (a,b))) $   labels
+  -- join the facet counts with the parent and label details, in a form suitable for output formatting... 
+  let m' = 
+       -- Map.foldlWithKey f Map.empty m
+       Map.foldlWithKey f [] m
+        where
+        f m concept (count, records) = case concept of 
+          -- ignore the root node
+          Nothing -> m
+          -- otherwise just insert, zipping with parent_id and label  
+          Just concept_id ->
+                let (parent, label) = mapGet labels concept_id in
+                (concept_id, parent, label, count) : m
+--                Map.insert (concept_id) (parent, label, count) m
 
-  -- let labels' = (Facet.getConceptLabels conn) >>=  Map.fromList . map (\(k, a, b) -> (k, (a,b)))  
--- labels
+
+  -- no - the key is the parent --- ugghhhhh ... how does 
+  -- no it's a list....
 
 
-  print "################## labels map"
-  mapM print . Map.toList $ labels' 
+  -- let rootNode = (Nothing, "dummy", -999  )
+  -- recurse m (parent_id, label, count) depth = do
 
 
-  print "##################"
-  -----------------------
+  print "################## everything map"
+
+  -- (mapM print).(Map.toList) $ m'
+  (mapM print) $ m'
+
+  -- this thing takes a list....
+  let fm = FacetFormat.buildFacetGraph m'
+ 
+  -- what data structure does this need? 
+  FacetFormat.printXMLFacetGraph fm 
+ 
+  return () 
+
+  -- nice!!!
+  -- FacetFormat.main
+
+
+
 
 {-
   -- actually we should transform it into the subset of whatever is the most convent
@@ -97,33 +127,6 @@ main = do
   -- IMPORTANT - should we move the db code outside of the facet stuff...
   -- if the nestings were ''
 
-
-
-  let m' = 
-       Map.foldlWithKey f Map.empty m
-        where
-        f m k (count, records) = case k of 
-          -- drop the root node
-          Nothing -> m
-          -- otherwise just insert 
-          Just concept_id -> Map.insert concept_id count m
-
-
-  -- this
-  -- Facet.printFacetMap m'
-
-  (Map.toList m') & mapM print  
-
-
- 
-  return () 
-
-  -- nice!!!
-  -- FacetFormat.main
-
-
-
-
   -- mapM print nestings 
   -- it might easier just to take the Facet structure - and add in the parent_id, and labels?
   -- it's also already a map....
@@ -160,4 +163,18 @@ main = do
   -- it's already a fast lookup - but we just don't have the children....
 
   -- I think the only thing we need is to add in the parent and label and we're done.
+
+  -- print "################## nestings list"
+  -- mapM print nestings
+
+--  print "################## labels list "
+
+  -- TODO change name nestings to parents, or parentNestings or something? or broader ?
+
+
+{-
+  labels <- Facet.getConceptLabels conn 
+  mapM print labels
+  let labels' =  Map.fromList . map (\(k, a, b) -> (k, (a,b))) $   labels
+-}
 
