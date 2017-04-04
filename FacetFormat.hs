@@ -14,6 +14,7 @@ import qualified Database.PostgreSQL.Simple as PG(query, connectPostgreSQL)
 import Data.Function( (&) )
 
 import Text.RawString.QQ
+import qualified Data.List as List(sortOn)
 
 
 -- ease syntax
@@ -104,7 +105,9 @@ printXMLFacetGraph m = do
       -- continue recursion
       -- TODO - we need to sort the children - according to the count...
       let children = mapGet m parent_id
-      mapM (\(concept_id, label, count)  -> recurse m (Just concept_id, label, count) (depth + 1)) children
+      let sortedChildren =  reverse. List.sortOn (\(_, _, count) -> count) $ children 
+
+      mapM (\(concept_id, label, count)  -> recurse m (Just concept_id, label, count) (depth + 1)) sortedChildren
 
       endTag (parent_id, label, count) depth  
       return ()
