@@ -89,7 +89,7 @@ buildFacetMap xs =
 
 -- TODO move the nestings argument so it's first - to make it easier to partially bind
 
-propagateToParent m nestings =
+propagateRecordsToParentConcept m nestings =
   {-
       a little bit like a topological sort,
       fold over the concept/parent nestings relationships and push the list of record_id's into their parent concept list
@@ -120,10 +120,10 @@ propagateToParent m nestings =
           -- add the recordsForConcept to the recordsForParent and de-duplicate
           let newParentLst  = mkUniq (recordsForParent ++ recordsForConcept)  in
 
-          -- and store new list for the parent concept
+          -- and store new list for the parent concept. countForParent stays the same
           Map.insert parent_id (countForParent, newParentLst) newMap 
 
-          -- and store the count and empty set for narrower concept 
+          -- and store the empty set for narrower concept, and update the count
           & Map.insert (Just concept_id) (countForConcept + length recordsForConcept, []) 
 
         False ->
@@ -183,17 +183,17 @@ main = do
 
 
   print "######################## 1"
-  let m'  = propagateToParent m nestings
+  let m'  = propagateRecordsToParentConcept m nestings
   printFacetMap m'
 
 
   print "######################## 2"
-  let m''  = propagateToParent m' nestings
+  let m''  = propagateRecordsToParentConcept m' nestings
   printFacetMap m''
 
 
   print "######################## 3"
-  let m'''  = propagateToParent m'' nestings
+  let m'''  = propagateRecordsToParentConcept m'' nestings
   printFacetMap m'''
 
 
