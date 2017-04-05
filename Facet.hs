@@ -129,7 +129,7 @@ propagateRecordsToParentConcept nestings m' =
   -}
   m'
   & \m -> foldl (f2) m nestings 
-  & \m -> foldl (f3) m nestings 
+  -- & \m -> foldl (f3) m nestings 
  
   where
 
@@ -154,7 +154,30 @@ propagateRecordsToParentConcept nestings m' =
         Map.insert parent_id (countForParent, newParentLst) m 
 
 
-    -- no no no --- we are moving items up. and then we are removing them!!!
+        & Map.insert (Just concept_id) (countForConcept + length recordsForConcept, []) -- m
+
+    -- i think we have to do it with an idea of whether it's been handled or not... in this pass....
+
+    -- if move in seperate pass,
+    -- no we are just deleting  then coming along later and removing them!!!
+    -- we can only do the subset that we changed....
+
+    -- alternatively if we do it in one pass, then we move items to their parent - then come along and 
+    -- move their parent up....
+
+    -- need to think about this...
+
+    -- we are removing from the list so it doesn't get processed again... 
+    -- but there's nothing to stop moving to a later thing - that then gets re-processed.
+
+    -- partition the list - into the things that have members and those that don't.
+
+    -- just use a completely different list...
+    -- yes partition - then we only process the items that need processing
+    -- get the list of entries... only and generate the new list -
+    -- but ... ol
+
+    -- partition, then process items needing processing. then merge.
 
     f3 m (concept_id, parent_id) =
         -- get the record list for this concept
