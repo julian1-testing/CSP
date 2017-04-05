@@ -32,14 +32,25 @@ main = do
   -- mapM print nestings
 
   facetLeafCounts <- Facet.getFacetList conn
-  -- mapM print facetLeafCounts
+  
+  print "##### the facetLeaf counts "
+  mapM print facetLeafCounts
 
 
   -- compute facet counts
   let facetCounts = Facet.buildLeafFacetMap facetLeafCounts
-        & Facet.propagateAllRecordsToRoot nestings 
-  -- (mapM print).(Map.toList) $ facetCounts
+  print "##### the facetCounts after creating the leaf map "
+  (mapM print).(Map.toList) $ facetCounts
 
+
+
+
+{-
+        & Facet.propagateAllRecordsToRoot nestings 
+  print "##### the facetCounts after propagating"
+  (mapM print).(Map.toList) $ facetCounts
+
+  
 
   -- get the concept, parents and labels from db as a Map
   let makePair (concept, parent, label) = (concept, (parent, label))  -- turn into key,val pairs needed for map,
@@ -70,7 +81,11 @@ main = do
  
   -- format the thing -
   FacetFormat.printXMLFacetGraph facetGraph
- 
+
+ -}
+
+
+
   return () 
 
   -- nice!!!

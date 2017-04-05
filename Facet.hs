@@ -89,6 +89,7 @@ getFacetList conn  = do
 
 buildLeafFacetMap xs =
   -- TODO change this so we just insert a new - maybe 
+  -- we make the concept a Maybe type - so that we can handle Nothing as root node later
 
   Map.empty
   & \m -> foldl initForConcept m xs
@@ -118,6 +119,9 @@ propagateRecordsToParentConcept nestings m' =
 
       -- TODO IMPORTANT - be careful - we don't propagate a nodes out of the root node - so it's no 
       longer accessible. may need to test. and then not move.
+
+
+      -- propagating things up....
   -}
   m'
   & \m -> foldl (f2) m nestings 
