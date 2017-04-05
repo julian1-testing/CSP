@@ -47,6 +47,7 @@ getConceptNesting conn  = do
   return xs
 
 
+
 getConceptLabels conn  = do
   let query1 = [r|
       select
@@ -57,8 +58,6 @@ getConceptLabels conn  = do
   |]
   xs :: [ (Integer, Maybe Integer, String ) ] <- PG.query conn query1 ()
   return xs
-
-
 
 
 
@@ -73,9 +72,7 @@ getFacetList conn  = do
       from facet
       left join concept_view on concept_view.id = facet.concept_id
       order by concept_id
-      -- where concept_id = 576 ;
   |]
-  -- note the parent may be null! beautiful...
   xs :: [ (Integer, Integer, Integer ) ] <- PG.query conn query1 ()
   -- mapM print xs
   return xs
@@ -118,35 +115,36 @@ propagateRecordsToParentConcept nestings m' =
 
   foldl f m' nestings
   where
+
     f m (concept_id, parent_id) =
-
+      -- only process concepts that exist in the map
       case Map.member (Just concept_id) m of
-        True ->
+        True -> f2 m (concept_id, parent_id)
+        False -> m
 
-          -- get the record list for this concept
-          let (countForConcept, recordsForConcept) = 
-                mapGet m (Just concept_id) 
-          in
-          -- get the records for the parent
-          let (countForParent, recordsForParent) = (
-                case Map.member parent_id m of
-                  False -> (0, [])
-                  True -> mapGet m parent_id
-                )
-          in
-          -- concat recordsForConcept to the recordsForParent and de-duplicate
-          let newParentLst  = mkUniq (recordsForParent ++ recordsForConcept)  in
 
-          -- and then store against the parent concept. countForParent is unchanged
-          Map.insert parent_id (countForParent, newParentLst) m 
+    f2 m (concept_id, parent_id) =
+        -- propagate records up...
 
-          -- now clear the list for child/narrower concept, and increment count by nymber of records moved to parent
-          & Map.insert (Just concept_id) (countForConcept + length recordsForConcept, []) 
+        -- get the record list for this concept
+        let (countForConcept, recordsForConcept) = 
+              mapGet m (Just concept_id) 
+        in
+        -- get the records for the parent
+        let (countForParent, recordsForParent) = (
+              case Map.member parent_id m of
+                False -> (0, [])
+                True -> mapGet m parent_id
+              )
+        in
+        -- concat recordsForConcept to the recordsForParent and de-duplicate
+        let newParentLst  = mkUniq (recordsForParent ++ recordsForConcept)  in
 
-        False ->
-          -- nothing to do - if there were no record matches associated with this concept
-          -- we may want to populate with an empty list...
-          m
+        -- and then store against the parent concept. countForParent is unchanged
+        Map.insert parent_id (countForParent, newParentLst) m 
+
+        -- now clear the list for child/narrower concept, and increment count by nymber of records moved to parent
+        & Map.insert (Just concept_id) (countForConcept + length recordsForConcept, []) 
 
 
 
