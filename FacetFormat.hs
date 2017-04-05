@@ -122,10 +122,9 @@ getTestFacetList conn = do
           id as concept_id, 
           parent_id,
           label ,
-          -999 -- count  -- dummy value
-        from facet_count_view
+          count
+        from facet_view
   |]
-  -- note the parent may be null! beautiful...
   xs :: [ (Integer, Maybe Integer, String, Integer  ) ] <- PG.query conn query ()
   return xs
 
@@ -193,9 +192,6 @@ recurse conn depth (parent_id, label) = do
 -}
 
 {-
-------
----- we're not thinking ....
---- our structure hasn't been returned 
 
 buildFacetGraph' facetMap =
 

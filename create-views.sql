@@ -7,8 +7,8 @@
 
 begin;
 
-drop view if exists facet_view_3 ;
-drop view if exists facet_count_view;
+-- drop view if exists facet_view_3 ;
+drop view if exists facet_view;
 drop view if exists facet_count_basic_view;
 drop view if exists wms_view;
 drop view if exists wfs_view;
@@ -137,7 +137,10 @@ select
 ;
 
 
-create view facet_count_view as
+-- change name to facet_view?
+-- because it includes all the useful stuff
+
+create view facet_view as
 select
   *
   from facet_count_basic_view
@@ -172,6 +175,7 @@ INSERT INTO data values ( 9, 8, 'Webradio', 90 );
 --
 -- SQL Statement
 
+/*
 
 create view facet_view_3 as
 
@@ -209,7 +213,7 @@ INNER JOIN (
 ;
 
 
-
+*/
 
 
 
