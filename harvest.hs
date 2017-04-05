@@ -40,7 +40,7 @@ import Data.Char (isSpace)
 -- ok now we want to go through the actual damn records,
 
   selecting matches by facets,
-  select uuid,title from facet_view where url = 'http://vocab.nerc.ac.uk/collection/P01/current/TEMPPR01' ; 
+  select uuid,title from facet_view where url = 'http://vocab.nerc.ac.uk/collection/P01/current/TEMPPR01' ;
 
 -}
 
@@ -168,7 +168,7 @@ doCSWGetRecords = do
 
 
 
-parseOnlineResources = 
+parseOnlineResources =
   atTag "gmd:CI_OnlineResource" >>>
   proc l -> do
     protocol    <- atChildName "gmd:protocol" >>> atChildName "gco:CharacterString" >>> getChildText  -< l
@@ -177,7 +177,7 @@ parseOnlineResources =
     returnA -< (protocol, linkage, description)
 
 
-parseDataParameters = 
+parseDataParameters =
   atTag "mcp:dataParameter" >>>
   proc l -> do
     term <- atChildName "mcp:DP_DataParameter" >>> atChildName "mcp:parameterName" >>> atChildName "mcp:DP_Term" -< l
@@ -186,7 +186,8 @@ parseDataParameters =
     returnA -< (txt, url)
 
 
-
+-- we really want some test code for just argo.
+-- rather than harvest everything...
 
 
 
@@ -214,7 +215,7 @@ getCSWGetRecordById uuid title = do
 ----------------
 
 processRecordUUID conn uuid title = do
-  execute conn "insert into record(uuid,title) values (?, ?)"   
+  execute conn "insert into record(uuid,title) values (?, ?)"
     (uuid :: String, title :: String)
 
 
@@ -223,7 +224,7 @@ processRecordUUID conn uuid title = do
 
 processOnlineResource conn uuid (protocol,linkage, description) = do
     execute conn [r|
-      insert into resource(record_id,protocol,linkage, description) 
+      insert into resource(record_id,protocol,linkage, description)
       values (
         (select id from record where uuid = ?), ?, ?, ?
       )
@@ -244,26 +245,28 @@ processOnlineResources conn uuid recordText = do
 processDataParameter conn uuid (term, url) = do
     -- look up the required concept
     xs :: [ (Integer, String) ] <- query conn "select id, label from concept where url = ?" (Only url)
-    -- putStrLn $ (show.length) xs 
+    -- putStrLn $ (show.length) xs
     case length xs of
       1 -> do
         -- store the concept
         let (concept_id, concept_label) : _ = xs
         execute conn [r|
-          insert into facet(concept_id, record_id) 
+          insert into facet(concept_id, record_id)
           values (?, (select record.id from record where record.uuid = ?))
           on conflict
           do nothing
-        |] (concept_id :: Integer, uuid :: String) 
+        |] (concept_id :: Integer, uuid :: String)
         return ()
-        
-      0 -> putStrLn "dataParameter not found"
-      _ -> putStrLn "multiple dataParameters?"
+
+      0 -> putStrLn $ "dataParameter '" ++ url ++ "' not found!"
+      _ -> putStrLn $ "dataParameter '" ++ url ++ "' found multiple matches?"
 
 
 processDataParameters conn uuid recordText = do
+
+    -- TODO IMPORTANT - should remove the uuid first...
     dataParameters <- runX (parseXML recordText >>> parseDataParameters)
-    putStrLn $ (++) "data parameter count: " $ (show.length) dataParameters
+    putStrLn $ "data parameter count: " ++ (show.length) dataParameters
     mapM (putStrLn.show) dataParameters
     mapM (processDataParameter conn uuid) dataParameters
 
@@ -272,38 +275,80 @@ processDataParameters conn uuid recordText = do
 ----------------
 
 processRecord conn (uuid, title) = do
-    record <- getCSWGetRecordById uuid title 
-    processRecordUUID conn uuid title 
+    -- TODO IMPORTANT - should remove the uuid first...
+    -- TODO - VERY IMPORTANT we should separate out the CSW action of getting the record 
+    -- removing the old stuff and indexing resources and parameters,
+    record <- getCSWGetRecordById uuid title
+    processRecordUUID conn uuid title
     processDataParameters conn uuid record
     processOnlineResources conn uuid record
     return ()
 
 
--- TODO - store the origin catalog .... that we scanned . in fact that 
--- might be stored in the db, and is ther
 
--- OK. we should probably let it go to completion - just to test...
-----------------
+
+
+processAllRecords conn = do
+    -- this is not very nice.... - should do deletion incrementallly for each record
+    -- and transactionally
+    execute conn "delete from resource *" ()
+    execute conn "delete from facet *" ()
+    execute conn "delete from record *" ()
+    
+    identifiers <- doCSWGetRecords
+    s <- doCSWGetRecords
+    identifiers <- getCSWIdentifiers s
+    mapM (processRecord conn) identifiers
+
+
+testArgoRecord = do
+    -- assumes have vocab loaded
+    -- TODO IMPORTANT - should remove the uuid first...
+    recordText <- readFile "./examples/argo.xml" 
+    -- let uuid = "4402cb50-e20a-44ee-93e6-4728259250d2"
+    -- processDataParameters conn uuid recordText
+
+    dataParameters <- runX (parseXML recordText >>> parseDataParameters)
+
+    mapM print dataParameters
+
+    return ()
+ 
+
+
 
 
 main :: IO ()
 main = do
   conn <- connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
+
+  testArgoRecord
+
+  -- processAllRecords conn 
+  return ()
+
+
+
+{-
   -- execute conn "truncate resource;"  ()
   -- note that the sequence will update -
   execute conn "delete from resource *" ()
   execute conn "delete from facet *" ()
   execute conn "delete from record *" ()
+-}
 
-  -- TODO - seperate out query and parse action - 
+
+
+{-
+  -- TODO - seperate out query and parse action -
   -- do query and get records
   identifiers <- doCSWGetRecords
 
-  s <- doCSWGetRecords 
+  s <- doCSWGetRecords
 
-  identifiers <- getCSWIdentifiers s 
+  identifiers <- getCSWIdentifiers s
 
+  -- IMPORTANT - we should have a single function...
   mapM (processRecord conn) identifiers
-
-  return ()
+-}
 
