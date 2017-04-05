@@ -170,10 +170,18 @@ propagateRecordsToParentConcept nestings m =
   -- the first map contains all elements that satisfy the prdicate
   -- lets check the noRecords contains noRecords
 
-  let (withRecords, noRecords) =  Map.partitionWithKey predWithRecords m in
+  -- so go through an insert into the parents 
+  -- OR - empty everything first... - yes I think this is good...
 
-  withRecords
+  let (withRecords, withoutRecords) =  Map.partitionWithKey predWithRecords m in
+  let cleaned =  Map.mapWithKey clearRecords m in
+  let propagated =  Map.mapWithKey propagate cleaned in
 
+  propagated 
+
+
+  -- now we want to Map, and move the records to the parent.... actually  
+  -- now map again and insert into parent 
 
   -- & \(m, m2) -> foldl (f2) m nestings
   -- & \m -> foldl (f3) m nestings
@@ -185,6 +193,13 @@ propagateRecordsToParentConcept nestings m =
         in case length records of
           0 -> False
           _ -> True
+
+    clearRecords k (count, records) =
+        (count, [] :: [ Integer ])
+
+
+    propagate k (count, records) = 
+        (count, [] :: [ Integer ])
 
 {-
     f2 m (concept_id, parent_id) =
