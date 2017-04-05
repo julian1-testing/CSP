@@ -173,18 +173,23 @@ propagateRecordsToParentConcept nestings m =
   -- so go through an insert into the parents 
   -- OR - empty everything first... - yes I think this is good...
 
+  -- IMPORTANT we may not even have to partition - but it may make it easier in avoiding the tests 
+
   let (withRecords, withoutRecords) =  Map.partitionWithKey predWithRecords m in
   let cleaned =  Map.mapWithKey clearRecords m in
-  let propagated =  Map.mapWithKey propagate cleaned in
+
+  let propagated =  foldl (propagate withRecords) cleaned nestings in
+
+  -- & \m -> foldl (f3) m nestings
 
   propagated 
 
 
   -- now we want to Map, and move the records to the parent.... actually  
   -- now map again and insert into parent 
-
   -- & \(m, m2) -> foldl (f2) m nestings
   -- & \m -> foldl (f3) m nestings
+
 
   where
 
@@ -197,9 +202,17 @@ propagateRecordsToParentConcept nestings m =
     clearRecords k (count, records) =
         (count, [] :: [ Integer ])
 
+    -- It is a fold over the nestings
 
-    propagate k (count, records) = 
-        (count, [] :: [ Integer ])
+    propagate withRecords m (concept_id, parent_id) = 
+        -- Ok, lookup whether this thing has records 
+        -- (count, [] :: [ Integer ])
+
+        -- so get the parent_id ...
+        let lst = mapGet withRecords (Just concept_id) in
+        
+
+        m
 
 {-
     f2 m (concept_id, parent_id) =
