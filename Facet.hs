@@ -104,7 +104,7 @@ buildLeafFacetMap xs =
 
 -- TODO move the nestings argument so it's first - to make it easier to partially bind
 
-propagateRecordsToParentConcept nestings m =
+propagateRecordsToParentConcept nestings m' =
   {-
       a little bit like a topological sort,
       fold over the concept/parent nestings relationships and push the list of record_id's into their parent concept list
@@ -117,38 +117,37 @@ propagateRecordsToParentConcept nestings m =
       longer accessible. may need to test. and then not move.
   -}
 
-  foldl f m nestings
+  foldl f m' nestings
   where
-    f newMap (concept_id, parent_id) =
+    f m (concept_id, parent_id) =
 
       case Map.member (Just concept_id) m of
         True ->
 
           -- get the record list for this concept
-          -- why are we looking at m, rather than newMap...
           let (countForConcept, recordsForConcept) = 
-                mapGet newMap (Just concept_id) 
+                mapGet m (Just concept_id) 
           in
           -- get the records for the parent
           let (countForParent, recordsForParent) = (
-                case Map.member parent_id newMap of
+                case Map.member parent_id m of
                   False -> (0, [])
-                  True -> mapGet newMap parent_id
+                  True -> mapGet m parent_id
                 )
           in
-          -- add the recordsForConcept to the recordsForParent and de-duplicate
+          -- concat recordsForConcept to the recordsForParent and de-duplicate
           let newParentLst  = mkUniq (recordsForParent ++ recordsForConcept)  in
 
-          -- and store new list for the parent concept. countForParent stays the same
-          Map.insert parent_id (countForParent, newParentLst) newMap 
+          -- and then store against the parent concept. countForParent is unchanged
+          Map.insert parent_id (countForParent, newParentLst) m 
 
-          -- and store the empty set for narrower concept, and update the count
+          -- now clear the list for child/narrower concept, and increment count by nymber of records moved to parent
           & Map.insert (Just concept_id) (countForConcept + length recordsForConcept, []) 
 
         False ->
           -- nothing to do - if there were no record matches associated with this concept
           -- we may want to populate with an empty list...
-          newMap
+          m
 
 
 
