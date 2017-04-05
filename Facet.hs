@@ -156,6 +156,20 @@ propagateRecordsToParentConcept nestings m' =
 
         & Map.insert (Just concept_id) (countForConcept + length recordsForConcept, []) -- m
 
+
+    f3 m (concept_id, parent_id) =
+        -- get the record list for this concept
+        let (countForConcept, recordsForConcept) = 
+              mapGet m (Just concept_id) 
+        in
+
+        -- now clear the list for child/narrower concept, and increment count by nymber of records moved to parent
+        Map.insert (Just concept_id) (countForConcept + length recordsForConcept, []) m
+
+
+    -- it's basically a partition... can we use an existing partition function...
+
+
     -- i think we have to do it with an idea of whether it's been handled or not... in this pass....
 
     -- if move in seperate pass,
@@ -179,17 +193,7 @@ propagateRecordsToParentConcept nestings m' =
     -- need to get in one go everything that needs to be pushed. then push only them. 
 
     -- can record - with a bool. or use a separate list.
-
-    f3 m (concept_id, parent_id) =
-        -- get the record list for this concept
-        let (countForConcept, recordsForConcept) = 
-              mapGet m (Just concept_id) 
-        in
-
-        -- now clear the list for child/narrower concept, and increment count by nymber of records moved to parent
-        Map.insert (Just concept_id) (countForConcept + length recordsForConcept, []) m
-
-
+    -- partition into 
 
 
 propagateAllRecordsToRoot nestings m = 
@@ -213,23 +217,72 @@ propagateAllRecordsToRoot nestings m =
 
 
 
--- remove  or rename to just printMap
-printFacetMap = do
-  -- m & Map.toList & mapM print
-  (mapM print).Map.toList
+printFacetMap m = do
+  (mapM print).Map.toList $ m
+
+
+
+
+
+testPropagateOnce = do
+  -- one nesting level only
+  conn <- PG.connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
+
+  nestings <- getConceptNesting conn
+  facetList <- getFacetList conn
+  -- print "facet list"
+  -- mapM print $ facetList
+
+  print "######################## 0"
+  let m = buildLeafFacetMap facetList
+  --  printFacetMap m
+
+  print "######################## 1"
+  let m'  = propagateRecordsToParentConcept nestings m
+  printFacetMap m'
+
+  {-
+  print "######################## 2"
+  let m''  = propagateRecordsToParentConcept nestings m' 
+  printFacetMap m''
+  -}
+  return ()
+
+
+
+testPropagateAll = do
+  -- one nesting level only
+  conn <- PG.connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
+
+  nestings <- getConceptNesting conn
+  -- print "nestings"
+  -- mapM print nestings
+
+  -- get the facet concept and record associations from the db
+  facetList <- getFacetList conn
+  -- print "facet list"
+  -- mapM print $ facetList
+
+  let m = buildLeafFacetMap facetList
+  --  printFacetMap m
+
+  let m' =  propagateAllRecordsToRoot nestings m
+  printFacetMap m'
+  return ()
+
+
+
+
+-- change name to test?
+main :: IO ()
+main = testPropagateOnce
+
+
 
 
 
 
 {-
-  now we want to do this until 
-
--}
-
-
--- change name to test?
-main :: IO ()
-main = do
   conn <- PG.connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
 
   nestings <- getConceptNesting conn
@@ -251,6 +304,7 @@ main = do
 
   let m' =  propagateAllRecordsToRoot nestings m
   printFacetMap m'
+-}
 
 
 {-
@@ -275,7 +329,6 @@ main = do
   printFacetMap m'''
 -}
 
-  return ()
 
 
 
