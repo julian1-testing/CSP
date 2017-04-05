@@ -59,7 +59,10 @@ isCoreConcept = do
 
 
 --------------------------
--- scheme stuff
+-- Conceptscheme stuff
+-- we store the conceptscheme as a concept since it makes dealing with concepts and their parent 
+-- relationships a lot easier.
+-- need to change the name
 
 parseScheme =
   deep (isElem >>> hasName "rdf:Description") >>>
@@ -71,15 +74,71 @@ parseScheme =
     returnA -< (about, title)
 
 
+
+
+
 storeSchemes conn s = do
     schemes <- runX (parseXML s  >>> parseScheme)
     -- mapM (putStrLn.show) schemes
     putStrLn $ "  scheme count " ++ (show.length) schemes
     mapM store schemes
     where
-      query = "insert into scheme(url,title) values (?, ?)"
+      -- query = "insert into scheme(url,title) values (?, ?)"
+      query = "insert into concept(url,label) values (?, ?)"
       -- TODO - make it a tuple instead... of array
       store (url,title) = execute conn query [url, title]
+
+
+{-
+<rdf:Description rdf:about="http://vocab.aodn.org.au/def/parameter_classes/1">
+	<rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#ConceptScheme"/>
+	<dc:rights rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Freely Available For Reuse</dc:rights>
+	<dcterms:contributor rdf:datatype="http://www.w3.org/2001/XMLSchema#string">eMII_Finney.Kim_Admin</dcterms:contributor>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2014-06-01T00:00:00Z</dcterms:created>
+	<dcterms:creator xml:lang="en">Sebastien Mancini</dcterms:creator>
+	<dcterms:description xml:lang="en">A classification scheme to support faceted searching across parameter types in the IMOS 123 Portal.</dcterms:description>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2015-09-16T01:19:32Z</dcterms:modified>
+	<dcterms:publisher xml:lang="en">eMarine Information Infrastructure (eMII)</dcterms:publisher>
+	<dcterms:subject xml:lang="en">parameter category</dcterms:subject>
+	<dcterms:title xml:lang="en">AODN Parameter Category Vocabulary</dcterms:title>
+	<identifier xmlns="http://schema.semantic-web.at/ppt/" rdf:datatype="http://www.w3.org/2001/XMLSchema#string">category</identifier>
+	<skos:hasTopConcept rdf:resource="http://vocab.aodn.org.au/def/parameter_classes/category/53"/>
+	<skos:hasTopConcept rdf:resource="http://vocab.aodn.org.au/def/parameter_classes/category/54"/>
+	<skos:hasTopConcept rdf:resource="http://vocab.aodn.org.au/def/parameter_classes/category/55"/>
+	<skos:hasTopConcept rdf:resource="http://vocab.aodn.org.au/def/parameter_classes/category/56"/>
+	<dcterms:issued rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2016-08-11</dcterms:issued>
+	<owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Version 1.1</owl:versionInfo>
+</rdf:Description>
+
+-}
+
+parseSchemeHasTopConcept =
+  deep (isElem >>> hasName "rdf:Description") >>>
+  proc e -> do
+    -- IMPORTANT - can we move the predicate up into the parent...
+    -- for everything...
+    isCoreScheme -< e
+    about <- getAttrValue "rdf:about" -< e
+    hasTopConcept <- getChildren >>> hasName "skos:hasTopConcept" >>> getAttrValue "rdf:resource" -< e
+    -- description, etc.
+    returnA -< (about, hasTopConcept)
+
+
+
+storeSchemeHasTopConcept conn s = do
+    schemes <- runX (parseXML s  >>> parseSchemeHasTopConcept)
+    mapM (putStrLn.show) schemes
+    putStrLn $ "  schemeHasTopConcept count " ++ (show.length) schemes
+    -- mapM store schemes
+    where
+      f = 123
+      -- query = "insert into scheme(url,title) values (?, ?)"
+      -- query = "insert into concept(url,label) values (?, ?)"
+      -- TODO - make it a tuple instead... of array
+      -- store (url,title) = execute conn query [url, title]
+
+
 
 
 --------------------------
@@ -168,6 +227,7 @@ storeNarrowMatchs conn s = do
 -- scheme membership
 --	<skos:inScheme rdf:resource="http://vocab.aodn.org.au/def/discovery_parameter/1"/>
 
+{-
 parseInScheme =
   deep isDescription >>>
   proc e -> do
@@ -192,20 +252,27 @@ storeInScheme conn s = do
       |]
       store (url,inScheme_url) = execute conn query [url, inScheme_url]
 
+-}
+
+
 
 --------------------------
 -- store everything
 
 storeAll conn platform platformCategory = do
+  -- TODO change name
 
   storeSchemes conn  platform
   storeSchemes conn platformCategory
 
+  storeSchemeHasTopConcept conn platformCategory
+
+{-
   storeConcepts conn platform
   storeConcepts conn platformCategory
 
-  storeInScheme conn  platform
-  storeInScheme conn platformCategory
+--  storeInScheme conn  platform
+--  storeInScheme conn platformCategory
 
   storeNarrowMatchs conn platform
   storeNarrowMatchs conn platformCategory
@@ -213,6 +280,7 @@ storeAll conn platform platformCategory = do
   storeNarrower conn platform
   storeNarrower conn platformCategory
 
+-}
 
 
 --------------------------
@@ -224,7 +292,8 @@ main = do
 
   -- should we be using plural?
   -- cannot rebuild the facets from out under - actually we can we just need to reindex,..
-  execute conn "truncate record, facet, resource,  scheme, concept, narrower, narrow_match, in_scheme ;" ()
+--  execute conn "truncate record, facet, resource,  scheme, concept, narrower, narrow_match, in_scheme ;" ()
+  execute conn "truncate record, facet, resource,  concept, narrower, narrow_match, scheme_has_top_concept ;" ()
 
   -- platform
   print "doing platform"

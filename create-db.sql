@@ -62,6 +62,7 @@ alter table narrow_match owner to harvest;
 
 
 create table scheme_has_top_concept (
+  -- eg. a skos:has_top_concept  in a scheme definition
 
   id serial   primary key not null,
   concept_id  integer references concept(id), 

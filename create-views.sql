@@ -58,9 +58,9 @@ select
 
   parent_concept.id as parent_id,
   parent_concept.url as parent_url,
-  parent_concept.label as parent_label,
+  parent_concept.label as parent_label
 
-  scheme.title as scheme_title
+  -- scheme.title as scheme_title
 
   from parent_view
 
@@ -68,8 +68,8 @@ select
   left join concept as parent_concept on parent_concept.id = parent_view.parent_id
 
   -- Careful - could have more than one scheme ?
-  left join in_scheme on in_scheme.concept_id = concept.id
-  left join scheme on scheme.id = in_scheme.scheme_id
+  -- left join in_scheme on in_scheme.concept_id = concept.id
+  -- left join scheme on scheme.id = in_scheme.scheme_id
 ;
 
 
