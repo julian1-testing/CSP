@@ -124,20 +124,26 @@ propagateRecordsToParentConcept nestings m' =
       -- propagating things up....
   -}
 
-  foldl (pred f2) m' nestings 
+--   foldl (pred f2) m' nestings 
+
 {-
   m'
   & \m -> foldl (pred f2) m nestings 
   & \m -> foldl (pred f3) m nestings
--} 
+-}
+  m'
+  & \m -> foldl (f2) m nestings 
+  & \m -> foldl (f3) m nestings
+ 
+ 
   where
-
+{-
     pred ff m (concept_id, parent_id) =
       -- only process concepts that exist in the map
       case Map.member (Just concept_id) m of
         True -> ff m (concept_id, parent_id)
         False -> trace ("whoot " ++ show concept_id) $ m
-
+-}
     -- we have to do this in two steps - so that the same values get propagating into multiple parents
     -- if they exist. before clearing out...
 
