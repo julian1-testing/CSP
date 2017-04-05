@@ -166,7 +166,6 @@ propagateRecordsToParentConcept nestings m' =
     -- move their parent up....
 
     -- need to think about this...
-
     -- we are removing from the list so it doesn't get processed again... 
     -- but there's nothing to stop moving to a later thing - that then gets re-processed.
 
@@ -176,8 +175,10 @@ propagateRecordsToParentConcept nestings m' =
     -- yes partition - then we only process the items that need processing
     -- get the list of entries... only and generate the new list -
     -- but ... ol
-
     -- partition, then process items needing processing. then merge.
+    -- need to get in one go everything that needs to be pushed. then push only them. 
+
+    -- can record - with a bool. or use a separate list.
 
     f3 m (concept_id, parent_id) =
         -- get the record list for this concept
