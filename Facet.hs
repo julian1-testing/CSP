@@ -61,24 +61,31 @@ getConceptLabels conn  = do
 
 
 
-getFacetList conn  = do
-  -- TODO - will need to be refined, where more
-  -- we want the concept_id, parent_id, record_id
-  let query1 = [r|
-      select
+
+{-
         facet.concept_id,
         concept_view.parent_id,   -- parent concept
         facet.record_id           -- the record
       from facet
       left join concept_view on concept_view.id = facet.concept_id
       order by concept_id
+-}
+
+getFacetList conn  = do
+  -- we want all concepts - regardless of whether there were facet match counts
+  let query1 = [r|
+      select 
+        concept_view.concept_id, 
+        concept_view.parent_id, 
+        facet.record_id 
+      from concept_view 
+      left join facet on facet.concept_id = concept_view.concept_id
   |]
   xs :: [ (Integer, Integer, Integer ) ] <- PG.query conn query1 ()
   -- mapM print xs
   return xs
 
 
---
 
 buildLeafFacetMap xs =
   -- TODO change this so we just insert a new - maybe 
@@ -111,17 +118,28 @@ propagateRecordsToParentConcept nestings m' =
 
       -- TODO IMPORTANT - be careful - we don't propagate a nodes out of the root node - so it's no 
       longer accessible. may need to test. and then not move.
+
+      -- why do we have empty ? 
+
+      -- propagating things up....
   -}
 
-  foldl f m' nestings
+  foldl (pred f2) m' nestings 
+{-
+  m'
+  & \m -> foldl (pred f2) m nestings 
+  & \m -> foldl (pred f3) m nestings
+-} 
   where
 
-    f m (concept_id, parent_id) =
+    pred ff m (concept_id, parent_id) =
       -- only process concepts that exist in the map
       case Map.member (Just concept_id) m of
-        True -> f2 m (concept_id, parent_id)
-        False -> m
+        True -> ff m (concept_id, parent_id)
+        False -> trace ("whoot " ++ show concept_id) $ m
 
+    -- we have to do this in two steps - so that the same values get propagating into multiple parents
+    -- if they exist. before clearing out...
 
     f2 m (concept_id, parent_id) =
         -- propagate records up to their parent concept, and adjust counts
@@ -144,7 +162,18 @@ propagateRecordsToParentConcept nestings m' =
         Map.insert parent_id (countForParent, newParentLst) m 
 
         -- now clear the list for child/narrower concept, and increment count by nymber of records moved to parent
-        & Map.insert (Just concept_id) (countForConcept + length recordsForConcept, []) 
+        & Map.insert (Just concept_id) (countForConcept + length recordsForConcept, []) -- m
+
+
+
+    f3 m (concept_id, parent_id) =
+        -- get the record list for this concept
+        let (countForConcept, recordsForConcept) = 
+              mapGet m (Just concept_id) 
+        in
+
+        -- now clear the list for child/narrower concept, and increment count by nymber of records moved to parent
+        Map.insert (Just concept_id) (countForConcept + length recordsForConcept, []) m
 
 
 

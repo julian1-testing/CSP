@@ -66,7 +66,7 @@ select
 
 create view concept_view as
 select
-  concept.id    as id,
+  concept.id    as concept_id,
   concept.label as label,
   concept.url   as url,
 
@@ -153,15 +153,14 @@ select
 
 -- change name to facet_view?
 -- because it includes all the useful stuff
-
+/*
 create view facet_view as
 select
   *
   from facet_count_basic_view
   left join concept_view on concept_view.id = facet_count_basic_view.concept_id
-
 ;
-
+*/
 
 
 

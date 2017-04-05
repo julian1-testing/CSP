@@ -193,7 +193,7 @@ parseSchemeHasTopConcept =
 storeSchemeHasTopConcept conn s = do
     schemes <- runX (parseXML s  >>> parseSchemeHasTopConcept)
     mapM (putStrLn.show) schemes
-    putStrLn $ "  schemeHasTopConcept count " ++ (show.length) schemes
+    -- putStrLn $ "  schemeHasTopConcept count " ++ (show.length) schemes
     mapM store schemes
     where
       query = [r|
