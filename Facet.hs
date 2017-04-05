@@ -167,8 +167,8 @@ propagateRecordsToParentConcept nestings m =
       -- type is ambiguous...
   -}
  
-  let (a, b) =  Map.partition pred m  in
-  -- let (a, b) =  Map.partitionWithKey pred m  in
+  -- let (a, b) =  Map.partition pred m  in
+  let (a, b) =  Map.partitionWithKey pred m  in
 
   a
 
@@ -178,7 +178,7 @@ propagateRecordsToParentConcept nestings m =
  
   where
     
-    pred v = 
+    pred k v = 
         let (count, records) = v 
         in case length records of 
           0 -> True
