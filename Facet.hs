@@ -175,10 +175,11 @@ propagateRecordsToParentConcept nestings m =
 
   -- IMPORTANT we may not even have to partition - but it may make it easier in avoiding the tests 
 
-  let (withRecords, withoutRecords) =  Map.partitionWithKey predWithRecords m in
+  let original = m in
+  -- let (withRecords, withoutRecords) =  Map.partitionWithKey predWithRecords m in
   let cleaned =  Map.mapWithKey clearRecords m in
 
-  let propagated =  foldl (propagate withRecords) cleaned nestings in
+  let propagated =  foldl (propagate original) cleaned nestings in
 
   -- & \m -> foldl (f3) m nestings
 
@@ -204,15 +205,33 @@ propagateRecordsToParentConcept nestings m =
 
     -- It is a fold over the nestings
 
-    propagate withRecords m (concept_id, parent_id) = 
+    propagate original m (concept_id, parent_id) = 
         -- Ok, lookup whether this thing has records 
         -- (count, [] :: [ Integer ])
 
-        -- so get the parent_id ...
-        let lst = mapGet withRecords (Just concept_id) in
-        
 
-        m
+        -- get the records associated with concept... -- we can just look this up in the original map
+        let (_, records) = mapGet original (Just concept_id) in
+        
+        -- look up current parent
+        let (parentCount, parentRecords) = mapGet m parent_id in
+
+        --
+        let updatedCount = parentCount + length records in  -- must be the existing count 
+
+
+        let updatedRecords = parentRecords ++ records in 
+
+        -- remember that we are only doing one level with this...
+         m
+
+
+
+
+       -- hang on ...
+
+        -- Map.insert parent_id (updatedCount, updatedRecords) m
+        -- Map.insert parent_id (updatedCount, updatedRecords) m
 
 {-
     f2 m (concept_id, parent_id) =
