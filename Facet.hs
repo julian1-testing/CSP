@@ -114,9 +114,36 @@ buildLeafFacetMap xs =
         Nothing -> m
           --Map.insert (Just concept_id) (0, []) 
 
+-- it's basically a partition... can we use an existing partition function...
 
 
-propagateRecordsToParentConcept nestings m' =
+-- i think we have to do it with an idea of whether it's been handled or not... in this pass....
+
+-- if move in seperate pass,
+-- no we are just deleting  then coming along later and removing them!!!
+-- we can only do the subset that we changed....
+
+-- alternatively if we do it in one pass, then we move items to their parent - then come along and 
+-- move their parent up....
+
+-- need to think about this...
+-- we are removing from the list so it doesn't get processed again... 
+-- but there's nothing to stop moving to a later thing - that then gets re-processed.
+
+-- partition the list - into the things that have members and those that don't.
+
+-- just use a completely different list...
+-- yes partition - then we only process the items that need processing
+-- get the list of entries... only and generate the new list -
+-- but ... ol
+-- partition, then process items needing processing. then merge.
+-- need to get in one go everything that needs to be pushed. then push only them. 
+
+-- can record - with a bool. or use a separate list.
+-- partition into 
+
+
+propagateRecordsToParentConcept nestings m =
   {-
       a little bit like a topological sort,
       fold over the concept/parent nestings relationships and push the list of record_id's into their parent concept list
@@ -130,13 +157,34 @@ propagateRecordsToParentConcept nestings m' =
 
 
       -- propagating things up....
+
+      -- there might be an issue in moving things up - 
+      -- rathero
+
+      -- may want partitionWithKey
+      -- if we can't do it with partition - then we should be able to do it with a partitionFold
+
+      -- type is ambiguous...
   -}
-  m'
-  & \m -> foldl (f2) m nestings 
+ 
+  let (a, b) =  Map.partition pred m  in
+  -- let (a, b) =  Map.partitionWithKey pred m  in
+
+  a
+
+
+  -- & \(m, m2) -> foldl (f2) m nestings 
   -- & \m -> foldl (f3) m nestings 
  
   where
+    
+    pred v = 
+        let (count, records) = v 
+        in case length records of 
+          0 -> True
+          _ -> False 
 
+{-
     f2 m (concept_id, parent_id) =
         -- propagate records up to their parent concept, and adjust counts
 
@@ -169,35 +217,9 @@ propagateRecordsToParentConcept nestings m' =
 
         -- now clear the list for child/narrower concept, and increment count by nymber of records moved to parent
         Map.insert (Just concept_id) (countForConcept + length recordsForConcept, []) m
+-}
 
 
-    -- it's basically a partition... can we use an existing partition function...
-
-
-    -- i think we have to do it with an idea of whether it's been handled or not... in this pass....
-
-    -- if move in seperate pass,
-    -- no we are just deleting  then coming along later and removing them!!!
-    -- we can only do the subset that we changed....
-
-    -- alternatively if we do it in one pass, then we move items to their parent - then come along and 
-    -- move their parent up....
-
-    -- need to think about this...
-    -- we are removing from the list so it doesn't get processed again... 
-    -- but there's nothing to stop moving to a later thing - that then gets re-processed.
-
-    -- partition the list - into the things that have members and those that don't.
-
-    -- just use a completely different list...
-    -- yes partition - then we only process the items that need processing
-    -- get the list of entries... only and generate the new list -
-    -- but ... ol
-    -- partition, then process items needing processing. then merge.
-    -- need to get in one go everything that needs to be pushed. then push only them. 
-
-    -- can record - with a bool. or use a separate list.
-    -- partition into 
 
 
 propagateAllRecordsToRoot nestings m = 
@@ -221,7 +243,7 @@ propagateAllRecordsToRoot nestings m =
 
 
 
-putStrLnFacetMap m = do
+putStrLnFacetMap m = -- do
   (mapM $ putStrLn.show).Map.toList $ m
 
 
