@@ -32,7 +32,7 @@ main = do
   -- mapM print nestings
 
   facetLeafCounts <- Facet.getFacetList conn
-  mapM print facetLeafCounts
+  -- mapM print facetLeafCounts
 
 
   -- compute facet counts
