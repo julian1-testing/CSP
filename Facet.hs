@@ -169,62 +169,43 @@ propagateRecordsToParentConcept nestings m =
 
   -- the first map contains all elements that satisfy the prdicate
   -- lets check the noRecords contains noRecords
-
-  -- so go through an insert into the parents 
+  -- so go through an insert into the parents
   -- OR - empty everything first... - yes I think this is good...
-
-  -- IMPORTANT we may not even have to partition - but it may make it easier in avoiding the tests 
+  -- IMPORTANT we may not even have to partition - but it may make it easier in avoiding the tests
 
   let original = m in
   -- let (withRecords, withoutRecords) =  Map.partitionWithKey predWithRecords m in
   let cleaned =  Map.mapWithKey clearRecords m in
 
-  let propagated =  foldl ( ignoreParent (propagate original)) cleaned nestings in
+  let propagated =  foldl (ignoreNothingParent (propagate original)) cleaned nestings in
 
-  -- & \m -> foldl (f3) m nestings
-
-  propagated 
-
-
+  propagated
   where
-
-    ignoreParent f m (concept_id, parent) = 
+    ignoreNothingParent f m (concept_id, parent) =
       case parent of
-        Nothing -> m 
+        Nothing -> m
         Just parent -> f m (concept_id, Just parent)  -- change this to get rid of the Just
-
 
     clearRecords k (count, records) =
         -- clean records but keep the count
         (count, [] :: [ Integer ])
 
-    -- It is a fold over the nestings
+    propagate original m (concept_id, parent_id) =
+        -- fold over the concept parent nestings
 
-    propagate original m (concept_id, parent_id) = 
-
-        trace ("concept_id " ++ show concept_id) $ 
         -- get the records associated with concept... -- we can just look this up in the original map for this level
         let (_, records) = mapGet original (Just concept_id) in
-        trace ("after concept_id ") $ 
-       
 
-        trace ("parent_id " ++ show concept_id) $ 
         -- get the records for the parent
-
-        -- the parent may be the root node - eg. Nothing which we have to handle explicitly...
-        
-
         let (parentCount, parentRecords) = mapGet m parent_id in
-        trace ("after parent_id ") $ 
 
         -- update the parent count with records for this concept
-        let updatedCount = parentCount + length records in  -- must be the existing count 
+        let updatedCount = parentCount + length records in  -- must be the existing count
 
         -- update the parent records
-        let updatedRecords = parentRecords ++ records in 
+        let updatedRecords = parentRecords ++ records in
 
-
-        -- and insert into the map for the parent 
+        -- and insert into the map for the parent
         Map.insert parent_id (updatedCount, updatedRecords) m
 
 
@@ -239,8 +220,8 @@ propagateRecordsToParentConcept nestings m =
 
 -}
 
-  -- now we want to Map, and move the records to the parent.... actually  
-  -- now map again and insert into parent 
+  -- now we want to Map, and move the records to the parent.... actually
+  -- now map again and insert into parent
   -- & \(m, m2) -> foldl (f2) m nestings
   -- & \m -> foldl (f3) m nestings
 
