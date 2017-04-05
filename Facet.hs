@@ -117,7 +117,7 @@ propagateRecordsToParentConcept nestings m =
       longer accessible. may need to test. and then not move.
   -}
 
-  foldl f Map.empty nestings
+  foldl f m nestings
   where
     f newMap (concept_id, parent_id) =
 
@@ -125,8 +125,9 @@ propagateRecordsToParentConcept nestings m =
         True ->
 
           -- get the record list for this concept
+          -- why are we looking at m, rather than newMap...
           let (countForConcept, recordsForConcept) = 
-                mapGet m (Just concept_id) 
+                mapGet newMap (Just concept_id) 
           in
           -- get the records for the parent
           let (countForParent, recordsForParent) = (

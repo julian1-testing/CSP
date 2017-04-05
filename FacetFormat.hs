@@ -21,6 +21,9 @@ import Data.Function( (&) )
 import Text.RawString.QQ
 
 
+import qualified Facet as Facet -- REMOVE when working
+
+
 -- ease syntax
 mapGet = (Map.!)
 
@@ -56,6 +59,23 @@ buildFacetGraph xs =
       let childLst = mapGet m parent_id in
       let newChildren = (concept_id, label, count) : childLst in
       Map.insert parent_id newChildren m
+
+
+
+
+
+-- WE DEFINITELY WANT TO SORT THE CHILDREN SEPARATELY
+-- TODO - not used...
+sortFacetGraph m =
+  let rootNode = (Nothing, "dummy", -999 ) in
+  recurse m rootNode 0 
+  where
+    recurse m (parent_id, label, count) depth =
+      let children = mapGet m parent_id in
+      let sortedChildren =  reverse. List.sortOn (\(_, _, count) -> count) $ children  in
+      let mm = map (\(concept_id, label, count)  -> recurse m (Just concept_id, label, count) (depth + 1)) sortedChildren in
+      ()
+
 
 
 
@@ -129,22 +149,25 @@ getTestFacetList conn = do
   return xs
 
 
-
+-- TODO rename to testMain ?
 main :: IO ()
 main = do
 
   conn <- PG.connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
   facetList <- getTestFacetList conn
 
-
   let  facetList' = map (\f (a,b,c, d) -> (a,b,c, 123) )  facetList
-  let  facetList' =  facetList
-
-  -- the graph....
+  let  facetList' = facetList
 
   let m = buildFacetGraph facetList'
 
+
+  -- nestings <- Facet.getConceptNesting conn
+  -- let m' =  Facet.propagateAllRecordsToRoot nestings m
+
+
   printXMLFacetGraph m
+  -- printFacetGraph m
 
   return ()
 
