@@ -23,6 +23,7 @@ create view parent_view as
 select
   concept.id as id,
   case
+    -- may be better as a union ....
     -- TODO another test to ensure not both narrower and narrowMatch
     when
         parent_concept.id is not null and parent_match_concept.id is null
@@ -30,8 +31,16 @@ select
     when
         parent_match_concept.id is not null and parent_concept.id is null
         then parent_match_concept.id
-    when parent_match_concept.id is null and parent_concept.id is null
-        then null
+
+    when
+        parent_scheme.id is not null and parent_concept.id is null
+        then parent_scheme.id
+
+
+
+    -- when parent_match_concept.id is null and parent_concept.id is null
+    --    then null
+
     -- error case - concept has both narrower and narrowMatch
     else -9999
   end as parent_id
@@ -40,15 +49,20 @@ select
 
   left join narrower on     concept.id = narrower.narrower_id
   left join narrow_match on concept.id = narrow_match.narrower_id
+  left join scheme_has_top_concept on concept.id = scheme_has_top_concept.scheme_id
 
   left join concept as parent_concept       on parent_concept.id = narrower.concept_id
   left join concept as parent_match_concept on parent_match_concept.id = narrow_match.concept_id
+  left join concept as parent_scheme        on parent_scheme.id = scheme_has_top_concept.concept_id
+
 ;
 
 
 
 
 -- view of concept parent relationships with more detail provided
+
+-- note concepts will be represented more than once - for each parent they have
 
 create view concept_view as
 select
