@@ -201,6 +201,7 @@ propagateRecordsToParentConcept nestings m =
           _ -> True
 
     clearRecords k (count, records) =
+        -- clean records but keep the count
         (count, [] :: [ Integer ])
 
     -- It is a fold over the nestings
@@ -222,8 +223,11 @@ propagateRecordsToParentConcept nestings m =
 
         let updatedRecords = parentRecords ++ records in 
 
+        -- insert for the parent
+        Map.insert parent_id (updatedCount, updatedRecords) m
+
         -- remember that we are only doing one level with this...
-         m
+         -- m
 
 
 
