@@ -43,14 +43,15 @@ main = do
   (mapM print).(Map.toList) $ facetCounts
 
 
-
-
-{-
-        & Facet.propagateAllRecordsToRoot nestings 
-  print "##### the facetCounts after propagating"
-  (mapM print).(Map.toList) $ facetCounts
-
   
+
+
+  let propagated = Facet.propagateAllRecordsToRoot nestings  facetCounts
+
+  print "##### the facetCounts after propagating"
+  (mapM print).(Map.toList) $ propagated
+
+ 
 
   -- get the concept, parents and labels from db as a Map
   let makePair (concept, parent, label) = (concept, (parent, label))  -- turn into key,val pairs needed for map,
@@ -58,10 +59,11 @@ main = do
   -- (mapM print).(Map.toList) $ labels
 
 
+
   -- create a new list by zipping with label, and parent_id, and removing the root node
   -- in a form suitable for the output formatting
   let completeFacetList = 
-       Map.foldlWithKey f [] facetCounts
+       Map.foldlWithKey f [] propagated 
         where
         f m concept (count, records) = case concept of 
           -- ignore the root node
@@ -82,7 +84,8 @@ main = do
   -- format the thing -
   FacetFormat.printXMLFacetGraph facetGraph
 
- -}
+{-
+-}
 
 
 
