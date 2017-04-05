@@ -170,24 +170,32 @@ doCSWGetRecords = do
 
 parseOnlineResources =
   atTag "gmd:CI_OnlineResource" >>>
-  proc l -> do
-    protocol    <- atChildName "gmd:protocol" >>> atChildName "gco:CharacterString" >>> getChildText  -< l
-    linkage     <- atChildName "gmd:linkage"  >>> atChildName "gmd:URL" >>> getChildText -< l
-    description <- atChildName "gmd:description" >>> atChildName "gco:CharacterString" >>> getChildText -< l
+  proc r -> do
+    protocol    <- atChildName "gmd:protocol" >>> atChildName "gco:CharacterString" >>> getChildText  -< r
+    linkage     <- atChildName "gmd:linkage"  >>> atChildName "gmd:URL" >>> getChildText -< r
+    description <- atChildName "gmd:description" >>> atChildName "gco:CharacterString" >>> getChildText -< r
     returnA -< (protocol, linkage, description)
 
 
-parseDataParameters =
+{-
+parseDataParameters' =
   atTag "mcp:dataParameter" >>>
-  proc l -> do
-    term <- atChildName "mcp:DP_DataParameter" >>> atChildName "mcp:parameterName" >>> atChildName "mcp:DP_Term" -< l
+  proc dp -> do
+    term <- atChildName "mcp:DP_DataParameter" >>> atChildName "mcp:parameterName" >>> atChildName "mcp:DP_Term" -< dp
+    txt  <- atChildName "mcp:term"  >>> atChildName "gco:CharacterString" >>> getChildText -< term
+    url  <- atChildName "mcp:vocabularyTermURL"  >>> atChildName "gmd:URL" >>> getChildText -< term
+    returnA -< (txt, url)
+-}
+
+
+parseDataParameters =
+  atTag "mcp:DP_Term" >>>
+  proc term -> do
     txt  <- atChildName "mcp:term"  >>> atChildName "gco:CharacterString" >>> getChildText -< term
     url  <- atChildName "mcp:vocabularyTermURL"  >>> atChildName "gmd:URL" >>> getChildText -< term
     returnA -< (txt, url)
 
 
--- we really want some test code for just argo.
--- rather than harvest everything...
 
 
 
@@ -302,17 +310,9 @@ processAllRecords conn = do
 
 
 testArgoRecord = do
-    -- assumes have vocab loaded
-    -- TODO IMPORTANT - should remove the uuid first...
     recordText <- readFile "./examples/argo.xml" 
-    -- let uuid = "4402cb50-e20a-44ee-93e6-4728259250d2"
-    -- processDataParameters conn uuid recordText
-
     dataParameters <- runX (parseXML recordText >>> parseDataParameters)
-
     mapM print dataParameters
-
-    return ()
  
 
 
@@ -322,9 +322,9 @@ main :: IO ()
 main = do
   conn <- connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
 
-  testArgoRecord
+  -- testArgoRecord
 
-  -- processAllRecords conn 
+  processAllRecords conn 
   return ()
 
 

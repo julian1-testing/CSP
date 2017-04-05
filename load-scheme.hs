@@ -18,7 +18,7 @@ import Database.PostgreSQL.Simple
 
 import Text.RawString.QQ
 
--- TODO change name - load-vocab-scheme? 
+-- TODO change name - load-vocab-scheme?
 
 {-
   http://vocabs.ands.org.au/repository/api/lda/aodn/aodn-discovery-parameter-vocabulary/version-1-2/resource.xml?uri=http://vocab.aodn.org.au/def/discovery_parameter/894
@@ -76,7 +76,7 @@ storeSchemes conn s = do
     -- mapM (putStrLn.show) schemes
     putStrLn $ "  scheme count " ++ (show.length) schemes
     mapM store schemes
-    where 
+    where
       query = "insert into scheme(url,title) values (?, ?)"
       -- TODO - make it a tuple instead... of array
       store (url,title) = execute conn query [url, title]
@@ -125,9 +125,9 @@ storeNarrower conn s = do
     mapM store narrower
     where
       query = [r|
-        insert into narrower(concept_id, narrower_id) 
+        insert into narrower(concept_id, narrower_id)
         values (
-          (select id from concept where concept.url = ?), 
+          (select id from concept where concept.url = ?),
           (select id from concept where concept.url = ?)
         )
       |]
@@ -152,11 +152,11 @@ storeNarrowMatchs conn s = do
     -- mapM (putStrLn.show) narrowMatch
     putStrLn $ "  narrowMatch count " ++ (show.length) narrowMatch
     mapM store narrowMatch
-    where 
+    where
       query = [r|
-        insert into narrow_match(concept_id, narrower_id) 
+        insert into narrow_match(concept_id, narrower_id)
         values (
-          (select id from concept where concept.url = ?), 
+          (select id from concept where concept.url = ?),
           (select id from concept where concept.url = ?)
         )
       |]
@@ -184,9 +184,9 @@ storeInScheme conn s = do
     mapM store inScheme
     where
       query = [r|
-        insert into in_scheme(concept_id, scheme_id) 
+        insert into in_scheme(concept_id, scheme_id)
         values (
-          (select id from concept where concept.url = ?), 
+          (select id from concept where concept.url = ?),
           (select id from scheme where scheme.url = ?)
         )
       |]
@@ -227,20 +227,18 @@ main = do
   execute conn "truncate record, facet, resource,  scheme, concept, narrower, narrow_match, in_scheme ;" ()
 
   -- platform
-  platform <- readFile "./vocab/aodn_aodn-platform-vocabulary.rdf"              -- 396 prefLabels, with narrower, no narrowMatch - prefLabels are detail
-  platformCategory <- readFile "./vocab/aodn_aodn-platform-category-vocabulary.rdf"     -- 9 preflabels,  no narrower, has 1narrowMatch    - prefLabels are high level
-
+  platform <- readFile "./vocab/aodn_aodn-platform-vocabulary.rdf"
+  platformCategory <- readFile "./vocab/aodn_aodn-platform-category-vocabulary.rdf"
   storeAll conn platform platformCategory
 
-{-
+
   -- parameter
-  param         <- readFile "./vocab/aodn_aodn-discovery-parameter-vocabulary.rdf"   -- 174 prefLabels, no narrower, 1 narrowMatch - prefLabels are detail
-  paramCategory <- readFile "./vocab/aodn_aodn-parameter-category-vocabulary.rdf"   -- 32 prefLabels, with 29 narrower, has narrowMatch   - prefLabels are high level
-
+  param         <- readFile "./vocab/aodn_aodn-discovery-parameter-vocabulary.rdf"
+  paramCategory <- readFile "./vocab/aodn_aodn-parameter-category-vocabulary.rdf"
   storeAll conn param paramCategory
--}
 
-  -- are there any other resources? 
+
+  -- are there any other resources?
   close conn
   putStrLn "finished"
 
