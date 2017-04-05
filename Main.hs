@@ -39,17 +39,13 @@ main = do
 
   -- compute facet counts
   let facetCounts = Facet.buildLeafFacetMap facetLeafCounts
-  print "##### the facetCounts after creating the leaf map "
-  (mapM print).(Map.toList) $ facetCounts
-
-
-  
+  -- print "##### the facetCounts after creating the leaf map "
+  -- (mapM print).(Map.toList) $ facetCounts
 
 
   let propagated = Facet.propagateAllRecordsToRoot nestings  facetCounts
-
-  print "##### the facetCounts after propagating"
-  (mapM print).(Map.toList) $ propagated
+  -- print "##### the facetCounts after propagating"
+  -- (mapM print).(Map.toList) $ propagated
 
  
 

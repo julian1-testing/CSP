@@ -96,11 +96,9 @@ buildLeafFacetMap xs =
   & \m -> foldl f m xs
 
   where
-
     --  insert an empty list for concept_id
     initForConcept m (concept_id, _, _) =
       Map.insert (Just concept_id) (0, []) m
-
 
     -- populate concept list with the records
     f m (concept_id, _, record) =
@@ -131,7 +129,7 @@ propagateRecordsToParentConcept nestings m' =
   -}
   m'
   & \m -> foldl (f2) m nestings 
-  & \m -> foldl (f3) m nestings
+  & \m -> foldl (f3) m nestings 
  
   where
 
@@ -155,10 +153,8 @@ propagateRecordsToParentConcept nestings m' =
         -- and then store against the parent concept. countForParent is unchanged
         Map.insert parent_id (countForParent, newParentLst) m 
 
-        -- now clear the list for child/narrower concept, and increment count by nymber of records moved to parent
-        & Map.insert (Just concept_id) (countForConcept + length recordsForConcept, []) -- m
 
-
+    -- no no no --- we are moving items up. and then we are removing them!!!
 
     f3 m (concept_id, parent_id) =
         -- get the record list for this concept
