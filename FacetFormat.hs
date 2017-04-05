@@ -1,6 +1,6 @@
 
--- {-# LANGUAGE OverloadedStrings #-}
--- {-# LANGUAGE Arrows, NoMonomorphismRestriction #-}
+-- https://catalogue-portal.aodn.org.au/geonetwork/srv/eng/xml.search.imos?protocol=OGC%3AWMS-1.1.1-http-get-map%20or%20OGC%3AWMS-1.3.0-http-get-map%20or%20IMOS%3ANCWMS--proto&sortBy=popularity&from=1&to=10&fast=index&filters=collectionavailability
+
 
 -- needed for disambiguating types,
 {-# LANGUAGE ScopedTypeVariables, OverloadedStrings, QuasiQuotes #-}
@@ -30,21 +30,6 @@ pad' s count =
 pad count = 
   pad' "" count
 
-
-
-getFacetList conn = do
-  -- get all facets and facet count from db and return as flat list
-  let query = [r|
-        select 
-          id as concept_id, 
-          parent_id,
-          label ,
-          -999 -- count  -- dummy value
-        from facet_count_view
-  |]
-  -- note the parent may be null! beautiful...
-  xs :: [ (Integer, Maybe Integer, String, Integer  ) ] <- PG.query conn query ()
-  return xs
 
 
 
@@ -99,16 +84,15 @@ printXMLFacetGraph m = do
   where
     -- recurse down into child nodes 
     recurse m (parent_id, label, count) depth = do
-
+      -- do start tag
       startTag (parent_id, label, count) depth  
-
-      -- continue recursion
-      -- TODO - we need to sort the children - according to the count...
+      -- get the children of this node
       let children = mapGet m parent_id
+      -- sort according to facet count
       let sortedChildren =  reverse. List.sortOn (\(_, _, count) -> count) $ children 
-
+      -- continue to recurse and process the children
       mapM (\(concept_id, label, count)  -> recurse m (Just concept_id, label, count) (depth + 1)) sortedChildren
-
+      -- do end tag
       endTag (parent_id, label, count) depth  
       return ()
 
@@ -127,18 +111,27 @@ printXMLFacetGraph m = do
  
 
 
--- Ok, need opening and closing nodes....
--- does that make it difficult...
+getTestFacetList conn = do
+  -- get all facets and facet count from db and return as flat list
+  let query = [r|
+        select 
+          id as concept_id, 
+          parent_id,
+          label ,
+          -999 -- count  -- dummy value
+        from facet_count_view
+  |]
+  -- note the parent may be null! beautiful...
+  xs :: [ (Integer, Maybe Integer, String, Integer  ) ] <- PG.query conn query ()
+  return xs
 
 
-
--- need mineral water
 
 main :: IO ()
 main = do
 
   conn <- PG.connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
-  facetList <- getFacetList conn
+  facetList <- getTestFacetList conn
 
 
   let  facetList' = map (\f (a,b,c, d) -> (a,b,c, 123) )  facetList
