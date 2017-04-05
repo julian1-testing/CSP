@@ -86,7 +86,7 @@ getFacetList conn  = do
       left join facet on facet.concept_id = concept_view.concept_id
   |]
   xs :: [ (Integer, Maybe Integer, Maybe Integer ) ] <- PG.query conn query1 ()
-  -- mapM print xs
+  -- mapM putStrLn xs
   return xs
 
 
@@ -221,8 +221,8 @@ propagateAllRecordsToRoot nestings m =
 
 
 
-printFacetMap m = do
-  (mapM print).Map.toList $ m
+putStrLnFacetMap m = do
+  (mapM $ putStrLn.show).Map.toList $ m
 
 
 
@@ -234,21 +234,21 @@ testPropagateOnce = do
 
   nestings <- getConceptNesting conn
   facetList <- getFacetList conn
-  -- print "facet list"
-  -- mapM print $ facetList
+  -- putStrLn "facet list"
+  -- mapM putStrLn $ facetList
 
-  print "######################## 0"
+  putStrLn "######################## 0 - leafmap"
   let m = buildLeafFacetMap facetList
-  --  printFacetMap m
+  putStrLnFacetMap m
 
-  print "######################## 1"
+  putStrLn "\n######################## 1 - after processing one level"
   let m'  = propagateRecordsToParentConcept nestings m
-  printFacetMap m'
+  putStrLnFacetMap m'
 
   {-
-  print "######################## 2"
+  putStrLn "######################## 2"
   let m''  = propagateRecordsToParentConcept nestings m' 
-  printFacetMap m''
+  putStrLnFacetMap m''
   -}
   return ()
 
@@ -259,19 +259,19 @@ testPropagateAll = do
   conn <- PG.connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
 
   nestings <- getConceptNesting conn
-  -- print "nestings"
-  -- mapM print nestings
+  -- putStrLn "nestings"
+  -- mapM putStrLn nestings
 
   -- get the facet concept and record associations from the db
   facetList <- getFacetList conn
-  -- print "facet list"
-  -- mapM print $ facetList
+  -- putStrLn "facet list"
+  -- mapM putStrLn $ facetList
 
   let m = buildLeafFacetMap facetList
-  --  printFacetMap m
+  --  putStrLnFacetMap m
 
   let m' =  propagateAllRecordsToRoot nestings m
-  printFacetMap m'
+  putStrLnFacetMap m'
   return ()
 
 
@@ -290,47 +290,47 @@ main = testPropagateOnce
   conn <- PG.connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
 
   nestings <- getConceptNesting conn
-  -- print "nestings"
-  -- mapM print nestings
+  -- putStrLn "nestings"
+  -- mapM putStrLn nestings
 
   -- IMPORTANT - should we move the db code outside of the facet stuff...
   -- if the nestings were ''
 
   -- get the facet concept and record associations from the db
   facetList <- getFacetList conn
-  -- print "facet list"
-  -- mapM print $ facetList
+  -- putStrLn "facet list"
+  -- mapM putStrLn $ facetList
 
 
-  print "######################## 0"
+  putStrLn "######################## 0"
   let m = buildLeafFacetMap facetList
---  printFacetMap m
+--  putStrLnFacetMap m
 
   let m' =  propagateAllRecordsToRoot nestings m
-  printFacetMap m'
+  putStrLnFacetMap m'
 -}
 
 
 {-
   propagateAllRecordsToRoot nestings m
-  & (return) >>= (\m -> printFacetMap m)
+  & (return) >>= (\m -> putStrLnFacetMap m)
 -}
 
 
 {-
-  print "######################## 1"
+  putStrLn "######################## 1"
   let m'  = propagateRecordsToParentConcept nestings m
-  printFacetMap m'
+  putStrLnFacetMap m'
 
 
-  print "######################## 2"
+  putStrLn "######################## 2"
   let m''  = propagateRecordsToParentConcept nestings m' 
-  printFacetMap m''
+  putStrLnFacetMap m''
 
 
-  print "######################## 3"
+  putStrLn "######################## 3"
   let m'''  = propagateRecordsToParentConcept  nestings m''
-  printFacetMap m'''
+  putStrLnFacetMap m'''
 -}
 
 

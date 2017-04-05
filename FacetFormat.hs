@@ -35,7 +35,8 @@ pad count = List.unfoldr f count
           _ -> Just (' ', x - 1)
 
 
--- TODO a dummy root node - there's a typing issue here, 
+-- TODO 
+-- a dummy root node - because we use it in multiple places - but there's a typing issue somewhere, 
 -- rootNode = (Nothing, "dummy", -999  )
 
 
@@ -62,9 +63,12 @@ buildFacetGraph xs =
 
 
 
-
-
--- WE DEFINITELY WANT TO SORT THE CHILDREN SEPARATELY
+-- TODO
+-- MOVE TO FACET not FacetFormat
+-- NOT USED 
+  -- But it would be really nice to sort the children - as an independet transform 
+  -- not used yet...
+-- should be possible since it's just an list
 -- TODO - not used...
 sortFacetGraph m =
   let rootNode = (Nothing, "dummy", -999 ) in
@@ -75,7 +79,6 @@ sortFacetGraph m =
       let sortedChildren =  reverse. List.sortOn (\(_, _, count) -> count) $ children  in
       let mm = map (\(concept_id, label, count)  -> recurse m (Just concept_id, label, count) (depth + 1)) sortedChildren in
       ()
-
 
 
 
@@ -96,7 +99,6 @@ printFacetGraph m = do
 
     printRow (parent_id, label, count) depth  = do
       putStrLn $ concatMap id [ (pad $ depth * 3), (show parent_id), " ",  (show label), " ", (show count) ]
-
 
 
 
