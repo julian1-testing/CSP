@@ -1,3 +1,7 @@
+{-
+  # To compile module to an executable,
+    ghc  -main-is Facet.main -outputdir tmp Facet.hs  -o ./Facet
+-}
 
 {-# LANGUAGE ScopedTypeVariables, OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes #-}

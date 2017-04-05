@@ -6,7 +6,7 @@ examples/parse
 examples/psql
 examples/psql2
 examples/transform
-output
+tmp
 Main
 Facet
 

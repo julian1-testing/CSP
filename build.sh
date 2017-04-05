@@ -1,6 +1,21 @@
 #!/bin/bash -x
 
-FLAGS="-O2 -outputdir output"
+
+# do we need -make also ?
+FLAGS="-O2 -outputdir tmp"
+
+
+[ -d tmp ] || mkdir tmp
+
+
+# we don't want to remove the files in output otherwise we have to build everythign again
+rm Main
+
+ghc $FLAGS Facet.hs Main.hs FacetFormat.hs
+
+
+# compile Facet test code,
+# ghc -main-is Facet.main -outputdir tmp Facet.hs  -o ./Facet
 
 ############
 
@@ -9,12 +24,4 @@ FLAGS="-O2 -outputdir output"
 
 # rm output -rf
 # ghc $FLAGS  load-scheme.hs || exit
-
-[ -d output ] || mkdir output
-
-# we don't want to remove the files in output otherwise we have to build everythign again
-# rm Main
-
-ghc $FLAGS Main.hs Facet.hs FacetFormat.hs
-
 
