@@ -1,6 +1,10 @@
 
--- https://catalogue-portal.aodn.org.au/geonetwork/srv/eng/xml.search.imos?protocol=OGC%3AWMS-1.1.1-http-get-map%20or%20OGC%3AWMS-1.3.0-http-get-map%20or%20IMOS%3ANCWMS--proto&sortBy=popularity&from=1&to=10&fast=index&filters=collectionavailability
+{-
+  eg. generate this,
 
+https://catalogue-portal.aodn.org.au/geonetwork/srv/eng/xml.search.imos?protocol=OGC%3AWMS-1.1.1-http-get-map%20or%20OGC%3AWMS-1.3.0-http-get-map%20or%20IMOS%3ANCWMS--proto&sortBy=popularity&from=1&to=10&fast=index&filters=collectionavailability
+
+-}
 
 -- needed for disambiguating types,
 {-# LANGUAGE ScopedTypeVariables, OverloadedStrings, QuasiQuotes #-}
@@ -10,36 +14,34 @@ module FacetFormat where
 
 
 import qualified Data.Map as Map
+import qualified Data.List as List(sortOn, unfoldr)
 import qualified Database.PostgreSQL.Simple as PG(query, connectPostgreSQL)
 import Data.Function( (&) )
 
 import Text.RawString.QQ
-import qualified Data.List as List(sortOn)
 
 
 -- ease syntax
 mapGet = (Map.!)
 
 
-pad' s count =
-  case count == 0 of
-    True -> s
-    False -> pad' (" " ++ s) (count - 1)
+-- generate a white space String with length of count
+pad count = List.unfoldr f count
+  where f x = case x of
+          0 -> Nothing
+          _ -> Just (' ', x - 1)
 
 
-pad count = 
-  pad' "" count
-
-
-
+-- TODO a dummy root node - there's a typing issue here, 
+-- rootNode = (Nothing, "dummy", -999  )
 
 
 buildFacetGraph xs =
   -- Map of concept_id -> [ child concepts ]
-  -- store nesting relationships in a map to enable easy lookup of children
+  -- store the concept/child relationships in a map to enable O(log n) lookup of a nodes children
 
   Map.empty
-  & \m -> Map.insert Nothing [] m    -- insert a root node
+  & \m -> Map.insert Nothing [] m    -- add a root/parent node
   & \m -> foldl createEmptyList m xs
   & \m -> foldl insertToList m xs
 
@@ -58,9 +60,10 @@ buildFacetGraph xs =
 
 
 printFacetGraph m = do
-  -- we will recurse from the root node down...
-  let rootNode = (Nothing, "dummy", -999  )
-  recurse m rootNode  0 
+  -- non xml view of the graphoutput 
+  let rootNode = (Nothing, "dummy", -999 )
+  -- recurse from the root node down...
+  recurse m rootNode 0 
   where
     -- this just prints everything and is monadic
     recurse m (parent_id, label, count) depth = do
@@ -86,6 +89,7 @@ printXMLFacetGraph m = do
     recurse m (parent_id, label, count) depth = do
       -- do start tag
       startTag (parent_id, label, count) depth  
+      -- TODO - move the sorting out into a different function?
       -- get the children of this node
       let children = mapGet m parent_id
       -- sort according to facet count

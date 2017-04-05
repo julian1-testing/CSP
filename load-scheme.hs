@@ -232,11 +232,13 @@ main = do
 
   storeAll conn platform platformCategory
 
+{-
   -- parameter
   param         <- readFile "./vocab/aodn_aodn-discovery-parameter-vocabulary.rdf"   -- 174 prefLabels, no narrower, 1 narrowMatch - prefLabels are detail
   paramCategory <- readFile "./vocab/aodn_aodn-parameter-category-vocabulary.rdf"   -- 32 prefLabels, with 29 narrower, has narrowMatch   - prefLabels are high level
 
   storeAll conn param paramCategory
+-}
 
   -- are there any other resources? 
   close conn
