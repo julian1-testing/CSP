@@ -31,10 +31,10 @@ main = do
   nestings <- Facet.getConceptNesting conn 
   -- mapM print nestings
 
+
   facetLeafCounts <- Facet.getFacetList conn
-  
-  print "##### the facetLeaf counts "
-  mapM print facetLeafCounts
+  -- print "##### the facetLeaf counts "
+  -- mapM print facetLeafCounts
 
 
   -- compute facet counts

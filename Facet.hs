@@ -96,15 +96,21 @@ buildLeafFacetMap xs =
   & \m -> foldl f m xs
 
   where
+
     --  insert an empty list for concept_id
     initForConcept m (concept_id, _, _) =
       Map.insert (Just concept_id) (0, []) m
 
+
     -- populate concept list with the records
-    f m (concept_id, _, record_id) =
-      let (count, current) = mapGet m (Just concept_id) in
-      let newLst = record_id : current in
-      Map.insert (Just concept_id) (count, newLst) m
+    f m (concept_id, _, record) =
+      case record of 
+        Just record_id -> 
+          let (count, current) = mapGet m (Just concept_id) in
+          let newLst = record_id : current in
+          Map.insert (Just concept_id) (count, newLst) m
+        Nothing -> m
+          --Map.insert (Just concept_id) (0, []) 
 
 
 
