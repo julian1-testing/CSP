@@ -17,7 +17,7 @@ begin;
 
 -- this is all vocab - distinct from facet or relationship with records 
 
-
+/*
 create table scheme (
 
   id serial   primary key not null,
@@ -25,9 +25,12 @@ create table scheme (
   title       text not null
 );
 alter table scheme owner to harvest;
+*/
 
 
 create table concept (
+  -- TODO change name
+  -- concept or conceptScheme
 
   id serial   primary key not null,
   url         text not null unique,
@@ -35,6 +38,8 @@ create table concept (
 );
 alter table concept owner to harvest;
 
+
+-- skos relationships
 
 create table narrower (
 
@@ -56,6 +61,17 @@ create table narrow_match (
 alter table narrow_match owner to harvest;
 
 
+create table scheme_has_top_concept (
+
+  id serial   primary key not null,
+  concept_id  integer references concept(id), 
+  scheme_id   integer references concept(id)
+);
+alter table scheme_has_top_concept owner to harvest;
+
+
+
+/*
 create table in_scheme (
 
   id serial   primary key not null,
@@ -63,7 +79,7 @@ create table in_scheme (
   scheme_id   integer references scheme(id)
 );
 alter table in_scheme owner to harvest;
-
+*/
 
 
 --------------

@@ -124,7 +124,7 @@ propagateRecordsToParentConcept nestings m' =
 
 
     f2 m (concept_id, parent_id) =
-        -- propagate records up...
+        -- propagate records up to their parent concept, and adjust counts
 
         -- get the record list for this concept
         let (countForConcept, recordsForConcept) = 
