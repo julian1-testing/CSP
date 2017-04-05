@@ -78,11 +78,11 @@ getConceptLabels conn  = do
 getFacetList conn  = do
   -- we want all concepts - regardless of whether there were facet match counts
   let query1 = [r|
-      select 
-        concept_view.concept_id, 
-        concept_view.parent_id, 
-        facet.record_id 
-      from concept_view 
+      select
+        concept_view.concept_id,
+        concept_view.parent_id,
+        facet.record_id
+      from concept_view
       left join facet on facet.concept_id = concept_view.concept_id
   |]
   xs :: [ (Integer, Maybe Integer, Maybe Integer ) ] <- PG.query conn query1 ()
@@ -92,7 +92,7 @@ getFacetList conn  = do
 
 
 buildLeafFacetMap xs =
-  -- TODO change this so we just insert a new - maybe 
+  -- TODO change this so we just insert a new - maybe
   -- we make the concept a Maybe type - so that we can handle Nothing as root node later
 
   Map.empty
@@ -106,13 +106,13 @@ buildLeafFacetMap xs =
 
     -- populate concept list with the records
     f m (concept_id, _, record) =
-      case record of 
-        Just record_id -> 
+      case record of
+        Just record_id ->
           let (count, current) = mapGet m (Just concept_id) in
           let newLst = record_id : current in
           Map.insert (Just concept_id) (count, newLst) m
         Nothing -> m
-          --Map.insert (Just concept_id) (0, []) 
+          --Map.insert (Just concept_id) (0, [])
 
 -- it's basically a partition... can we use an existing partition function...
 
@@ -123,11 +123,11 @@ buildLeafFacetMap xs =
 -- no we are just deleting  then coming along later and removing them!!!
 -- we can only do the subset that we changed....
 
--- alternatively if we do it in one pass, then we move items to their parent - then come along and 
+-- alternatively if we do it in one pass, then we move items to their parent - then come along and
 -- move their parent up....
 
 -- need to think about this...
--- we are removing from the list so it doesn't get processed again... 
+-- we are removing from the list so it doesn't get processed again...
 -- but there's nothing to stop moving to a later thing - that then gets re-processed.
 
 -- partition the list - into the things that have members and those that don't.
@@ -137,10 +137,10 @@ buildLeafFacetMap xs =
 -- get the list of entries... only and generate the new list -
 -- but ... ol
 -- partition, then process items needing processing. then merge.
--- need to get in one go everything that needs to be pushed. then push only them. 
+-- need to get in one go everything that needs to be pushed. then push only them.
 
 -- can record - with a bool. or use a separate list.
--- partition into 
+-- partition into
 
 
 propagateRecordsToParentConcept nestings m =
@@ -149,16 +149,16 @@ propagateRecordsToParentConcept nestings m =
       fold over the concept/parent nestings relationships and push the list of record_id's into their parent concept list
       while recorded the count of records moved
 
-      Thus, the parent node is the union of record_id of it's child nodes for each iteration of the propagation 
+      Thus, the parent node is the union of record_id of it's child nodes for each iteration of the propagation
       Also, we remove duplicates
 
-      -- TODO IMPORTANT - be careful - we don't propagate a nodes out of the root node - so it's no 
+      -- TODO IMPORTANT - be careful - we don't propagate a nodes out of the root node - so it's no
       longer accessible. may need to test. and then not move.
 
 
       -- propagating things up....
 
-      -- there might be an issue in moving things up - 
+      -- there might be an issue in moving things up -
       -- rathero
 
       -- may want partitionWithKey
@@ -166,31 +166,33 @@ propagateRecordsToParentConcept nestings m =
 
       -- type is ambiguous...
   -}
- 
-  -- let (a, b) =  Map.partition pred m  in
-  let (a, b) =  Map.partitionWithKey pred m  in
 
-  a
+  -- the first map contains all elements that satisfy the prdicate
+  -- lets check the noRecords contains noRecords
+
+  let (withRecords, noRecords) =  Map.partitionWithKey predWithRecords m in
+
+  withRecords
 
 
-  -- & \(m, m2) -> foldl (f2) m nestings 
-  -- & \m -> foldl (f3) m nestings 
- 
+  -- & \(m, m2) -> foldl (f2) m nestings
+  -- & \m -> foldl (f3) m nestings
+
   where
-    
-    pred k v = 
-        let (count, records) = v 
-        in case length records of 
-          0 -> True
-          _ -> False 
+
+    predWithRecords k v =
+        let (count, records) = v
+        in case length records of
+          0 -> False
+          _ -> True
 
 {-
     f2 m (concept_id, parent_id) =
         -- propagate records up to their parent concept, and adjust counts
 
         -- get the record list for this concept
-        let (countForConcept, recordsForConcept) = 
-              mapGet m (Just concept_id) 
+        let (countForConcept, recordsForConcept) =
+              mapGet m (Just concept_id)
         in
         -- get the records for the parent
         let (countForParent, recordsForParent) = (
@@ -203,7 +205,7 @@ propagateRecordsToParentConcept nestings m =
         let newParentLst  = mkUniq (recordsForParent ++ recordsForConcept)  in
 
         -- and then store against the parent concept. countForParent is unchanged
-        Map.insert parent_id (countForParent, newParentLst) m 
+        Map.insert parent_id (countForParent, newParentLst) m
 
 
         & Map.insert (Just concept_id) (countForConcept + length recordsForConcept, []) -- m
@@ -211,8 +213,8 @@ propagateRecordsToParentConcept nestings m =
 
     f3 m (concept_id, parent_id) =
         -- get the record list for this concept
-        let (countForConcept, recordsForConcept) = 
-              mapGet m (Just concept_id) 
+        let (countForConcept, recordsForConcept) =
+              mapGet m (Just concept_id)
         in
 
         -- now clear the list for child/narrower concept, and increment count by nymber of records moved to parent
@@ -222,13 +224,13 @@ propagateRecordsToParentConcept nestings m =
 
 
 
-propagateAllRecordsToRoot nestings m = 
+propagateAllRecordsToRoot nestings m =
   {-
       call propagateRecordsToParent until all record_ids have been moved to the root node
   -}
   case unpropagatedRecords m == 0 of
-    True -> m  
-    False -> 
+    True -> m
+    False ->
       propagateRecordsToParentConcept nestings m
       & propagateAllRecordsToRoot nestings
   where
@@ -237,7 +239,7 @@ propagateAllRecordsToRoot nestings m =
         where
         f m concept_id (_, recordsForConcept) = case concept_id of
           -- ignore root node
-          Nothing -> m  
+          Nothing -> m
           -- else just keep summing
           Just _ -> m + length recordsForConcept
 
@@ -269,7 +271,7 @@ testPropagateOnce = do
 
   {-
   putStrLn "######################## 2"
-  let m''  = propagateRecordsToParentConcept nestings m' 
+  let m''  = propagateRecordsToParentConcept nestings m'
   putStrLnFacetMap m''
   -}
   return ()
@@ -346,7 +348,7 @@ main = testPropagateOnce
 
 
   putStrLn "######################## 2"
-  let m''  = propagateRecordsToParentConcept nestings m' 
+  let m''  = propagateRecordsToParentConcept nestings m'
   putStrLnFacetMap m''
 
 
