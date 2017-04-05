@@ -102,16 +102,15 @@ buildLeafFacetMap xs =
       Map.insert (Just concept_id) (count, newLst) m
 
 
--- TODO move the nestings argument so it's first - to make it easier to partially bind
 
 propagateRecordsToParentConcept nestings m' =
   {-
       a little bit like a topological sort,
       fold over the concept/parent nestings relationships and push the list of record_id's into their parent concept list
-      the parent node thus is the union of record_id of it's child nodes
-      also remove duplicates
+      while recorded the count of records moved
 
-      so we move records up.... and add to the count of records moved up....
+      Thus, the parent node is the union of record_id of it's child nodes for each iteration of the propagation 
+      Also, we remove duplicates
 
       -- TODO IMPORTANT - be careful - we don't propagate a nodes out of the root node - so it's no 
       longer accessible. may need to test. and then not move.
