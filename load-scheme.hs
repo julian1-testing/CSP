@@ -227,12 +227,14 @@ main = do
   execute conn "truncate record, facet, resource,  scheme, concept, narrower, narrow_match, in_scheme ;" ()
 
   -- platform
+  print "doing platform"
   platform <- readFile "./vocab/aodn_aodn-platform-vocabulary.rdf"
   platformCategory <- readFile "./vocab/aodn_aodn-platform-category-vocabulary.rdf"
   storeAll conn platform platformCategory
 
 
   -- parameter
+  print "doing parameter"
   param         <- readFile "./vocab/aodn_aodn-discovery-parameter-vocabulary.rdf"
   paramCategory <- readFile "./vocab/aodn_aodn-parameter-category-vocabulary.rdf"
   storeAll conn param paramCategory
