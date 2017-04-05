@@ -39,7 +39,7 @@ getConceptNesting conn  = do
   -- we want the concept_id, parent_id, record_id
   let query1 = [r|
       select
-        id as concept_id,
+        concept_id,
         parent_id
       from concept_view ;
   |]
@@ -51,7 +51,7 @@ getConceptNesting conn  = do
 getConceptLabels conn  = do
   let query1 = [r|
       select
-        id as concept_id,
+        concept_id,
         parent_id,
         label
       from concept_view ;
@@ -81,7 +81,7 @@ getFacetList conn  = do
       from concept_view 
       left join facet on facet.concept_id = concept_view.concept_id
   |]
-  xs :: [ (Integer, Integer, Integer ) ] <- PG.query conn query1 ()
+  xs :: [ (Integer, Maybe Integer, Maybe Integer ) ] <- PG.query conn query1 ()
   -- mapM print xs
   return xs
 
