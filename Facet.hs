@@ -28,7 +28,6 @@ mkUniq :: Ord a => [a] -> [a]
 mkUniq = toList . fromList
 
 
--- WE SHOULD REVERSE THE SYNTAX TO MAKE IT CONSISTENT WITH EVERYTHING ELSE.. with m as the last argument
 -- ease syntax
 mapGet e m =
   -- trace  ("mytrace - mapGet e: " ++ show e ++ " m: " ++ show m) $
@@ -197,6 +196,25 @@ propagateAllRecordsToRoot nestings m =
 
 
 
+adjustRootRecord m = 
+  -- set the count of the root node and return the records as a list 
+  let (_, rootRecords) = mapGet Nothing m in
+  let rootCount = length rootRecords  in
+  let m' = Map.insert Nothing (rootCount, []) m in
+  (m', rootRecords)
+
+
+
+doAll nestings m  =
+  propagateAllRecordsToRoot nestings m
+  & adjustRootRecord
+
+
+
+--  let (propagated, records) = Facet.doAll nestings  facetCounts
+
+
+
 ---- NO just run the propagation 
 ---- and manually set the root node and take the elements from it...
 ---- easy peasy.
@@ -246,8 +264,6 @@ testPropagateOnce = do
   let m'''''  = propagateRecordsToParentConcept nestings m''''
   putStrLnFacetMap m'''''
 
-
-
   return ()
 
 
@@ -270,11 +286,7 @@ testPropagateAll = do
 
   let m' =  propagateAllRecordsToRoot nestings m
 
-  -- now just adjust the root node,,,
-  let (_, rootRecords) = mapGet Nothing m' 
-  let rootCount = length rootRecords  
-
-  let m'' = Map.insert Nothing (rootCount, [])  m'
+  let (m'', records) = adjustRootRecord m'
 
   putStrLnFacetMap m''
   return ()

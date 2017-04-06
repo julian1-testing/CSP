@@ -43,34 +43,39 @@ main = do
   -- (mapM print).(Map.toList) $ facetCounts
 
 
-  let propagated = Facet.propagateAllRecordsToRoot nestings  facetCounts
+  let (propagated, allRecordIds) = Facet.doAll nestings  facetCounts
   -- print "##### the facetCounts after propagating"
   -- (mapM print).(Map.toList) $ propagated
 
  
 
   -- get the concept, parents and labels from db as a Map
-  let makePair (concept, parent, label) = (concept, (parent, label))  -- turn into key,val pairs needed for map,
-  labels <- Facet.getConceptLabels conn >>= return.(Map.fromList).(map makePair)
+  let makePair (concept, parent, label) = 
+        (Just concept, (parent, label))  -- turn into key,val pairs needed for map,
+
+  labels <- Facet.getConceptLabels conn 
+      >>= return.(Map.fromList).(map makePair)
+      >>= return.(\m ->  Map.insert Nothing ( Nothing, "summary") m )  -- insert a root node
+
+  -- print "##### labels"
   -- (mapM print).(Map.toList) $ labels
 
-
-
-  -- create a new list by zipping with label, and parent_id, and removing the root node
-  -- in a form suitable for the output formatting
+  -- now join the label information with the facet list
   let completeFacetList = 
        Map.foldlWithKey f [] propagated 
         where
-        f m concept (count, records) = case concept of 
-          -- ignore the root node
-          Nothing -> m
-          -- otherwise just insert, zipping with parent_id and label  
-          Just concept_id ->
-                let (parent, label) = mapGet labels concept_id in
-                (concept_id, parent, label, count) : m
+        f m concept (count, records) = 
+           let (parent, label) = mapGet labels concept in
+            (concept, parent, label, count) : m
 
-  -- (mapM print) completeFacetList
 
+
+  print "##### complete facet list"
+  (mapM print) completeFacetList
+
+
+
+{-
 
   -- build the graph for output formatting 
   let facetGraph = FacetFormat.fromList completeFacetList
@@ -79,7 +84,21 @@ main = do
   let sortedGraph = FacetFormat.sort facetGraph
  
   -- format the thing -
-  FacetFormat.printXML sortedGraph
+  FacetFormat.printXML rootNode sortedGraph
+-}
+
+
+
+{-
+          case concept of 
+            -- ignore the root node
+            Nothing -> m
+            -- otherwise just insert, zipping with parent_id and label  
+            Just concept_id ->
+
+                  let (parent, label) = mapGet labels concept_id in
+                  (concept_id, parent, label, count) : m
+-}
 
 {-
 -}
