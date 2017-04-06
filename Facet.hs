@@ -28,7 +28,7 @@ mkUniq :: Ord a => [a] -> [a]
 mkUniq = toList . fromList
 
 
-
+-- WE SHOULD REVERSE THE SYNTAX TO MAKE IT CONSISTENT WITH EVERYTHING ELSE.. with m as the last argument
 -- ease syntax
 mapGet m e =
   -- trace  ("mytrace - mapGet e: " ++ show e ++ " m: " ++ show m) $
@@ -172,7 +172,6 @@ propagateRecordsToParentConcept nestings m =
 propagateAllRecordsToRoot nestings m =
   {-
       call propagateRecordsToParent until all record_ids have been moved to the root node
-
       maybe we can handle this by clearing of Nothing as wel go
   -}
 
@@ -270,7 +269,14 @@ testPropagateAll = do
   --  putStrLnFacetMap m
 
   let m' =  propagateAllRecordsToRoot nestings m
-  putStrLnFacetMap m'
+
+  -- now just adjust the root node,,,
+  let (_, rootRecords) = mapGet m' Nothing
+  let rootCount = length rootRecords  
+
+  let m'' = Map.insert Nothing (rootCount, [])  m'
+
+  putStrLnFacetMap m''
   return ()
 
 
