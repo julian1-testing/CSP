@@ -17,6 +17,9 @@ ghc $FLAGS Facet.hs Main.hs FacetFormat.hs
 # compile Facet test code,
 # ghc -main-is Facet.main -outputdir tmp Facet.hs  -o ./Facet
 
+# Format only...
+# ghc -main-is Facet.main -outputdir tmp  FacetFormat.hs  -o ./FacetFormat
+
 ############
 
 # rm output -rf

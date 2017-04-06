@@ -117,6 +117,8 @@ buildLeafFacetMap xs =
           m
 
 
+-- we need to know how this is working?
+-- it's the finish condition that we need to test....
 
 propagateRecordsToParentConcept nestings m =
   {-
@@ -171,21 +173,26 @@ propagateAllRecordsToRoot nestings m =
   {-
       call propagateRecordsToParent until all record_ids have been moved to the root node
   -}
-  case unpropagatedRecords m == 0 of
+
+  case countUnprocessed m == 0 of
     True -> m
     False ->
       propagateRecordsToParentConcept nestings m
       & propagateAllRecordsToRoot nestings
   where
-    unpropagatedRecords m =
+    -- 
+    countUnprocessed m =
       Map.foldlWithKey f 0 m
         where
-        f m concept_id (_, recordsForConcept) = case concept_id of
-          -- ignore root node
-          Nothing -> m
-          -- else just keep summing
-          Just _ -> m + length recordsForConcept
+        f m concept_id (_, recordsForConcept) = 
+          case concept_id of
+            -- ignore root node
+            Nothing -> m
+            -- else just keep summing
+            Just _ -> m + length recordsForConcept
 
+-- holdy k
+-- we need to change this around...
 
 
 putStrLnFacetMap m = -- do

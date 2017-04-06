@@ -112,7 +112,8 @@ printXML m = do
 
         "dummy" ->
           doResponse (parent_id, label, count) depth 
-
+    
+        -- we also need to do response - substitutiton, 
         -- should we be doing this label substitution here, or when loading the vocab scheme and set the label ...
         -- use
         "AODN Parameter Category Vocabulary" ->
