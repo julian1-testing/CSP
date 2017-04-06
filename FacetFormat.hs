@@ -111,8 +111,7 @@ printXML m = do
       case label of 
 
         "AODN Parameter Category Vocabulary" -> do
-          putStrLn "whoot"
-          return ()
+          doDimension (parent_id, label, count) depth 
 
         _ -> do
           doCategory (parent_id, label, count) depth 
@@ -122,29 +121,41 @@ printXML m = do
         -- get the children of this node and process them
         let children = mapGet m parent_id
         mapM (\(concept_id, label, count)  -> recurse m (Just concept_id, label, count) (depth + 1)) children --sortedChildren
+        return ()
 
 
-{-
-    doDimension (parent_id, label, count) depth = do 
+    doDimension (parent_id, label, count) depth  = do
+
       putStrLn $ concatMap id [
         (pad $ depth * 3),
-        "<dimension value=\"", label, "\"", " count=", show count, " >"
+        "<dimension value=\"", label, "\"", " count=", show count, " />"
         ]
-        -- don't have to drill into the children at all,
 
-        {- dimensionStartTag a  depth
-        processChildren a depth
-        dimensionEndTag a depth -}
-        return ()
--}
+      processChildren (parent_id, label, count) depth
+     
 
-    doCategory a depth  = do
+    -- doCategory a depth  = do
+
+    doCategory (parent_id, label, count) depth  = do
         -- do category start tag
-        categoryStartTag a  depth
+      putStrLn $ concatMap id [
+        (pad $ depth * 3),
+        "<category value=\"", label, "\"", " count=", show count, " >"
+        ]
+
+      processChildren (parent_id, label, count) depth
+
+      putStrLn $ concatMap id [
+        (pad $ depth * 3),
+        "</category>"
+        ]
+
+      return ()
+{-
         processChildren a depth
+
         categoryEndTag a depth
         return ()
-
 
     categoryStartTag (parent_id, label, count) depth  = do
       putStrLn $ concatMap id [
@@ -158,7 +169,7 @@ printXML m = do
         "</category>"
         ]
 
-
+-}
 
 getTestFacetList conn = do
   -- get all facets and facet count from db and return as flat list
