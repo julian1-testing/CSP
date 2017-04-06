@@ -17,6 +17,7 @@ import qualified Data.Map as Map
 import qualified Data.List as List(sortOn, unfoldr)
 import qualified Database.PostgreSQL.Simple as PG(query, connectPostgreSQL)
 import Data.Function( (&) )
+import Debug.Trace(trace)
 
 import Text.RawString.QQ
 

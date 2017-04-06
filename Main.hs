@@ -8,6 +8,8 @@ import qualified FacetFormat as FacetFormat--(main)
 
 import qualified Data.Map as Map
 
+import Debug.Trace(trace)
+
 
 import Data.Function( (&) )
 
@@ -73,9 +75,8 @@ main = do
           let (parent, label) = mapGet concept labels in
             case concept of
               Nothing -> 
-                -- the root node, which doesn't exist as a concept
-                -- this isn't correct
-                -- (concept, Nothing, "summary", count) : m
+                -- the root node, which appears once - and is'nt a concept that we have a label for 
+                trace ("this is the rootNode count " ++ show count ) $ 
                 m
               Just concept_id ->
                 -- a normal concept
@@ -104,12 +105,17 @@ main = do
 -}
 
   let sortedGraph = FacetFormat.sort facetGraph
-  (mapM print).(Map.toList) $ facetGraph
+  -- (mapM print).(Map.toList) $ facetGraph
 
-{-
+
   -- format the thing -
   FacetFormat.printXML sortedGraph
--}
+
+
+
+  return () 
+
+
 
 
 {-
@@ -122,17 +128,5 @@ main = do
                   let (parent, label) = mapGet labels concept_id in
                   (concept_id, parent, label, count) : m
 -}
-
-{-
--}
-
-
-
-  return () 
-
-  -- nice!!!
-  -- FacetFormat.main
-
-
 
 
