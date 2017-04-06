@@ -152,15 +152,15 @@ formatXML rootRecordCount m = do
 
     doDimension (parent_id, label, count) depth =
       -- single closed tag...
+        (LT.append)
 
-      LT.append
-
-        (LT.pack (
+        (LT.pack $
           concatMap id [
             (pad $ depth * 3),
             "<dimension value=\"", label, "\"", " count=", show count, " />"
             ]
-        ))
+        )
+
         (
           processChildren (parent_id, label, count) depth
         )
