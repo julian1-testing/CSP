@@ -77,7 +77,11 @@ main = do
           let (parent, label) = mapGet concept labels in
             case concept of
               Nothing -> 
-                -- the root node, which appears once - and is'nt a concept or something that we have a label for so we drop it for now
+                {-
+                  the root node, which appears once - and is'nt a concept or something that we have a label
+                  and we cannot store the parent parent_id which will be Nothing since then we get a self-referential child/parent
+                  that will create infinite recursion when we go to format the graph.
+                -}
                 -- trace ("this is the rootNode count " ++ show count ) $ 
                 m
               Just concept_id ->
