@@ -189,13 +189,14 @@ propagateRecordsToParentConcept nestings m =
   -- we fold over all the nestings. but only process entries in the recordsToProcess
 
   where
+    {-
     ignoreNothingParent' recordsToProcess f m (concept_id, parent) =
       case parent of
         Nothing -> m
         Just parent -> case Map.member (Just concept_id) recordsToProcess of 
             True -> f m (concept_id, Just parent)
             False -> m
-
+    -}
 
     ignoreNothingParent recordsToProcess f m (concept_id, parent) =
 
