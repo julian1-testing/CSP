@@ -110,22 +110,46 @@ printXML m = do
       -- what's going on here?
       case label of 
 
-        "AODN Parameter Category Vocabulary" -> do
-          doDimension (parent_id, label, count) depth 
+        "dummy" ->
+          doResponse (parent_id, label, count) depth 
 
-        _ -> do
+        -- should we be doing this label substitution here, or when loading the vocab scheme and set the label ...
+        -- use
+        "AODN Parameter Category Vocabulary" ->
+          doDimension (parent_id, "Measured Parameter", count) depth 
+
+        "AODN Platform Category Vocabulary" ->
+          doDimension (parent_id, "Platform", count) depth 
+
+        _ ->
           doCategory (parent_id, label, count) depth 
 
 
     processChildren (parent_id, label, count) depth = do 
         -- get the children of this node and process them
         let children = mapGet m parent_id
-        mapM (\(concept_id, label, count)  -> recurse m (Just concept_id, label, count) (depth + 1)) children --sortedChildren
+        -- and process them
+        mapM f children
         return ()
+        where 
+          f (concept_id, label, count) = recurse m (Just concept_id, label, count) (depth + 1)
+          
+
+    doResponse (parent_id, label, count) depth  = do
+
+      -- single closed tag...
+      putStrLn $ concatMap id [
+        (pad $ depth * 3),
+        "<summary count=", show count, " type=\"local\"/>"
+        ]
+
+      processChildren (parent_id, label, count) depth
+ 
 
 
     doDimension (parent_id, label, count) depth  = do
 
+      -- single closed tag...
       putStrLn $ concatMap id [
         (pad $ depth * 3),
         "<dimension value=\"", label, "\"", " count=", show count, " />"
@@ -134,10 +158,9 @@ printXML m = do
       processChildren (parent_id, label, count) depth
      
 
-    -- doCategory a depth  = do
 
     doCategory (parent_id, label, count) depth  = do
-        -- do category start tag
+        -- start tag
       putStrLn $ concatMap id [
         (pad $ depth * 3),
         "<category value=\"", label, "\"", " count=", show count, " >"
@@ -145,31 +168,12 @@ printXML m = do
 
       processChildren (parent_id, label, count) depth
 
+      -- end tag
       putStrLn $ concatMap id [
         (pad $ depth * 3),
         "</category>"
         ]
 
-      return ()
-{-
-        processChildren a depth
-
-        categoryEndTag a depth
-        return ()
-
-    categoryStartTag (parent_id, label, count) depth  = do
-      putStrLn $ concatMap id [
-        (pad $ depth * 3),
-        "<category value=\"", label, "\"", " count=", show count, " >"
-        ]
-
-    categoryEndTag (parent_id, label, count) depth = do
-      putStrLn $ concatMap id [
-        (pad $ depth * 3),
-        "</category>"
-        ]
-
--}
 
 getTestFacetList conn = do
   -- get all facets and facet count from db and return as flat list
