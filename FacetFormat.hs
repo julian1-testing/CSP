@@ -21,7 +21,7 @@ import Data.Function( (&) )
 import Text.RawString.QQ
 
 
-import qualified Facet as Facet -- REMOVE when working
+import qualified Facet as Facet
 
 
 -- ease syntax
@@ -35,12 +35,11 @@ pad count = List.unfoldr f count
           _ -> Just (' ', x - 1)
 
 
--- TODO 
--- a dummy root node - because we use it in multiple places - but there's a typing issue somewhere, 
+-- TODO
+-- a dummy root node - because we use it in multiple places - but there's a typing issue somewhere,
 -- rootNode = (Nothing, "dummy", -999  )
 
 
--- TODO change name - fromList...
 
 fromList xs =
   -- Map of concept_id -> [ child concepts ]
@@ -67,25 +66,26 @@ fromList xs =
 
 
 sort m =
+  -- TODO move to Facet?
   -- sort the children according to their count
-  Map.mapWithKey f m 
+  Map.mapWithKey f m
   where
-  f k children = 
-    reverse. List.sortOn (\(_, _, count) -> count) $ children 
+  f k children =
+    reverse. List.sortOn (\(_, _, count) -> count) $ children
 
 
 
 
 
 print m = do
-  -- non xml view of the graphoutput 
+  -- non xml view of the graphoutput
   let rootNode = (Nothing, "dummy", -999 )
   -- recurse from the root node down...
-  recurse m rootNode 0 
+  recurse m rootNode 0
   where
     -- this just prints everything and is monadic
     recurse m (parent_id, label, count) depth = do
-      printRow (parent_id, label, count) depth  
+      printRow (parent_id, label, count) depth
 
       -- continue recursion
       let children = mapGet m parent_id
@@ -98,46 +98,54 @@ print m = do
 
 
 printXML m = do
+  -- should change this so that it's returning a string? or concatenating?
 
   -- we will recurse from the root node down...
   let rootNode = (Nothing, "dummy", -999 )
-  recurse m rootNode  0 
+  recurse m rootNode  0
   where
-    -- recurse down into child nodes 
+    -- recurse down into child nodes
     recurse m (parent_id, label, count) depth = do
-      -- do start tag
-      startTag (parent_id, label, count) depth  
-      -- TODO - move the sorting out into a different function?
-      -- get the children of this node
-      let children = mapGet m parent_id
-      -- sort according to facet count
-      -- let sortedChildren =  reverse. List.sortOn (\(_, _, count) -> count) $ children 
-      -- continue to recurse and process the children
-      mapM (\(concept_id, label, count)  -> recurse m (Just concept_id, label, count) (depth + 1)) children --sortedChildren
-      -- do end tag
-      endTag (parent_id, label, count) depth  
-      return ()
+
+      -- what's going on here?
+      case label of 
+
+        "AODN Parameter Category Vocabulary" -> do
+          putStrLn "whoot"
+          return ()
+
+        _ -> do
+          -- do category start tag
+          startTag (parent_id, label, count) depth
+
+          -- get the children of this node and process them
+          let children = mapGet m parent_id
+          mapM (\(concept_id, label, count)  -> recurse m (Just concept_id, label, count) (depth + 1)) children --sortedChildren
+
+          -- do end tag
+          endTag (parent_id, label, count) depth
+          return ()
 
 
     startTag (parent_id, label, count) depth  = do
-      putStrLn $ concatMap id [ 
-        (pad $ depth * 3), 
+      putStrLn $ concatMap id [
+        (pad $ depth * 3),
         "<category value=\"", label, "\"", " count=", show count, " >"
         ]
 
-    endTag (parent_id, label, count) depth = do 
-      putStrLn $ concatMap id [ 
-        (pad $ depth * 3), 
+    endTag (parent_id, label, count) depth = do
+      putStrLn $ concatMap id [
+        (pad $ depth * 3),
         "</category>"
         ]
- 
+
 
 
 getTestFacetList conn = do
   -- get all facets and facet count from db and return as flat list
   let query = [r|
-        select 
-          id as concept_id, 
+        select
+          id as concept_id,
           parent_id,
           label ,
           count
@@ -164,7 +172,7 @@ main = do
   -- nestings <- Facet.getConceptNesting conn
   -- let m' =  Facet.propagateAllRecordsToRoot nestings m
 
-  let m' = sort m 
+  let m' = sort m
 
   FacetFormat.print m'
 
@@ -179,9 +187,9 @@ main = do
 
 
 {-
-  let depthMap = buildDepthMap g 
+  let depthMap = buildDepthMap g
 
-  mapM print (Map.toList depthMap) 
+  mapM print (Map.toList depthMap)
 
   let zipped = zipFacetListWithDepth facetList depthMap
 
@@ -220,7 +228,7 @@ fromList' facetMap =
   recurse' facetMap (Nothing, "dummy", -999  ) 0
 
   where
-  recurse' m (parent_id, label, count) depth = 
+  recurse' m (parent_id, label, count) depth =
 
     -- look up the children...
     -- hmmmm we are going to have to generate a new map?
@@ -233,21 +241,21 @@ fromList' facetMap =
 -}
 
 {-
-  ok, so we have the map...  lets try to now we want to transform the original list 
+  ok, so we have the map...  lets try to now we want to transform the original list
 
   append is modify
   where is
 
   IMPORTNAT
-  TODO change name depth to nestingLevel 
+  TODO change name depth to nestingLevel
 -}
 
 {-
-zipFacetListWithDepth xs depthMap = 
+zipFacetListWithDepth xs depthMap =
   sortOn  (map f) $ xs
-  
+
   where
-    compare (a,b,c,d,e) (a,b,c,d,e) = 
+    compare (a,b,c,d,e) (a,b,c,d,e) =
     f (a,b,c,d) = (a,b,c,d, mapGet depthMap (Just a))
 -}
 
@@ -258,12 +266,12 @@ buildDepthMap g =
   -- this is a recursion
   -- build a Map from Graph indexed by concept id with depth of the facet
   let rootNode = (Nothing, "dummy", -999) in
-  recurse g Map.empty rootNode 0 
+  recurse g Map.empty rootNode 0
   where
     recurse g depthMap (parent_id, label, count) depth =
       -- set depth for this current id,
       let depthMap' = Map.insert parent_id depth depthMap in
-      -- get children and drill 
+      -- get children and drill
       let children = mapGet g parent_id in
       -- recurse/process the children
       let f depthMap' (concept_id, label, count) = recurse g depthMap' (Just concept_id, label, count) (depth + 1) in
@@ -277,14 +285,14 @@ buildDepthMap g =
 
   mapping from concept_id -> children
 
-  I think we will create another one 
+  I think we will create another one
 
   concept_id -> counts
 
   therefore we should remove the count from here.
 -}
 {-
-    - we need to recurse twice - once to propagate the counts up the tree nodes. 
+    - we need to recurse twice - once to propagate the counts up the tree nodes.
     - this should be non monadic...
 
 -}
