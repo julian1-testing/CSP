@@ -138,9 +138,6 @@ formatXML rootRecordCount m = do
       -- what's going on here?
       case label of 
 
-        "dummy" ->
-          LT.pack "x" -- doResponse (parent_id, label, count) depth 
-    
         -- we also need to do response - substitutiton, 
         -- should we be doing this label substitution here, or when loading the vocab scheme and set the label ...
         -- use
@@ -148,19 +145,25 @@ formatXML rootRecordCount m = do
           doDimension (parent_id, "Measured Parameter", count) depth 
 
         "AODN Platform Category Vocabulary" ->
-          "z" -- doDimension (parent_id, "Platform", count) depth 
+          doDimension (parent_id, "Platform", count) depth 
 
         _ ->
           "j" --doCategory (parent_id, label, count) depth 
 
     doDimension (parent_id, label, count) depth =
       -- single closed tag...
-      LT.pack $
-        concatMap id [
-          (pad $ depth * 3),
-          "<dimension value=\"", label, "\"", " count=", show count, " />"
-          ]
-      -- processChildren (parent_id, label, count) depth
+
+      LT.append
+
+        (LT.pack (
+          concatMap id [
+            (pad $ depth * 3),
+            "<dimension value=\"", label, "\"", " count=", show count, " />"
+            ]
+        ))
+        (
+          processChildren (parent_id, label, count) depth
+        )
 
 
     processChildren (parent_id, label, count) depth = -- do 
