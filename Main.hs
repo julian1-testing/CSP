@@ -53,6 +53,7 @@ main = do
   -- print "##### the facetCounts after propagating"
   -- (mapM print).(Map.toList) $ propagated
 
+  print $ allRecordIds 
  
 
   -- get the concept, parents and labels from db as a Map
@@ -65,6 +66,7 @@ main = do
 
   -- print "##### labels"
   -- (mapM print).(Map.toList) $ labels
+
 
   -- now join the label information with the facet list
   -- TODO propagated should be passed as an argument
@@ -82,24 +84,10 @@ main = do
                 -- a normal concept
                 (concept, parent, label, count) : m
 
-
-{-
-  -- root node count, and all records....
-  -- fold with a map...
-  -- actually we should probably return the damn list of items - because we need it for later
-  let rootRecords = 
-       Map.foldlWithKey f [] propagated 
-            where
-              f m concept (count, records) = 
-                case concept of
-                  Nothing -> 
-                    records
-                  Just concept_id              
-                    m
- -}      
-
   -- print "##### complete facet list"
   -- (mapM print) completeFacetList
+
+
 
   -- we should be adding a root node here...
   -- VERY IMPORTANT - the root should be created in the facetFormat.fromList 
@@ -110,20 +98,13 @@ main = do
 
   -- are we really sure we need to pass the root explicitly 
 
-{-
-  -- Nothing?????/
-  let rootNode = mapGet Nothing facetGraph
-  print "rootNode"
-  print rootNode
-  -- root node is an array?  why????
--}
 
   let sortedGraph = FacetFormat.sort facetGraph
   -- (mapM print).(Map.toList) $ facetGraph
 
 
   -- format the thing -
-  FacetFormat.printXML 333 sortedGraph
+  FacetFormat.printXML (length allRecordIds) sortedGraph
 
 
 
