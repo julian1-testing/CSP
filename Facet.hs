@@ -173,11 +173,11 @@ propagateRecordsToParentConcept nestings m =
   -- OR - empty everything first... - yes I think this is good...
   -- IMPORTANT we may not even have to partition - but it may make it easier in avoiding the tests
 
-  let original = m in
-  -- let (withRecords, withoutRecords) =  Map.partitionWithKey predWithRecords m in
-  let cleaned =  Map.mapWithKey clearRecords m in
+  -- let original = m in
+  let (recordsToProcess, _) =  Map.partitionWithKey predHasRecords m in
+  -- let cleaned =  Map.mapWithKey clearRecords m in
 
-  let propagated =  foldl (ignoreNothingParent (propagate original)) cleaned nestings in
+  let propagated =  foldl (ignoreNothingParent (propagate recordsToProcess)) m nestings in
 
   propagated
   where
@@ -186,39 +186,62 @@ propagateRecordsToParentConcept nestings m =
         Nothing -> m
         Just parent -> f m (concept_id, Just parent)  -- change this to get rid of the Just
 
+    -- what we need to know is if we have processed the thing
+    -- already in this round.
+    -- if we limited it to the partitioned records.o
+
+    -- No the fold - must take two things.... in a tuple....
+    -- we lookup stuff in the original only
+    -- this was correct...
+
+    -- we don't clear anything....
+    -- we take the entries...
+
+    -- we pass in the withRecords and move them - only...
+{-
+    -- uggh - we cannot just go and clean the reocrds - as then there is nothing to propagate...
     clearRecords k (count, records) =
         -- clean records but keep the count
         (count, [] :: [ Integer ])
+-}
 
-    propagate original m (concept_id, parent_id) =
+
+    propagate recordsToProcess m (concept_id, parent_id) =
         -- fold over the concept parent nestings
+        -- We update the records in the parent. - and record the count against the current node.
 
-        -- get the records associated with concept... -- we can just look this up in the original map for this level
-        let (_, records) = mapGet original (Just concept_id) in
+        -- we can't use original here... - because we're propagating it up
+
+        -- get the records associated with child concept... -- we can just look this up in the original map for this level
+        let (childCount, childRecords) = mapGet m (Just concept_id) in
 
         -- get the records for the parent
         let (parentCount, parentRecords) = mapGet m parent_id in
 
-        -- update the parent count with records for this concept
-        let updatedCount = parentCount + length records in  -- must be the existing count
-
-        -- update the parent records
-        let updatedRecords = parentRecords ++ records in
-
+        -- update the child count with records for this concept
+        let updatedChildCount = childCount + length childRecords in  -- must be the existing count
         -- and insert into the map for the parent
-        Map.insert parent_id (updatedCount, updatedRecords) m
+
+        -- add thie child's records to the parent - and deduplicate
+        let updatedParentRecords = mkUniq ( parentRecords ++ childRecords ) in
+
+ --       m
+
+        -- and store for child... 
+        Map.insert (Just concept_id) (updatedChildCount, []) m
+
+        &
+        -- insert for parent
+        Map.insert parent_id (parentCount, updatedParentRecords)
 
 
-
-
-{-
-    predWithRecords k v =
+    predHasRecords k v =
         let (count, records) = v
         in case length records of
           0 -> False
           _ -> True
 
--}
+
 
   -- now we want to Map, and move the records to the parent.... actually
   -- now map again and insert into parent
@@ -348,8 +371,8 @@ testPropagateAll = do
 
 -- change name to test?
 main :: IO ()
-main = testPropagateOnce
-
+-- main = testPropagateOnce
+main = testPropagateAll
 
 
 
