@@ -172,15 +172,16 @@ propagateRecordsToParentConcept nestings m =
 propagateAllRecordsToRoot nestings m =
   {-
       call propagateRecordsToParent until all record_ids have been moved to the root node
+
+      maybe we can handle this by clearing of Nothing as wel go
   -}
 
-  case countUnprocessed m == 0 of
+  case countUnprocessed m == 0 of   -- change to countUnrpocessed = 0 _ otherwise
     True -> m
     False ->
       propagateRecordsToParentConcept nestings m
       & propagateAllRecordsToRoot nestings
   where
-    -- 
     countUnprocessed m =
       Map.foldlWithKey f 0 m
         where
@@ -188,8 +189,15 @@ propagateAllRecordsToRoot nestings m =
           case concept_id of
             -- ignore root node
             Nothing -> m
-            -- else just keep summing
+            -- sum count 
             Just _ -> m + length recordsForConcept
+
+
+
+
+---- NO just run the propagation 
+---- and manually set the root node and take the elements from it...
+---- easy peasy.
 
 -- holdy k
 -- we need to change this around...
@@ -232,6 +240,12 @@ testPropagateOnce = do
   putStrLnFacetMap m''''
 
 
+  putStrLn "######################## 5"
+  let m'''''  = propagateRecordsToParentConcept nestings m''''
+  putStrLnFacetMap m'''''
+
+
+
   return ()
 
 
@@ -266,54 +280,6 @@ main = testPropagateAll
 
 
 
-
-
-{-
-  conn <- PG.connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
-
-  nestings <- getConceptNesting conn
-  -- putStrLn "nestings"
-  -- mapM putStrLn nestings
-
-  -- IMPORTANT - should we move the db code outside of the facet stuff...
-  -- if the nestings were ''
-
-  -- get the facet concept and record associations from the db
-  facetList <- getFacetList conn
-  -- putStrLn "facet list"
-  -- mapM putStrLn $ facetList
-
-
-  putStrLn "######################## 0"
-  let m = buildLeafFacetMap facetList
---  putStrLnFacetMap m
-
-  let m' =  propagateAllRecordsToRoot nestings m
-  putStrLnFacetMap m'
--}
-
-
-{-
-  propagateAllRecordsToRoot nestings m
-  & (return) >>= (\m -> putStrLnFacetMap m)
--}
-
-
-{-
-  putStrLn "######################## 1"
-  let m'  = propagateRecordsToParentConcept nestings m
-  putStrLnFacetMap m'
-
-
-  putStrLn "######################## 2"
-  let m''  = propagateRecordsToParentConcept nestings m'
-  putStrLnFacetMap m''
-
-
-  putStrLn "######################## 3"
-  let m'''  = propagateRecordsToParentConcept  nestings m''
-  putStrLnFacetMap m'''
--}
 
 
 
