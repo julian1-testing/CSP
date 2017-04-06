@@ -115,25 +115,44 @@ printXML m = do
           return ()
 
         _ -> do
-          -- do category start tag
-          startTag (parent_id, label, count) depth
-
-          -- get the children of this node and process them
-          let children = mapGet m parent_id
-          mapM (\(concept_id, label, count)  -> recurse m (Just concept_id, label, count) (depth + 1)) children --sortedChildren
-
-          -- do end tag
-          endTag (parent_id, label, count) depth
-          return ()
+          doCategory (parent_id, label, count) depth 
 
 
-    startTag (parent_id, label, count) depth  = do
+    processChildren (parent_id, label, count) depth = do 
+        -- get the children of this node and process them
+        let children = mapGet m parent_id
+        mapM (\(concept_id, label, count)  -> recurse m (Just concept_id, label, count) (depth + 1)) children --sortedChildren
+
+
+{-
+    doDimension (parent_id, label, count) depth = do 
+      putStrLn $ concatMap id [
+        (pad $ depth * 3),
+        "<dimension value=\"", label, "\"", " count=", show count, " >"
+        ]
+        -- don't have to drill into the children at all,
+
+        {- dimensionStartTag a  depth
+        processChildren a depth
+        dimensionEndTag a depth -}
+        return ()
+-}
+
+    doCategory a depth  = do
+        -- do category start tag
+        categoryStartTag a  depth
+        processChildren a depth
+        categoryEndTag a depth
+        return ()
+
+
+    categoryStartTag (parent_id, label, count) depth  = do
       putStrLn $ concatMap id [
         (pad $ depth * 3),
         "<category value=\"", label, "\"", " count=", show count, " >"
         ]
 
-    endTag (parent_id, label, count) depth = do
+    categoryEndTag (parent_id, label, count) depth = do
       putStrLn $ concatMap id [
         (pad $ depth * 3),
         "</category>"
