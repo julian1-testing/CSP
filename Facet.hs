@@ -98,6 +98,7 @@ buildLeafFacetMap xs =
   Map.empty
   & \m -> foldl initForConcept m xs
   & \m -> foldl f m xs
+  & \m -> Map.insert Nothing (0 , []) m    -- insert a root node
 
   where
     --  insert an empty list for concept_id
@@ -111,8 +112,9 @@ buildLeafFacetMap xs =
           let (count, current) = mapGet m (Just concept_id) in
           let newLst = record_id : current in
           Map.insert (Just concept_id) (count, newLst) m
-        Nothing -> m
-          --Map.insert (Just concept_id) (0, [])
+        Nothing -> 
+          -- nothing means null in the left join so no records 
+          m
 
 -- it's basically a partition... can we use an existing partition function...
 
@@ -187,12 +189,21 @@ propagateRecordsToParentConcept nestings m =
   -- we fold over all the nestings. but only process entries in the recordsToProcess
 
   where
-    ignoreNothingParent recordsToProcess f m (concept_id, parent) =
+    ignoreNothingParent' recordsToProcess f m (concept_id, parent) =
       case parent of
         Nothing -> m
         Just parent -> case Map.member (Just concept_id) recordsToProcess of 
             True -> f m (concept_id, Just parent)
             False -> m
+
+
+    ignoreNothingParent recordsToProcess f m (concept_id, parent) =
+
+        case Map.member (Just concept_id) recordsToProcess of 
+            True -> f m (concept_id, parent)
+            False -> m
+            -- True -> m
+
 
 
     propagate m (concept_id, parent_id) =
@@ -355,6 +366,10 @@ testPropagateOnce = do
   putStrLn "######################## 3"
   let m'''  = propagateRecordsToParentConcept nestings m''
   putStrLnFacetMap m'''
+ 
+  putStrLn "######################## 4"
+  let m''''  = propagateRecordsToParentConcept nestings m'''
+  putStrLnFacetMap m''''
  
   
   return ()
