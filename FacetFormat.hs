@@ -181,11 +181,11 @@ formatXML rootRecordCount m = do
 
     processChildren (parent_id, label, count) depth =
 
-        -- take the node children
+        -- take children
         let children = mapGet parent_id m  in
-        -- appending function
+        -- recurse into children
         let f txt (concept, label, count) = txt $ recurse m (concept, label, count) (depth + 1) in
-        -- fold
+        -- fold over children appending text
         foldl (f.LT.append) LT.empty children
       
 
