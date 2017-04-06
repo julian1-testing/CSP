@@ -40,9 +40,9 @@ pad count = List.unfoldr f count
 -- rootNode = (Nothing, "dummy", -999  )
 
 
--- TODO change name - buildFromList...
+-- TODO change name - fromList...
 
-buildFacetGraph xs =
+fromList xs =
   -- Map of concept_id -> [ child concepts ]
   -- store the concept/child relationships in a map to enable O(log n) lookup of a nodes children
 
@@ -66,7 +66,7 @@ buildFacetGraph xs =
 
 
 
-sortFacetGraph m =
+sort m =
   -- sort the children according to their count
   Map.mapWithKey f m 
   where
@@ -77,7 +77,7 @@ sortFacetGraph m =
 
 
 
-printFacetGraph m = do
+print m = do
   -- non xml view of the graphoutput 
   let rootNode = (Nothing, "dummy", -999 )
   -- recurse from the root node down...
@@ -97,7 +97,7 @@ printFacetGraph m = do
 
 
 
-printXMLFacetGraph m = do
+printXML m = do
 
   -- we will recurse from the root node down...
   let rootNode = (Nothing, "dummy", -999 )
@@ -157,21 +157,16 @@ main = do
   let  facetList' = map (\f (a,b,c, d) -> (a,b,c, 123) )  facetList
   let  facetList' = facetList
 
-  let m = buildFacetGraph facetList'
+  let m = fromList facetList'
 
-  -- printFacet
-
-  print m
+  FacetFormat.print m
 
   -- nestings <- Facet.getConceptNesting conn
   -- let m' =  Facet.propagateAllRecordsToRoot nestings m
 
+  let m' = sort m 
 
-  let m' = sortFacetGraph m 
-
-
-  printXMLFacetGraph m'
-  -- printFacetGraph m
+  FacetFormat.print m'
 
   return ()
 
@@ -220,7 +215,7 @@ recurse conn depth (parent_id, label) = do
 
 {-
 
-buildFacetGraph' facetMap =
+fromList' facetMap =
 
   recurse' facetMap (Nothing, "dummy", -999  ) 0
 

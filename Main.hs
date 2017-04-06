@@ -73,13 +73,13 @@ main = do
 
 
   -- build the graph for output formatting 
-  let facetGraph = FacetFormat.buildFacetGraph completeFacetList
+  let facetGraph = FacetFormat.fromList completeFacetList
   -- (mapM print).(Map.toList) $ facetGraph
 
-  let sortedGraph = FacetFormat.sortFacetGraph facetGraph
+  let sortedGraph = FacetFormat.sort facetGraph
  
   -- format the thing -
-  FacetFormat.printXMLFacetGraph sortedGraph
+  FacetFormat.printXML sortedGraph
 
 {-
 -}
