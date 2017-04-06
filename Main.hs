@@ -77,8 +77,8 @@ main = do
           let (parent, label) = mapGet concept labels in
             case concept of
               Nothing -> 
-                -- the root node, which appears once - and is'nt a concept that we have a label for 
-                trace ("this is the rootNode count " ++ show count ) $ 
+                -- the root node, which appears once - and is'nt a concept or something that we have a label for so we drop it for now
+                -- trace ("this is the rootNode count " ++ show count ) $ 
                 m
               Just concept_id ->
                 -- a normal concept
@@ -88,15 +88,9 @@ main = do
   -- (mapM print) completeFacetList
 
 
-
-  -- we should be adding a root node here...
-  -- VERY IMPORTANT - the root should be created in the facetFormat.fromList 
-
   -- build the graph for output formatting 
   let facetGraph = FacetFormat.fromList completeFacetList
   -- (mapM print).(Map.toList) $ facetGraph
-
-  -- are we really sure we need to pass the root explicitly 
 
 
   let sortedGraph = FacetFormat.sort facetGraph
@@ -106,22 +100,8 @@ main = do
   -- format the thing -
   FacetFormat.printXML (length allRecordIds) sortedGraph
 
-
-
   return () 
 
 
-
-
-{-
-          case concept of 
-            -- ignore the root node
-            Nothing -> m
-            -- otherwise just insert, zipping with parent_id and label  
-            Just concept_id ->
-
-                  let (parent, label) = mapGet labels concept_id in
-                  (concept_id, parent, label, count) : m
--}
 
 
