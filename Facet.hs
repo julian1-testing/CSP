@@ -177,36 +177,23 @@ propagateRecordsToParentConcept nestings m =
   let (recordsToProcess, _) =  Map.partitionWithKey predHasRecords m in
   -- let cleaned =  Map.mapWithKey clearRecords m in
 
-  let propagated =  foldl (ignoreNothingParent (propagate recordsToProcess)) m nestings in
+  let propagated =  foldl ((ignoreNothingParent recordsToProcess) propagate ) m nestings in
+
+
+  -- we can do the ignore in the recordsToProcess predicate 
+
+  -- we fold over all the nestings. but only process entries in the recordsToProcess
 
   propagated
   where
-    ignoreNothingParent f m (concept_id, parent) =
+    ignoreNothingParent recordsToProcess f m (concept_id, parent) =
       case parent of
         Nothing -> m
         Just parent -> f m (concept_id, Just parent)  -- change this to get rid of the Just
 
-    -- what we need to know is if we have processed the thing
-    -- already in this round.
-    -- if we limited it to the partitioned records.o
-
-    -- No the fold - must take two things.... in a tuple....
-    -- we lookup stuff in the original only
-    -- this was correct...
-
-    -- we don't clear anything....
-    -- we take the entries...
-
-    -- we pass in the withRecords and move them - only...
-{-
-    -- uggh - we cannot just go and clean the reocrds - as then there is nothing to propagate...
-    clearRecords k (count, records) =
-        -- clean records but keep the count
-        (count, [] :: [ Integer ])
--}
 
 
-    propagate recordsToProcess m (concept_id, parent_id) =
+    propagate m (concept_id, parent_id) =
         -- fold over the concept parent nestings
         -- We update the records in the parent. - and record the count against the current node.
 
@@ -240,6 +227,27 @@ propagateRecordsToParentConcept nestings m =
         in case length records of
           0 -> False
           _ -> True
+
+
+
+    -- what we need to know is if we have processed the thing
+    -- already in this round.
+    -- if we limited it to the partitioned records.o
+
+    -- No the fold - must take two things.... in a tuple....
+    -- we lookup stuff in the original only
+    -- this was correct...
+
+    -- we don't clear anything....
+    -- we take the entries...
+
+    -- we pass in the withRecords and move them - only...
+{-
+    -- uggh - we cannot just go and clean the reocrds - as then there is nothing to propagate...
+    clearRecords k (count, records) =
+        -- clean records but keep the count
+        (count, [] :: [ Integer ])
+-}
 
 
 
