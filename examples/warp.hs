@@ -19,5 +19,5 @@ app req f = do
     print "got request"
     x <- f $ responseLBS status200 [(hContentType, "text/plain")] "Hello world!" 
     print "done request"
-    x
+    return x
 
