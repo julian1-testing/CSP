@@ -139,8 +139,8 @@ propagateRecordsToParentConcept nestings m =
 
 
     propagate m (concept_id, parent_id) =
-        -- fold over the concept parent nestings
-        -- We update the records in the parent. - and record the count against the current child node.
+        -- fold over the concept/parent nestings
+        -- and update the records in the parent. - and record the count against the current child node.
 
         -- get the records associated with child concept
         let (childCount, childRecords) = mapGet m (Just concept_id) in
@@ -162,12 +162,8 @@ propagateRecordsToParentConcept nestings m =
         Map.insert parent_id (parentCount, updatedParentRecords)
 
 
-    predHasRecords k v =
-        let (count, records) = v
-        -- TODO don't compute length - just test if empty or not
-        in case length records of
-          0 -> False
-          _ -> True
+    predHasRecords k (count, records) =
+        not $ null records
 
 
 
@@ -357,4 +353,12 @@ main = testPropagateAll
         (count, [] :: [ Integer ])
 -}
 
+{-
+
+        -- let (count, records) = v
+        -- TODO don't compute length - just test if empty or not
+        in case length records of
+          0 -> False
+          _ -> True
+-}
 

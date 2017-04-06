@@ -63,15 +63,18 @@ buildFacetGraph xs =
 
 
 
--- TODO
--- MOVE TO FACET not FacetFormat
--- NOT USED 
-  -- But it would be really nice to sort the children - as an independet transform 
-  -- not used yet...
--- should be possible since it's just an list
--- TODO - not used...
+
 sortFacetGraph m =
+  Map.mapWithKey f m 
+  where
+  f k v = v
+  
+
+{-
   let rootNode = (Nothing, "dummy", -999 ) in
+  m
+
+
   recurse m rootNode 0 
   where
     recurse m (parent_id, label, count) depth =
@@ -79,7 +82,7 @@ sortFacetGraph m =
       let sortedChildren =  reverse. List.sortOn (\(_, _, count) -> count) $ children  in
       let mm = map (\(concept_id, label, count)  -> recurse m (Just concept_id, label, count) (depth + 1)) sortedChildren in
       ()
-
+-}
 
 
 printFacetGraph m = do
@@ -147,11 +150,11 @@ getTestFacetList conn = do
           count
         from facet_view
   |]
-  xs :: [ (Integer, Maybe Integer, String, Integer  ) ] <- PG.query conn query ()
+  xs :: [ (Integer, Maybe Integer, String, Integer) ] <- PG.query conn query ()
   return xs
 
 
--- TODO rename to testMain ?
+
 main :: IO ()
 main = do
 
@@ -163,12 +166,18 @@ main = do
 
   let m = buildFacetGraph facetList'
 
+  -- printFacet
+
+  print m
 
   -- nestings <- Facet.getConceptNesting conn
   -- let m' =  Facet.propagateAllRecordsToRoot nestings m
 
 
-  printXMLFacetGraph m
+  let m' = sortFacetGraph m 
+
+
+  printXMLFacetGraph m'
   -- printFacetGraph m
 
   return ()
