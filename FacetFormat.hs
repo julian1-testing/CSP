@@ -152,47 +152,43 @@ formatXML rootRecordCount m = do
 
     doDimension (parent_id, label, count) depth =
       -- single closed tag...
-        (LT.append)
-
-        (LT.pack $
-          concatMap id [
-            (pad $ depth * 3),
-            "<dimension value=\"", label, "\"", " count=", show count, " />"
-            ]
-        )
-
-        (
+        LT.append
+          (LT.pack $
+            concatMap id [
+              (pad $ depth * 3),
+              "<dimension value=\"", label, "\"", " count=", show count, " />"
+              ]
+          ) $ 
           processChildren (parent_id, label, count) depth
-        )
 
-
-    processChildren (parent_id, label, count) depth = -- do 
-        -- get the children of this node and process them
-        let children = mapGet parent_id m  in
-        -- and process them
-
-        -- we forgot the depth argument...
-
-        -- let textChilren = map f children in
-        -- why isn't this working
-        -- let aaa = [ LT.empty ] in  
-
-
-        let f txt (concept_id, label, count) = LT.append txt $ recurse m ({-Just -}concept_id, label, count) (depth + 1) in
-
-        foldl f LT.empty children
+{-
+    doCategory (parent_id, label, count) depth  = do
       
-        -- should be a fold?
-         
-        -- where 
-          -- f txt (concept_id, label, count) = LT.append txt $ recurse m ({-Just -}concept_id, label, count) (depth + 1)
-          -- f t e = LT.append t e 
-          -- f t e = t 
-          -- f t e = LT.append t $ LT.pack e 
-          -- f t e = LT.append t  (e 
+      -- start tag
+      putStrLn $ concatMap id [
+        (pad $ depth * 3),
+        "<category value=\"", label, "\"", " count=", show count, " >"
+        ]
+      processChildren (parent_id, label, count) depth
 
-          -- f txt (concept_id, label, count) = LT.append txt $ recurse m ({-Just -}concept_id, label, count) (depth + 1)
- 
+      -- end tag
+      putStrLn $ concatMap id [
+        (pad $ depth * 3),
+        "</category>"
+        ]
+-}
+
+
+    processChildren (parent_id, label, count) depth =
+
+        -- take the node children
+        let children = mapGet parent_id m  in
+        -- appending function
+        let f txt (concept, label, count) = txt $ recurse m (concept, label, count) (depth + 1) in
+        -- fold
+        foldl (f.LT.append) LT.empty children
+      
+
  
 
 
