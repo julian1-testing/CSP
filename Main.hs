@@ -102,7 +102,13 @@ main = do
 
 
   -- format the thing -
-  FacetFormat.printXML (length allRecordIds) sortedGraph
+  -- FacetFormat.printXML (length allRecordIds) sortedGraph
+
+  let s = FacetFormat.formatXML (length allRecordIds) sortedGraph
+
+  -- print $ LBS.unpack d
+  -- S is LBS
+  print s 
 
   return () 
 

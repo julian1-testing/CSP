@@ -25,6 +25,7 @@ import Text.RawString.QQ
 import qualified Facet as Facet
 
 
+import qualified Data.Text.Lazy as LT
 
 -- ease syntax
 mapGet e m =
@@ -121,7 +122,9 @@ print m = do
 -- VERY IMPORTANT - it might be possible to do this more simply - by having separate lists. 
 
 
-printXML rootRecordCount m = do
+
+
+formatXML rootRecordCount m = do
 
   -- we will recurse from the root node down...
   -- remember that we cannot have a Nothing node above the Nothing node. so there's nowhere else to store label or count 
@@ -135,6 +138,75 @@ printXML rootRecordCount m = do
       -- what's going on here?
       case label of 
 
+        "dummy" ->
+          LT.pack "x" -- doResponse (parent_id, label, count) depth 
+    
+        -- we also need to do response - substitutiton, 
+        -- should we be doing this label substitution here, or when loading the vocab scheme and set the label ...
+        -- use
+        "AODN Parameter Category Vocabulary" ->
+          doDimension (parent_id, "Measured Parameter", count) depth 
+
+        "AODN Platform Category Vocabulary" ->
+          "z" -- doDimension (parent_id, "Platform", count) depth 
+
+        _ ->
+          "j" --doCategory (parent_id, label, count) depth 
+
+    doDimension (parent_id, label, count) depth =
+      -- single closed tag...
+      LT.pack $
+        concatMap id [
+          (pad $ depth * 3),
+          "<dimension value=\"", label, "\"", " count=", show count, " />"
+          ]
+      -- processChildren (parent_id, label, count) depth
+
+
+    processChildren (parent_id, label, count) depth = -- do 
+        -- get the children of this node and process them
+        let children = mapGet parent_id m  in
+        -- and process them
+
+        -- we forgot the depth argument...
+
+        -- let textChilren = map f children in
+        -- why isn't this working
+        -- let aaa = [ LT.empty ] in  
+
+
+        let f txt (concept_id, label, count) = LT.append txt $ recurse m ({-Just -}concept_id, label, count) (depth + 1) in
+
+        foldl f LT.empty children
+      
+        -- should be a fold?
+         
+        -- where 
+          -- f txt (concept_id, label, count) = LT.append txt $ recurse m ({-Just -}concept_id, label, count) (depth + 1)
+          -- f t e = LT.append t e 
+          -- f t e = t 
+          -- f t e = LT.append t $ LT.pack e 
+          -- f t e = LT.append t  (e 
+
+          -- f txt (concept_id, label, count) = LT.append txt $ recurse m ({-Just -}concept_id, label, count) (depth + 1)
+ 
+ 
+
+
+printXML rootRecordCount m = do
+
+  -- we will recurse from the root node down...
+  -- remember that we cannot have a Nothing node above the Nothing node. so there's nowhere else to store label or count 
+  -- information which isn't a known concept or scheme anyway
+  let rootNode = (Nothing, "summary", rootRecordCount )
+  recurse m rootNode 0
+  where
+    -- recurse down into child nodes
+    recurse m (parent_id, label, count) depth = do
+
+      -- what's going on here?
+      case label of 
+        -- TODO remove this....
         "dummy" ->
           doResponse (parent_id, label, count) depth 
     
@@ -162,25 +234,20 @@ printXML rootRecordCount m = do
           
 
     doResponse (parent_id, label, count) depth  = do
-
       -- single closed tag...
       putStrLn $ concatMap id [
         (pad $ depth * 3),
         "<summary count=", show count, " type=\"local\"/>"
         ]
-
       processChildren (parent_id, label, count) depth
- 
 
 
     doDimension (parent_id, label, count) depth  = do
-
       -- single closed tag...
       putStrLn $ concatMap id [
         (pad $ depth * 3),
         "<dimension value=\"", label, "\"", " count=", show count, " />"
         ]
-
       processChildren (parent_id, label, count) depth
      
 
@@ -191,7 +258,6 @@ printXML rootRecordCount m = do
         (pad $ depth * 3),
         "<category value=\"", label, "\"", " count=", show count, " >"
         ]
-
       processChildren (parent_id, label, count) depth
 
       -- end tag
@@ -199,6 +265,9 @@ printXML rootRecordCount m = do
         (pad $ depth * 3),
         "</category>"
         ]
+
+
+
 
 
 getTestFacetList conn = do
