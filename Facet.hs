@@ -30,7 +30,7 @@ mkUniq = toList . fromList
 
 -- WE SHOULD REVERSE THE SYNTAX TO MAKE IT CONSISTENT WITH EVERYTHING ELSE.. with m as the last argument
 -- ease syntax
-mapGet m e =
+mapGet e m =
   -- trace  ("mytrace - mapGet e: " ++ show e ++ " m: " ++ show m) $
   (Map.!) m e
 
@@ -109,7 +109,7 @@ buildLeafFacetMap xs =
     f m (concept_id, _, record) =
       case record of
         Just record_id ->
-          let (count, current) = mapGet m (Just concept_id) in
+          let (count, current) = mapGet (Just concept_id) m in
           let newLst = record_id : current in
           Map.insert (Just concept_id) (count, newLst) m
         Nothing ->
@@ -145,10 +145,10 @@ propagateRecordsToParentConcept nestings m =
         -- and update the records in the parent. - and record the count against the current child node.
 
         -- get the records associated with child concept
-        let (childCount, childRecords) = mapGet m (Just concept_id) in
+        let (childCount, childRecords) = mapGet (Just concept_id) m in
 
         -- get the records for the parent
-        let (parentCount, parentRecords) = mapGet m parent_id in
+        let (parentCount, parentRecords) = mapGet parent_id m in
 
         -- work out updated child count with records for this concept
         let updatedChildCount = childCount + length childRecords in  -- must be the existing count
@@ -271,7 +271,7 @@ testPropagateAll = do
   let m' =  propagateAllRecordsToRoot nestings m
 
   -- now just adjust the root node,,,
-  let (_, rootRecords) = mapGet m' Nothing
+  let (_, rootRecords) = mapGet Nothing m' 
   let rootCount = length rootRecords  
 
   let m'' = Map.insert Nothing (rootCount, [])  m'
