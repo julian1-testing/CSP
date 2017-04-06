@@ -59,15 +59,28 @@ fromList xs =
     -- insert empty list for concept_id
     -- this is ok.
     createEmptyList m (concept_id,_,_,_) =
-      Map.insert (Just concept_id) [] m
+      Map.insert (concept_id) [] m
 
     -- add items to the list associated with graph node with children
-    insertToList m (concept_id, parent_id, label,count) =
-      let childLst = mapGet parent_id m in
-      let newChildren = (concept_id, label, count) : childLst in
-      Map.insert parent_id newChildren m
+    insertToList m (concept_id, parent, label,count) =
+
+        let childLst = mapGet parent m in
+        let newChildren = (concept_id, label, count) : childLst in
+        Map.insert parent newChildren m
 
 
+{-
+      case parent of 
+        Nothing -> m
+          -- this is where we have to 
+          -- why doesn't this work if there is a root node there already
+
+        Just concept_id ->
+          let childLst = mapGet parent m in
+          let newChildren = (concept_id, label, count) : childLst in
+          Map.insert parent newChildren m
+
+-}
 
 
 sort m =
@@ -102,14 +115,16 @@ print m = do
 
 
 
-printXML rootNode m = do
+
+
+printXML m = do
   -- should change this so that it's returning a string? or concatenating?
 
   -- I think we should be passing in the root node.... as an argument
 
   -- we will recurse from the root node down...
-  -- let rootNode = mapGet (Nothing, "dummy", -999 )
-  recurse m rootNode  0
+  let rootNode = (Nothing, "summary", 119 )
+  recurse m rootNode 0
   where
     -- recurse down into child nodes
     recurse m (parent_id, label, count) depth = do
@@ -140,7 +155,7 @@ printXML rootNode m = do
         mapM f children
         return ()
         where 
-          f (concept_id, label, count) = recurse m (Just concept_id, label, count) (depth + 1)
+          f (concept_id, label, count) = recurse m ({-Just -}concept_id, label, count) (depth + 1)
           
 
     doResponse (parent_id, label, count) depth  = do
@@ -207,6 +222,7 @@ main = do
   let  facetList' = map (\f (a,b,c, d) -> (a,b,c, 123) )  facetList
   let  facetList' = facetList
 
+{-
   let m = fromList facetList'
 
   FacetFormat.print m
@@ -217,7 +233,7 @@ main = do
   let m' = sort m
 
   FacetFormat.print m'
-
+-}
   return ()
 
 

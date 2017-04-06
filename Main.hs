@@ -11,7 +11,11 @@ import qualified Data.Map as Map
 
 import Data.Function( (&) )
 
-mapGet m e = (Map.!) m e
+
+mapGet e m =
+  -- trace  ("mytrace - mapGet e: " ++ show e ++ " m: " ++ show m) $
+  (Map.!) m e
+
 
 
 
@@ -55,7 +59,7 @@ main = do
 
   labels <- Facet.getConceptLabels conn 
       >>= return.(Map.fromList).(map makePair)
-      >>= return.(\m ->  Map.insert Nothing ( Nothing, "summary") m )  -- insert a root node
+      -- >>= return.(\m ->  Map.insert Nothing ( Nothing, "this si wrong ") m )  -- insert a root node -- this isn't right
 
   -- print "##### labels"
   -- (mapM print).(Map.toList) $ labels
@@ -65,28 +69,47 @@ main = do
        Map.foldlWithKey f [] propagated 
         where
         f m concept (count, records) = 
-           let (parent, label) = mapGet labels concept in
-            (concept, parent, label, count) : m
+
+          let (parent, label) = mapGet concept labels in
+            case concept of
+              Nothing -> 
+                -- the root node, which doesn't exist as a concept
+                -- this isn't correct
+                -- (concept, Nothing, "summary", count) : m
+                m
+              Just concept_id ->
+                -- a normal concept
+                (concept, parent, label, count) : m
 
 
 
-  print "##### complete facet list"
-  (mapM print) completeFacetList
+  -- print "##### complete facet list"
+  -- (mapM print) completeFacetList
 
-
-
-{-
+  -- we should be adding a root node here...
+  -- VERY IMPORTANT - the root should be created in the facetFormat.fromList 
 
   -- build the graph for output formatting 
   let facetGraph = FacetFormat.fromList completeFacetList
-  -- (mapM print).(Map.toList) $ facetGraph
+  (mapM print).(Map.toList) $ facetGraph
 
-  let sortedGraph = FacetFormat.sort facetGraph
- 
-  -- format the thing -
-  FacetFormat.printXML rootNode sortedGraph
+  -- are we really sure we need to pass the root explicitly 
+
+{-
+  -- Nothing?????/
+  let rootNode = mapGet Nothing facetGraph
+  print "rootNode"
+  print rootNode
+  -- root node is an array?  why????
 -}
 
+{-
+  let sortedGraph = FacetFormat.sort facetGraph
+  (mapM print).(Map.toList) $ facetGraph
+
+  -- format the thing -
+  FacetFormat.printXML sortedGraph
+-}
 
 
 {-
