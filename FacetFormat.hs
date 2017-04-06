@@ -118,16 +118,14 @@ print m = do
 
 
 -- so all we need to do is pass the actual root node in here explicitly 
--- remember that we cannot have a Nothing node above the Nothing node. therefore there's nowhere to store the information...
 -- VERY IMPORTANT - it might be possible to do this more simply - by having separate lists. 
 
 
 printXML rootRecordCount m = do
-  -- should change this so that it's returning a string? or concatenating?
-
-  -- I think we should be passing in the root node.... as an argument
 
   -- we will recurse from the root node down...
+  -- remember that we cannot have a Nothing node above the Nothing node. so there's nowhere else to store label or count 
+  -- information which isn't a known concept or scheme anyway
   let rootNode = (Nothing, "summary", rootRecordCount )
   recurse m rootNode 0
   where
