@@ -40,6 +40,8 @@ pad count = List.unfoldr f count
 -- rootNode = (Nothing, "dummy", -999  )
 
 
+-- TODO change name - buildFromList...
+
 buildFacetGraph xs =
   -- Map of concept_id -> [ child concepts ]
   -- store the concept/child relationships in a map to enable O(log n) lookup of a nodes children
@@ -65,24 +67,14 @@ buildFacetGraph xs =
 
 
 sortFacetGraph m =
+  -- sort the children according to their count
   Map.mapWithKey f m 
   where
-  f k v = v
-  
-
-{-
-  let rootNode = (Nothing, "dummy", -999 ) in
-  m
+  f k children = 
+    reverse. List.sortOn (\(_, _, count) -> count) $ children 
 
 
-  recurse m rootNode 0 
-  where
-    recurse m (parent_id, label, count) depth =
-      let children = mapGet m parent_id in
-      let sortedChildren =  reverse. List.sortOn (\(_, _, count) -> count) $ children  in
-      let mm = map (\(concept_id, label, count)  -> recurse m (Just concept_id, label, count) (depth + 1)) sortedChildren in
-      ()
--}
+
 
 
 printFacetGraph m = do
@@ -106,6 +98,7 @@ printFacetGraph m = do
 
 
 printXMLFacetGraph m = do
+
   -- we will recurse from the root node down...
   let rootNode = (Nothing, "dummy", -999 )
   recurse m rootNode  0 
@@ -118,9 +111,9 @@ printXMLFacetGraph m = do
       -- get the children of this node
       let children = mapGet m parent_id
       -- sort according to facet count
-      let sortedChildren =  reverse. List.sortOn (\(_, _, count) -> count) $ children 
+      -- let sortedChildren =  reverse. List.sortOn (\(_, _, count) -> count) $ children 
       -- continue to recurse and process the children
-      mapM (\(concept_id, label, count)  -> recurse m (Just concept_id, label, count) (depth + 1)) sortedChildren
+      mapM (\(concept_id, label, count)  -> recurse m (Just concept_id, label, count) (depth + 1)) children --sortedChildren
       -- do end tag
       endTag (parent_id, label, count) depth  
       return ()
