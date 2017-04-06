@@ -6,8 +6,11 @@ examples/parse
 examples/psql
 examples/psql2
 examples/transform
+examples/Utf
+examples/Warp
 tmp
 Main
 Facet
+FacetFormat
 FacetFormat
 
