@@ -91,7 +91,7 @@ main = do
 
   -- build the graph for output formatting 
   let facetGraph = FacetFormat.fromList completeFacetList
-  (mapM print).(Map.toList) $ facetGraph
+  -- (mapM print).(Map.toList) $ facetGraph
 
   -- are we really sure we need to pass the root explicitly 
 
@@ -103,10 +103,10 @@ main = do
   -- root node is an array?  why????
 -}
 
-{-
   let sortedGraph = FacetFormat.sort facetGraph
   (mapM print).(Map.toList) $ facetGraph
 
+{-
   -- format the thing -
   FacetFormat.printXML sortedGraph
 -}
