@@ -45,7 +45,8 @@ pad count = List.unfoldr f count
 -- a dummy root node - because we use it in multiple places - but there's a typing issue somewhere,
 -- rootNode = (Nothing, "dummy", -999  )
 
-
+-- We have no way of representing the root node...
+-- so we will have to pass it explicitly...
 
 fromList xs =
   -- Map of concept_id -> [ child concepts ]
@@ -116,15 +117,18 @@ print m = do
 
 
 
+-- so all we need to do is pass the actual root node in here explicitly 
+-- remember that we cannot have a Nothing node above the Nothing node. therefore there's nowhere to store the information...
+-- VERY IMPORTANT - it might be possible to do this more simply - by having separate lists. 
 
 
-printXML m = do
+printXML rootRecordCount m = do
   -- should change this so that it's returning a string? or concatenating?
 
   -- I think we should be passing in the root node.... as an argument
 
   -- we will recurse from the root node down...
-  let rootNode = (Nothing, "summary", 119 )
+  let rootNode = (Nothing, "summary", rootRecordCount )
   recurse m rootNode 0
   where
     -- recurse down into child nodes

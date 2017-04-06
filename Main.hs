@@ -67,11 +67,11 @@ main = do
   -- (mapM print).(Map.toList) $ labels
 
   -- now join the label information with the facet list
+  -- TODO propagated should be passed as an argument
   let completeFacetList = 
        Map.foldlWithKey f [] propagated 
         where
         f m concept (count, records) = 
-
           let (parent, label) = mapGet concept labels in
             case concept of
               Nothing -> 
@@ -83,6 +83,20 @@ main = do
                 (concept, parent, label, count) : m
 
 
+{-
+  -- root node count, and all records....
+  -- fold with a map...
+  -- actually we should probably return the damn list of items - because we need it for later
+  let rootRecords = 
+       Map.foldlWithKey f [] propagated 
+            where
+              f m concept (count, records) = 
+                case concept of
+                  Nothing -> 
+                    records
+                  Just concept_id              
+                    m
+ -}      
 
   -- print "##### complete facet list"
   -- (mapM print) completeFacetList
@@ -109,7 +123,7 @@ main = do
 
 
   -- format the thing -
-  FacetFormat.printXML sortedGraph
+  FacetFormat.printXML 333 sortedGraph
 
 
 

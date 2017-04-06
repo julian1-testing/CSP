@@ -9,7 +9,7 @@ FLAGS="-O2 -outputdir tmp"
 
 
 # we don't want to remove the files in output otherwise we have to build everythign again
-rm Main
+# rm Main
 
 ghc $FLAGS Facet.hs Main.hs FacetFormat.hs
 
