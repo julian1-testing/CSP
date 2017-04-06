@@ -1,8 +1,19 @@
+
 {-# LANGUAGE OverloadedStrings #-}
+
+
+-- see here on routes, http://cjwebb.github.io/blog/2016/12/16/getting-started-with-haskells-warp/
+{-
+  app :: Application
+  app req res =
+    res $ case rawPathInfo req of
+      "/" -> helloRoute
+      _   -> notFoundRoute
+-}
 
 import Network.Wai (responseLBS, Application)
 import Network.Wai.Handler.Warp (run)
-import Network.HTTP.Types (status200)
+import Network.HTTP.Types (status200, status404)
 import Network.HTTP.Types.Header (hContentType)
 
 {-
@@ -12,10 +23,12 @@ import qualified Data.Text.Encoding as E
 -}
 
 import qualified Data.Text.Lazy    as LT
-import qualified Data.Text.Lazy.IO as LT
+import qualified Data.Text.Lazy.IO as LT  -- 
 import qualified Data.Text.Lazy.Encoding as LE
 
 
+-- needed for using print
+import qualified Data.ByteString.Lazy.Char8 as LBS
 
 main = do
     let port = 3000
@@ -38,10 +51,13 @@ app req f = do
     -- 
     let d = LE.encodeUtf8 c
 
+    print $ LBS.unpack d -- "sending data " -- kind of works.
+
+    -- LBS.putStrLn  LBS.unpack d
 
     -- x <- f $ responseLBS status200 [(hContentType, "text/plain")] d --"Hello world!" 
     -- x <- f $ responseLBS status200 [(hContentType, "text/plain")] d --"Hello world!" 
-    x <- f $ responseLBS status200 [(hContentType, "text/html; charset=utf-8")] d --"Hello world!" 
+    x <- f $ responseLBS status200 [(hContentType,  "text/html; charset=utf-8")] d --"Hello world!" 
 
     print "done request"
     return x
