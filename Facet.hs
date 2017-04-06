@@ -346,11 +346,17 @@ testPropagateOnce = do
   let m'  = propagateRecordsToParentConcept nestings m
   putStrLnFacetMap m'
 
-  {-
+  
   putStrLn "######################## 2"
   let m''  = propagateRecordsToParentConcept nestings m'
   putStrLnFacetMap m''
-  -}
+
+
+  putStrLn "######################## 3"
+  let m'''  = propagateRecordsToParentConcept nestings m''
+  putStrLnFacetMap m'''
+ 
+  
   return ()
 
 
