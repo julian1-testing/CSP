@@ -173,24 +173,26 @@ propagateRecordsToParentConcept nestings m =
   -- OR - empty everything first... - yes I think this is good...
   -- IMPORTANT we may not even have to partition - but it may make it easier in avoiding the tests
 
-  -- let original = m in
-  let (recordsToProcess, _) =  Map.partitionWithKey predHasRecords m in
   -- let cleaned =  Map.mapWithKey clearRecords m in
+  -- let original = m in
+
+  let (recordsToProcess, _) =  Map.partitionWithKey predHasRecords m in
 
   let propagated =  foldl ((ignoreNothingParent recordsToProcess) propagate ) m nestings in
 
+  propagated
 
   -- we can do the ignore in the recordsToProcess predicate 
 
   -- we fold over all the nestings. but only process entries in the recordsToProcess
 
-  propagated
   where
     ignoreNothingParent recordsToProcess f m (concept_id, parent) =
       case parent of
         Nothing -> m
-        Just parent -> f m (concept_id, Just parent)  -- change this to get rid of the Just
-
+        Just parent -> case Map.member (Just concept_id) recordsToProcess of 
+            True -> f m (concept_id, Just parent)
+            False -> m
 
 
     propagate m (concept_id, parent_id) =
@@ -212,8 +214,6 @@ propagateRecordsToParentConcept nestings m =
         -- add thie child's records to the parent - and deduplicate
         let updatedParentRecords = mkUniq ( parentRecords ++ childRecords ) in
 
- --       m
-
         -- and store for child... 
         Map.insert (Just concept_id) (updatedChildCount, []) m
 
@@ -224,6 +224,7 @@ propagateRecordsToParentConcept nestings m =
 
     predHasRecords k v =
         let (count, records) = v
+        -- TODO don't compute length - just test if empty or not
         in case length records of
           0 -> False
           _ -> True
@@ -379,8 +380,8 @@ testPropagateAll = do
 
 -- change name to test?
 main :: IO ()
--- main = testPropagateOnce
-main = testPropagateAll
+main = testPropagateOnce
+-- main = testPropagateAll
 
 
 
