@@ -176,21 +176,24 @@ propagateAllRecordsToRoot nestings m =
       maybe we can handle this by clearing of Nothing as wel go
   -}
 
-  case countUnprocessed m == 0 of   -- change to countUnrpocessed = 0 _ otherwise
-    True -> m
-    False ->
+  case countUnprocessed m of   -- change to countUnrpocessed = 0 _ otherwise
+    0 -> 
+      -- finished
+      m
+    _ ->
+      -- keep processing, more to do
       propagateRecordsToParentConcept nestings m
       & propagateAllRecordsToRoot nestings
   where
     countUnprocessed m =
       Map.foldlWithKey f 0 m
-        where
-        f m concept_id (_, recordsForConcept) = 
-          case concept_id of
-            -- ignore root node
-            Nothing -> m
-            -- sum count 
-            Just _ -> m + length recordsForConcept
+
+    f m concept_id (_, recordsForConcept) = 
+      case concept_id of
+        -- ignore root node
+        Nothing -> m
+        -- sum record count 
+        Just _ -> m + length recordsForConcept
 
 
 
