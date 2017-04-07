@@ -7,13 +7,15 @@ module CSW where
 
 import Text.XML.HXT.Core
 
-import Network.HTTP.Client
-import Network.HTTP.Client.TLS
+
+import Network.HTTP.Client(responseBody, responseStatus)
+import Network.HTTP.Client.TLS 
 import Network.HTTP.Types.Status (statusCode)
 
 -- TODO import qualified
-import Network.HTTP.Types.Method
-import Network.HTTP.Types.Header
+--import Network.HTTP.Types.Method
+-- import Network.HTTP.Types.Header
+
 
 import qualified Data.ByteString as B
 import qualified Data.ByteString.Char8 as BC
@@ -31,41 +33,7 @@ import Text.RawString.QQ
 
 
 
-import Helpers(parseXML, atTag, atChildName, getChildText, stripSpace ) 
-
-
-
-
-doHTTPGET url = do
-    let settings = tlsManagerSettings { managerResponseTimeout = responseTimeoutMicro $ 60 * 1000000 }
-    manager <- newManager settings
-    request <- parseRequest url
-    response <- httpLbs request manager
-    -- Prelude.putStrLn $ "The status code was: " ++ (show $ statusCode $ responseStatus response)
-    return response
-
-
-
-
-doHTTPPost url body = do
-    let settings = tlsManagerSettings  {
-        managerResponseTimeout = responseTimeoutMicro $ 60 * 1000000
-    }
-    manager <- newManager settings
-    -- get initial request
-    initialRequest <- parseRequest url
-    -- modify for post
-    let request = initialRequest {
-        method = BC.pack "POST",
-        requestBody = RequestBodyBS $ BC.pack body,
-        requestHeaders = [
-            (hContentType, BC.pack "application/xml")
-        ]
-    }
-    response <- httpLbs request manager
-    Prelude.putStrLn $ "The status code was: " ++ (show $ statusCode $ responseStatus response)
-    return response
-
+import Helpers(parseXML, atTag, atChildName, getChildText, stripSpace, doHTTPPost, doHTTPGet ) 
 
 
 
@@ -95,7 +63,7 @@ getCSWIdentifiers s = do
 doCSWGetRecords = do
     let url = "https://catalogue-imos.aodn.org.au/geonetwork/srv/eng/csw"
     -- putStrLn query
-    response <- doHTTPPost url queryWMSAndIMOS
+    response <- Helpers.doHTTPPost url queryWMSAndIMOS
     let s = BLC.unpack $ responseBody response
     return s
     where
@@ -143,7 +111,7 @@ doCSWGetRecords = do
 getCSWGetRecordById uuid title = do
     -- TODO - pass the catalog as a parameter - or pre-apply the whole thing.
     putStrLn $ concatMap id [ title, " ", uuid, " ", url ]
-    response <- doHTTPGET url
+    response <- Helpers.doHTTPGet url
     putStrLn $ "  The status code was: " ++ (show $ statusCode $ responseStatus response)
     let s = BLC.unpack $ responseBody response
     -- putStrLn s

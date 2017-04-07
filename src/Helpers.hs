@@ -46,3 +46,37 @@ getChildText = getChildren >>> getText
 stripSpace = filter $ not.isSpace
 
 
+
+
+doHTTPGet url = do
+    let settings = tlsManagerSettings { managerResponseTimeout = responseTimeoutMicro $ 60 * 1000000 }
+    manager <- newManager settings
+    request <- parseRequest url
+    response <- httpLbs request manager
+    -- Prelude.putStrLn $ "The status code was: " ++ (show $ statusCode $ responseStatus response)
+    return response
+
+
+
+
+doHTTPPost url body = do
+    let settings = tlsManagerSettings  {
+        managerResponseTimeout = responseTimeoutMicro $ 60 * 1000000
+    }
+    manager <- newManager settings
+    -- get initial request
+    initialRequest <- parseRequest url
+    -- modify for post
+    let request = initialRequest {
+        method = BC.pack "POST",
+        requestBody = RequestBodyBS $ BC.pack body,
+        requestHeaders = [
+            (hContentType, BC.pack "application/xml")
+        ]
+    }
+    response <- httpLbs request manager
+    Prelude.putStrLn $ "The status code was: " ++ (show $ statusCode $ responseStatus response)
+    return response
+
+
+
