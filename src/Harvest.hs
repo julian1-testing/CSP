@@ -34,7 +34,7 @@ processMD conn (uuid, title) = do
     -- TODO IMPORTANT - should remove the uuid first...
     -- TODO - VERY IMPORTANT we should separate out the CSW action of getting the record 
     -- removing the old stuff and indexing resources and parameters,
-    record <- CSW.getRecordById uuid title
+    record <- CSW.doGetRecordById uuid title
     MD.processRecordUUID conn uuid title
     MD.processDataParameters conn uuid record
     MD.processOnlineResources conn uuid record
@@ -54,7 +54,7 @@ processAllMDs conn = do
     identifiers <- CSW.doGetRecords
     -- TODO what's happening here,
     s <- CSW.doGetRecords
-    identifiers <- CSW.getIdentifiers s
+    identifiers <- CSW.doGetIdentifiers s
     mapM (processMD conn) identifiers
 
 
@@ -90,7 +90,7 @@ main = do
 
   s <- doCSWGetMDs
 
-  identifiers <- getIdentifiers s
+  identifiers <- doGetIdentifiers s
 
   -- IMPORTANT - we should have a single function...
   mapM (processMD conn) identifiers

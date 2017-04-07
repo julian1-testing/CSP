@@ -27,8 +27,9 @@ parseCSWSummaryRecord = atTag "csw:SummaryRecord" >>>
     returnA -< (identifier, title)
 
 
+-- should be a do...
 
-getIdentifiers s = do
+doGetIdentifiers s = do
     identifiers <- runX (parseXML s  >>> parseCSWSummaryRecord)
     -- print
     -- mapM (putStrLn.format) identifiers
@@ -90,7 +91,7 @@ doGetRecords = do
       |]
 
 
-getRecordById uuid title = do
+doGetRecordById uuid title = do
     -- TODO - pass the catalog as a parameter - or pre-apply the whole thing.
     putStrLn $ concatMap id [ title, " ", uuid, " ", url ]
     response <- Helpers.doHTTPGet url
