@@ -133,9 +133,10 @@ myConcat lst = foldl LT.append LT.empty lst
 
 formatXML rootRecordCount m = 
 
-  -- we will recurse from the root node down...
-  -- remember that we cannot have a Nothing node above the Nothing node. so there's nowhere else to store label or count 
-  -- information which isn't a known concept or scheme anyway
+  {-  we will recurse from the root node down...
+      remember that we cannot have a Nothing node above the Nothing node. so there's nowhere else to store label or count 
+      information which isn't a known concept or scheme anyway
+  -}
   let rootNode = (Nothing, "summary", rootRecordCount ) in
   recurse m rootNode 0
   where
@@ -158,14 +159,9 @@ formatXML rootRecordCount m =
     doDimension (parent_id, label, count) depth =
       -- single closed tag...
         myConcat [
-        -- LT.append
-          (LT.pack $
-            concatMap id [
-              (pad $ depth * 3),
-              "<dimension value=\"", label, "\"", " count=", show count, " />"
-              ]
-          ), 
-          processChildren (parent_id, label, count) depth
+              LT.pack $ (pad $ depth * 3),
+              LT.pack $ concatMap id [ "<dimension value=\"", label, "\"", " count=", show count, " />"  ], 
+              processChildren (parent_id, label, count) depth
         ]
 
 
