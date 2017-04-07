@@ -12,14 +12,14 @@ import Database.PostgreSQL.Simple as PG(query, execute, connectPostgreSQL)
 import Database.PostgreSQL.Simple.Types as PG(Only(..))
 import Text.RawString.QQ
 
-import Helpers(parseXML, atTag, atChildName, getChildText, stripSpace) 
+import Helpers(parseXML, atTag, atChildName, getChildText, stripSpace)
 
 -- IMPORTANT must close!!!
 -- responseClose :: Response a -> IO ()
 
 
 {-
-    we work out what we need by looking at 
+    we work out what we need by looking at
         1. MetaDataRecord.js and seeing the fields
         2. looking at the fields in the response.xml
         3. then mapping the values in response.xml back into original argo.xml record to get tag name
@@ -34,7 +34,7 @@ import Helpers(parseXML, atTag, atChildName, getChildText, stripSpace)
         uuid                 done
         parameterField   -   done db join vocab  parameters we have - just join in the db and format
         platform         -   done db field join vocab
-        
+
         organisationField    - **** don't have yet - .
 
         jurisdictionLink    done
@@ -42,34 +42,36 @@ import Helpers(parseXML, atTag, atChildName, getChildText, stripSpace)
         licenseName         done
         licenseImagelink    done
 
-        attrConstrField -> attrConstr ->  
-            - more than one in MD_Commons 
+        attrConstrField -> attrConstr ->
+            - more than one in MD_Commons
 
         otherConstrField ->  also in MDcommons
 
-        otherCitation  <- does not appear in summary-response
-        useLimitationiField -> useLimitation - more than one
+        otherCitation      ***** does not appear in summary-response
+        useLimitationiField done -> useLimitation - more than one
+
+        temperalExtentBegin, -> tempExtentBegin  -> it's just a date  eg. <tempExtentBegin>1999-10-01t00:00:00.000z</tempExtentBegin>
 
 -}
 
-parseFileIdentifier = 
+parseFileIdentifier =
   atTag "gmd:fileIdentifier" >>>
   proc identifier -> do
     uuid <- atChildName "gco:CharacterString" >>> getChildText -< identifier
     returnA -< (uuid)
 
 
-data MCP2Record = MCP2Record { title:: String  
-                     , abstract:: String  
+data MCP2Record = MCP2Record { title:: String
+                     , abstract:: String
                      , jurisdictionLink :: String
                      , licenseLink :: String
                      , licenseName :: String
                      , licenseImageLink:: String
 --                     , attrConstr :: String
 --                     , otherAttrConstr :: String
-                     } deriving (Show, Eq)  
+                     } deriving (Show, Eq)
 
--- p = Person { firstName = "john", lastName = "madden", age = 34 }  
+-- p = Person { firstName = "john", lastName = "madden", age = 34 }
 
 
 
@@ -78,28 +80,28 @@ parseDataIdentification =
   atTag "mcp:MD_DataIdentification" >>>
   proc dataIdent -> do
 
-    title <- atChildName "gmd:citation" >>> atChildName "gmd:CI_Citation" >>> atChildName "gmd:title"  
+    title <- atChildName "gmd:citation" >>> atChildName "gmd:CI_Citation" >>> atChildName "gmd:title"
         >>> atChildName "gco:CharacterString" >>> getChildText -< dataIdent
 
     abstract <- atChildName "gmd:abstract" >>> atChildName "gco:CharacterString" >>> getChildText -< dataIdent
 
     -- and only one md_commons
-    md_commons <- atChildName "gmd:resourceConstraints" >>> atChildName "mcp:MD_Commons" -< dataIdent 
+    md_commons <- atChildName "gmd:resourceConstraints" >>> atChildName "mcp:MD_Commons" -< dataIdent
 
     jurisdictionLink <- atChildName "mcp:jurisdictionLink" >>> atChildName "gmd:URL" >>> getChildText -< md_commons
 
     licenseLink <- atChildName "mcp:licenseLink" >>> atChildName "gmd:URL" >>> getChildText -< md_commons
-    
+
     licenseName <- atChildName "mcp:licenseName" >>> atChildName "gco:CharacterString" >>> getChildText -< md_commons
 
     licenseImageLink <- atChildName "mcp:imageLink" >>> atChildName "gmd:URL" >>> getChildText -< md_commons
- 
-    returnA -< MCP2Record { 
+
+    returnA -< MCP2Record {
         title = title,
-        abstract = abstract, 
-        jurisdictionLink = jurisdictionLink, 
-        licenseLink = licenseLink, 
-        licenseName = licenseName, 
+        abstract = abstract,
+        jurisdictionLink = jurisdictionLink,
+        licenseLink = licenseLink,
+        licenseName = licenseName,
         licenseImageLink = licenseImageLink
         }
 
@@ -116,7 +118,7 @@ parseAttributionConstraints =
         <gmd:MD_Constraints>
           <gmd:useLimitation>
             <gco:CharacterString>Data, products and services from IMOS are provided "as is" without any warranty as to fitness for a particular purpose.</gco:CharacterString>
- 
+
 -}
 
 parseUseLimitations =
@@ -128,22 +130,38 @@ parseUseLimitations =
 
 
 
+{-
+      <gmd:extent>
+        <gmd:EX_Extent>
+          <GMD:geographicElement>
+
+          <gmd:temporalElement>
+            <mcp:EX_TemporalExtent gco:isoType="gmd:EX_TemporalExtent">
+              <gmd:extent>
+                <gml:TimePeriod gml:id="d98744e634a1052958">
+                  <gml:begin>
+                    <gml:TimeInstant gml:id="d98744e636a1052958">
+                      <gml:timePosition>1999-10-01</gml:timePosition>
+                    </gml:TimeInstant>
+                  </gml:begin>
+
+-}
+
+parseTemporalExtentBegin =
+  -- once
+  atTag "gmd:extent"  >>> atChildName "gmd:EX_Extent" >>>
+  proc extent -> do
+    begin <- atChildName "gmd:temporalElement" >>> atChildName "mcp:EX_TemporalExtent"
+        >>> atChildName "gmd:extent" >>> atChildName "gml:TimePeriod"
+        >>> atChildName "gml:begin" >>> atChildName "gml:TimeInstant"
+        >>> atChildName "gml:timePosition" >>> getChildText -< extent
+    returnA -< begin
 
 
-    {-
-        -- no  
-        -- gmd:MD_Constraints
-        md_constraints <- atChildName "gmd:resourceConstraints" >>> atChildName "gmd:MD_Constraints" -< dataIdent 
-
-        otherAttrConstr <- atChildName "gmd:useLimitation" >>> atChildName "gco:CharacterString" >>> getChildText -< md_constraints
-    -}
-    -- it's getting hard to read see this....
 
 
 
 
---- OK 
- -- where getting multiple things????
 
 parseOnlineResources =
   atTag "gmd:CI_OnlineResource" >>>
@@ -234,9 +252,9 @@ processDataParameters conn uuid recordText = do
 
 
 testArgoRecord = do
-    recordText <- readFile "./test-data/argo.xml" 
+    recordText <- readFile "./test-data/argo.xml"
 
-    let parsed = Helpers.parseXML recordText 
+    let parsed = Helpers.parseXML recordText
 
     -- data parameters
     dataParameters <- runX (parsed >>> parseDataParameters)
@@ -250,7 +268,7 @@ testArgoRecord = do
     -- dataIdentification
     print "###### data identification stuff"
     x <- runX (parsed >>> parseDataIdentification )
-    print x 
+    print x
 
     -- dataIdentification
     print "###### attribution constraints "
@@ -261,8 +279,14 @@ testArgoRecord = do
     j <- runX (parsed >>> parseUseLimitations)
     mapM print j
 
+
+    print "###### temporal begin"
+    t <- runX (parsed >>> parseTemporalExtentBegin )
+    mapM print t
+
+
     return ()
 
 
-main = testArgoRecord 
- 
+main = testArgoRecord
+
