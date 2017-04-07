@@ -5,24 +5,18 @@ import qualified Database.PostgreSQL.Simple as PG(query, connectPostgreSQL)
 
 import qualified Facet as Facet--(buildLeafFacetMap,main)
 import qualified FacetFormat as FacetFormat--(main)
-
 import qualified Data.Map as Map
+import qualified Data.Text.Lazy.IO as LT(putStrLn)
+-- import qualified Data.Text.Lazy as LT
 
 import Debug.Trace(trace)
-
-
 import Data.Function( (&) )
-
--- import qualified Data.Text.Lazy    as LT
-import qualified Data.Text.Lazy.IO as LT(putStrLn)  -- 
 
 
 
 mapGet e m =
   -- trace  ("mytrace - mapGet e: " ++ show e ++ " m: " ++ show m) $
   (Map.!) m e
-
-
 
 
 

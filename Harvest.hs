@@ -1,13 +1,11 @@
+
 -- stack --install-ghc --resolver lts-5.13 runghc --package http-conduit
 
--- {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE Arrows, NoMonomorphismRestriction #-}
-
--- needed for disambiguating types,
 {-# LANGUAGE ScopedTypeVariables, OverloadedStrings #-}
-
 {-# LANGUAGE QuasiQuotes #-}
 
+module Harvest where
 
 import Text.XML.HXT.Core
 

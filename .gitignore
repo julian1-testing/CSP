@@ -1,6 +1,5 @@
 *.o
 *.hi
-harvest
 load-scheme
 examples/parse
 examples/psql
@@ -9,8 +8,8 @@ examples/transform
 examples/Utf
 examples/Warp
 tmp
+Harvest
 Main
 Facet
-FacetFormat
 FacetFormat
 

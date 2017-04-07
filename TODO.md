@@ -1,23 +1,21 @@
 
-0. done - why doesn't the fucking thing, propagate to the parent Nothing node?....
+Ok - now we need to massage the XML
+
+----
+done - why doesn't the fucking thing, propagate to the parent Nothing node?....
   - we need to check that we actually have a relationship to the parent.
 
 
-2. get recusion and tree output working again? - on subset?
+done get recusion and tree output working again? - on subset?
   - we only need the counts on the category - so we
       store the coutn associated with the node.
       and then do the monadic recursion.
 
-  output xml
-
-  - I think we need to get the actual xml outputted - in whatever form we want to use in order
-      to know how to construct our real view...
-
-  - can either use text
+  - done can either use text
   - or use hxt. need to - think about hxt graph construction...
 
 
-1. fix platform indexing
+done - fix platform indexing
 
 
 

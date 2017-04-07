@@ -14,6 +14,11 @@ FLAGS="-O2 -outputdir tmp"
 ghc $FLAGS Facet.hs Main.hs FacetFormat.hs
 
 
+# setting the main function explicitly avoids Main.o files being generated in tmp and confusing the build.
+ghc $FLAGS -main-is Harvest.main Harvest.hs
+
+
+
 # compile Facet test code,
 # ghc -main-is Facet.main -outputdir tmp Facet.hs  -o ./Facet
 
