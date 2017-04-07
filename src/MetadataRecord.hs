@@ -14,15 +14,16 @@ import Text.RawString.QQ
 
 import Helpers(parseXML, atTag, atChildName, getChildText, stripSpace) 
 
+{-
+    we work out what we need by looking at 
+        MetaDataRecord.js and seeing the fields
+        looking at the fields in the response.xml
+        then mapping the values in response.xml back into original argo.xml record
+-}
 
 -- IMPORTANT must close!!!
 -- responseClose :: Response a -> IO ()
 
--- we don't parse the uuid - because we have required it...
-
-
--- need a data structure...
--- should parse the identifier - even if it's not used for CSW 
 
 {-
     ./web-app/js/portal/data/MetadataRecord.js
@@ -65,13 +66,8 @@ parseDataIdentification =
 
     abstract <- atChildName "gmd:abstract" >>> atChildName "gco:CharacterString" >>> getChildText -< dataIdent
 
-    -- jurisdictionLink <- atChildName "gmd:abstract" >>> atChildName "gco:CharacterString" >>> getChildText -< dataIdent
-
-    -- jurisdictionLink <- atChildName "gmd:resourceConstraints" >>> atChildName "mcp:MD_Commons" 
-        -- >>> getChildText -< dataIdent
-
-    jurisdictionLink <- atChildName "gmd:resourceConstraints" >>> atChildName "mcp:MD_Commons" >>> atChildName "mcp:jurisdictionLink" >>> atChildName "gmd:URL" >>> getChildText -< dataIdent
-
+    jurisdictionLink <- atChildName "gmd:resourceConstraints" >>> atChildName "mcp:MD_Commons" 
+        >>> atChildName "mcp:jurisdictionLink" >>> atChildName "gmd:URL" >>> getChildText -< dataIdent
 
     returnA -< (title,abstract, jurisdictionLink)
 
