@@ -14,15 +14,17 @@ import Text.RawString.QQ
 
 import Helpers(parseXML, atTag, atChildName, getChildText, stripSpace) 
 
-{-
-    we work out what we need by looking at 
-        MetaDataRecord.js and seeing the fields
-        looking at the fields in the response.xml
-        then mapping the values in response.xml back into original argo.xml record
--}
-
 -- IMPORTANT must close!!!
 -- responseClose :: Response a -> IO ()
+
+
+{-
+    we work out what we need by looking at 
+        1. MetaDataRecord.js and seeing the fields
+        2. looking at the fields in the response.xml
+        3. then mapping the values in response.xml back into original argo.xml record to get tag name
+-}
+
 
 
 {-
@@ -41,15 +43,12 @@ import Helpers(parseXML, atTag, atChildName, getChildText, stripSpace)
         licenseImagelink    done
 
         attrConstrField -> attrConstr ->  
-            - there is one in Commons 
-            -- and another 
+            - more than one in MD_Commons 
 
-        otherConstrField -> 
+        otherConstrField ->  also in MDcommons
 
-          <mcp:attributionConstraints>
-            <gco:CharacterString>The citation in a list of references is: "IMOS [year-of-data-download], [Title], [data-access-URL], accessed [date-of-access]."</gco:CharacterString>
-          </mcp:attributionConstraints>
- 
+        otherCitation  <- does not appear in summary-response
+        useLimitationiField -> useLimitation - more than one
 
 -}
 
@@ -75,6 +74,7 @@ data MCP2Record = MCP2Record { title:: String
 
 
 parseDataIdentification =
+  -- single instance
   atTag "mcp:MD_DataIdentification" >>>
   proc dataIdent -> do
 
@@ -83,8 +83,7 @@ parseDataIdentification =
 
     abstract <- atChildName "gmd:abstract" >>> atChildName "gco:CharacterString" >>> getChildText -< dataIdent
 
-    -- separate out into a different function? no because it becomes too difficult to destrcture - but does it? 
-    -- mcp:MD_Commons
+    -- and only one md_commons
     md_commons <- atChildName "gmd:resourceConstraints" >>> atChildName "mcp:MD_Commons" -< dataIdent 
 
     jurisdictionLink <- atChildName "mcp:jurisdictionLink" >>> atChildName "gmd:URL" >>> getChildText -< md_commons
@@ -94,21 +93,54 @@ parseDataIdentification =
     licenseName <- atChildName "mcp:licenseName" >>> atChildName "gco:CharacterString" >>> getChildText -< md_commons
 
     licenseImageLink <- atChildName "mcp:imageLink" >>> atChildName "gmd:URL" >>> getChildText -< md_commons
-  
---    attrConstr <- atChildName "mcp:attributionConstraints" >>> atChildName "gco:CharacterString" >>> getChildText -< md_commons
+ 
+    returnA -< MCP2Record { 
+        title = title,
+        abstract = abstract, 
+        jurisdictionLink = jurisdictionLink, 
+        licenseLink = licenseLink, 
+        licenseName = licenseName, 
+        licenseImageLink = licenseImageLink
+        }
+
+
+parseAttributionConstraints =
+  -- have more than one
+  atTag "gmd:resourceConstraints"  >>> atChildName "mcp:MD_Commons" >>>
+  proc md_commons -> do
+    attrConstr <- atChildName "mcp:attributionConstraints" >>> atChildName "gco:CharacterString" >>> getChildText -< md_commons
+    returnA -< attrConstr
 
 {-
-    -- gmd:MD_Constraints
-    md_constraints <- atChildName "gmd:resourceConstraints" >>> atChildName "gmd:MD_Constraints" -< dataIdent 
-
-    otherAttrConstr <- atChildName "gmd:useLimitation" >>> atChildName "gco:CharacterString" >>> getChildText -< md_constraints
+      <gmd:resourceConstraints>
+        <gmd:MD_Constraints>
+          <gmd:useLimitation>
+            <gco:CharacterString>Data, products and services from IMOS are provided "as is" without any warranty as to fitness for a particular purpose.</gco:CharacterString>
+ 
 -}
+
+parseUseLimitations =
+  -- have more than one
+  atTag "gmd:resourceConstraints"  >>> atChildName "gmd:MD_Constraints" >>>
+  proc md_commons -> do
+    useLimitation <- atChildName "gmd:useLimitation" >>> atChildName "gco:CharacterString" >>> getChildText -< md_commons
+    returnA -< useLimitation
+
+
+
+
+
+    {-
+        -- no  
+        -- gmd:MD_Constraints
+        md_constraints <- atChildName "gmd:resourceConstraints" >>> atChildName "gmd:MD_Constraints" -< dataIdent 
+
+        otherAttrConstr <- atChildName "gmd:useLimitation" >>> atChildName "gco:CharacterString" >>> getChildText -< md_constraints
+    -}
     -- it's getting hard to read see this....
 
-    returnA -< MCP2Record { title = title,abstract = abstract, jurisdictionLink = jurisdictionLink, 
-        licenseLink = licenseLink, licenseName = licenseName, licenseImageLink = licenseImageLink --, 
-        -- attrConstr = attrConstr,  otherAttrConstr = otherAttrConstr 
-        }
+
+
 
 --- OK 
  -- where getting multiple things????
@@ -215,11 +247,19 @@ testArgoRecord = do
     print identifier
 
 
-
-    -- title
+    -- dataIdentification
+    print "###### data identification stuff"
     x <- runX (parsed >>> parseDataIdentification )
-
     print x 
+
+    -- dataIdentification
+    print "###### attribution constraints "
+    y <- runX (parsed >>> parseAttributionConstraints)
+    mapM print y
+
+    print "###### useLimitations"
+    j <- runX (parsed >>> parseUseLimitations)
+    mapM print j
 
     return ()
 
