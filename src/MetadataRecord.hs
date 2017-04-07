@@ -95,7 +95,7 @@ parseDataIdentification =
 
     licenseImageLink <- atChildName "mcp:imageLink" >>> atChildName "gmd:URL" >>> getChildText -< md_commons
   
-    attrConstr <- atChildName "mcp:attributionConstraints" >>> atChildName "gco:CharacterString" >>> getChildText -< md_commons
+--    attrConstr <- atChildName "mcp:attributionConstraints" >>> atChildName "gco:CharacterString" >>> getChildText -< md_commons
 
 {-
     -- gmd:MD_Constraints
@@ -216,16 +216,10 @@ testArgoRecord = do
 
 
 
-
     -- title
     x <- runX (parsed >>> parseDataIdentification )
- --   let (title, abstract, jurisdictionLink) = head x
 
     print x 
---    print abstract
---    print jurisdictionLink
-
---     print p
 
     return ()
 
