@@ -22,11 +22,14 @@ import qualified Data.ByteString.Char8 as BC
 import qualified Data.ByteString.Lazy.Char8 as BLC
 
 
-import Database.PostgreSQL.Simple
+import Database.PostgreSQL.Simple as PG(query, execute, connectPostgreSQL)
+
+import Database.PostgreSQL.Simple.Types -- Only is there a better way to import this
+
 
 import Text.RawString.QQ
 
-import Data.Char (isSpace)
+import Data.Char(isSpace)
 
 {-
   catalogue-imos, pot, and WMS
@@ -221,7 +224,7 @@ getCSWGetRecordById uuid title = do
 ----------------
 
 processRecordUUID conn uuid title = do
-  execute conn "insert into record(uuid,title) values (?, ?)"
+  PG.execute conn "insert into record(uuid,title) values (?, ?)"
     (uuid :: String, title :: String)
 
 
@@ -229,7 +232,7 @@ processRecordUUID conn uuid title = do
 -- resources
 
 processOnlineResource conn uuid (protocol,linkage, description) = do
-    execute conn [r|
+    PG.execute conn [r|
       insert into resource(record_id,protocol,linkage, description)
       values (
         (select id from record where uuid = ?), ?, ?, ?
@@ -256,7 +259,7 @@ processDataParameter conn uuid (term, url) = do
       1 -> do
         -- store the concept
         let (concept_id, concept_label) : _ = xs
-        execute conn [r|
+        PG.execute conn [r|
           insert into facet(concept_id, record_id)
           values (?, (select record.id from record where record.uuid = ?))
           on conflict
@@ -297,9 +300,9 @@ processRecord conn (uuid, title) = do
 processAllRecords conn = do
     -- this is not very nice.... - should do deletion incrementallly for each record
     -- and transactionally
-    execute conn "delete from resource *" ()
-    execute conn "delete from facet *" ()
-    execute conn "delete from record *" ()
+    PG.execute conn "delete from resource *" ()
+    PG.execute conn "delete from facet *" ()
+    PG.execute conn "delete from record *" ()
     
     identifiers <- doCSWGetRecords
     s <- doCSWGetRecords
