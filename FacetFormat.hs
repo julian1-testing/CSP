@@ -89,6 +89,7 @@ fromList xs =
 sort m =
   -- TODO move to Facet?
   -- sort the children according to their count
+  -- should sort before adding labels to tuples?
   Map.mapWithKey f m
   where
   f k children =
@@ -124,11 +125,9 @@ print m = do
 -- lazy string concat
 myConcat lst = foldl LT.append LT.empty lst
 
-{-
-        let f txt (concept, label, count) = txt $ recurse m (concept, label, count) (depth + 1) in
-        -- fold over children appending text
-        foldl (f.LT.append) LT.empty children
--} 
+-- myConcat lst = concatMap LT.append lst
+
+
 
 
 formatXML rootRecordCount m = 
@@ -145,6 +144,8 @@ formatXML rootRecordCount m =
 
       -- what's going on here?
       case label of 
+        -- "summary" ->
+
         -- should we be doing this label substitution here? or when loading the vocab scheme and set the label? ...
         "AODN Parameter Category Vocabulary" ->
           doDimension (parent_id, "Measured Parameter", count) depth 
@@ -155,13 +156,20 @@ formatXML rootRecordCount m =
         _ ->
           doCategory (parent_id, label, count) depth 
 
+    doSummary (parent_id, label, count) depth  = 
+      myConcat [
+          LT.pack $ (pad $ depth * 3),
+          LT.pack $ mconcat [ "<summary count=", show count, " type=\"local\"/>" ],
+          processChildren (parent_id, label, count) depth
+      ]
+
+
 
     doDimension (parent_id, label, count) depth =
       -- single closed tag...
         myConcat [
             LT.pack $ (pad $ depth * 3),
-            -- LT.pack $ concatMap id [ "<dimension value=\"", label, "\"", " count=", show count, " />"  ], 
-            LT.pack $ mconcat [ "<dimension value=\"", label, "\"", " count=", show count, " />"  ], 
+            LT.pack $ mconcat [ "<dimension value=\"", label, "\"", " count=", show count, " />\n"  ], 
             processChildren (parent_id, label, count) depth
         ]
 
@@ -170,14 +178,15 @@ formatXML rootRecordCount m =
       myConcat [ 
         -- start tag
           LT.pack $ (pad $ depth * 3),
-          LT.pack $ mconcat [ "<category value=\"", label, "\"", " count=", show count, " >" ],
+          LT.pack $ mconcat [ "<category value=\"", label, "\"", " count=", show count, " >\n" ],
         -- children
         processChildren (parent_id, label, count) depth ,
         -- end tag
         LT.pack $ (pad $ depth * 3),
-        LT.pack "</category>"
+        LT.pack "</category>\n"
       ]
 
+-- print will append a new line
 
     processChildren (parent_id, label, count) depth =
         -- take children
@@ -189,7 +198,7 @@ formatXML rootRecordCount m =
         -- TODO use myConcat? eg.
         -- concatMap f children
 
-
+{-
 printXML rootRecordCount m = do
 
   -- we will recurse from the root node down...
@@ -261,7 +270,7 @@ printXML rootRecordCount m = do
         "</category>"
         ]
 
-
+-}
 
 
 
@@ -307,6 +316,12 @@ main = do
 
 
 
+
+{-
+        let f txt (concept, label, count) = txt $ recurse m (concept, label, count) (depth + 1) in
+        -- fold over children appending text
+        foldl (f.LT.append) LT.empty children
+-} 
 
 
 

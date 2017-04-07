@@ -110,10 +110,7 @@ main = do
 
   let s = FacetFormat.formatXML (length allRecordIds) sortedGraph
 
-  -- print $ LBS.unpack d
-  -- S is LBS
-  -- don't want 
-  -- print s 
+
   LT.putStrLn $ s
 
   return () 
