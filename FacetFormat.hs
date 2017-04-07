@@ -131,23 +131,20 @@ myConcat lst = foldl LT.append LT.empty lst
 -} 
 
 
-formatXML rootRecordCount m = do
+formatXML rootRecordCount m = 
 
   -- we will recurse from the root node down...
   -- remember that we cannot have a Nothing node above the Nothing node. so there's nowhere else to store label or count 
   -- information which isn't a known concept or scheme anyway
-  let rootNode = (Nothing, "summary", rootRecordCount )
+  let rootNode = (Nothing, "summary", rootRecordCount ) in
   recurse m rootNode 0
   where
     -- recurse down into child nodes
-    recurse m (parent_id, label, count) depth = do
+    recurse m (parent_id, label, count) depth = 
 
       -- what's going on here?
       case label of 
-
-        -- we also need to do response - substitutiton, 
-        -- should we be doing this label substitution here, or when loading the vocab scheme and set the label ...
-        -- use
+        -- should we be doing this label substitution here? or when loading the vocab scheme and set the label? ...
         "AODN Parameter Category Vocabulary" ->
           doDimension (parent_id, "Measured Parameter", count) depth 
 
@@ -213,7 +210,7 @@ printXML rootRecordCount m = do
   recurse m rootNode 0
   where
     -- recurse down into child nodes
-    recurse m (parent_id, label, count) depth = -- do
+    recurse m (parent_id, label, count) depth = do
 
       -- what's going on here?
       case label of 
