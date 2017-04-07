@@ -67,19 +67,6 @@ fromList xs =
         Map.insert parent newChildren m
 
 
-{-
-      case parent of 
-        Nothing -> m
-          -- this is where we have to 
-          -- why doesn't this work if there is a root node there already
-
-        Just concept_id ->
-          let childLst = mapGet parent m in
-          let newChildren = (concept_id, label, count) : childLst in
-          Map.insert parent newChildren m
-
--}
-
 
 sort m =
   -- TODO move to Facet?
@@ -167,82 +154,6 @@ formatXML rootRecordCount m =
         foldl (f.LT.append) LT.empty children
         -- TODO use myConcat? eg.
         -- concatMap f children
-
-
-
-{-
-printXML rootRecordCount m = do
-
-  -- we will recurse from the root node down...
-  -- remember that we cannot have a Nothing node above the Nothing node. so there's nowhere else to store label or count 
-  -- information which isn't a known concept or scheme anyway
-  let rootNode = (Nothing, "summary", rootRecordCount)
-  recurse m rootNode 0
-  where
-    -- recurse down into child nodes
-    recurse m (parent_id, label, count) depth = do
-
-      -- what's going on here?
-      case label of 
-        -- TODO remove this....
-        -- should we be doing this label substitution here? or when loading the vocab scheme and set the label? ...
-        "summary" ->
-          doSummary (parent_id, label, count) depth 
-    
-        "AODN Parameter Category Vocabulary" ->
-          doDimension (parent_id, "Measured Parameter", count) depth 
-
-        "AODN Platform Category Vocabulary" ->
-          doDimension (parent_id, "Platform", count) depth 
-
-        _ ->
-          doCategory (parent_id, label, count) depth 
-
-
-    processChildren (parent_id, label, count) depth = do 
-        -- get the children of this node and process them
-        let children = mapGet parent_id m 
-        -- and process them
-        mapM f children
-        return ()
-        where 
-          f (concept_id, label, count) = recurse m ({-Just -}concept_id, label, count) (depth + 1)
-          
-
-    doSummary (parent_id, label, count) depth  = do
-      -- single closed tag...
-      putStrLn $ concatMap id [
-        -- TODO don't use concatMap here...
-        (pad $ depth * 3),
-        "<summary count=", show count, " type=\"local\"/>"
-        ]
-      processChildren (parent_id, label, count) depth
-
-
-    doDimension (parent_id, label, count) depth  = do
-      -- single closed tag...
-      putStrLn $ concatMap id [
-        (pad $ depth * 3),
-        "<dimension value=\"", label, "\"", " count=", show count, " />"
-        ]
-      processChildren (parent_id, label, count) depth
-
-
-    doCategory (parent_id, label, count) depth  = do
-        -- start tag
-      putStrLn $ concatMap id [
-        (pad $ depth * 3),
-        "<category value=\"", label, "\"", " count=", show count, " >"
-        ]
-      processChildren (parent_id, label, count) depth
-
-      -- end tag
-      putStrLn $ concatMap id [
-        (pad $ depth * 3),
-        "</category>"
-        ]
-
--}
 
 
 
@@ -350,5 +261,96 @@ print m = do
 -- IMPORTANT
 -- are we sure we cannot use a groupby on the facet_count_view to get the counts ...
 -- this would make client side stuff a lot simpler.
+-}
+
+
+
+
+{-
+printXML rootRecordCount m = do
+
+  -- we will recurse from the root node down...
+  -- remember that we cannot have a Nothing node above the Nothing node. so there's nowhere else to store label or count 
+  -- information which isn't a known concept or scheme anyway
+  let rootNode = (Nothing, "summary", rootRecordCount)
+  recurse m rootNode 0
+  where
+    -- recurse down into child nodes
+    recurse m (parent_id, label, count) depth = do
+
+      -- what's going on here?
+      case label of 
+        -- TODO remove this....
+        -- should we be doing this label substitution here? or when loading the vocab scheme and set the label? ...
+        "summary" ->
+          doSummary (parent_id, label, count) depth 
+    
+        "AODN Parameter Category Vocabulary" ->
+          doDimension (parent_id, "Measured Parameter", count) depth 
+
+        "AODN Platform Category Vocabulary" ->
+          doDimension (parent_id, "Platform", count) depth 
+
+        _ ->
+          doCategory (parent_id, label, count) depth 
+
+
+    processChildren (parent_id, label, count) depth = do 
+        -- get the children of this node and process them
+        let children = mapGet parent_id m 
+        -- and process them
+        mapM f children
+        return ()
+        where 
+          f (concept_id, label, count) = recurse m ({-Just -}concept_id, label, count) (depth + 1)
+          
+
+    doSummary (parent_id, label, count) depth  = do
+      -- single closed tag...
+      putStrLn $ concatMap id [
+        -- TODO don't use concatMap here...
+        (pad $ depth * 3),
+        "<summary count=", show count, " type=\"local\"/>"
+        ]
+      processChildren (parent_id, label, count) depth
+
+
+    doDimension (parent_id, label, count) depth  = do
+      -- single closed tag...
+      putStrLn $ concatMap id [
+        (pad $ depth * 3),
+        "<dimension value=\"", label, "\"", " count=", show count, " />"
+        ]
+      processChildren (parent_id, label, count) depth
+
+
+    doCategory (parent_id, label, count) depth  = do
+        -- start tag
+      putStrLn $ concatMap id [
+        (pad $ depth * 3),
+        "<category value=\"", label, "\"", " count=", show count, " >"
+        ]
+      processChildren (parent_id, label, count) depth
+
+      -- end tag
+      putStrLn $ concatMap id [
+        (pad $ depth * 3),
+        "</category>"
+        ]
+
+-}
+
+
+{-
+      case parent of 
+        Nothing -> m
+          -- this is where we have to 
+          -- why doesn't this work if there is a root node there already
+
+        Just concept_id ->
+          let childLst = mapGet parent m in
+          let newChildren = (concept_id, label, count) : childLst in
+          Map.insert parent newChildren m
+
 -}
 
