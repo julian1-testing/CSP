@@ -159,33 +159,27 @@ formatXML rootRecordCount m =
     doDimension (parent_id, label, count) depth =
       -- single closed tag...
         myConcat [
-              LT.pack $ (pad $ depth * 3),
-              LT.pack $ concatMap id [ "<dimension value=\"", label, "\"", " count=", show count, " />"  ], 
-              processChildren (parent_id, label, count) depth
+            LT.pack $ (pad $ depth * 3),
+            -- LT.pack $ concatMap id [ "<dimension value=\"", label, "\"", " count=", show count, " />"  ], 
+            LT.pack $ mconcat [ "<dimension value=\"", label, "\"", " count=", show count, " />"  ], 
+            processChildren (parent_id, label, count) depth
         ]
-
 
     doCategory (parent_id, label, count) depth =
      
       myConcat [ 
         -- start tag
-        LT.pack $ concatMap id [
-          (pad $ depth * 3),
-          "<category value=\"", label, "\"", " count=", show count, " >"
-          ]
-        ,
+          LT.pack $ (pad $ depth * 3),
+          LT.pack $ mconcat [ "<category value=\"", label, "\"", " count=", show count, " >" ],
         -- children
-        processChildren (parent_id, label, count) depth
-        ,
+        processChildren (parent_id, label, count) depth ,
         -- end tag
-        LT.pack $ concatMap id [
-          (pad $ depth * 3),
-          "</category>"
-          ]
+        LT.pack $ (pad $ depth * 3),
+        LT.pack "</category>"
       ]
 
-    processChildren (parent_id, label, count) depth =
 
+    processChildren (parent_id, label, count) depth =
         -- take children
         let children = mapGet parent_id m  in
         -- recurse into children
@@ -194,7 +188,6 @@ formatXML rootRecordCount m =
         foldl (f.LT.append) LT.empty children
         -- TODO use myConcat?
 
- 
 
 
 printXML rootRecordCount m = do
