@@ -121,7 +121,14 @@ print m = do
 -- so all we need to do is pass the actual root node in here explicitly 
 -- VERY IMPORTANT - it might be possible to do this more simply - by having separate lists. 
 
+-- lazy string concat
+myConcat lst = foldl LT.append LT.empty lst
 
+{-
+        let f txt (concept, label, count) = txt $ recurse m (concept, label, count) (depth + 1) in
+        -- fold over children appending text
+        foldl (f.LT.append) LT.empty children
+-} 
 
 
 formatXML rootRecordCount m = do
@@ -148,36 +155,41 @@ formatXML rootRecordCount m = do
           doDimension (parent_id, "Platform", count) depth 
 
         _ ->
-          "j" --doCategory (parent_id, label, count) depth 
+          doCategory (parent_id, label, count) depth 
+
 
     doDimension (parent_id, label, count) depth =
       -- single closed tag...
-        LT.append
+        myConcat [
+        -- LT.append
           (LT.pack $
             concatMap id [
               (pad $ depth * 3),
               "<dimension value=\"", label, "\"", " count=", show count, " />"
               ]
-          ) $ 
+          ), 
           processChildren (parent_id, label, count) depth
-
-{-
-    doCategory (parent_id, label, count) depth  = do
-      
-      -- start tag
-      putStrLn $ concatMap id [
-        (pad $ depth * 3),
-        "<category value=\"", label, "\"", " count=", show count, " >"
         ]
-      processChildren (parent_id, label, count) depth
 
-      -- end tag
-      putStrLn $ concatMap id [
-        (pad $ depth * 3),
-        "</category>"
-        ]
--}
 
+    doCategory (parent_id, label, count) depth =
+     
+      myConcat [ 
+        -- start tag
+        LT.pack $ concatMap id [
+          (pad $ depth * 3),
+          "<category value=\"", label, "\"", " count=", show count, " >"
+          ]
+        ,
+        -- children
+        processChildren (parent_id, label, count) depth
+        ,
+        -- end tag
+        LT.pack $ concatMap id [
+          (pad $ depth * 3),
+          "</category>"
+          ]
+      ]
 
     processChildren (parent_id, label, count) depth =
 
@@ -187,7 +199,7 @@ formatXML rootRecordCount m = do
         let f txt (concept, label, count) = txt $ recurse m (concept, label, count) (depth + 1) in
         -- fold over children appending text
         foldl (f.LT.append) LT.empty children
-      
+        -- TODO use myConcat?
 
  
 
@@ -197,21 +209,19 @@ printXML rootRecordCount m = do
   -- we will recurse from the root node down...
   -- remember that we cannot have a Nothing node above the Nothing node. so there's nowhere else to store label or count 
   -- information which isn't a known concept or scheme anyway
-  let rootNode = (Nothing, "summary", rootRecordCount )
+  let rootNode = (Nothing, "summary", rootRecordCount)
   recurse m rootNode 0
   where
     -- recurse down into child nodes
-    recurse m (parent_id, label, count) depth = do
+    recurse m (parent_id, label, count) depth = -- do
 
       -- what's going on here?
       case label of 
         -- TODO remove this....
-        "dummy" ->
-          doResponse (parent_id, label, count) depth 
+        -- should we be doing this label substitution here? or when loading the vocab scheme and set the label? ...
+        "summary" ->
+          doSummary (parent_id, label, count) depth 
     
-        -- we also need to do response - substitutiton, 
-        -- should we be doing this label substitution here, or when loading the vocab scheme and set the label ...
-        -- use
         "AODN Parameter Category Vocabulary" ->
           doDimension (parent_id, "Measured Parameter", count) depth 
 
@@ -232,9 +242,10 @@ printXML rootRecordCount m = do
           f (concept_id, label, count) = recurse m ({-Just -}concept_id, label, count) (depth + 1)
           
 
-    doResponse (parent_id, label, count) depth  = do
+    doSummary (parent_id, label, count) depth  = do
       -- single closed tag...
       putStrLn $ concatMap id [
+        -- TODO don't use concatMap here...
         (pad $ depth * 3),
         "<summary count=", show count, " type=\"local\"/>"
         ]
@@ -248,7 +259,6 @@ printXML rootRecordCount m = do
         "<dimension value=\"", label, "\"", " count=", show count, " />"
         ]
       processChildren (parent_id, label, count) depth
-     
 
 
     doCategory (parent_id, label, count) depth  = do
