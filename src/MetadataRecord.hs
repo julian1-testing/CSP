@@ -35,9 +35,19 @@ parseTitle =
   atTag "mcp:MD_DataIdentification" >>>
   proc dataIdent -> do
     title <- atChildName "gmd:citation" >>> atChildName "gmd:CI_Citation" >>> atChildName "gmd:title"  >>> atChildName "gco:CharacterString" >>> getChildText -< dataIdent
-    returnA -< title 
+    abstract <- atChildName "gmd:abstract" >>> atChildName "gco:CharacterString" >>> getChildText -< dataIdent
 
+    returnA -< (title,abstract)
 
+{-
+
+      </gmd:citation>
+      <gmd:abstract>
+        <gco:CharacterString>Argo Australia aims to undertake real time monitoring of the broad ocean state around Australia by maintaining an array of profiling (Argo) floats that measure temperature, salinity and pressure down to 2000m every 10 days in real time. The data presented here, represent all Australian Argo profiles collected since 2000, and covers the oceans in the southern hemisphere worldwide A typical Argo float mission is to profile from 2000 m depth to the sea surface every 10 days. On deployment, the float sinks to a depth of 1000 m and drifts with the ocean currents for 9 days. Then the float sinks deeper to its profile depth (usually 2000 m) before starting to ascend through the water column measuring temperature, salinity, pressure, and oxygen (on selected floats) as it rises. Once at the surface it transmits location and profile data via satellite to land-based Argo data centres. After transmission the float sinks again and repeats the cycle. Each Argo float is identified by a unique identification number called a WMO ID. WMO (World Meteorological Organisation) ID Numbers are assigned to measurement stations and observing platforms to enable researchers to keep track of, and uniquely identify their floats. The average life of the latest model APEX Argo floats are around 3.7 years or approximately 135 cycles. These statistics are for floats with the standard alkaline battery configuration from an analysis by Kobayashi et al (2009). In the Australian Argo program, the floats are deployed with a combination of lithium and alkaline battery packs which extends float lifetime. Argo Australia floats usually last 5 years and several floats are approaching their 9th birthday and are still returning good data.</gco:CharacterString>
+      </gmd:abstract>
+ 
+
+-}
 
 
 
@@ -136,16 +146,19 @@ processDataParameters conn uuid recordText = do
     mapM (processDataParameter conn uuid) dataParameters
 
 
--- need a data structure - for communication.... to represent the damn record.
--- we should be parsing all this in a 
 
 
 testArgoRecord = do
     recordText <- readFile "./test-data/argo.xml" 
-    dataParameters <- runX (Helpers.parseXML recordText >>> parseDataParameters)
+
+    let parsed = Helpers.parseXML recordText 
+
+    -- data parameters
+    dataParameters <- runX (parsed >>> parseDataParameters)
     mapM print dataParameters
 
-    title <- runX (Helpers.parseXML recordText >>> parseTitle )
+    -- title
+    title <- runX (parsed >>> parseTitle )
     print title
 
 
