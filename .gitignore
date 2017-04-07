@@ -1,15 +1,13 @@
 *.o
 *.hi
-load-scheme
+*.dyn_hi
+*.dyn_ho
 examples/parse
 examples/psql
 examples/psql2
 examples/transform
 examples/Utf
 examples/Warp
-tmp
-Harvest
-Main
-Facet
-FacetFormat
+target/*
+tmp/*
 
