@@ -16,11 +16,12 @@ ghc $FLAGS src/Facet.hs src/FacetFormat.hs src/FacetRequest.hs -o target/FacetRe
 
 
 # setting the main function explicitly avoids Main.o files being generated in tmp and confusing the build.
-ghc $FLAGS -main-is Harvest.main src/Record.hs src/Harvest.hs src/CSW.hs src/Helpers.hs -o target/Harvest 
+
+ghc $FLAGS -main-is Harvest.main src/MetadataRecord.hs src/Harvest.hs src/CSW.hs src/Helpers.hs -o target/Harvest 
 
 
 # record decoding test
-ghc -main-is Record.main -outputdir tmp src/Record.hs src/Helpers.hs -o ./target/Record
+ghc -main-is MetadataRecord.main -outputdir tmp src/MetadataRecord.hs src/Helpers.hs -o ./target/MetadataRecord
 
 
 

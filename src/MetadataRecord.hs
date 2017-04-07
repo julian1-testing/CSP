@@ -4,7 +4,7 @@
 {-# LANGUAGE ScopedTypeVariables, OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes #-}
 
-module Record where
+module MetadataRecord where
 
 
 import Text.XML.HXT.Core
@@ -125,7 +125,7 @@ processDataParameters conn uuid recordText = do
 
 testArgoRecord = do
     recordText <- readFile "./test-data/argo.xml" 
-    dataParameters <- runX (Helpers.parseXML recordText >>> Record.parseDataParameters)
+    dataParameters <- runX (Helpers.parseXML recordText >>> parseDataParameters)
     mapM print dataParameters
 
 

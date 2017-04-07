@@ -13,16 +13,16 @@ import Database.PostgreSQL.Simple.Types as PG(Only(..))
 
 import Text.RawString.QQ
 
-import qualified CSW
-import qualified Record
-import qualified Helpers as Helpers(parseXML) 
+import qualified CSW as CSW
+import qualified MetadataRecord as MD
+-- import qualified Helpers as Helpers(parseXML) 
 
 {-
   catalogue-imos, pot, and WMS
   https://github.com/aodn/chef-private/blob/master/data_bags/imos_webapps_geonetwork_harvesters/catalogue_imos.json
 
   csw getrecordbyid request,
-  https://catalogue-portal.aodn.org.au/geonetwork/srv/eng/csw?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&id=4402cb50-e20a-44ee-93e6-4728259250d2&outputSchema=http://www.isotc211.org/2005/gmd
+  https://catalogue-portal.aodn.org.au/geonetwork/srv/eng/csw?request=GetMDById&service=CSW&version=2.0.2&elementSetName=full&id=4402cb50-e20a-44ee-93e6-4728259250d2&outputSchema=http://www.isotc211.org/2005/gmd
 
 
 -}
@@ -30,21 +30,21 @@ import qualified Helpers as Helpers(parseXML)
 
 ----------------
 
-processRecord conn (uuid, title) = do
+processMD conn (uuid, title) = do
     -- TODO IMPORTANT - should remove the uuid first...
     -- TODO - VERY IMPORTANT we should separate out the CSW action of getting the record 
     -- removing the old stuff and indexing resources and parameters,
     record <- CSW.getCSWGetRecordById uuid title
-    Record.processRecordUUID conn uuid title
-    Record.processDataParameters conn uuid record
-    Record.processOnlineResources conn uuid record
+    MD.processRecordUUID conn uuid title
+    MD.processDataParameters conn uuid record
+    MD.processOnlineResources conn uuid record
     return ()
 
 
 
 
 
-processAllRecords conn = do
+processAllMDs conn = do
     -- this is not very nice.... - should do deletion incrementallly for each record
     -- and transactionally
     PG.execute conn "delete from resource *" ()
@@ -55,7 +55,7 @@ processAllRecords conn = do
     -- TODO what's happening here,
     s <- CSW.doCSWGetRecords
     identifiers <- CSW.getCSWIdentifiers s
-    mapM (processRecord conn) identifiers
+    mapM (processMD conn) identifiers
 
 
 
@@ -66,9 +66,9 @@ main :: IO ()
 main = do
   conn <- connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
 
-  -- testArgoRecord
+  -- testArgoMD
 
-  processAllRecords conn 
+  processAllMDs conn 
   return ()
 
 
@@ -86,13 +86,13 @@ main = do
 {-
   -- TODO - seperate out query and parse action -
   -- do query and get records
-  identifiers <- doCSWGetRecords
+  identifiers <- doCSWGetMDs
 
-  s <- doCSWGetRecords
+  s <- doCSWGetMDs
 
   identifiers <- getCSWIdentifiers s
 
   -- IMPORTANT - we should have a single function...
-  mapM (processRecord conn) identifiers
+  mapM (processMD conn) identifiers
 -}
 
