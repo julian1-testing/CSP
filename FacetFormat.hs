@@ -36,18 +36,13 @@ mapGet e m =
 
 
 -- generate a white space String with length of count
-pad count = LT.pack $ List.unfoldr f count
-  where f x = case x of
-          0 -> Nothing
-          _ -> Just (' ', x - 1)
+pad count = 
+  LT.pack $ List.unfoldr f count
+    where f x = case x of
+            0 -> Nothing
+            _ -> Just (' ', x - 1)
 
 
--- TODO
--- a dummy root node - because we use it in multiple places - but there's a typing issue somewhere,
--- rootNode = (Nothing, "dummy", -999  )
-
--- We have no way of representing the root node...
--- so we will have to pass it explicitly...
 
 fromList xs =
   -- Map of concept_id -> [ child concepts ]
@@ -96,29 +91,6 @@ sort m =
     reverse. List.sortOn (\(_, _, count) -> count) $ children
 
 
-
-
-{- 
-print m = do
-  -- non xml view of the graphoutput
-  let rootNode = (Nothing, "dummy", -999 )
-  -- recurse from the root node down...
-  recurse m rootNode 0
-  where
-    -- this just prints everything and is monadic
-    recurse m (parent_id, label, count) depth = do
-      printRow (parent_id, label, count) depth
-
-      -- continue recursion
-      let children = mapGet parent_id m 
-      mapM (\(concept_id, label, count) -> recurse m (Just concept_id, label, count) (depth + 1)) children
-      return ()
-
-    printRow (parent_id, label, count) depth  = do
-      putStrLn $ concatMap id [ (pad $ depth * 3), (show parent_id), " ",  (show label), " ", (show count) ]
--}
-
-
 -- so all we need to do is pass the actual root node in here explicitly 
 -- VERY IMPORTANT - it might be possible to do this more simply - by having separate lists. 
 
@@ -139,56 +111,56 @@ formatXML rootRecordCount m =
   recurse m rootNode 0
   where
     -- drill into child nodes
-    recurse m (parent_id, label, count) depth = 
+    recurse m (parent, label, count) depth = 
 
       -- what's going on here?
       case label of 
         "summary" ->
-          outputSummary (parent_id, label, count) depth 
+          outputSummary (parent, label, count) depth 
 
         -- should we be outputing this label substitution here? or when loading the vocab scheme and set the label? ...
         "AODN Parameter Category Vocabulary" ->
-          outputDimension (parent_id, "Measured Parameter", count) depth 
+          outputDimension (parent, "Measured Parameter", count) depth 
 
         "AODN Platform Category Vocabulary" ->
-          outputDimension (parent_id, "Platform", count) depth 
+          outputDimension (parent, "Platform", count) depth 
 
         _ ->
-          outputCategory (parent_id, label, count) depth 
+          outputCategory (parent, label, count) depth 
 
-    outputSummary (parent_id, label, count) depth  = 
+    outputSummary (parent, label, count) depth  = 
       myConcat [
           pad $ depth * 3,
           "<", LT.pack label, " count=", LT.pack.show $ count, " type=\"local\"/>\n",
-          outputChildren (parent_id, label, count) depth
+          outputChildren (parent, label, count) depth
       ]
 
 
-    outputDimension (parent_id, label, count) depth =
+    outputDimension (parent, label, count) depth =
       -- single closed tag...
       myConcat [
           pad $ depth * 3,
           "<dimension value=\"", LT.pack label, "\" count=", LT.pack.show $ count, " />\n", 
-          outputChildren (parent_id, label, count) depth
+          outputChildren (parent, label, count) depth
       ]
 
 
-    outputCategory (parent_id, label, count) depth =
+    outputCategory (parent, label, count) depth =
       myConcat [ 
         -- start tag
         pad $ depth * 3,
         "<category value=\"", LT.pack label, "\" count=", LT.pack.show $ count, " >\n",
         -- children
-        outputChildren (parent_id, label, count) depth ,
+        outputChildren (parent, label, count) depth ,
         -- end tag
         pad $ depth * 3,
         "</category>\n"
       ]
 
 
-    outputChildren (parent_id, label, count) depth =
+    outputChildren (parent, label, count) depth =
         -- take children
-        let children = mapGet parent_id m  in
+        let children = mapGet parent m  in
         -- recurse into children
         let f acc (concept, label, count) = acc $ recurse m (concept, label, count) (depth + 1) in
         -- fold over children appending text
@@ -312,6 +284,29 @@ main = do
 -}
   return ()
 
+
+
+
+
+{- 
+print m = do
+  -- non xml view of the graphoutput
+  let rootNode = (Nothing, "dummy", -999 )
+  -- recurse from the root node down...
+  recurse m rootNode 0
+  where
+    -- this just prints everything and is monadic
+    recurse m (parent_id, label, count) depth = do
+      printRow (parent_id, label, count) depth
+
+      -- continue recursion
+      let children = mapGet parent_id m 
+      mapM (\(concept_id, label, count) -> recurse m (Just concept_id, label, count) (depth + 1)) children
+      return ()
+
+    printRow (parent_id, label, count) depth  = do
+      putStrLn $ concatMap id [ (pad $ depth * 3), (show parent_id), " ",  (show label), " ", (show count) ]
+-}
 
 
 
