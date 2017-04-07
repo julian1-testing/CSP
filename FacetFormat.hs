@@ -36,7 +36,7 @@ mapGet e m =
 
 
 -- generate a white space String with length of count
-pad count = List.unfoldr f count
+pad count = LT.pack $ List.unfoldr f count
   where f x = case x of
           0 -> Nothing
           _ -> Just (' ', x - 1)
@@ -98,7 +98,7 @@ sort m =
 
 
 
-
+{- 
 print m = do
   -- non xml view of the graphoutput
   let rootNode = (Nothing, "dummy", -999 )
@@ -116,7 +116,7 @@ print m = do
 
     printRow (parent_id, label, count) depth  = do
       putStrLn $ concatMap id [ (pad $ depth * 3), (show parent_id), " ",  (show label), " ", (show count) ]
-
+-}
 
 
 -- so all we need to do is pass the actual root node in here explicitly 
@@ -158,17 +158,16 @@ formatXML rootRecordCount m =
 
     doSummary (parent_id, label, count) depth  = 
       myConcat [
-          LT.pack $ (pad $ depth * 3),
+          pad $ depth * 3,
           LT.pack $ mconcat [ "<summary count=", show count, " type=\"local\"/>" ],
           processChildren (parent_id, label, count) depth
       ]
 
 
-
     doDimension (parent_id, label, count) depth =
       -- single closed tag...
         myConcat [
-            LT.pack $ (pad $ depth * 3),
+            (pad $ depth * 3),
             LT.pack $ mconcat [ "<dimension value=\"", label, "\"", " count=", show count, " />\n"  ], 
             processChildren (parent_id, label, count) depth
         ]
@@ -177,12 +176,12 @@ formatXML rootRecordCount m =
      
       myConcat [ 
         -- start tag
-          LT.pack $ (pad $ depth * 3),
+          (pad $ depth * 3),
           LT.pack $ mconcat [ "<category value=\"", label, "\"", " count=", show count, " >\n" ],
         -- children
         processChildren (parent_id, label, count) depth ,
         -- end tag
-        LT.pack $ (pad $ depth * 3),
+        (pad $ depth * 3),
         LT.pack "</category>\n"
       ]
 
