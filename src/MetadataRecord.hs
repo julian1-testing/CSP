@@ -25,13 +25,28 @@ import Helpers(parseXML, atTag, atChildName, getChildText, stripSpace)
 -- should parse the identifier - even if it's not used for CSW 
 
 {-
-<mcp:MD_Metadata xmlns:mcp="http://schemas.aodn.org.au/mcp-2.0" xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:dwc="http://rs.tdwg.org/dwc/terms/" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:gml="http://www.opengis.net/gml" xmlns:geonet="http://www.fao.org/geonetwork" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gmx="http://www.isotc211.org/2005/gmx" gco:isoType="gmd:MD_Metadata" xsi:schemaLocation="http://www.isotc211.org/2005/gmd http://www.isotc211.org/2005/gmd/gmd.xsd http://www.isotc211.org/2005/srv http://schemas.opengis.net/iso/19139/20060504/srv/srv.xsd http://schemas.aodn.org.au/mcp-2.0 http://schemas.aodn.org.au/mcp-2.0/schema.xsd">
-  <gmd:fileIdentifier>
-    <gco:CharacterString>4402cb50-e20a-44ee-93e6-4728259250d2</gco:CharacterString>
-  </gmd:fileIdentifier>
--}
- 
+    ./web-app/js/portal/data/MetadataRecord.js
+        title
+        abstract
+        uuid
+        parameterField   - db join vocab
+        platform         - db field join vocab
+        
+        organisation    - **** don't have yet - .
 
+        jurisdictionLink 
+      <gmd:resourceConstraints>
+        <mcp:MD_Commons gco:isoType="gmd:MD_Constraints" mcp:commonsType="Creative Commons">
+          <mcp:jurisdictionLink>
+            <gmd:URL>http://creativecommons.org/international/</gmd:URL>
+          </mcp:jurisdictionLink>
+ 
+        
+
+    parameters we have - just join in the db and format
+    organisation we have - just formatting...
+
+-}
 
 parseFileIdentifier = 
   atTag "gmd:fileIdentifier" >>>
@@ -44,11 +59,32 @@ parseFileIdentifier =
 parseDataIdentification =
   atTag "mcp:MD_DataIdentification" >>>
   proc dataIdent -> do
+
+    title <- atChildName "gmd:citation" >>> atChildName "gmd:CI_Citation" >>> atChildName "gmd:title"  
+        >>> atChildName "gco:CharacterString" >>> getChildText -< dataIdent
+
+    abstract <- atChildName "gmd:abstract" >>> atChildName "gco:CharacterString" >>> getChildText -< dataIdent
+
+    -- jurisdictionLink <- atChildName "gmd:abstract" >>> atChildName "gco:CharacterString" >>> getChildText -< dataIdent
+
+    -- jurisdictionLink <- atChildName "gmd:resourceConstraints" >>> atChildName "mcp:MD_Commons" 
+        -- >>> getChildText -< dataIdent
+
+    jurisdictionLink <- atChildName "gmd:resourceConstraints" >>> atChildName "mcp:MD_Commons" >>> atChildName "mcp:jurisdictionLink" >>> atChildName "gmd:URL" >>> getChildText -< dataIdent
+
+
+    returnA -< (title,abstract, jurisdictionLink)
+
+
+parseJurisdictionLink =
+  atTag "mcp:MD_DataIdentification" >>>
+  proc dataIdent -> do
     title <- atChildName "gmd:citation" >>> atChildName "gmd:CI_Citation" >>> atChildName "gmd:title"  
         >>> atChildName "gco:CharacterString" >>> getChildText -< dataIdent
     abstract <- atChildName "gmd:abstract" >>> atChildName "gco:CharacterString" >>> getChildText -< dataIdent
-
     returnA -< (title,abstract)
+
+
 
 
 parseOnlineResources =
@@ -148,15 +184,22 @@ testArgoRecord = do
     dataParameters <- runX (parsed >>> parseDataParameters)
     mapM print dataParameters
 
-    -- title
-    title <- runX (parsed >>> parseDataIdentification )
-    print title
-
-
     -- identifier
     identifier <- runX (parsed >>> parseFileIdentifier)
     print identifier
 
+
+
+
+    -- title
+    x <- runX (parsed >>> parseDataIdentification )
+    let (title, abstract, jurisdictionLink) = head x
+
+    print title 
+    print abstract
+    print jurisdictionLink
+
+    return ()
 
 
 main = testArgoRecord 
