@@ -34,7 +34,7 @@ processMD conn (uuid, title) = do
     -- TODO IMPORTANT - should remove the uuid first...
     -- TODO - VERY IMPORTANT we should separate out the CSW action of getting the record 
     -- removing the old stuff and indexing resources and parameters,
-    record <- CSW.getCSWGetRecordById uuid title
+    record <- CSW.getRecordById uuid title
     MD.processRecordUUID conn uuid title
     MD.processDataParameters conn uuid record
     MD.processOnlineResources conn uuid record
@@ -51,10 +51,10 @@ processAllMDs conn = do
     PG.execute conn "delete from facet *" ()
     PG.execute conn "delete from record *" ()
     
-    identifiers <- CSW.doCSWGetRecords
+    identifiers <- CSW.doGetRecords
     -- TODO what's happening here,
-    s <- CSW.doCSWGetRecords
-    identifiers <- CSW.getCSWIdentifiers s
+    s <- CSW.doGetRecords
+    identifiers <- CSW.getIdentifiers s
     mapM (processMD conn) identifiers
 
 
@@ -90,7 +90,7 @@ main = do
 
   s <- doCSWGetMDs
 
-  identifiers <- getCSWIdentifiers s
+  identifiers <- getIdentifiers s
 
   -- IMPORTANT - we should have a single function...
   mapM (processMD conn) identifiers

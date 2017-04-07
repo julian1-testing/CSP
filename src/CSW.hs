@@ -28,7 +28,7 @@ parseCSWSummaryRecord = atTag "csw:SummaryRecord" >>>
 
 
 
-getCSWIdentifiers s = do
+getIdentifiers s = do
     identifiers <- runX (parseXML s  >>> parseCSWSummaryRecord)
     -- print
     -- mapM (putStrLn.format) identifiers
@@ -42,7 +42,7 @@ getCSWIdentifiers s = do
 -- TODO need to think about the transaction boundary
 -- DO NOT COMBINE DATABASSE WITH RETRIEVAL
 
-doCSWGetRecords = do
+doGetRecords = do
     let url = "https://catalogue-imos.aodn.org.au/geonetwork/srv/eng/csw"
     -- putStrLn query
     response <- Helpers.doHTTPPost url queryWMSAndIMOS
@@ -90,7 +90,7 @@ doCSWGetRecords = do
       |]
 
 
-getCSWGetRecordById uuid title = do
+getRecordById uuid title = do
     -- TODO - pass the catalog as a parameter - or pre-apply the whole thing.
     putStrLn $ concatMap id [ title, " ", uuid, " ", url ]
     response <- Helpers.doHTTPGet url
