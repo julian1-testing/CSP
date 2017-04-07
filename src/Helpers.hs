@@ -8,12 +8,15 @@ module Helpers where
 
 import Text.XML.HXT.Core
 
-import Network.HTTP.Client
+
+-- initialRequest where is this?
+
+import Network.HTTP.Client(responseBody, responseStatus, managerResponseTimeout, RequestBody(RequestBodyBS), method, requestBody, requestHeaders, responseTimeoutMicro, parseRequest, newManager, httpLbs  )
 import Network.HTTP.Client.TLS
-import Network.HTTP.Types.Status (statusCode)
+import Network.HTTP.Types.Status(statusCode)
 
 -- TODO import qualified
-import Network.HTTP.Types.Method
+import Network.HTTP.Types.Method()
 import Network.HTTP.Types.Header
 
 import qualified Data.ByteString as B
