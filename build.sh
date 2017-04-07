@@ -19,6 +19,13 @@ ghc $FLAGS src/Facet.hs src/FacetFormat.hs src/FacetRequest.hs -o target/FacetRe
 ghc $FLAGS -main-is Harvest.main src/Record.hs src/Harvest.hs src/CSW.hs src/Helpers.hs -o target/Harvest 
 
 
+# record decoding test
+ghc -main-is Record.main -outputdir tmp src/Record.hs src/Helpers.hs -o ./target/Record
+
+
+
+
+
 
 # compile Facet test code,
 # ghc -main-is Facet.main -outputdir tmp Facet.hs  -o ./Facet
@@ -27,9 +34,6 @@ ghc $FLAGS -main-is Harvest.main src/Record.hs src/Harvest.hs src/CSW.hs src/Hel
 # ghc -main-is Facet.main -outputdir tmp  FacetFormat.hs  -o ./FacetFormat
 
 ############
-
-# rm output -rf
-# ghc $FLAGS harvest.hs || exit
 
 # rm output -rf
 # ghc $FLAGS  load-scheme.hs || exit

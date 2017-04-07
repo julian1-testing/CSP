@@ -6,31 +6,14 @@
 
 module Record where
 
+
 import Text.XML.HXT.Core
-
 import Database.PostgreSQL.Simple as PG(query, execute, connectPostgreSQL)
-
--- http://stackoverflow.com/questions/34547937/haskell-import-qualified-and-not-in-scope-data-constructor
 import Database.PostgreSQL.Simple.Types as PG(Only(..))
-
 import Text.RawString.QQ
 
 import Helpers(parseXML, atTag, atChildName, getChildText, stripSpace) 
 
-
-{-
-  catalogue-imos, pot, and WMS
-  https://github.com/aodn/chef-private/blob/master/data_bags/imos_webapps_geonetwork_harvesters/catalogue_imos.json
-
-  csw getrecordbyid request,
-  https://catalogue-portal.aodn.org.au/geonetwork/srv/eng/csw?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&id=4402cb50-e20a-44ee-93e6-4728259250d2&outputSchema=http://www.isotc211.org/2005/gmd
-
--- ok now we want to go through the actual damn records,
-
-  selecting matches by facets,
-  select uuid,title from facet_view where url = 'http://vocab.nerc.ac.uk/collection/P01/current/TEMPPR01' ;
-
--}
 
 -- IMPORTANT must close!!!
 -- responseClose :: Response a -> IO ()
@@ -78,6 +61,10 @@ parseDataParameters =
 processRecordUUID conn uuid title = do
   PG.execute conn "insert into record(uuid,title) values (?, ?)"
     (uuid :: String, title :: String)
+
+
+
+
 
 
 ----------------
@@ -132,4 +119,15 @@ processDataParameters conn uuid recordText = do
     mapM (processDataParameter conn uuid) dataParameters
 
 
+-- need a data structure - for communication.... to represent the damn record.
+-- we should be parsing all this in a 
 
+
+testArgoRecord = do
+    recordText <- readFile "./test-data/argo.xml" 
+    dataParameters <- runX (Helpers.parseXML recordText >>> Record.parseDataParameters)
+    mapM print dataParameters
+
+
+main = testArgoRecord 
+ 

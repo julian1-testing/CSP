@@ -17,6 +17,15 @@ import qualified CSW
 import qualified Record
 import qualified Helpers as Helpers(parseXML) 
 
+{-
+  catalogue-imos, pot, and WMS
+  https://github.com/aodn/chef-private/blob/master/data_bags/imos_webapps_geonetwork_harvesters/catalogue_imos.json
+
+  csw getrecordbyid request,
+  https://catalogue-portal.aodn.org.au/geonetwork/srv/eng/csw?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&id=4402cb50-e20a-44ee-93e6-4728259250d2&outputSchema=http://www.isotc211.org/2005/gmd
+
+
+-}
 
 
 ----------------
@@ -49,11 +58,6 @@ processAllRecords conn = do
     mapM (processRecord conn) identifiers
 
 
-testArgoRecord = do
-    recordText <- readFile "./examples/argo.xml" 
-    dataParameters <- runX (Helpers.parseXML recordText >>> Record.parseDataParameters)
-    mapM print dataParameters
- 
 
 
 
