@@ -16,6 +16,7 @@ module FacetFormat where
 import qualified Data.Map as Map
 import qualified Data.List as List(sortOn, unfoldr)
 import qualified Database.PostgreSQL.Simple as PG(query, connectPostgreSQL)
+import qualified Data.Text.Lazy as LT(pack, empty, append)
 import Data.Function( (&) )
 import Debug.Trace(trace)
 
@@ -25,7 +26,6 @@ import Text.RawString.QQ
 import qualified Facet as Facet
 
 
-import qualified Data.Text.Lazy as LT
 
 -- ease syntax
 mapGet e m =
@@ -131,7 +131,6 @@ myConcat lst = foldl LT.append LT.empty lst
 
 
 formatXML rootRecordCount m = 
-
   {-  we will recurse from the root node down...
       remember that we cannot have a Nothing node above the Nothing node. so there's nowhere else to store label or count 
       information which isn't a known concept or scheme anyway
@@ -139,63 +138,65 @@ formatXML rootRecordCount m =
   let rootNode = (Nothing, "summary", rootRecordCount ) in
   recurse m rootNode 0
   where
-    -- recurse down into child nodes
+    -- drill into child nodes
     recurse m (parent_id, label, count) depth = 
 
       -- what's going on here?
       case label of 
-        -- "summary" ->
+        "summary" ->
+          outputSummary (parent_id, label, count) depth 
 
-        -- should we be doing this label substitution here? or when loading the vocab scheme and set the label? ...
+        -- should we be outputing this label substitution here? or when loading the vocab scheme and set the label? ...
         "AODN Parameter Category Vocabulary" ->
-          doDimension (parent_id, "Measured Parameter", count) depth 
+          outputDimension (parent_id, "Measured Parameter", count) depth 
 
         "AODN Platform Category Vocabulary" ->
-          doDimension (parent_id, "Platform", count) depth 
+          outputDimension (parent_id, "Platform", count) depth 
 
         _ ->
-          doCategory (parent_id, label, count) depth 
+          outputCategory (parent_id, label, count) depth 
 
-    doSummary (parent_id, label, count) depth  = 
+    outputSummary (parent_id, label, count) depth  = 
       myConcat [
           pad $ depth * 3,
-          LT.pack $ mconcat [ "<summary count=", show count, " type=\"local\"/>" ],
-          processChildren (parent_id, label, count) depth
+          "<", LT.pack label, " count=", LT.pack.show $ count, " type=\"local\"/>\n",
+          outputChildren (parent_id, label, count) depth
       ]
 
 
-    doDimension (parent_id, label, count) depth =
+    outputDimension (parent_id, label, count) depth =
       -- single closed tag...
-        myConcat [
-            (pad $ depth * 3),
-            LT.pack $ mconcat [ "<dimension value=\"", label, "\"", " count=", show count, " />\n"  ], 
-            processChildren (parent_id, label, count) depth
-        ]
+      myConcat [
+          pad $ depth * 3,
+          "<dimension value=\"", LT.pack label, "\" count=", LT.pack.show $ count, " />\n", 
+          outputChildren (parent_id, label, count) depth
+      ]
 
-    doCategory (parent_id, label, count) depth =
-     
+
+    outputCategory (parent_id, label, count) depth =
       myConcat [ 
         -- start tag
-          (pad $ depth * 3),
-          LT.pack $ mconcat [ "<category value=\"", label, "\"", " count=", show count, " >\n" ],
+        pad $ depth * 3,
+        "<category value=\"", LT.pack label, "\" count=", LT.pack.show $ count, " >\n",
         -- children
-        processChildren (parent_id, label, count) depth ,
+        outputChildren (parent_id, label, count) depth ,
         -- end tag
-        (pad $ depth * 3),
-        LT.pack "</category>\n"
+        pad $ depth * 3,
+        "</category>\n"
       ]
 
--- print will append a new line
 
-    processChildren (parent_id, label, count) depth =
+    outputChildren (parent_id, label, count) depth =
         -- take children
         let children = mapGet parent_id m  in
         -- recurse into children
-        let f txt (concept, label, count) = txt $ recurse m (concept, label, count) (depth + 1) in
+        let f acc (concept, label, count) = acc $ recurse m (concept, label, count) (depth + 1) in
         -- fold over children appending text
         foldl (f.LT.append) LT.empty children
         -- TODO use myConcat? eg.
         -- concatMap f children
+
+
 
 {-
 printXML rootRecordCount m = do
