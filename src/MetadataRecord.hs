@@ -42,6 +42,9 @@ import Helpers(parseXML, atTag, atChildName, getChildText, stripSpace)
             <gmd:URL>http://creativecommons.org/international/</gmd:URL>
           </mcp:jurisdictionLink>
  
+           <mcp:licenseLink>
+            <gmd:URL>http://creativecommons.org/licenses/by/4.0/</gmd:URL>
+          </mcp:licenseLink>
         
 
     parameters we have - just join in the db and format
@@ -66,20 +69,14 @@ parseDataIdentification =
 
     abstract <- atChildName "gmd:abstract" >>> atChildName "gco:CharacterString" >>> getChildText -< dataIdent
 
-    jurisdictionLink <- atChildName "gmd:resourceConstraints" >>> atChildName "mcp:MD_Commons" 
-        >>> atChildName "mcp:jurisdictionLink" >>> atChildName "gmd:URL" >>> getChildText -< dataIdent
+    commons <- atChildName "gmd:resourceConstraints" >>> atChildName "mcp:MD_Commons" -< dataIdent 
 
-    returnA -< (title,abstract, jurisdictionLink)
+    jurisdictionLink <- atChildName "mcp:jurisdictionLink" >>> atChildName "gmd:URL" >>> getChildText -< commons
+
+    licenseLink <- atChildName "mcp:licenseLink" >>> atChildName "gmd:URL" >>> getChildText -< commons
 
 
-parseJurisdictionLink =
-  atTag "mcp:MD_DataIdentification" >>>
-  proc dataIdent -> do
-    title <- atChildName "gmd:citation" >>> atChildName "gmd:CI_Citation" >>> atChildName "gmd:title"  
-        >>> atChildName "gco:CharacterString" >>> getChildText -< dataIdent
-    abstract <- atChildName "gmd:abstract" >>> atChildName "gco:CharacterString" >>> getChildText -< dataIdent
-    returnA -< (title,abstract)
-
+    returnA -< (title,abstract, jurisdictionLink, licenseLink)
 
 
 
@@ -189,11 +186,11 @@ testArgoRecord = do
 
     -- title
     x <- runX (parsed >>> parseDataIdentification )
-    let (title, abstract, jurisdictionLink) = head x
+ --   let (title, abstract, jurisdictionLink) = head x
 
-    print title 
-    print abstract
-    print jurisdictionLink
+    print x 
+--    print abstract
+--    print jurisdictionLink
 
     return ()
 
