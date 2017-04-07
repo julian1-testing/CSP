@@ -18,7 +18,24 @@ import Helpers(parseXML, atTag, atChildName, getChildText, stripSpace)
 -- IMPORTANT must close!!!
 -- responseClose :: Response a -> IO ()
 
+-- we don't parse the uuid - because we have required it...
 
+
+{-
+    <mcp:MD_DataIdentification gco:isoType="gmd:MD_DataIdentification">
+      <gmd:citation>
+        <gmd:CI_Citation>
+          <gmd:title>
+            <gco:CharacterString>IMOS - Argo Profiles</gco:CharacterString>
+          </gmd:title>
+-} 
+
+
+parseTitle =
+  atTag "mcp:MD_DataIdentification" >>>
+  proc dataIdent -> do
+    title <- atChildName "gmd:citation" >>> atChildName "gmd:CI_Citation" >>> atChildName "gmd:title"  >>> atChildName "gco:CharacterString" >>> getChildText -< dataIdent
+    returnA -< title 
 
 
 
@@ -127,6 +144,9 @@ testArgoRecord = do
     recordText <- readFile "./test-data/argo.xml" 
     dataParameters <- runX (Helpers.parseXML recordText >>> parseDataParameters)
     mapM print dataParameters
+
+    title <- runX (Helpers.parseXML recordText >>> parseTitle )
+    print title
 
 
 main = testArgoRecord 
