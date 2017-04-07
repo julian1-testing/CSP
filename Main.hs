@@ -13,6 +13,7 @@ import Debug.Trace(trace)
 import Data.Function( (&) )
 
 
+-- should put this in a module TestFacets - 
 
 mapGet e m =
   -- trace  ("mytrace - mapGet e: " ++ show e ++ " m: " ++ show m) $
