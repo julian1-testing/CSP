@@ -27,28 +27,17 @@ import Helpers(parseXML, atTag, atChildName, getChildText, stripSpace)
 
 {-
     ./web-app/js/portal/data/MetadataRecord.js
-        title
-        abstract
-        uuid
-        parameterField   - db join vocab
-        platform         - db field join vocab
+        title               done
+        abstract            done
+        uuid                 done
+        parameterField   -   done db join vocab  parameters we have - just join in the db and format
+        platform         -   done db field join vocab
         
-        organisation    - **** don't have yet - .
+        organisationField    - **** don't have yet - .
 
-        jurisdictionLink 
-      <gmd:resourceConstraints>
-        <mcp:MD_Commons gco:isoType="gmd:MD_Constraints" mcp:commonsType="Creative Commons">
-          <mcp:jurisdictionLink>
-            <gmd:URL>http://creativecommons.org/international/</gmd:URL>
-          </mcp:jurisdictionLink>
- 
-           <mcp:licenseLink>
-            <gmd:URL>http://creativecommons.org/licenses/by/4.0/</gmd:URL>
-          </mcp:licenseLink>
-        
-
-    parameters we have - just join in the db and format
-    organisation we have - just formatting...
+        jurisdictionLink    done
+        licenseLink         done
+        licenseName         done
 
 -}
 
@@ -74,9 +63,15 @@ parseDataIdentification =
     jurisdictionLink <- atChildName "mcp:jurisdictionLink" >>> atChildName "gmd:URL" >>> getChildText -< commons
 
     licenseLink <- atChildName "mcp:licenseLink" >>> atChildName "gmd:URL" >>> getChildText -< commons
+    
+    licenseName <- atChildName "mcp:licenseName" >>> atChildName "gco:CharacterString" >>> getChildText -< commons
 
 
-    returnA -< (title,abstract, jurisdictionLink, licenseLink)
+    licenseImageLink <- atChildName "mcp:imageLink" >>> atChildName "gmd:URL" >>> getChildText -< commons
+    
+
+
+    returnA -< (title,abstract, jurisdictionLink, licenseLink, licenseName, licenseImageLink)
 
 
 
