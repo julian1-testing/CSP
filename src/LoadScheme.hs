@@ -27,11 +27,6 @@ import Helpers(parseXML, atTag, atChildName, getChildText, stripSpace) -- we don
 
 -}
 
-{-
-parseXML s = readString [ withValidate no
-    , withRemoveWS yes  -- throw away formating WS
-    ] s
--}
 
 isDescription = do
   isElem >>> hasName "rdf:Description"

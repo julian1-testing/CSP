@@ -5,6 +5,7 @@ module Helpers where
 
 -- TODO limit imports
 import Text.XML.HXT.Core
+-- import Text.XML.HXT.Core(runX, (>>>))
 
 
 import Network.HTTP.Client(responseBody, responseStatus, managerResponseTimeout, RequestBody(RequestBodyBS), method, requestBody, requestHeaders, responseTimeoutMicro, parseRequest, newManager, httpLbs  )
