@@ -29,20 +29,9 @@ import Database.PostgreSQL.Simple.Types as PG(Only(..))
 
 import Text.RawString.QQ
 
--- Helpers
-
-parseXML s = readString [ withValidate no
-    , withRemoveWS yes  -- throw away formating WS
-    ] s
 
 
-atTag tag = deep (isElem >>> hasName tag)
-
-atChildName s = getChildren >>> hasName s
-
-getChildText = getChildren >>> getText
-
-stripSpace = filter $ not.isSpace
+import Helpers(parseXML, atTag, atChildName, getChildText, stripSpace ) 
 
 
 

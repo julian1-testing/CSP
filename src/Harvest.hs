@@ -36,6 +36,8 @@ import Text.RawString.QQ
 import qualified CSW
 import qualified Record
 
+-- import Helpers(parseXML, atTag, atChildName, getChildText, stripSpace ) 
+import Helpers(parseXML) 
 
 
 
@@ -71,7 +73,7 @@ processAllRecords conn = do
 
 testArgoRecord = do
     recordText <- readFile "./examples/argo.xml" 
-    dataParameters <- runX (Record.parseXML recordText >>> Record.parseDataParameters)
+    dataParameters <- runX (Helpers.parseXML recordText >>> Record.parseDataParameters)
     mapM print dataParameters
  
 
