@@ -186,8 +186,8 @@ formatXML rootRecordCount m =
         let f txt (concept, label, count) = txt $ recurse m (concept, label, count) (depth + 1) in
         -- fold over children appending text
         foldl (f.LT.append) LT.empty children
-        -- TODO use myConcat?
-
+        -- TODO use myConcat? eg.
+        -- concatMap f children
 
 
 printXML rootRecordCount m = do

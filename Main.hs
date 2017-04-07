@@ -13,6 +13,10 @@ import Debug.Trace(trace)
 
 import Data.Function( (&) )
 
+-- import qualified Data.Text.Lazy    as LT
+import qualified Data.Text.Lazy.IO as LT(putStrLn)  -- 
+
+
 
 mapGet e m =
   -- trace  ("mytrace - mapGet e: " ++ show e ++ " m: " ++ show m) $
@@ -108,7 +112,9 @@ main = do
 
   -- print $ LBS.unpack d
   -- S is LBS
-  print s 
+  -- don't want 
+  -- print s 
+  LT.putStrLn $ s
 
   return () 
 
