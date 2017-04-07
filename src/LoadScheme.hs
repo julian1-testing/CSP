@@ -3,22 +3,18 @@
 -- {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE Arrows, NoMonomorphismRestriction #-}
 
--- needed for disambiguating types,
-{-# LANGUAGE ScopedTypeVariables, OverloadedStrings #-}
+-- {-# LANGUAGE ScopedTypeVariables, OverloadedStrings #-}
 
 {-# LANGUAGE QuasiQuotes #-}
 
 import Text.XML.HXT.Core
 
-import qualified Data.ByteString as B
-import qualified Data.ByteString.Char8 as BC
-import qualified Data.ByteString.Lazy.Char8 as BLC
 
 import Database.PostgreSQL.Simple
 
 import Text.RawString.QQ
 
--- TODO change name - load-vocab-scheme?
+import Helpers(parseXML, atTag, atChildName, getChildText, stripSpace) -- we don't use all these
 
 {-
   http://vocabs.ands.org.au/repository/api/lda/aodn/aodn-discovery-parameter-vocabulary/version-1-2/resource.xml?uri=http://vocab.aodn.org.au/def/discovery_parameter/894
@@ -31,10 +27,11 @@ import Text.RawString.QQ
 
 -}
 
+{-
 parseXML s = readString [ withValidate no
     , withRemoveWS yes  -- throw away formating WS
     ] s
-
+-}
 
 isDescription = do
   isElem >>> hasName "rdf:Description"
