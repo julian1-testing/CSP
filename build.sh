@@ -6,16 +6,17 @@ FLAGS="-O2 -outputdir tmp"
 
 
 [ -d tmp ] || mkdir tmp
+[ -d target ] || mkdir target
 
 
 # we don't want to remove the files in output otherwise we have to build everythign again
 # rm Main
 
-ghc $FLAGS CSW.hs Facet.hs Main.hs FacetFormat.hs
+ghc $FLAGS src/CSW.hs src/Facet.hs  src/FacetFormat.hs src/Main.hs -o target/Main
 
 
 # setting the main function explicitly avoids Main.o files being generated in tmp and confusing the build.
-ghc $FLAGS -main-is Harvest.main Harvest.hs
+ghc $FLAGS -main-is Harvest.main src/Harvest.hs -o target/Harvest 
 
 
 
