@@ -95,7 +95,6 @@ doGetRecords url' = do
 
 
 
--- doGetRecordById (uuid, title) = do
 doGetRecordById uuid title = do
     -- keeping the title around is pretty useful for output formatting,
     -- TODO - pass the catalog as a parameter - or pre-apply the whole thing.

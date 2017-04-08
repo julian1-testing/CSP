@@ -8,11 +8,11 @@
 module RecordStore where
 
 
-import Database.PostgreSQL.Simple as PG(query, execute, connectPostgreSQL, close)
+import Database.PostgreSQL.Simple as PG
 import Database.PostgreSQL.Simple.Types as PG(Only(..))
 import Text.RawString.QQ
 
-import Helpers(parseXML)
+import Helpers as H -- (parseXML)
 import ParseMCP20(parse)
 import Record
  
@@ -201,7 +201,7 @@ main = do
     print "hi"
 
     recordText <- readFile "./test-data/argo.xml"
-    let elts = Helpers.parseXML recordText
+    let elts = parseXML recordText
 
     myRecord <- ParseMCP20.parse elts
     putStrLn $ showRecord myRecord

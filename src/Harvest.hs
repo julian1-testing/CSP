@@ -3,32 +3,25 @@
 
 -}
 
-{-# LANGUAGE ScopedTypeVariables, OverloadedStrings #-}
-{-# LANGUAGE QuasiQuotes #-}
+{-# LANGUAGE OverloadedStrings #-}
+-- {-# LANGUAGE QuasiQuotes #-}
 
 module Harvest where
 
 import Text.XML.HXT.Core(runX, (>>>))
-
--- import Database.PostgreSQL.Simple as PG(query, execute, connectPostgreSQL)
 import Database.PostgreSQL.Simple as PG(connectPostgreSQL, close)
--- import Database.PostgreSQL.Simple.Types as PG(Only(..))
-
 import Text.RawString.QQ
 
+import qualified Helpers as Helpers
 import qualified CSW as CSW
 import qualified Record as R
 import qualified RecordStore as RS
+import qualified ParseMCP20 as ParseMCP20
 
-import qualified Helpers as Helpers
--- import qualified Helpers as Helpers(parseXML) 
 
 ----------------
 
 doGetAndprocessRecord conn uuid title = do
-    -- TODO IMPORTANT - should remove the uuid first...
-    -- TODO - VERY IMPORTANT we should separate out the CSW action of getting the record 
-    -- removing the old stuff and indexing resources and parameters,
 
     print "hi"
 {-
@@ -37,34 +30,35 @@ doGetAndprocessRecord conn uuid title = do
     RS.processDataParameters conn uuid record
     RS.processOnlineResources conn uuid record
 -}
+
+    recordText <- CSW.doGetRecordById uuid title
+
+    let elts = Helpers.parseXML recordText
+    myRecord <- ParseMCP20.parse elts 
+
+    putStrLn $ R.showRecord myRecord
+
     return ()
 
 
 
 
 doGetAndProcessRecords conn = do
-    -- this is not very nice.... - should do deletion incrementallly for each record
-    -- and transactionally
-{-
-    PG.execute conn "delete from resource *" ()
-    PG.execute conn "delete from facet *" ()
-    PG.execute conn "delete from record *" ()
--}
+    {-
+        -- THIS IS NOT RIGHT - NEEDS TO be a deletion as we do each record 
+        -- and need to know if a record has been removed.
+        PG.execute conn "delete from resource *" ()
+        PG.execute conn "delete from facet *" ()
+        PG.execute conn "delete from record *" ()
+    -}
     
-
+    -- get records to process
     result <- CSW.doGetRecords "https://catalogue-imos.aodn.org.au/geonetwork" 
     let elts = Helpers.parseXML result
     identifiers <- runX (elts >>> CSW.parseCSWSummaryRecord)
     mapM (putStrLn.show) identifiers
  
-    -- TODO what's happening here,
-    -- s <- CSW.doGetRecords -- change name Parse records parseIdentidifers
-    -- identifiers <- CSW.doGetIdentifiers s
-    -- mapM (processRecord conn) identifiers
-    -- mapM print identifiers
-    -- print identifiers
-
-
+    -- process each record
     mapM (uncurry $ doGetAndprocessRecord conn) identifiers
 
 
@@ -72,38 +66,10 @@ doGetAndProcessRecords conn = do
 main :: IO ()
 main = do
   conn <- PG.connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
-
-  -- testArgoR
-
   doGetAndProcessRecords conn 
-
-
   PG.close conn
 
   return ()
 
 
-
-{-
-  -- execute conn "truncate resource;"  ()
-  -- note that the sequence will update -
-  execute conn "delete from resource *" ()
-  execute conn "delete from facet *" ()
-  execute conn "delete from record *" ()
--}
-
-
-
-{-
-  -- TODO - seperate out query and parse action -
-  -- do query and get records
-  identifiers <- doCSWGetRs
-
-  s <- doCSWGetRs
-
-  identifiers <- doGetIdentifiers s
-
-  -- IMPORTANT - we should have a single function...
-  mapM (processR conn) identifiers
--}
 
