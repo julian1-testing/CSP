@@ -26,12 +26,22 @@ import ParseMCP20(parse)
 
 processRecordUUID conn uuid title = do
 
-  xs :: [ (Only Integer) ] <- PG.query conn "insert into record(uuid,title) values (?, ?) returning id" (uuid :: String, title :: String)
+    xs :: [ (Only Integer)] <- PG.query conn "insert into record(uuid,title) values (?, ?) returning id" (uuid :: String, title :: String)
 
-  print xs
+    -- only is actually a type
+    -- Can we use Maybe instead
+
+    let record_id = case xs of
+         [] -> Nothing
+         [ Only record_id ] -> Just record_id 
+
+
+    putStrLn $ "record_id is " ++ show record_id
+    return ()
+
+
 
 {- 
-
 
 processOnlineResource conn uuid (protocol,linkage, description) = do
     PG.execute conn [r|
