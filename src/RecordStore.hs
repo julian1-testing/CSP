@@ -9,7 +9,9 @@ import Database.PostgreSQL.Simple.Types as PG(Only(..))
 import Text.RawString.QQ
 
 
-import MetadataRecord(Record)
+import MetadataRecord(Record, parseMCP20, showRecord)
+
+import Helpers(parseXML)
 
 
 ----------------
@@ -76,6 +78,14 @@ processDataParameters conn uuid recordText = do
 
 main = do
     print "hi"
+
+    recordText <- readFile "./test-data/argo.xml"
+    let elts = Helpers.parseXML recordText
+
+    myRecord <- MetadataRecord.parseMCP20 elts 
+    putStrLn $ showRecord myRecord
+    return ()
+
 
 
 

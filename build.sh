@@ -25,6 +25,8 @@ ghc -i./src -main-is RecordStore.main -outputdir tmp ./src/RecordStore.hs  -o ta
 ghc -i./src -main-is MetadataRecord.main -outputdir tmp ./src/MetadataRecord.hs  -o target/MetadataRecord
 
 
+
+
 # compile Facet test code,
 # ghc -main-is Facet.main -outputdir tmp Facet.hs  -o ./Facet
 
