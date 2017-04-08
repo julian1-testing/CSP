@@ -103,12 +103,12 @@ processDataIdentification conn record_id dataIdentification = do
         -- there's a limit of 9 elements in the tuple....
         $ let d = dataIdentification in
         (   record_id :: Integer, 
-            title d :: String,
-            abstract d :: String,
-            jurisdictionLink d :: String,
-            licenseLink d :: String,
-            licenseName d :: String,
-            licenseImageLink d  :: String
+            title d,-- :: String,
+            abstract d,-- :: String,
+            jurisdictionLink d,-- :: String,
+            licenseLink d,-- :: String,
+            licenseName d,-- :: String,
+            licenseImageLink d--  :: String
         )
     return ()
 
@@ -137,10 +137,10 @@ processTransferProtocol conn record_id transferProtocol = do
         |] 
         $ let t = transferProtocol in
         (
-            record_id :: Integer,
-            protocol t :: String, 
-            linkage t :: String, 
-            description t :: String
+            record_id , -- :: Integer,
+            protocol t,-- :: String, 
+            linkage t, -- :: String, 
+            description t-- :: String
         )
 
     return ()
