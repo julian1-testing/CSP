@@ -2,7 +2,7 @@
 
 
 # do we need -make also ?
-FLAGS="-O2 -outputdir tmp"
+FLAGS="-i./src -O2 -outputdir tmp"
 
 
 [ -d tmp ] || mkdir tmp
@@ -20,13 +20,14 @@ FLAGS="-O2 -outputdir tmp"
 
 
 # Like this, and it will automatically pull in dependencies
-# ghc -i./src -main-is RecordStore.main -outputdir tmp ./src/RecordStore.hs  -o target/RecordStore
 
 # ghc -i./src -main-is MetadataRecord.main -outputdir tmp ./src/MetadataRecord.hs  -o target/MetadataRecord
 
-ghc -i./src -main-is ParseMCP20.main -outputdir tmp ./src/ParseMCP20.hs  -o target/ParseMCP20
+# ghc -i./src -main-is ParseMCP20.main -outputdir tmp ./src/ParseMCP20.hs  -o target/ParseMCP20
 
 
+# ghc $FLAGS -main-is RecordStore.main -outputdir tmp ./src/RecordStore.hs  -o target/RecordStore
+ghc $FLAGS -main-is RecordStore.main  ./src/RecordStore.hs  -o target/RecordStore
 
 
 # compile Facet test code,

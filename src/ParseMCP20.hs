@@ -3,6 +3,11 @@
 
 module ParseMCP20 where
 
+{-
+    IMPORTANT must close resources !!!
+    responseClose :: Response a -> IO ()
+-}
+
 
 import Text.XML.HXT.Core
 

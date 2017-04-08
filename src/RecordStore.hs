@@ -8,10 +8,9 @@ import Database.PostgreSQL.Simple as PG(query, execute, connectPostgreSQL)
 import Database.PostgreSQL.Simple.Types as PG(Only(..))
 import Text.RawString.QQ
 
-
+import Helpers(parseXML)
 import Record(Record, showRecord)
 import ParseMCP20(parse)
-
 
 
 ----------------
@@ -82,7 +81,7 @@ main = do
     recordText <- readFile "./test-data/argo.xml"
     let elts = Helpers.parseXML recordText
 
-    myRecord <- MetadataRecord.parseMCP20 elts 
+    myRecord <- ParseMCP20.parse elts 
     putStrLn $ showRecord myRecord
     return ()
 

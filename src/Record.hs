@@ -1,21 +1,6 @@
--- stack --install-ghc --resolver lts-5.13 runghc --package http-conduit
 
-{-# LANGUAGE Arrows, NoMonomorphismRestriction #-}
--- {-# LANGUAGE ScopedTypeVariables, OverloadedStrings #-}
--- {-# LANGUAGE QuasiQuotes #-}
-
--- a portalRecord
 
 module Record where
-
-
--- import Text.XML.HXT.Core
-
--- import Helpers(parseXML, atTag, atChildName, getChildText, stripSpace)
-
--- IMPORTANT must close resources !!!
--- responseClose :: Response a -> IO ()
-
 
 {-
     we work out what we need by looking at
@@ -49,7 +34,8 @@ module Record where
         otherCitation      ***** does not appear in summary-response
         useLimitationiField done -> useLimitation - more than one
 
-        temperalExtentBegin done -> tempExtentBegin  -> it's just a date  eg. <tempExtentBegin>1999-10-01t00:00:00.000z</tempExtentBegin>
+        temperalExtentBegin done -> tempExtentBegin  -> it's just a date  
+            eg. <tempExtentBegin>1999-10-01t00:00:00.000z</tempExtentBegin>
 
         linksField          done -> links -> CI_Online_Resource  eg. 'View and download'  transferLinks 
         linkedFilesField  -> linkedFiles -> ****** does not appear 
@@ -64,7 +50,7 @@ module Record where
 -}
 
 
--- If any field is genuinely optional then should use Maybe 
+-- If any field is genuinely optional then we should use Maybe 
 
 data DataIdentification = DataIdentification { 
 
@@ -106,13 +92,13 @@ data Record = Record {
 } deriving (Show, Eq)
 
 
--- ByteString?
+-- should use ByteString?
 
 -- should pass in the formatting function to use....
 
 
-
 showRecord myRecord =
+  -- change to show 
 
     let formatList f xs = concatMap id $ map (\x ->  "\n  -" ++ f x) xs in
 
