@@ -141,9 +141,7 @@ parseDataParameters =
 
 
 parse elts = do
-    -- runX returns an IO type...
-    -- so this has to monadic
-    -- but - is it possible to run a non monadic runX to parse everything?
+    -- runX returns an IO type...  so this function must be monadic
 
     identifier <- runX (elts >>> parseFileIdentifier)
 
@@ -162,8 +160,9 @@ parse elts = do
     geoPoly <- runX (elts >>> parseGeoPolygon )
 
 
-    let a = case (identifier, dataIdentification, temporalBegin) of
-            ([ uuid ], [ di ], [tb]) -> Right $ Record {
+    let record = case (identifier, dataIdentification, temporalBegin) of
+            ([ uuid ], [ di ], [tb]) -> Right $ 
+             Record {
                 uuid = uuid,
                 dataIdentification = di,
                 attrConstraints = attrConstraints ,
@@ -175,9 +174,7 @@ parse elts = do
             }
             ( _, _, _) -> Left "missing uuid, dataIdentification or temporalBegin"
 
-
-
-    return a
+    return record
 
 
 
