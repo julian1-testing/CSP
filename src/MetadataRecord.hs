@@ -121,13 +121,15 @@ formatList f xs = concatMap id $ map (\x ->  "\n  -" ++ f x) xs
 showMyRecord myRecord =
 
     concatMap id [ 
-        "uuid: " ++ uuid  myRecord, "\n",
+        "uuid= " ++ uuid  myRecord, "\n",
     
-        "attrConstraints:", formatList id (attrConstraints myRecord), "\n",
+        "attrConstraints= ", formatList id (attrConstraints myRecord), "\n",
         
-        "useLimitations:", formatList id (useLimitations myRecord), "\n",
+        "useLimitations= ", formatList id (useLimitations myRecord), "\n",
         
-        "dataParameters :", formatList show (dataParameters myRecord)
+        "dataParameters= ", formatList show (dataParameters myRecord), "\n",
+
+        "temporalBegin= ",  temporalBegin myRecord, "\n"
 
     ]
 
