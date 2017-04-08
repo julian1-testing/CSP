@@ -87,7 +87,8 @@ data Record = Record {
     useLimitations :: [ String ],
     dataParameters :: [ DataParameter ], 
     temporalBegin :: String,
-    links :: [ TransferLink ],
+    -- links :: [ TransferLink ],
+    transferLinks :: [ TransferLink ],
     geoPoly :: [ String ]
 } deriving (Show, Eq)
 
@@ -117,7 +118,7 @@ showRecord myRecord =
         "useLimitations= ", formatList id (useLimitations myRecord), "\n",
         "dataParameters= ", formatList show (dataParameters myRecord), "\n",
         "temporalBegin= ",  temporalBegin myRecord, "\n",
-        "links= ", formatList show (links myRecord), "\n",
+        "transferLinks= ", formatList show (transferLinks myRecord), "\n",
         "geoPoly= ", formatList id (geoPoly myRecord), "\n"
     ]
 

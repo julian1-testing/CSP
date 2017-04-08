@@ -115,7 +115,7 @@ processDataIdentification conn record_id dataIdentification = do
 
 
 
-processTransferProtocol conn record_id transferProtocol = do
+processTransferLink conn record_id transferLink = do
 
     xs :: [ (Only Integer)] <- PG.query conn
         [r|
@@ -135,7 +135,7 @@ processTransferProtocol conn record_id transferProtocol = do
             (select * from a)
             returning id
         |] 
-        $ let t = transferProtocol in
+        $ let t = transferLink in
         (
             record_id , -- :: Integer,
             protocol t,-- :: String, 
@@ -144,6 +144,12 @@ processTransferProtocol conn record_id transferProtocol = do
         )
 
     return ()
+
+
+processTransferLinks conn record_id transferLinks = do
+    -- mapM (putStrLn.show) onlineResources
+    mapM (processTransferLink conn record_id) transferLinks
+
 
 
 
@@ -220,6 +226,9 @@ main = do
     record_id <- processRecordUUID conn "myuuid" 
 
     processDataIdentification conn record_id (Record.dataIdentification myRecord)
+
+
+    processTransferLinks conn record_id (Record.transferLinks myRecord) 
 
     return ()
 

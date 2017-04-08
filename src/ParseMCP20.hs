@@ -157,7 +157,7 @@ parse elts = do
 
     temporalBegin <- runX (elts >>> parseTemporalExtentBegin )
 
-    links <- runX (elts >>> parseTransferLinks)
+    transferLinks <- runX (elts >>> parseTransferLinks)
 
     geoPoly <- runX (elts >>> parseGeoPolygon )
 
@@ -176,7 +176,7 @@ parse elts = do
         useLimitations = useLimitations,
         dataParameters = dataParameters,
         temporalBegin = headWithDefault temporalBegin "unknown",
-        links = links,
+        transferLinks = transferLinks,
         geoPoly = geoPoly
     }
 

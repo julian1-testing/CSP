@@ -118,7 +118,7 @@ alter table record owner to harvest;
 --  select * from record left join  data_identification di on di.record_id = record.id ;
 -- 
 
-create table transfer_protocol (
+create table transfer_link (
   -- mcp2 resource
 
   id serial   primary key not null,
@@ -130,7 +130,7 @@ create table transfer_protocol (
 );
 
 -- should be unique on these three...
-CREATE UNIQUE INDEX my_transfer_protocol_unique_idx ON transfer_protocol(record_id, protocol, linkage);
+CREATE UNIQUE INDEX my_transfer_link_unique_idx ON transfer_link(record_id, protocol, linkage);
 
 
 
