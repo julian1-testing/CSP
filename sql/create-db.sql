@@ -99,7 +99,7 @@ alter table record owner to harvest;
 create table data_identification (
 
     id serial primary key not null,
-    record_id integer references record(id), 
+    record_id integer references record(id) unique, 
 
     title               text, -- not null? 
     abstract            text, 

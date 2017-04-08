@@ -10,12 +10,9 @@ import Database.PostgreSQL.Simple.Types as PG(Only(..))
 import Text.RawString.QQ
 
 import Helpers(parseXML)
-import Record(Record, DataIdentification(title), showRecord, dataIdentification)
-
--- import Record.DataIdentification(title)
-
 import ParseMCP20(parse)
-
+import Record
+ 
 
 ----------------
 
@@ -65,18 +62,52 @@ processRecordUUID conn uuid = do
 
 processDataIdentification conn record_id dataIdentification = do
     print "hi this is dataIdentification"
+    {- deleting each time isn't nearly as nice
+    -- upsert....
+    -- but if there are multiple items......  then we have to do a delete first... in case one has been removed????
+    -- Note that we can insert the last modified time in the on conflict clause which is quite nice.
+    -}
 
     xs :: [ (Only Integer)] <- PG.query conn
         [r|
+            -- using upsert
+            with a as (
+                select 
+                ? as record_id,
+                ? as title,
+                ? as abstract, 
+                ? as jurisdiction_link,
+                ? as license_link,
+                ? as license_name,
+                ? as license_image_link
+            )
             insert into data_identification( 
                 record_id,
-                title
+                title,
+                abstract,
+                jurisdiction_link,
+                license_link,
+                license_name,
+                license_image_link
             )
-            values (?, ?)
+            (select * from a)
+            on conflict (record_id) do update set
+                title = (select title from a),
+                abstract = (select abstract from a)
+
             returning id
         |]
-        (record_id :: Integer, 
-         title dataIdentification :: String
+        -- we can dup this duple - actually I don't think we can ...
+        -- there seems to be a maximum of 9 elements in the tuple....
+        $ let d = dataIdentification in
+        (   record_id :: Integer, 
+
+            title d :: String,
+            abstract d :: String,
+            jurisdictionLink d :: String,
+            licenseLink d :: String,
+            licenseName d :: String,
+            licenseImageLink d :: String
         )
 
     return ()
