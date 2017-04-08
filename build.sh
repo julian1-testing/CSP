@@ -9,26 +9,17 @@ FLAGS="-i./src -O2 -outputdir tmp"
 [ -d target ] || mkdir target
 
 
-# setting the main function explicitly avoids Main.o files being generated in tmp and confusing the build.
-# we don't want to remove the files in output otherwise we have to build everythign again
-# rm Main
+# - setting the module main function explicitly for the executable - avoids Main.o files being generated in tmp and confusing the build.
+# - Using -i will pull in dependnecies 
 
-# ghc $FLAGS src/Facet.hs src/FacetFormat.hs src/FacetRequest.hs -o target/FacetRequest
+# ghc $FLAGS -main-is ParseMCP20.main   ./src/ParseMCP20.hs  -o target/ParseMCP20
 
-
-
-
-
-# Like this, and it will automatically pull in dependencies
-
-# ghc -i./src -main-is MetadataRecord.main -outputdir tmp ./src/MetadataRecord.hs  -o target/MetadataRecord
-
-# ghc -i./src -main-is ParseMCP20.main -outputdir tmp ./src/ParseMCP20.hs  -o target/ParseMCP20
-
-
-# ghc $FLAGS -main-is RecordStore.main -outputdir tmp ./src/RecordStore.hs  -o target/RecordStore
 ghc $FLAGS -main-is RecordStore.main  ./src/RecordStore.hs  -o target/RecordStore
 
+
+
+
+# ghc $FLAGS src/Facet.hs src/FacetFormat.hs src/FacetRequest.hs -o target/FacetRequest
 
 # compile Facet test code,
 # ghc -main-is Facet.main -outputdir tmp Facet.hs  -o ./Facet

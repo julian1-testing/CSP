@@ -1,8 +1,9 @@
 
+{-# LANGUAGE ScopedTypeVariables, OverloadedStrings #-}
+{-# LANGUAGE QuasiQuotes #-}
 
 module RecordStore where
 
--- import Helpers(parseXML, atTag, atChildName, getChildText, stripSpace)
 
 import Database.PostgreSQL.Simple as PG(query, execute, connectPostgreSQL)
 import Database.PostgreSQL.Simple.Types as PG(Only(..))
@@ -16,13 +17,20 @@ import ParseMCP20(parse)
 ----------------
 
 {-
-    I think we're basically going to want to redo this....
+    ok - get rid of the title,
+
+    -- should be upsert - and probably the only one. 
+    -- and return the id
+-}
 
 
 processRecordUUID conn uuid title = do
-  PG.execute conn "insert into record(uuid,title) values (?, ?)"
-    (uuid :: String, title :: String)
 
+  xs :: [ (Integer, Integer) ] <- PG.query conn "insert into record(uuid,title) values (?, ?) returning id" (uuid :: String, title :: String)
+
+  print xs
+
+{- 
 
 
 processOnlineResource conn uuid (protocol,linkage, description) = do
@@ -83,6 +91,14 @@ main = do
 
     myRecord <- ParseMCP20.parse elts 
     putStrLn $ showRecord myRecord
+
+    -- processRecordUUID conn uuid title = do
+
+    conn <- PG.connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
+
+    processRecordUUID conn "myuuid" "my title"
+
+
     return ()
 
 
