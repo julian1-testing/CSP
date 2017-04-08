@@ -20,9 +20,11 @@ FLAGS="-O2 -outputdir tmp"
 
 
 # Like this, and it will automatically pull in dependencies
-ghc -i./src -main-is RecordStore.main -outputdir tmp ./src/RecordStore.hs  -o target/RecordStore
+# ghc -i./src -main-is RecordStore.main -outputdir tmp ./src/RecordStore.hs  -o target/RecordStore
 
-ghc -i./src -main-is MetadataRecord.main -outputdir tmp ./src/MetadataRecord.hs  -o target/MetadataRecord
+# ghc -i./src -main-is MetadataRecord.main -outputdir tmp ./src/MetadataRecord.hs  -o target/MetadataRecord
+
+ghc -i./src -main-is ParseMCP20.main -outputdir tmp ./src/ParseMCP20.hs  -o target/ParseMCP20
 
 
 

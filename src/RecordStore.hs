@@ -9,9 +9,9 @@ import Database.PostgreSQL.Simple.Types as PG(Only(..))
 import Text.RawString.QQ
 
 
-import MetadataRecord(Record, parseMCP20, showRecord)
+import Record(Record, showRecord)
+import ParseMCP20(parse)
 
-import Helpers(parseXML)
 
 
 ----------------

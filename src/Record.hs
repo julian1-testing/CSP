@@ -1,0 +1,139 @@
+-- stack --install-ghc --resolver lts-5.13 runghc --package http-conduit
+
+{-# LANGUAGE Arrows, NoMonomorphismRestriction #-}
+-- {-# LANGUAGE ScopedTypeVariables, OverloadedStrings #-}
+-- {-# LANGUAGE QuasiQuotes #-}
+
+-- a portalRecord
+
+module Record where
+
+
+-- import Text.XML.HXT.Core
+
+-- import Helpers(parseXML, atTag, atChildName, getChildText, stripSpace)
+
+-- IMPORTANT must close resources !!!
+-- responseClose :: Response a -> IO ()
+
+
+{-
+    we work out what we need by looking at
+        1. MetaDataRecord.js and seeing the fields
+        2. looking at the fields in the response.xml
+        3. then mapping the values in response.xml back into original argo.xml record to get tag name
+-}
+
+
+
+{-
+    ./web-app/js/portal/data/MetadataRecord.js
+        title               done
+        abstract            done
+        uuid                 done
+        parameterField   -   done db join vocab  parameters we have - just join in the db and format
+        platform         -   done db field join vocab
+
+        organisationField    **** don't have yet - .
+
+        jurisdictionLink    done
+        licenseLink         done
+        licenseName         done
+        licenseImagelink    done
+
+        attrConstrField -> attrConstr ->
+            - more than one in MD_Commons
+
+        otherConstrField ->  also in MDcommons
+
+        otherCitation      ***** does not appear in summary-response
+        useLimitationiField done -> useLimitation - more than one
+
+        temperalExtentBegin done -> tempExtentBegin  -> it's just a date  eg. <tempExtentBegin>1999-10-01t00:00:00.000z</tempExtentBegin>
+
+        linksField          done -> links -> CI_Online_Resource  eg. 'View and download'  transferLinks 
+        linkedFilesField  -> linkedFiles -> ****** does not appear 
+        onlineResourcesFiled -> onlineResources ***** does not appear 
+        pointOfTruthLinkField -> pointOfTruthLink  **** does not appear 
+        bboxField -> bbox -> 
+                            -> geoBox  ** don't have for argo.... but do for satellite... i think
+                            -> geoPolygon  done.
+
+        wmsLayer             **** does not appear 
+        iconSourceUuid   -> source -> which is the uuid 
+-}
+
+
+-- If any field is genuinely optional then should use Maybe 
+
+data DataIdentification = DataIdentification { 
+
+    title:: String, 
+    abstract:: String, 
+    jurisdictionLink :: String, 
+    licenseLink :: String , 
+    licenseName :: String , 
+    licenseImageLink:: String
+} deriving (Show, Eq)
+
+
+data TransferLink = TransferLink {
+
+    protocol :: String,
+    linkage :: String,
+    description :: String
+} deriving (Show, Eq)
+
+
+data DataParameter = DataParameter {
+
+    term :: String,
+    url :: String
+} deriving (Show, Eq)
+
+
+-- change name - PortalRecord, or MCP2 Record
+data Record = Record {
+
+    uuid :: String,
+    dataIdentification :: DataIdentification , 
+    attrConstraints :: [ String ],
+    useLimitations :: [ String ],
+    dataParameters :: [ DataParameter ], 
+    temporalBegin :: String,
+    links :: [ TransferLink ],
+    geoPoly :: [ String ]
+} deriving (Show, Eq)
+
+
+-- ByteString?
+
+-- should pass in the formatting function to use....
+
+
+
+showRecord myRecord =
+
+    let formatList f xs = concatMap id $ map (\x ->  "\n  -" ++ f x) xs in
+
+    concatMap id [ 
+        "uuid= " ++ uuid  myRecord, "\n",
+
+        -- TODO -- tidy        
+        "dataIdentification.title= " ++ (show $ (title.dataIdentification) myRecord), "\n",
+        "dataIdentification.abstract= " ++ (show $ (abstract.dataIdentification) myRecord), "\n",
+        "dataIdentification.jurisdictionLinke = " ++ (show $ (jurisdictionLink.dataIdentification) myRecord), "\n",
+        "dataIdentification.licenseLink= " ++ (show $ (licenseLink.dataIdentification) myRecord), "\n",
+        "dataIdentification.licenseName= " ++ (show $ (licenseName.dataIdentification) myRecord), "\n",
+        "dataIdentification.licenseImageLink = " ++ (show $ (licenseImageLink.dataIdentification) myRecord), "\n",
+ 
+        "attrConstraints= ", formatList id (attrConstraints myRecord), "\n",
+        "useLimitations= ", formatList id (useLimitations myRecord), "\n",
+        "dataParameters= ", formatList show (dataParameters myRecord), "\n",
+        "temporalBegin= ",  temporalBegin myRecord, "\n",
+        "links= ", formatList show (links myRecord), "\n",
+        "geoPoly= ", formatList id (geoPoly myRecord), "\n"
+    ]
+
+
+
