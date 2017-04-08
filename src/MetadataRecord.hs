@@ -56,7 +56,12 @@ import Helpers(parseXML, atTag, atChildName, getChildText, stripSpace)
         linkedFilesField  -> linkedFiles -> ****** does not appear 
         onlineResourcesFiled -> onlineResources ***** does not appear 
         pointOfTruthLinkField -> pointOfTruthLink  **** does not appear 
+        bboxField -> bbox -> 
+                            -> geoBox  ** don't have   do have - but not for argo....
+                            -> geoPolygon
 
+        wmsLayer             **** does not appear 
+        iconSourceUuid   -> source -> which is the uuid 
 -}
 
 parseFileIdentifier =
@@ -78,6 +83,15 @@ data MCP2Record = MCP2Record { title:: String
 
 -- p = Person { firstName = "john", lastName = "madden", age = 34 }
 
+
+-- source is the catalog we're harvesting eg.  337   <metadata>
+-- 
+{-
+     337   <metadata>
+ 338     <title>IMOS - SRS Satellite - SST L3S - 01 day composite - night time</title>
+ 339     <popularity>1798</popularity>
+ 340     <source>ed23e365-c459-4aa4-bbc1-5d2cd0274af0</source>
+-}
 
 
 parseDataIdentification =
@@ -143,14 +157,38 @@ parseTemporalExtentBegin =
     returnA -< begin
 
 
-
 {-
-      <gmd:transferOptions>
-        <gmd:MD_DigitalTransferOptions>
-          <gmd:onLine>
-            <gmd:CI_OnlineResource>
- 
+    geoPoly
+      <gmd:extent>
+        <gmd:EX_Extent>
+          <GMD:geographicElement>
+            <gmd:EX_BoundingPolygon>
+              <gmd:polygon>
+                <gml:Polygon srsName="CRS:84">
+                  <gml:exterior>
+           <gmd:geographicElement>
+            <gmd:EX_BoundingPolygon>
+              <gmd:polygon>
+                <gml:Polygon srsName="CRS:84">
+                  <gml:exterior>
+                    <gml:LinearRing>
+                      <gml:posList srsDimension="2">-85 -15 -85 -10 -80 -10 -80 -15 -85 -15</gml:posList>
 -}
+
+parseGeoPolygon =
+    -- change name  
+  -- multiple
+  atTag "gmd:extent"  >>> atChildName "gmd:EX_Extent" >>>
+  proc extent -> do
+    begin <- atChildName "gmd:geographicElement" >>> atChildName "gmd:EX_BoundingPolygon"
+        >>> atChildName "gmd:polygon" >>> atChildName "gml:Polygon"
+        >>> atChildName "gml:exterior" >>> atChildName "gml:LinearRing"
+        >>> atChildName "gml:posList" >>> getChildText -< extent
+    returnA -< begin
+
+
+
+
 
 
 -- change name to links...
@@ -283,6 +321,11 @@ testArgoRecord = do
     putStrLn "\n###### links"
     links <- runX (parsed >>> parseTransferLinks)
     mapM print links
+
+    
+    putStrLn "\n###### geoPoly "
+    geoPoly <- runX (parsed >>> parseGeoPolygon )
+    mapM print geoPoly
  
 
     return ()
