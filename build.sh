@@ -17,17 +17,12 @@ FLAGS="-O2 -outputdir tmp"
 
 
 
-# ghc $FLAGS -main-is Harvest.main src/MetadataRecord.hs src/Harvest.hs src/CSW.hs src/Helpers.hs -o target/Harvest 
 
 
-# record parsing
-ghc -main-is MetadataRecord.main -outputdir tmp src/MetadataRecord.hs src/Helpers.hs -o ./target/MetadataRecord
+# Like this, and it will automatically pull in dependencies
+ghc -i./src -main-is RecordStore.main -outputdir tmp ./src/RecordStore.hs  -o target/RecordStore
 
-# ghc -main-is RecordStore.main -outputdir tmp src/RecordStore.hs src/MetadataRecord.hs src/Helpers.hs -o ./target/RecordStore
-
-
-
-
+ghc -i./src -main-is MetadataRecord.main -outputdir tmp ./src/MetadataRecord.hs  -o target/MetadataRecord
 
 
 # compile Facet test code,
@@ -38,6 +33,27 @@ ghc -main-is MetadataRecord.main -outputdir tmp src/MetadataRecord.hs src/Helper
 
 ############
 
+
+
+
+#### OLD
+
+# ghc $FLAGS -main-is Harvest.main src/MetadataRecord.hs src/Harvest.hs src/CSW.hs src/Helpers.hs -o target/Harvest 
+
 # rm output -rf
 # ghc $FLAGS  load-scheme.hs || exit
+
+# record parsing
+# ghc -main-is MetadataRecord.main -outputdir tmp src/MetadataRecord.hs src/Helpers.hs -o ./target/MetadataRecord
+
+# ghc -main-is RecordStore.main -outputdir tmp src/RecordStore.hs src/MetadataRecord.hs src/Helpers.hs -o ./target/RecordStore
+
+# -- ghc -package ghc -v -outputdir ../tmp RecordStore.hs 
+# ghc  -main-is RecordStore.main --outputdir ../tmp RecordStore.hs 
+
+#####
+# importnat - it will automatically find all the files  
+## pushd ./src
+##ghc -main-is RecordStore.main -outputdir ../tmp RecordStore.hs  -o ../target/RecordStore
+
 
