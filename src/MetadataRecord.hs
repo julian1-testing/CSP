@@ -89,7 +89,7 @@ data TransferLink = TransferLink {
 
 data DataParameter = DataParameter {
 
-    txt :: String,
+    term :: String,
     url :: String
 } deriving (Show, Eq)
 
@@ -244,15 +244,15 @@ parseTransferLinks =
 
 
 
-
 parseDataParameters =
   atTag "mcp:DP_Term" >>>
   proc term -> do
-    txt  <- atChildName "mcp:term"  >>> atChildName "gco:CharacterString" >>> getChildText -< term
+    term_ <- atChildName "mcp:term"  >>> atChildName "gco:CharacterString" >>> getChildText -< term
     url  <- atChildName "mcp:vocabularyTermURL"  >>> atChildName "gmd:URL" >>> getChildText -< term
-    returnA -< (txt, url)
-
-
+    returnA -< DataParameter { 
+        term = term_,
+        url = url 
+    }
 
 
 
@@ -292,6 +292,8 @@ processOnlineResources conn uuid recordText = do
 ----------------
 -- data parameters
 
+-- TODO - move the DB interaction outside of the parsing.... 
+
 processDataParameter conn uuid (term, url) = do
     -- look up the required concept
     xs :: [ (Integer, String) ] <- query conn "select id, label from concept where url = ?" (Only url)
@@ -312,6 +314,8 @@ processDataParameter conn uuid (term, url) = do
       _ -> putStrLn $ "dataParameter '" ++ url ++ "' found multiple matches?"
 
 
+{-
+
 processDataParameters conn uuid recordText = do
 
     -- TODO IMPORTANT - should remove the uuid first...
@@ -319,7 +323,7 @@ processDataParameters conn uuid recordText = do
     putStrLn $ "data parameter count: " ++ (show.length) dataParameters
     mapM (putStrLn.show) dataParameters
     mapM (processDataParameter conn uuid) dataParameters
-
+-}
 
 -- ok we want to push this stuff into a data structure...
 
@@ -329,10 +333,9 @@ testArgoRecord = do
     let parsed = Helpers.parseXML recordText
 
     -- data parameters
-    dataParameters <- runX (parsed >>> parseDataParameters)
-    mapM print dataParameters
 
-    -- identifier
+
+    putStrLn "\n###### identifier"
     identifier <- runX (parsed >>> parseFileIdentifier)
     print identifier
 
@@ -350,6 +353,11 @@ testArgoRecord = do
     putStrLn "\n###### useLimitations"
     useLimitations <- runX (parsed >>> parseUseLimitations)
     mapM print useLimitations
+
+    putStrLn "\n###### parameters"
+    dataParameters <- runX (parsed >>> parseDataParameters)
+    mapM print dataParameters
+
 
 
     putStrLn "\n###### temporal begin"
