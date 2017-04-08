@@ -10,7 +10,10 @@ import Database.PostgreSQL.Simple.Types as PG(Only(..))
 import Text.RawString.QQ
 
 import Helpers(parseXML)
-import Record(Record, showRecord)
+import Record(Record, DataIdentification(title), showRecord, dataIdentification)
+
+-- import Record.DataIdentification(title)
+
 import ParseMCP20(parse)
 
 
@@ -56,12 +59,29 @@ processRecordUUID conn uuid = do
 
 
     putStrLn $ "record_id is " ++ show record_id
+    return record_id
+
+
+
+processDataIdentification conn record_id dataIdentification = do
+    print "hi this is dataIdentification"
+
+    xs :: [ (Only Integer)] <- PG.query conn
+        [r|
+            insert into data_identification( 
+                record_id,
+                title
+            )
+            values (?, ?)
+            returning id
+        |]
+        (record_id :: Integer, 
+         title dataIdentification :: String
+        )
+
     return ()
 
 
-
-processDataIdentification conn dataIdentification = do
-    print "hi"
 
 
 {-
@@ -129,8 +149,9 @@ main = do
 
     conn <- PG.connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
 
-    processRecordUUID conn "myuuid" 
+    record_id <- processRecordUUID conn "myuuid" 
 
+    processDataIdentification conn record_id (Record.dataIdentification myRecord)
 
     return ()
 
