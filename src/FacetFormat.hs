@@ -1,6 +1,6 @@
-
 {-
-  eg. generate this,
+  
+  Format the result of xml.search.imos, used for Facets
 
 https://catalogue-portal.aodn.org.au/geonetwork/srv/eng/xml.search.imos?protocol=OGC%3AWMS-1.1.1-http-get-map%20or%20OGC%3AWMS-1.3.0-http-get-map%20or%20IMOS%3ANCWMS--proto&sortBy=popularity&from=1&to=10&fast=index&filters=collectionavailability
 

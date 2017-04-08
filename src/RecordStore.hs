@@ -1,5 +1,5 @@
 {-
-    module for Storing a record to the db
+    module for Storing a Record to db
 
 -}
 {-# LANGUAGE ScopedTypeVariables, OverloadedStrings #-}
