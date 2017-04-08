@@ -18,6 +18,8 @@ import Text.RawString.QQ
 import qualified CSW as CSW
 import qualified Record as R
 import qualified RecordStore as RS
+
+import qualified Helpers as Helpers
 -- import qualified Helpers as Helpers(parseXML) 
 
 {-
@@ -50,13 +52,18 @@ processAllRs conn = do
     PG.execute conn "delete from record *" ()
 -}
     
-    identifiers <- CSW.doGetRecords
+
+    result <- CSW.doGetRecords "https://catalogue-imos.aodn.org.au/geonetwork" 
+    let elts = Helpers.parseXML result
+    identifiers <- runX (elts >>> CSW.parseCSWSummaryRecord)
+    mapM (putStrLn.show) identifiers
+ 
     -- TODO what's happening here,
     -- s <- CSW.doGetRecords -- change name Parse records parseIdentidifers
     -- identifiers <- CSW.doGetIdentifiers s
     -- mapM (processRecord conn) identifiers
     -- mapM print identifiers
-    print identifiers
+    -- print identifiers
 
 
 

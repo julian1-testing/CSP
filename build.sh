@@ -16,9 +16,9 @@ FLAGS="-i./src -O2 -outputdir tmp"
 
 # ghc $FLAGS -main-is RecordStore.main  ./src/RecordStore.hs  -o target/RecordStore
 
-# ghc $FLAGS -main-is Harvest.main  ./src/Harvest.hs  -o target/Harvest
+ghc $FLAGS -main-is Harvest.main  ./src/Harvest.hs  -o target/Harvest
 
-ghc $FLAGS -main-is CSW.main  ./src/CSW.hs  -o target/CSW
+# ghc $FLAGS -main-is CSW.main  ./src/CSW.hs  -o target/CSW
 
 
 
