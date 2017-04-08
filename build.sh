@@ -20,8 +20,10 @@ FLAGS="-O2 -outputdir tmp"
 # ghc $FLAGS -main-is Harvest.main src/MetadataRecord.hs src/Harvest.hs src/CSW.hs src/Helpers.hs -o target/Harvest 
 
 
-# record decoding test
+# record parsing
 ghc -main-is MetadataRecord.main -outputdir tmp src/MetadataRecord.hs src/Helpers.hs -o ./target/MetadataRecord
+
+# ghc -main-is RecordStore.main -outputdir tmp src/RecordStore.hs src/MetadataRecord.hs src/Helpers.hs -o ./target/RecordStore
 
 
 

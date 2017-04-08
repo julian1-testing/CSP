@@ -96,7 +96,7 @@ data DataParameter = DataParameter {
 
 
 -- change name - PortalRecord, or MCP2 Record
-data MyRecord = MyRecord {
+data Record = Record {
 
     uuid :: String,
     dataIdentification :: DataIdentification , 
@@ -115,7 +115,7 @@ data MyRecord = MyRecord {
 
 
 
-showMyRecord myRecord =
+showRecord myRecord =
 
     let formatList f xs = concatMap id $ map (\x ->  "\n  -" ++ f x) xs in
 
@@ -311,7 +311,6 @@ processDataParameter conn uuid (term, url) = do
       _ -> putStrLn $ "dataParameter '" ++ url ++ "' found multiple matches?"
 
 
-{-
 
 processDataParameters conn uuid recordText = do
 
@@ -323,14 +322,9 @@ processDataParameters conn uuid recordText = do
 -}
 
 -- ok we want to push this stuff into a data structure...
--}
 
 
-
-testArgoRecord = do
-    recordText <- readFile "./test-data/argo.xml"
-
-    let elts = Helpers.parseXML recordText
+parseMCP20 elts = do
 
     identifier <- runX (elts >>> parseFileIdentifier)
 
@@ -353,7 +347,9 @@ testArgoRecord = do
             True -> head x
             False -> d
 
-    let myRecord = MyRecord {
+    -- TODO check we have a DataIdentification section
+
+    let myRecord = Record {
         -- if the list is empty??????   need to test.... 
         uuid = headWithDefault identifier "blah",
         dataIdentification = head dataIdentification,     -- t dangerous... fixme  uuid should never be null, since searchable index
@@ -365,10 +361,17 @@ testArgoRecord = do
         geoPoly = geoPoly
     }
 
-    putStrLn $ showMyRecord myRecord
+    return myRecord 
 
+
+testArgoRecord = do
+
+    recordText <- readFile "./test-data/argo.xml"
+    let elts = Helpers.parseXML recordText
+
+    myRecord <- parseMCP20 elts 
+    putStrLn $ showRecord myRecord
     return ()
-
 
 main = testArgoRecord
 
