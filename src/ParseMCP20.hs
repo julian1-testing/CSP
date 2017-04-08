@@ -172,9 +172,11 @@ parse elts = do
         -- if the list is empty??????   need to test.... 
         uuid = headWithDefault identifier "blah",
         dataIdentification = head dataIdentification,     -- t dangerous... fixme  uuid should never be null, since searchable index
+
         attrConstraints = attrConstraints ,
         useLimitations = useLimitations,
         dataParameters = dataParameters,
+
         temporalBegin = headWithDefault temporalBegin "unknown",
         transferLinks = transferLinks,
         geoPoly = geoPoly

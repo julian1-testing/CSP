@@ -114,9 +114,21 @@ alter table record owner to harvest;
 
 
 
---
---  select * from record left join  data_identification di on di.record_id = record.id ;
--- 
+create or replace view record_view as
+select 
+    record.id, 
+    record.uuid,
+    di.title,
+    di.abstract,
+    di.jurisdiction_link,
+    di.license_link,
+    di.license_name,
+    di.license_image_link 
+from record 
+left join data_identification di 
+on di.record_id = record.id 
+;
+
 
 create table transfer_link (
   -- mcp2 resource
