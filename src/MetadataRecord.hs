@@ -64,34 +64,66 @@ import Helpers(parseXML, atTag, atChildName, getChildText, stripSpace)
         iconSourceUuid   -> source -> which is the uuid 
 -}
 
+
+
+data Identification = Identification { 
+        title:: String
+     , abstract:: String
+     , jurisdictionLink :: String
+     , licenseLink :: String
+     , licenseName :: String
+     , licenseImageLink:: String
+     } deriving (Show, Eq)
+
+{-
+
+data MCP2Record = MCP2Record {
+
+    -- data parameters
+    dataParameters <- runX (parsed >>> parseDataParameters)
+    mapM print dataParameters
+
+    -- identifier
+    identifier <- runX (parsed >>> parseFileIdentifier)
+    print identifier
+
+
+    -- dataIdentification
+    putStrLn "\n###### data identification stuff"
+    identification <- runX (parsed >>> parseDataIdentification )
+    print identification
+
+    -- dataIdentification
+    putStrLn "\n###### attribution constraints "
+    attrConstraints <- runX (parsed >>> parseAttributionConstraints)
+    mapM print attrConstraints
+
+    putStrLn "\n###### useLimitations"
+    useLimitations <- runX (parsed >>> parseUseLimitations)
+    mapM print useLimitations
+
+
+    putStrLn "\n###### temporal begin"
+    temporalBegin <- runX (parsed >>> parseTemporalExtentBegin )
+    mapM print temporalBegin
+
+
+    putStrLn "\n###### links"
+    links <- runX (parsed >>> parseTransferLinks)
+    mapM print links
+
+    
+    putStrLn "\n###### geoPoly "
+    geoPoly <- runX (parsed >>> parseGeoPolygon )
+    mapM print geoPoly
+-} 
+
 parseFileIdentifier =
   atTag "gmd:fileIdentifier" >>>
   proc identifier -> do
     uuid <- atChildName "gco:CharacterString" >>> getChildText -< identifier
     returnA -< (uuid)
 
-
-data MCP2Record = MCP2Record { title:: String
-                     , abstract:: String
-                     , jurisdictionLink :: String
-                     , licenseLink :: String
-                     , licenseName :: String
-                     , licenseImageLink:: String
---                     , attrConstr :: String
---                     , otherAttrConstr :: String
-                     } deriving (Show, Eq)
-
--- p = Person { firstName = "john", lastName = "madden", age = 34 }
-
-
--- source is the catalog we're harvesting eg.  337   <metadata>
--- 
-{-
-     337   <metadata>
- 338     <title>IMOS - SRS Satellite - SST L3S - 01 day composite - night time</title>
- 339     <popularity>1798</popularity>
- 340     <source>ed23e365-c459-4aa4-bbc1-5d2cd0274af0</source>
--}
 
 
 parseDataIdentification =
@@ -116,7 +148,7 @@ parseDataIdentification =
     licenseImageLink <- atChildName "mcp:imageLink" >>> atChildName "gmd:URL" >>> getChildText -< md_commons
 
     -- change name to DataIdentification
-    returnA -< MCP2Record {
+    returnA -< Identification {
         title = title,
         abstract = abstract,
         jurisdictionLink = jurisdictionLink,
@@ -282,7 +314,7 @@ processDataParameters conn uuid recordText = do
     mapM (processDataParameter conn uuid) dataParameters
 
 
-
+-- ok we want to push this stuff into a data structure...
 
 testArgoRecord = do
     recordText <- readFile "./test-data/argo.xml"
@@ -300,22 +332,22 @@ testArgoRecord = do
 
     -- dataIdentification
     putStrLn "\n###### data identification stuff"
-    x <- runX (parsed >>> parseDataIdentification )
-    print x
+    identification <- runX (parsed >>> parseDataIdentification )
+    print identification
 
     -- dataIdentification
     putStrLn "\n###### attribution constraints "
-    y <- runX (parsed >>> parseAttributionConstraints)
-    mapM print y
+    attrConstraints <- runX (parsed >>> parseAttributionConstraints)
+    mapM print attrConstraints
 
     putStrLn "\n###### useLimitations"
-    j <- runX (parsed >>> parseUseLimitations)
-    mapM print j
+    useLimitations <- runX (parsed >>> parseUseLimitations)
+    mapM print useLimitations
 
 
     putStrLn "\n###### temporal begin"
-    t <- runX (parsed >>> parseTemporalExtentBegin )
-    mapM print t
+    temporalBegin <- runX (parsed >>> parseTemporalExtentBegin )
+    mapM print temporalBegin
 
 
     putStrLn "\n###### links"
