@@ -10,8 +10,9 @@ module Harvest where
 
 import Text.XML.HXT.Core(runX, (>>>))
 
-import Database.PostgreSQL.Simple as PG(query, execute, connectPostgreSQL)
-import Database.PostgreSQL.Simple.Types as PG(Only(..))
+-- import Database.PostgreSQL.Simple as PG(query, execute, connectPostgreSQL)
+import Database.PostgreSQL.Simple as PG(connectPostgreSQL, close)
+-- import Database.PostgreSQL.Simple.Types as PG(Only(..))
 
 import Text.RawString.QQ
 
@@ -21,11 +22,6 @@ import qualified RecordStore as RS
 
 import qualified Helpers as Helpers
 -- import qualified Helpers as Helpers(parseXML) 
-
-{-
-
--}
-
 
 ----------------
 {-
@@ -43,7 +39,7 @@ processRecord conn (uuid, title) = do
 
 
 
-processAllRs conn = do
+doGetAndProcessRecords conn = do
     -- this is not very nice.... - should do deletion incrementallly for each record
     -- and transactionally
 {-
@@ -72,11 +68,15 @@ processAllRs conn = do
 
 main :: IO ()
 main = do
-  conn <- connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
+  conn <- PG.connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
 
   -- testArgoR
 
-  processAllRs conn 
+  doGetAndProcessRecords conn 
+
+
+  PG.close conn
+
   return ()
 
 
