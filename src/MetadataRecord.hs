@@ -74,7 +74,7 @@ data Identification = Identification {
     licenseLink :: String , 
     licenseName :: String , 
     licenseImageLink:: String
-    } deriving (Show, Eq)
+} deriving (Show, Eq)
 
 
 data TransferLink = TransferLink {
@@ -95,25 +95,35 @@ data DataParameter = DataParameter {
 
 
 
+-- If any field is genuinely optional then use Maybe 
+
 -- change name - PortalRecord, or MCP2 Record
 data MyRecord = MyRecord {
 
-    uuid :: String, -- aaa
-
-    identification :: Identification 
-
+    uuid :: String,
+    identification :: Identification , 
+    attrConstraints :: [ String ],
+    useLimitations :: [ String ],
+    dataParameters :: [ DataParameter ], 
+    temporalBegin :: String,
+    links :: [ TransferLink ],
+    geoPoly :: [ String ]
 } deriving (Show, Eq)
 
 
+-- ByteString?
 
+showMyRecord myRecord =
 
+    concatMap id [ 
+        "uuid: " ++ (uuid ) myRecord, "\n",
+    
+        "attrConstraints:\n  -",
+        concatMap (++"\n  -") $ attrConstraints myRecord 
+
+    ]
 
 {-
-    putStrLn "\n###### identifier"
-    identifier <- runX (parsed >>> parseFileIdentifier)
-    print identifier
-
-
     -- dataIdentification
     putStrLn "\n###### data identification stuff"
     identification <- runX (parsed >>> parseDataIdentification )
@@ -132,24 +142,18 @@ data MyRecord = MyRecord {
     dataParameters <- runX (parsed >>> parseDataParameters)
     mapM print dataParameters
 
-
-
     putStrLn "\n###### temporal begin"
     temporalBegin <- runX (parsed >>> parseTemporalExtentBegin )
     mapM print temporalBegin
-
 
     putStrLn "\n###### links"
     links <- runX (parsed >>> parseTransferLinks)
     mapM print links
 
-    
     putStrLn "\n###### geoPoly "
     geoPoly <- runX (parsed >>> parseGeoPolygon )
     mapM print geoPoly
- 
--} 
-
+-}
 
 
 
@@ -386,19 +390,31 @@ testArgoRecord = do
     geoPoly <- runX (parsed >>> parseGeoPolygon )
     mapM print geoPoly
 
+    -- avoid throwing, or perhaps - if genuinely optional then use Maybe 
     let headWithDefault x d = case not $ null x of 
             True -> head x
             False -> d
 
     -- actually think we'll have to test valid values ... 
 
-    let myrecord = MyRecord {
+    let myRecord = MyRecord {
 
         -- if the list is empty??????   need to test.... 
         uuid = headWithDefault identifier "blah",
-        identification = head identification 
+        identification = head identification,     -- t dangerous... fixme  uuid should never be null, since searchable index
+        attrConstraints = attrConstraints ,
+        useLimitations = useLimitations,
+        dataParameters = dataParameters,
+        temporalBegin = headWithDefault temporalBegin "unknown",
+        links = links,
+        geoPoly = geoPoly
     }
 
+    -- print myRecord
+
+    putStrLn "\n###### here -> "
+
+    putStrLn $ showMyRecord myRecord
 
     return ()
 
