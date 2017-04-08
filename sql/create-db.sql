@@ -91,13 +91,30 @@ alter table in_scheme owner to harvest;
 create table record (
 
   id          serial primary key not null,
-  uuid        text not null unique,
-  title       text not null
+  uuid        text not null unique
 );
 
 alter table record owner to harvest;
 
--- TODO need uniqueness constraints - dd
+create table data_identification (
+
+    id serial primary key not null,
+    record_id integer references record(id), 
+
+    title               text, -- not null? 
+    abstract            text, 
+    jurisdiction_link   text, 
+    license_link        text, 
+    license_name        text, 
+    license_image_link  text
+);
+
+alter table record owner to harvest;
+
+
+
+
+
 
 create table resource (
   -- mcp2 resource
@@ -109,6 +126,9 @@ create table resource (
   linkage     text not null,
   description text 
 );
+
+
+-- TODO need uniqueness constraints - on protocol and linkage 
 
 alter table resource owner to harvest;
 

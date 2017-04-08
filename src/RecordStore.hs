@@ -25,7 +25,9 @@ import ParseMCP20(parse)
 
 
 processRecordUUID conn uuid = do
+    -- must get the id, so we can delete all old bits,
     -- this is harder than it looks....
+    -- insert or select item, returning id
     -- http://stackoverflow.com/questions/18192570/insert-if-not-exists-else-return-id-in-postgresql
 
     xs :: [ (Only Integer)] <- PG.query conn
@@ -56,6 +58,10 @@ processRecordUUID conn uuid = do
     putStrLn $ "record_id is " ++ show record_id
     return ()
 
+
+
+processDataIdentification conn dataIdentification = do
+    print "hi"
 
 
 {-
