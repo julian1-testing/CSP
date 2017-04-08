@@ -24,18 +24,21 @@ import qualified Helpers as Helpers
 -- import qualified Helpers as Helpers(parseXML) 
 
 ----------------
-{-
-processRecord conn (uuid, title) = do
+
+doGetAndprocessRecord conn uuid title = do
     -- TODO IMPORTANT - should remove the uuid first...
     -- TODO - VERY IMPORTANT we should separate out the CSW action of getting the record 
     -- removing the old stuff and indexing resources and parameters,
+
+    print "hi"
+{-
     record <- CSW.doGetRecordById uuid title
     RS.processRecordUUID conn uuid title
     RS.processDataParameters conn uuid record
     RS.processOnlineResources conn uuid record
+-}
     return ()
 
--}
 
 
 
@@ -62,7 +65,7 @@ doGetAndProcessRecords conn = do
     -- print identifiers
 
 
-
+    mapM (uncurry $ doGetAndprocessRecord conn) identifiers
 
 
 
