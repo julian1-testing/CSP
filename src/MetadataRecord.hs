@@ -52,6 +52,8 @@ import Helpers(parseXML, atTag, atChildName, getChildText, stripSpace)
 
         temperalExtentBegin, -> tempExtentBegin  -> it's just a date  eg. <tempExtentBegin>1999-10-01t00:00:00.000z</tempExtentBegin>
 
+        linksField  -> links -> CI_Online_Resource  eg. 'View and download'
+
 -}
 
 parseFileIdentifier =
@@ -96,6 +98,7 @@ parseDataIdentification =
 
     licenseImageLink <- atChildName "mcp:imageLink" >>> atChildName "gmd:URL" >>> getChildText -< md_commons
 
+    -- change name to DataIdentification
     returnA -< MCP2Record {
         title = title,
         abstract = abstract,
@@ -106,6 +109,7 @@ parseDataIdentification =
         }
 
 
+
 parseAttributionConstraints =
   -- have more than one
   atTag "gmd:resourceConstraints"  >>> atChildName "mcp:MD_Commons" >>>
@@ -113,39 +117,17 @@ parseAttributionConstraints =
     attrConstr <- atChildName "mcp:attributionConstraints" >>> atChildName "gco:CharacterString" >>> getChildText -< md_commons
     returnA -< attrConstr
 
-{-
-      <gmd:resourceConstraints>
-        <gmd:MD_Constraints>
-          <gmd:useLimitation>
-            <gco:CharacterString>Data, products and services from IMOS are provided "as is" without any warranty as to fitness for a particular purpose.</gco:CharacterString>
 
--}
 
 parseUseLimitations =
   -- have more than one
   atTag "gmd:resourceConstraints"  >>> atChildName "gmd:MD_Constraints" >>>
   proc md_commons -> do
-    useLimitation <- atChildName "gmd:useLimitation" >>> atChildName "gco:CharacterString" >>> getChildText -< md_commons
+    useLimitation <- atChildName "gmd:useLimitation" >>> atChildName "gco:CharacterString" 
+        >>> getChildText -< md_commons
     returnA -< useLimitation
 
 
-
-{-
-      <gmd:extent>
-        <gmd:EX_Extent>
-          <GMD:geographicElement>
-
-          <gmd:temporalElement>
-            <mcp:EX_TemporalExtent gco:isoType="gmd:EX_TemporalExtent">
-              <gmd:extent>
-                <gml:TimePeriod gml:id="d98744e634a1052958">
-                  <gml:begin>
-                    <gml:TimeInstant gml:id="d98744e636a1052958">
-                      <gml:timePosition>1999-10-01</gml:timePosition>
-                    </gml:TimeInstant>
-                  </gml:begin>
-
--}
 
 parseTemporalExtentBegin =
   -- once
@@ -159,16 +141,24 @@ parseTemporalExtentBegin =
 
 
 
+{-
+      <gmd:transferOptions>
+        <gmd:MD_DigitalTransferOptions>
+          <gmd:onLine>
+            <gmd:CI_OnlineResource>
+ 
+-}
 
-
-
-
+-- change name to links...
 parseOnlineResources =
-  atTag "gmd:CI_OnlineResource" >>>
-  proc r -> do
-    protocol    <- atChildName "gmd:protocol" >>> atChildName "gco:CharacterString" >>> getChildText  -< r
-    linkage     <- atChildName "gmd:linkage"  >>> atChildName "gmd:URL" >>> getChildText -< r
-    description <- atChildName "gmd:description" >>> atChildName "gco:CharacterString" >>> getChildText -< r
+  atTag "gmd:transferOptions" >>> atChildName "gmd:MD_DigitalTransferOptions" >>>
+  proc transfer -> do
+
+    resource <- atChildName "gmd:onLine" >>> atChildName "gmd:CI_OnlineResource" -<  transfer
+
+    protocol    <- atChildName "gmd:protocol" >>> atChildName "gco:CharacterString" >>> getChildText  -< resource
+    linkage     <- atChildName "gmd:linkage"  >>> atChildName "gmd:URL" >>> getChildText -< resource
+    description <- atChildName "gmd:description" >>> atChildName "gco:CharacterString" >>> getChildText -< resource
     returnA -< (protocol, linkage, description)
 
 
@@ -266,24 +256,29 @@ testArgoRecord = do
 
 
     -- dataIdentification
-    print "###### data identification stuff"
+    putStrLn "\n###### data identification stuff"
     x <- runX (parsed >>> parseDataIdentification )
     print x
 
     -- dataIdentification
-    print "###### attribution constraints "
+    putStrLn "\n###### attribution constraints "
     y <- runX (parsed >>> parseAttributionConstraints)
     mapM print y
 
-    print "###### useLimitations"
+    putStrLn "\n###### useLimitations"
     j <- runX (parsed >>> parseUseLimitations)
     mapM print j
 
 
-    print "###### temporal begin"
+    putStrLn "\n###### temporal begin"
     t <- runX (parsed >>> parseTemporalExtentBegin )
     mapM print t
 
+
+    putStrLn "\n###### links"
+    links <- runX (parsed >>> parseOnlineResources)
+    mapM print links
+ 
 
     return ()
 
