@@ -202,23 +202,21 @@ main = do
 
     recordText <- readFile "./test-data/argo.xml"
     let elts = parseXML recordText
-
     myRecord <- ParseMCP20.parse elts
-    putStrLn $ showRecord myRecord
+    case myRecord of
+        Right record -> do
 
-    -- processRecordUUID conn uuid title = do
+            putStrLn $ showRecord record --myRecord
 
-    conn <- PG.connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
+            -- processRecordUUID conn uuid title = do
+            conn <- PG.connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
+            record_id <- processRecordUUID conn "myuuid" 
+            processDataIdentification conn record_id (Record.dataIdentification record)
+            processTransferLinks conn record_id (Record.transferLinks record) 
 
-    record_id <- processRecordUUID conn "myuuid" 
+            PG.close conn
 
-    processDataIdentification conn record_id (Record.dataIdentification myRecord)
-
-    processTransferLinks conn record_id (Record.transferLinks myRecord) 
-
-    PG.close conn
-
-    return ()
+            return ()
 
 
 

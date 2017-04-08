@@ -9,6 +9,8 @@ module ParseMCP20 where
 -}
 
 
+import Control.Exception 
+
 import Text.XML.HXT.Core
 
 import Helpers(parseXML, atTag, atChildName, getChildText, stripSpace)
@@ -180,14 +182,26 @@ parse elts = do
 
 testArgoRecord = do
 
-    -- recordText <- readFile "./test-data/aus-cpr.xml"
-    recordText <- readFile "./test-data/argo.xml"
+    recordText <- readFile "./test-data/aus-cpr.xml"
+    -- recordText <- readFile "./test-data/argo.xml"
     let elts = Helpers.parseXML recordText
-
     myRecord <- parse elts
+   
+
+    print $ myRecord
+
+
+-- we should still see if it can get through everything  
+
+{- 
     putStrLn $ case myRecord of
         Right myRecord  -> showRecord myRecord
         Left msg -> msg
+ -}   
+
+    -- try ( print $ Left "whoot" ) -- putStrLn.showRecord $ myRecord)
+    -- catch (print $ head []) $ \(e ::  Exception NoMethodError) -> print "good message"
+
 
     return ()
 

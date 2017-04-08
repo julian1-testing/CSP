@@ -19,24 +19,39 @@ import qualified RecordStore as RS
 import qualified ParseMCP20 as ParseMCP20
 
 
+-- should have a simple function to do something if it's the right
+
+applyEither lf rf x 
+  = case x of
+    Right a -> lf a
+    Left a -> rf a
+
+
 ----------------
 
-doGetAndprocessRecord conn uuid title = do
+doGetAndProcessRecord conn uuid title = do
 
-    print "hi"
-{-
-    record <- CSW.doGetRecordById uuid title
-    RS.processRecordUUID conn uuid title
-    RS.processDataParameters conn uuid record
-    RS.processOnlineResources conn uuid record
--}
+    print $ "doGetAndProcessRecord " ++ uuid ++ " " ++ title
+
 
     recordText <- CSW.doGetRecordById uuid title
 
     let elts = Helpers.parseXML recordText
     myRecord <- ParseMCP20.parse elts 
 
-    putStrLn $ R.showRecord myRecord
+    -- TODO if showRecord was just show, then we wouldn't have to destructure
+    {-
+    putStrLn $ case myRecord of
+        Right record -> 
+          R.showRecord record
+        Left msg -> 
+          msg
+    -}
+
+    putStrLn $ applyEither R.showRecord id myRecord 
+
+    
+    -- OK, want to store the damn thing to the db...
 
     return ()
 
@@ -59,7 +74,7 @@ doGetAndProcessRecords conn = do
     mapM (putStrLn.show) identifiers
  
     -- process each record
-    mapM (uncurry $ doGetAndprocessRecord conn) identifiers
+    mapM (uncurry $ doGetAndProcessRecord conn) identifiers
 
 
 
