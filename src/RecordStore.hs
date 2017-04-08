@@ -8,7 +8,7 @@
 module RecordStore where
 
 
-import Database.PostgreSQL.Simple as PG(query, execute, connectPostgreSQL)
+import Database.PostgreSQL.Simple as PG(query, execute, connectPostgreSQL, close)
 import Database.PostgreSQL.Simple.Types as PG(Only(..))
 import Text.RawString.QQ
 
@@ -214,8 +214,9 @@ main = do
 
     processDataIdentification conn record_id (Record.dataIdentification myRecord)
 
-
     processTransferLinks conn record_id (Record.transferLinks myRecord) 
+
+    PG.close conn
 
     return ()
 
