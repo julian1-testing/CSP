@@ -26,7 +26,12 @@ import ParseMCP20(parse)
 
 processRecordUUID conn uuid title = do
 
-    xs :: [ (Only Integer)] <- PG.query conn "insert into record(uuid,title) values (?, ?) returning id" (uuid :: String, title :: String)
+    xs :: [ (Only Integer)] <- PG.query conn -- "insert into record(uuid,title) values (?, ?) returning id" 
+        [r|
+            insert into record(uuid,title) values (?, ?) returning id
+        |] 
+        (uuid :: String, title :: String)
+
 
     -- only is actually a type
     -- Can we use Maybe instead
