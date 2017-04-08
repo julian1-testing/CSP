@@ -71,7 +71,7 @@ parseUseLimitations =
   -- have more than one
   atTag "gmd:resourceConstraints"  >>> atChildName "gmd:MD_Constraints" >>>
   proc md_commons -> do
-    useLimitation <- atChildName "gmd:useLimitation" >>> atChildName "gco:CharacterString" 
+    useLimitation <- atChildName "gmd:useLimitation" >>> atChildName "gco:CharacterString"
         >>> getChildText -< md_commons
     returnA -< useLimitation
 
@@ -90,7 +90,7 @@ parseTemporalExtentBegin =
 
 
 parseGeoPolygon =
-    -- change name  
+    -- change name
   -- multiple
   atTag "gmd:extent"  >>> atChildName "gmd:EX_Extent" >>>
   proc extent -> do
@@ -112,10 +112,10 @@ parseTransferLinks =
     protocol    <- atChildName "gmd:protocol" >>> atChildName "gco:CharacterString" >>> getChildText  -< resource
     linkage     <- atChildName "gmd:linkage"  >>> atChildName "gmd:URL" >>> getChildText -< resource
     description <- atChildName "gmd:description" >>> atChildName "gco:CharacterString" >>> getChildText -< resource
-    returnA -< TransferLink { 
-        protocol = protocol, 
-        linkage = linkage, 
-        description = description 
+    returnA -< TransferLink {
+        protocol = protocol,
+        linkage = linkage,
+        description = description
     }
 
 
@@ -125,9 +125,9 @@ parseDataParameters =
   proc term -> do
     term_ <- atChildName "mcp:term"  >>> atChildName "gco:CharacterString" >>> getChildText -< term
     url  <- atChildName "mcp:vocabularyTermURL"  >>> atChildName "gmd:URL" >>> getChildText -< term
-    returnA -< DataParameter { 
+    returnA -< DataParameter {
         term = term_,
-        url = url 
+        url = url
     }
 
 
@@ -161,32 +161,52 @@ parse elts = do
 
     geoPoly <- runX (elts >>> parseGeoPolygon )
 
-    -- avoid throwing, or perhaps - if genuinely optional then use Maybe 
-    let headWithDefault x d = case not $ null x of 
-            True -> head x
-            False -> d
 
-    -- TODO check we have a DataIdentification section
-
-    let a = case (identifier, dataIdentification) of
-            ([ id ], _) -> Record {
-                -- if the list is empty??????   need to test.... 
-                uuid = id, -- headWithDefault identifier "blah",
-                dataIdentification = head dataIdentification,     -- t dangerous... fixme  uuid should never be null, since searchable index
-
+    let a = case (identifier, dataIdentification, temporalBegin) of
+            ([ uuid ], [ di ], [tb]) -> Right $ Record {
+                uuid = uuid,
+                dataIdentification = di,
                 attrConstraints = attrConstraints ,
                 useLimitations = useLimitations,
                 dataParameters = dataParameters,
-
-                temporalBegin = headWithDefault temporalBegin "unknown",
+                temporalBegin = tb,
                 transferLinks = transferLinks,
                 geoPoly = geoPoly
-    }
+            }
+            ( _, _, _) -> Left "missing uuid, dataIdentification or temporalBegin"
 
+
+
+    return a
+
+
+
+testArgoRecord = do
+
+    -- recordText <- readFile "./test-data/aus-cpr.xml"
+    recordText <- readFile "./test-data/argo.xml"
+    let elts = Helpers.parseXML recordText
+
+    myRecord <- parse elts
+    putStrLn $ case myRecord of
+        Right myRecord  -> showRecord myRecord
+        Left msg -> msg
+
+    return ()
+
+
+main = testArgoRecord
+
+
+
+{-
+   let headWithDefault x d = case not $ null x of
+            True -> head x
+            False -> d
 
 
     let myRecord = Record {
-        -- if the list is empty??????   need to test.... 
+        -- if the list is empty??????   need to test....
         uuid = headWithDefault identifier "blah",
         dataIdentification = head dataIdentification,     -- t dangerous... fixme  uuid should never be null, since searchable index
 
@@ -198,20 +218,5 @@ parse elts = do
         transferLinks = transferLinks,
         geoPoly = geoPoly
     }
-
-    return myRecord 
-
-
-
-testArgoRecord = do
-
-    recordText <- readFile "./test-data/aus-cpr.xml"
-    let elts = Helpers.parseXML recordText
-
-    myRecord <- parse elts 
-    putStrLn $ showRecord myRecord
-    return ()
-
-
-main = testArgoRecord
+-}
 
