@@ -1,4 +1,10 @@
 
+1.  check the complete harvest
+    - issue with empty fields.
+1. store other fields
+
+
+------
 Ok - now we need to massage the XML
 
 ----

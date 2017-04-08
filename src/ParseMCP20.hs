@@ -168,6 +168,23 @@ parse elts = do
 
     -- TODO check we have a DataIdentification section
 
+    let a = case (identifier, dataIdentification) of
+            ([ id ], _) -> Record {
+                -- if the list is empty??????   need to test.... 
+                uuid = id, -- headWithDefault identifier "blah",
+                dataIdentification = head dataIdentification,     -- t dangerous... fixme  uuid should never be null, since searchable index
+
+                attrConstraints = attrConstraints ,
+                useLimitations = useLimitations,
+                dataParameters = dataParameters,
+
+                temporalBegin = headWithDefault temporalBegin "unknown",
+                transferLinks = transferLinks,
+                geoPoly = geoPoly
+    }
+
+
+
     let myRecord = Record {
         -- if the list is empty??????   need to test.... 
         uuid = headWithDefault identifier "blah",
@@ -188,7 +205,7 @@ parse elts = do
 
 testArgoRecord = do
 
-    recordText <- readFile "./test-data/argo.xml"
+    recordText <- readFile "./test-data/aus-cpr.xml"
     let elts = Helpers.parseXML recordText
 
     myRecord <- parse elts 
