@@ -1,12 +1,10 @@
 
 {-# LANGUAGE Arrows, NoMonomorphismRestriction #-}
-{-# LANGUAGE ScopedTypeVariables, OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes #-}
 
 module CSW where
 
 import Text.XML.HXT.Core
-
 
 import Network.HTTP.Client(responseBody, responseStatus)
 import Network.HTTP.Types.Status (statusCode)
@@ -14,8 +12,7 @@ import qualified Data.ByteString.Lazy.Char8 as BLC
 import Text.RawString.QQ
 
 
--- import Helpers(parseXML, atTag, atChildName, getChildText, stripSpace, doHTTPPost, doHTTPGet ) 
--- import Helpers as Helpers(parseXML, atTag, atChildName, getChildText, stripSpace, doHTTPPost, doHTTPGet ) 
+-- TODO tighten? 
 import Helpers as Helpers
 
 
