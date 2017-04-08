@@ -1,20 +1,22 @@
 -- stack --install-ghc --resolver lts-5.13 runghc --package http-conduit
 
 {-# LANGUAGE Arrows, NoMonomorphismRestriction #-}
-{-# LANGUAGE ScopedTypeVariables, OverloadedStrings #-}
-{-# LANGUAGE QuasiQuotes #-}
+-- {-# LANGUAGE ScopedTypeVariables, OverloadedStrings #-}
+-- {-# LANGUAGE QuasiQuotes #-}
 
 module MetadataRecord where
 
 
 import Text.XML.HXT.Core
+{-
 import Database.PostgreSQL.Simple as PG(query, execute, connectPostgreSQL)
 import Database.PostgreSQL.Simple.Types as PG(Only(..))
 import Text.RawString.QQ
+-}
 
 import Helpers(parseXML, atTag, atChildName, getChildText, stripSpace)
 
--- IMPORTANT must close!!!
+-- IMPORTANT must close resources !!!
 -- responseClose :: Response a -> IO ()
 
 
@@ -256,18 +258,20 @@ parseDataParameters =
 
 ----------------
 
-processRecordUUID conn uuid title = do
-  PG.execute conn "insert into record(uuid,title) values (?, ?)"
-    (uuid :: String, title :: String)
-
 
 
 
 
 
 ----------------
--- resources
+-- TODO move all this
 {-
+
+processRecordUUID conn uuid title = do
+  PG.execute conn "insert into record(uuid,title) values (?, ?)"
+    (uuid :: String, title :: String)
+
+
 
 processOnlineResource conn uuid (protocol,linkage, description) = do
     PG.execute conn [r|
@@ -284,12 +288,8 @@ processOnlineResources conn uuid recordText = do
     putStrLn $ (++) "resource count: " $ (show.length) onlineResources
     mapM (putStrLn.show) onlineResources
     mapM (processOnlineResource conn uuid) onlineResources
--}
 
-----------------
--- data parameters
 
--- TODO - move the DB interaction outside of the parsing.... 
 
 processDataParameter conn uuid (term, url) = do
     -- look up the required concept
@@ -323,30 +323,30 @@ processDataParameters conn uuid recordText = do
 -}
 
 -- ok we want to push this stuff into a data structure...
-
+-}
 
 
 
 testArgoRecord = do
     recordText <- readFile "./test-data/argo.xml"
 
-    let parsed = Helpers.parseXML recordText
+    let elts = Helpers.parseXML recordText
 
-    identifier <- runX (parsed >>> parseFileIdentifier)
+    identifier <- runX (elts >>> parseFileIdentifier)
 
-    dataIdentification <- runX (parsed >>> parseDataIdentification )
+    dataIdentification <- runX (elts >>> parseDataIdentification )
 
-    attrConstraints <- runX (parsed >>> parseAttributionConstraints)
+    attrConstraints <- runX (elts >>> parseAttributionConstraints)
 
-    useLimitations <- runX (parsed >>> parseUseLimitations)
+    useLimitations <- runX (elts >>> parseUseLimitations)
 
-    dataParameters <- runX (parsed >>> parseDataParameters)
+    dataParameters <- runX (elts >>> parseDataParameters)
 
-    temporalBegin <- runX (parsed >>> parseTemporalExtentBegin )
+    temporalBegin <- runX (elts >>> parseTemporalExtentBegin )
 
-    links <- runX (parsed >>> parseTransferLinks)
+    links <- runX (elts >>> parseTransferLinks)
 
-    geoPoly <- runX (parsed >>> parseGeoPolygon )
+    geoPoly <- runX (elts >>> parseGeoPolygon )
 
     -- avoid throwing, or perhaps - if genuinely optional then use Maybe 
     let headWithDefault x d = case not $ null x of 
@@ -364,9 +364,6 @@ testArgoRecord = do
         links = links,
         geoPoly = geoPoly
     }
-
-    -- print myRecord
-
 
     putStrLn $ showMyRecord myRecord
 
