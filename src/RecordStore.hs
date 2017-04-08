@@ -26,7 +26,7 @@ import ParseMCP20(parse)
 
 processRecordUUID conn uuid title = do
 
-  xs :: [ (Integer, Integer) ] <- PG.query conn "insert into record(uuid,title) values (?, ?) returning id" (uuid :: String, title :: String)
+  xs :: [ (Only Integer) ] <- PG.query conn "insert into record(uuid,title) values (?, ?) returning id" (uuid :: String, title :: String)
 
   print xs
 
