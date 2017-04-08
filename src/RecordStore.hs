@@ -143,44 +143,22 @@ processTransferLink conn record_id transferLink = do
         |] 
         $ let t = transferLink in
         (
-            record_id , -- :: Integer,
+            record_id, -- :: Integer,
             protocol t,-- :: String, 
             linkage t, -- :: String, 
             description t-- :: String
         )
-
     return ()
 
 
 processTransferLinks conn record_id transferLinks = do
-    -- mapM (putStrLn.show) onlineResources
+    -- mapM (putStrLn.show) transferLinks
     mapM (processTransferLink conn record_id) transferLinks
 
 
 
 
 {-
-
-    protocol :: String,
-    linkage :: String,
-    description :: String
-
-
-processOnlineResource conn uuid (protocol,linkage, description) = do
-    PG.execute conn [r|
-      insert into resource(record_id,protocol,linkage, description)
-      values (
-        (select id from record where uuid = ?), ?, ?, ?
-      )
-    |] (uuid :: String, protocol :: String, linkage, description)
-
-
-
-processOnlineResources conn uuid recordText = do
-    onlineResources <- runX (parseXML recordText >>> parseTransferLinks)
-    putStrLn $ (++) "resource count: " $ (show.length) onlineResources
-    mapM (putStrLn.show) onlineResources
-    mapM (processOnlineResource conn uuid) onlineResources
 
 
 
