@@ -18,7 +18,7 @@ import Text.RawString.QQ
 import Helpers(parseXML, atTag, atChildName, getChildText, stripSpace, doHTTPPost, doHTTPGet ) 
 
 
-
+-- might be better to move the parsing to a separate file....
 
 parseCSWSummaryRecord = atTag "csw:SummaryRecord" >>>
   proc l -> do
@@ -29,6 +29,10 @@ parseCSWSummaryRecord = atTag "csw:SummaryRecord" >>>
 
 -- should be a do...
 
+
+
+{--- OK,,, we want to split out the parsing from retrieval...
+
 doGetIdentifiers s = do
     identifiers <- runX (parseXML s  >>> parseCSWSummaryRecord)
     -- print
@@ -37,15 +41,19 @@ doGetIdentifiers s = do
 
     putStrLn $ (++) "cws identifiers count: " $ (show.length) identifiers
     return identifiers
-
+-}
 
 
 -- TODO need to think about the transaction boundary
 -- DO NOT COMBINE DATABASSE WITH RETRIEVAL
 
-doGetRecords = do
-    let url = "https://catalogue-imos.aodn.org.au/geonetwork/srv/eng/csw"
-    -- putStrLn query
+
+-- "https://catalogue-imos.aodn.org.au/geonetwork/srv/eng/csw"
+
+
+doGetRecords url' = do
+    let url = url' ++ "/srv/eng/csw"
+    putStrLn $ "doGetRcords " ++ url
     response <- Helpers.doHTTPPost url queryWMSAndIMOS
     let s = BLC.unpack $ responseBody response
     return s
@@ -109,6 +117,24 @@ doGetRecordById uuid title = do
         &elementSetName=full
         &outputSchema=http://www.isotc211.org/2005/gmd
         &id= |] ++ uuid
+
+
+
+testGetRecords = do
+    identifiers <- doGetRecords "https://catalogue-imos.aodn.org.au/geonetwork" 
+
+    return ()
+
+
+main :: IO ()
+main = testGetRecords
+{-
+  -- testArgoR
+  processAllRs conn 
+  return ()
+-}
+
+
 
 
 
