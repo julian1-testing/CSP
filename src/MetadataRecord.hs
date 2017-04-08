@@ -77,6 +77,10 @@ data Identification = Identification {
 } deriving (Show, Eq)
 
 
+
+
+
+
 data TransferLink = TransferLink {
 
     protocol :: String,
@@ -122,14 +126,26 @@ showMyRecord myRecord =
 
     concatMap id [ 
         "uuid= " ++ uuid  myRecord, "\n",
-    
+
+        -- TODO -- tidy        
+        "identification.title= " ++ (show $ (title.identification) myRecord), "\n",
+        "identification.abstract= " ++ (show $ (abstract.identification) myRecord), "\n",
+        "identification.jurisdictionLinke = " ++ (show $ (jurisdictionLink.identification) myRecord), "\n",
+        "identification.licenseLink= " ++ (show $ (licenseLink.identification) myRecord), "\n",
+        "identification.licenseName= " ++ (show $ (licenseName.identification) myRecord), "\n",
+        "identification.licenseImageLink = " ++ (show $ (licenseImageLink.identification) myRecord), "\n",
+ 
         "attrConstraints= ", formatList id (attrConstraints myRecord), "\n",
         
         "useLimitations= ", formatList id (useLimitations myRecord), "\n",
         
         "dataParameters= ", formatList show (dataParameters myRecord), "\n",
 
-        "temporalBegin= ",  temporalBegin myRecord, "\n"
+        "temporalBegin= ",  temporalBegin myRecord, "\n",
+
+        "links= ", formatList show (links myRecord), "\n",
+        
+        "geoPoly= ", formatList id (geoPoly myRecord), "\n"
 
     ]
 
