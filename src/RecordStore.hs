@@ -71,6 +71,7 @@ processDataIdentification conn record_id dataIdentification = do
     xs :: [ (Only Integer)] <- PG.query conn
         [r|
             -- using upsert
+            -- we use cte in order not to pass the arguments more than once....
             with a as (
                 select 
                 ? as record_id,
@@ -91,17 +92,19 @@ processDataIdentification conn record_id dataIdentification = do
                 license_image_link
             )
             (select * from a)
-            on conflict (record_id) do update set
+            on conflict (record_id) 
+            do update set
                 title = (select title from a),
-                abstract = (select abstract from a)
-
+                abstract = (select abstract from a),
+                jurisdiction_link = (select jurisdiction_link from a),
+                license_link = (select license_link from a),
+                license_name = (select license_name from a),
+                license_image_link = (select license_image_link from a)
             returning id
         |]
-        -- we can dup this duple - actually I don't think we can ...
-        -- there seems to be a maximum of 9 elements in the tuple....
+        -- there's a limit of 9 elements in the tuple....
         $ let d = dataIdentification in
         (   record_id :: Integer, 
-
             title d :: String,
             abstract d :: String,
             jurisdictionLink d :: String,
@@ -109,7 +112,6 @@ processDataIdentification conn record_id dataIdentification = do
             licenseName d :: String,
             licenseImageLink d :: String
         )
-
     return ()
 
 

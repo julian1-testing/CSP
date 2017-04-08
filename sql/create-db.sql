@@ -96,6 +96,7 @@ create table record (
 
 alter table record owner to harvest;
 
+
 create table data_identification (
 
     id serial primary key not null,
@@ -113,22 +114,31 @@ alter table record owner to harvest;
 
 
 
+--
+--  select * from record left join  data_identification di on di.record_id = record.id ;
+-- 
 
-
-
-create table resource (
+create table transfer_protocol (
   -- mcp2 resource
 
   id serial   primary key not null,
-  record_id  integer references record(id), 
+  record_id  integer references record(id),  -- more than one
 
   protocol    text not null,
   linkage     text not null,
   description text 
 );
 
+-- should be unique on these three...
+CREATE UNIQUE INDEX my_transfer_protocol_unique_idx ON transfer_protocol(record_id, protocol, linkage);
+
+
+
+
 
 -- TODO need uniqueness constraints - on protocol and linkage 
+-- actually probably only needs to be on protocol...
+-- actually it's unique on record_id, protocol, linkage 
 
 alter table resource owner to harvest;
 
