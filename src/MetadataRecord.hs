@@ -57,8 +57,8 @@ import Helpers(parseXML, atTag, atChildName, getChildText, stripSpace)
         onlineResourcesFiled -> onlineResources ***** does not appear 
         pointOfTruthLinkField -> pointOfTruthLink  **** does not appear 
         bboxField -> bbox -> 
-                            -> geoBox  ** don't have   do have - but not for argo....
-                            -> geoPolygon
+                            -> geoBox  ** don't have for argo.... but do for satellite... i think
+                            -> geoPolygon  done.
 
         wmsLayer             **** does not appear 
         iconSourceUuid   -> source -> which is the uuid 
