@@ -95,18 +95,21 @@ data DataParameter = DataParameter {
 
 
 
+-- change name - PortalRecord, or MCP2 Record
+data MyRecord = MyRecord {
+
+    uuid :: String, -- aaa
+
+    identification :: Identification 
+
+} deriving (Show, Eq)
+
+
 
 
 
 {-
-
-data MCP2Record = MCP2Record {
-
-    -- data parameters
-    dataParameters <- runX (parsed >>> parseDataParameters)
-    mapM print dataParameters
-
-    -- identifier
+    putStrLn "\n###### identifier"
     identifier <- runX (parsed >>> parseFileIdentifier)
     print identifier
 
@@ -125,6 +128,11 @@ data MCP2Record = MCP2Record {
     useLimitations <- runX (parsed >>> parseUseLimitations)
     mapM print useLimitations
 
+    putStrLn "\n###### parameters"
+    dataParameters <- runX (parsed >>> parseDataParameters)
+    mapM print dataParameters
+
+
 
     putStrLn "\n###### temporal begin"
     temporalBegin <- runX (parsed >>> parseTemporalExtentBegin )
@@ -139,7 +147,11 @@ data MCP2Record = MCP2Record {
     putStrLn "\n###### geoPoly "
     geoPoly <- runX (parsed >>> parseGeoPolygon )
     mapM print geoPoly
+ 
 -} 
+
+
+
 
 parseFileIdentifier =
   atTag "gmd:fileIdentifier" >>>
@@ -373,7 +385,20 @@ testArgoRecord = do
     putStrLn "\n###### geoPoly "
     geoPoly <- runX (parsed >>> parseGeoPolygon )
     mapM print geoPoly
- 
+
+    let headWithDefault x d = case not $ null x of 
+            True -> head x
+            False -> d
+
+    -- actually think we'll have to test valid values ... 
+
+    let myrecord = MyRecord {
+
+        -- if the list is empty??????   need to test.... 
+        uuid = headWithDefault identifier "blah",
+        identification = head identification 
+    }
+
 
     return ()
 
