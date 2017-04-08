@@ -65,8 +65,9 @@ import Helpers(parseXML, atTag, atChildName, getChildText, stripSpace)
 -}
 
 
+-- If any field is genuinely optional then should use Maybe 
 
-data Identification = Identification { 
+data DataIdentification = DataIdentification { 
 
     title:: String, 
     abstract:: String, 
@@ -77,18 +78,12 @@ data Identification = Identification {
 } deriving (Show, Eq)
 
 
-
-
-
-
 data TransferLink = TransferLink {
 
     protocol :: String,
     linkage :: String,
     description :: String
 } deriving (Show, Eq)
-
-
 
 
 data DataParameter = DataParameter {
@@ -98,14 +93,11 @@ data DataParameter = DataParameter {
 } deriving (Show, Eq)
 
 
-
--- If any field is genuinely optional then use Maybe 
-
 -- change name - PortalRecord, or MCP2 Record
 data MyRecord = MyRecord {
 
     uuid :: String,
-    identification :: Identification , 
+    dataIdentification :: DataIdentification , 
     attrConstraints :: [ String ],
     useLimitations :: [ String ],
     dataParameters :: [ DataParameter ], 
@@ -119,67 +111,30 @@ data MyRecord = MyRecord {
 
 -- should pass in the formatting function to use....
 
-formatList f xs = concatMap id $ map (\x ->  "\n  -" ++ f x) xs
 
 
 showMyRecord myRecord =
+
+    let formatList f xs = concatMap id $ map (\x ->  "\n  -" ++ f x) xs in
 
     concatMap id [ 
         "uuid= " ++ uuid  myRecord, "\n",
 
         -- TODO -- tidy        
-        "identification.title= " ++ (show $ (title.identification) myRecord), "\n",
-        "identification.abstract= " ++ (show $ (abstract.identification) myRecord), "\n",
-        "identification.jurisdictionLinke = " ++ (show $ (jurisdictionLink.identification) myRecord), "\n",
-        "identification.licenseLink= " ++ (show $ (licenseLink.identification) myRecord), "\n",
-        "identification.licenseName= " ++ (show $ (licenseName.identification) myRecord), "\n",
-        "identification.licenseImageLink = " ++ (show $ (licenseImageLink.identification) myRecord), "\n",
+        "dataIdentification.title= " ++ (show $ (title.dataIdentification) myRecord), "\n",
+        "dataIdentification.abstract= " ++ (show $ (abstract.dataIdentification) myRecord), "\n",
+        "dataIdentification.jurisdictionLinke = " ++ (show $ (jurisdictionLink.dataIdentification) myRecord), "\n",
+        "dataIdentification.licenseLink= " ++ (show $ (licenseLink.dataIdentification) myRecord), "\n",
+        "dataIdentification.licenseName= " ++ (show $ (licenseName.dataIdentification) myRecord), "\n",
+        "dataIdentification.licenseImageLink = " ++ (show $ (licenseImageLink.dataIdentification) myRecord), "\n",
  
         "attrConstraints= ", formatList id (attrConstraints myRecord), "\n",
-        
         "useLimitations= ", formatList id (useLimitations myRecord), "\n",
-        
         "dataParameters= ", formatList show (dataParameters myRecord), "\n",
-
         "temporalBegin= ",  temporalBegin myRecord, "\n",
-
         "links= ", formatList show (links myRecord), "\n",
-        
         "geoPoly= ", formatList id (geoPoly myRecord), "\n"
-
     ]
-
-{-
-    -- dataIdentification
-    putStrLn "\n###### data identification stuff"
-    identification <- runX (parsed >>> parseDataIdentification )
-    print identification
-
-    -- dataIdentification
-    putStrLn "\n###### attribution constraints "
-    attrConstraints <- runX (parsed >>> parseAttributionConstraints)
-    mapM print attrConstraints
-
-    putStrLn "\n###### useLimitations"
-    useLimitations <- runX (parsed >>> parseUseLimitations)
-    mapM print useLimitations
-
-    putStrLn "\n###### parameters"
-    dataParameters <- runX (parsed >>> parseDataParameters)
-    mapM print dataParameters
-
-    putStrLn "\n###### temporal begin"
-    temporalBegin <- runX (parsed >>> parseTemporalExtentBegin )
-    mapM print temporalBegin
-
-    putStrLn "\n###### links"
-    links <- runX (parsed >>> parseTransferLinks)
-    mapM print links
-
-    putStrLn "\n###### geoPoly "
-    geoPoly <- runX (parsed >>> parseGeoPolygon )
-    mapM print geoPoly
--}
 
 
 
@@ -212,8 +167,8 @@ parseDataIdentification =
 
     licenseImageLink <- atChildName "mcp:imageLink" >>> atChildName "gmd:URL" >>> getChildText -< md_commons
 
-    -- change name to DataIdentification
-    returnA -< Identification {
+    -- maybe change name to DataIdentification
+    returnA -< DataIdentification {
         title = title,
         abstract = abstract,
         jurisdictionLink = jurisdictionLink,
@@ -369,65 +324,39 @@ processDataParameters conn uuid recordText = do
 
 -- ok we want to push this stuff into a data structure...
 
+
+
+
 testArgoRecord = do
     recordText <- readFile "./test-data/argo.xml"
 
     let parsed = Helpers.parseXML recordText
 
-    -- data parameters
-
-
-    putStrLn "\n###### identifier"
     identifier <- runX (parsed >>> parseFileIdentifier)
-    print identifier
 
+    dataIdentification <- runX (parsed >>> parseDataIdentification )
 
-    -- dataIdentification
-    putStrLn "\n###### data identification stuff"
-    identification <- runX (parsed >>> parseDataIdentification )
-    print identification
-
-    -- dataIdentification
-    putStrLn "\n###### attribution constraints "
     attrConstraints <- runX (parsed >>> parseAttributionConstraints)
-    mapM print attrConstraints
 
-    putStrLn "\n###### useLimitations"
     useLimitations <- runX (parsed >>> parseUseLimitations)
-    mapM print useLimitations
 
-    putStrLn "\n###### parameters"
     dataParameters <- runX (parsed >>> parseDataParameters)
-    mapM print dataParameters
 
-
-
-    putStrLn "\n###### temporal begin"
     temporalBegin <- runX (parsed >>> parseTemporalExtentBegin )
-    mapM print temporalBegin
 
-
-    putStrLn "\n###### links"
     links <- runX (parsed >>> parseTransferLinks)
-    mapM print links
 
-    
-    putStrLn "\n###### geoPoly "
     geoPoly <- runX (parsed >>> parseGeoPolygon )
-    mapM print geoPoly
 
     -- avoid throwing, or perhaps - if genuinely optional then use Maybe 
     let headWithDefault x d = case not $ null x of 
             True -> head x
             False -> d
 
-    -- actually think we'll have to test valid values ... 
-
     let myRecord = MyRecord {
-
         -- if the list is empty??????   need to test.... 
         uuid = headWithDefault identifier "blah",
-        identification = head identification,     -- t dangerous... fixme  uuid should never be null, since searchable index
+        dataIdentification = head dataIdentification,     -- t dangerous... fixme  uuid should never be null, since searchable index
         attrConstraints = attrConstraints ,
         useLimitations = useLimitations,
         dataParameters = dataParameters,
@@ -438,7 +367,6 @@ testArgoRecord = do
 
     -- print myRecord
 
-    putStrLn "\n###### here -> "
 
     putStrLn $ showMyRecord myRecord
 
