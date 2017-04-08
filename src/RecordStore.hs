@@ -49,11 +49,9 @@ processRecordUUID conn uuid = do
         |]
         (uuid :: String, uuid :: String)
 
-
     let record_id = case xs of
          [] -> -99999 -- avoided because sql will return a value
          [ Only record_id ] -> record_id
-
 
     putStrLn $ "record_id is " ++ show record_id
     return record_id
@@ -100,7 +98,7 @@ processDataIdentification conn record_id dataIdentification = do
                 license_link = (select license_link from a),
                 license_name = (select license_name from a),
                 license_image_link = (select license_image_link from a)
-            returning id
+            returning data_identification.id
         |]
         -- there's a limit of 9 elements in the tuple....
         $ let d = dataIdentification in
@@ -110,14 +108,51 @@ processDataIdentification conn record_id dataIdentification = do
             jurisdictionLink d :: String,
             licenseLink d :: String,
             licenseName d :: String,
-            licenseImageLink d :: String
+            licenseImageLink d  :: String
         )
     return ()
 
 
 
 
+processTransferProtocol conn record_id transferProtocol = do
+
+    xs :: [ (Only Integer)] <- PG.query conn
+        [r|
+            with a as (
+                select 
+                ? as record_id,
+                ? as protocol,
+                ? as linkage, 
+                ? as description
+            )
+            insert into protocol_transfer(
+                record_id,
+                protocol,
+                linkage, 
+                description
+            )
+            (select * from a)
+            returning id
+        |] 
+        $ let t = transferProtocol in
+        (
+            record_id :: Integer,
+            protocol t :: String, 
+            linkage t :: String, 
+            description t :: String
+        )
+
+    return ()
+
+
+
 {-
+
+    protocol :: String,
+    linkage :: String,
+    description :: String
+
 
 processOnlineResource conn uuid (protocol,linkage, description) = do
     PG.execute conn [r|
