@@ -149,8 +149,9 @@ parseTemporalExtentBegin =
  
 -}
 
+
 -- change name to links...
-parseOnlineResources =
+parseTransferLinks =
   atTag "gmd:transferOptions" >>> atChildName "gmd:MD_DigitalTransferOptions" >>>
   proc transfer -> do
 
@@ -201,7 +202,7 @@ processOnlineResource conn uuid (protocol,linkage, description) = do
 
 
 processOnlineResources conn uuid recordText = do
-    onlineResources <- runX (parseXML recordText >>> parseOnlineResources)
+    onlineResources <- runX (parseXML recordText >>> parseTransferLinks)
     putStrLn $ (++) "resource count: " $ (show.length) onlineResources
     mapM (putStrLn.show) onlineResources
     mapM (processOnlineResource conn uuid) onlineResources
@@ -276,7 +277,7 @@ testArgoRecord = do
 
 
     putStrLn "\n###### links"
-    links <- runX (parsed >>> parseOnlineResources)
+    links <- runX (parsed >>> parseTransferLinks)
     mapM print links
  
 

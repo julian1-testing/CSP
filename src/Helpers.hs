@@ -28,7 +28,7 @@ parseXML s = readString [ withValidate no
     , withRemoveWS yes  -- throw away formating WS
     ] s
 
--- TODO stop using this ... it just obscures things....
+-- atTag does both deep and isElem and avoids children
 atTag tag = deep (isElem >>> hasName tag)
 
 atChildName s = getChildren >>> hasName s
