@@ -133,7 +133,13 @@ processTransferLink conn record_id transferLink = do
                 description
             )
             (select * from a)
-            returning id
+            on conflict(record_id, protocol, linkage) -- (my_transfer_protocol_unique_idx ) 
+            do update set
+                protocol = (select protocol from a),
+                linkage = (select linkage from a),
+                description = (select description from a)
+
+            returning transfer_link.id
         |] 
         $ let t = transferLink in
         (
