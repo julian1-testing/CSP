@@ -126,7 +126,7 @@ processTransferLink conn record_id transferLink = do
                 ? as linkage, 
                 ? as description
             )
-            insert into protocol_transfer(
+            insert into transfer_link (
                 record_id,
                 protocol,
                 linkage, 
