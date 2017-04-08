@@ -14,11 +14,14 @@ import qualified Data.ByteString.Lazy.Char8 as BLC
 import Text.RawString.QQ
 
 
-
-import Helpers(parseXML, atTag, atChildName, getChildText, stripSpace, doHTTPPost, doHTTPGet ) 
+-- import Helpers(parseXML, atTag, atChildName, getChildText, stripSpace, doHTTPPost, doHTTPGet ) 
+-- import Helpers as Helpers(parseXML, atTag, atChildName, getChildText, stripSpace, doHTTPPost, doHTTPGet ) 
+import Helpers as Helpers
 
 
 -- might be better to move the parsing to a separate file....
+
+-- should this be a tuple ...
 
 parseCSWSummaryRecord = atTag "csw:SummaryRecord" >>>
   proc l -> do
@@ -27,7 +30,6 @@ parseCSWSummaryRecord = atTag "csw:SummaryRecord" >>>
     returnA -< (identifier, title)
 
 
--- should be a do...
 
 
 
@@ -52,12 +54,18 @@ doGetIdentifiers s = do
 
 
 doGetRecords url' = do
+    {-
+        - we should make Type and POT arguments but this will do for now...
+        - Two filters - OnlineResourceType=WMS, PointOfTruth=catalogue-imos.aodn.org.au
+        Should we specify the 
+    -}
     let url = url' ++ "/srv/eng/csw"
     putStrLn $ "doGetRcords " ++ url
-    response <- Helpers.doHTTPPost url queryWMSAndIMOS
+    response <- doHTTPPost url queryWMSAndIMOS
     let s = BLC.unpack $ responseBody response
     return s
     where
+      -- Two filters - OnlineResourceType=WMS, PointOfTruth=catalogue-imos.aodn.org.au
       -- format (identifier,title) = identifier ++ " -> " ++ title
 
       queryAll = [r|<?xml version="1.0" encoding="UTF-8"?>
@@ -100,6 +108,7 @@ doGetRecords url' = do
 
 
 doGetRecordById uuid title = do
+    -- keeping the title around is pretty useful for output formatting,
     -- TODO - pass the catalog as a parameter - or pre-apply the whole thing.
     putStrLn $ concatMap id [ title, " ", uuid, " ", url ]
     response <- Helpers.doHTTPGet url
@@ -121,7 +130,22 @@ doGetRecordById uuid title = do
 
 
 testGetRecords = do
-    identifiers <- doGetRecords "https://catalogue-imos.aodn.org.au/geonetwork" 
+    result <- doGetRecords "https://catalogue-imos.aodn.org.au/geonetwork" 
+
+    let elts = Helpers.parseXML result
+
+    identifiers <- runX (elts >>> parseCSWSummaryRecord)
+
+    -- parseCSWSummaryRecord = atTag "csw:SummaryRecord" >>>
+
+    -- mapM (putStrLn.show) identifiers
+    mapM print identifiers
+
+    -- mapM (\(uuid, title) -> doGetRecordById uuid title) identifiers
+    -- doGetRecordById uuid title = do
+
+    -- mapM doGetRecordById identifiers
+
 
     return ()
 
