@@ -1,5 +1,7 @@
+{-
+  Use CSW and RecordStore - to harvest records from CSW server to db
 
--- stack --install-ghc --resolver lts-5.13 runghc --package http-conduit
+-}
 
 {-# LANGUAGE ScopedTypeVariables, OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes #-}

@@ -1,17 +1,14 @@
-
-
-module Record where
-
 {-
+    Record structure - containing everything needed for Portal
+
     we work out what we need by looking at
         1. MetaDataRecord.js and seeing the fields
         2. looking at the fields in the response.xml
         3. then mapping the values in response.xml back into original argo.xml record to get tag name
--}
 
+    If any field is genuinely optional then we should use Maybe 
 
-
-{-
+    Eg. 
     ./web-app/js/portal/data/MetadataRecord.js
         title               done
         abstract            done
@@ -49,8 +46,9 @@ module Record where
         iconSourceUuid   -> source -> which is the uuid 
 -}
 
+module Record where
 
--- If any field is genuinely optional then we should use Maybe 
+
 
 data DataIdentification = DataIdentification { 
 

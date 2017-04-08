@@ -1,3 +1,19 @@
+{-
+    interface for interacting with CSW web-services
+
+    TODO 
+    - maybe move the CSW parsing to a separate file
+    - think about the transaction boundaries when deleting old and storing to db
+
+    refs,
+      chef catalogue-imos, POT and WMS
+      https://github.com/aodn/chef-private/blob/master/data_bags/imos_webapps_geonetwork_harvesters/catalogue_imos.json
+
+      use csw getrecordbyid to get argo in native schema
+            https://catalogue-imos.aodn.org.au/geonetwork/srv/eng/csw?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&id=4402cb50-e20a-44ee-93e6-4728259250d2&outputSchema=http://www.isotc211.org/2005/gmd
+
+
+-}
 
 {-# LANGUAGE Arrows, NoMonomorphismRestriction #-}
 {-# LANGUAGE QuasiQuotes #-}
@@ -16,11 +32,6 @@ import Text.RawString.QQ
 import Helpers as Helpers
 
 
-{-
-    TODO 
-    - maybe move the CSW parsing to a separate file
-    - think about the transaction boundaries when deleting old and storing to db
--}
 
 parseCSWSummaryRecord = atTag "csw:SummaryRecord" >>>
   proc l -> do
@@ -93,6 +104,7 @@ doGetRecordById uuid title = do
     putStrLn $ "  The status code was: " ++ (show $ statusCode $ responseStatus response)
     let s = BLC.unpack $ responseBody response
     -- putStrLn s
+    -- TODO maybe use post rather than get?
     return s
     where
       url = stripSpace $ [r|

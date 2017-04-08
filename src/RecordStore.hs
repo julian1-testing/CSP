@@ -1,4 +1,7 @@
+{-
+    module for Storing a record to the db
 
+-}
 {-# LANGUAGE ScopedTypeVariables, OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes #-}
 
