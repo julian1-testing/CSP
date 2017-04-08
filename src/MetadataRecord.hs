@@ -67,13 +67,36 @@ import Helpers(parseXML, atTag, atChildName, getChildText, stripSpace)
 
 
 data Identification = Identification { 
-        title:: String
-     , abstract:: String
-     , jurisdictionLink :: String
-     , licenseLink :: String
-     , licenseName :: String
-     , licenseImageLink:: String
-     } deriving (Show, Eq)
+
+    title:: String, 
+    abstract:: String, 
+    jurisdictionLink :: String, 
+    licenseLink :: String , 
+    licenseName :: String , 
+    licenseImageLink:: String
+    } deriving (Show, Eq)
+
+
+data TransferLink = TransferLink {
+
+    protocol :: String,
+    linkage :: String,
+    description :: String
+} deriving (Show, Eq)
+
+
+
+
+data DataParameter = DataParameter {
+
+    txt :: String,
+    url :: String
+} deriving (Show, Eq)
+
+
+
+
+
 
 {-
 
@@ -189,23 +212,6 @@ parseTemporalExtentBegin =
     returnA -< begin
 
 
-{-
-    geoPoly
-      <gmd:extent>
-        <gmd:EX_Extent>
-          <GMD:geographicElement>
-            <gmd:EX_BoundingPolygon>
-              <gmd:polygon>
-                <gml:Polygon srsName="CRS:84">
-                  <gml:exterior>
-           <gmd:geographicElement>
-            <gmd:EX_BoundingPolygon>
-              <gmd:polygon>
-                <gml:Polygon srsName="CRS:84">
-                  <gml:exterior>
-                    <gml:LinearRing>
-                      <gml:posList srsDimension="2">-85 -15 -85 -10 -80 -10 -80 -15 -85 -15</gml:posList>
--}
 
 parseGeoPolygon =
     -- change name  
@@ -220,9 +226,6 @@ parseGeoPolygon =
 
 
 
-
-
-
 -- change name to links...
 parseTransferLinks =
   atTag "gmd:transferOptions" >>> atChildName "gmd:MD_DigitalTransferOptions" >>>
@@ -233,7 +236,11 @@ parseTransferLinks =
     protocol    <- atChildName "gmd:protocol" >>> atChildName "gco:CharacterString" >>> getChildText  -< resource
     linkage     <- atChildName "gmd:linkage"  >>> atChildName "gmd:URL" >>> getChildText -< resource
     description <- atChildName "gmd:description" >>> atChildName "gco:CharacterString" >>> getChildText -< resource
-    returnA -< (protocol, linkage, description)
+    returnA -< TransferLink { 
+        protocol = protocol, 
+        linkage = linkage, 
+        description = description 
+    }
 
 
 
