@@ -19,26 +19,38 @@ import ParseMCP20(parse)
 {-
     ok - get rid of the title,
 
-    -- should be upsert - and probably the only one. 
+    -- should be upsert - and probably the only one.
     -- and return the id
 -}
 
 
-processRecordUUID conn uuid title = do
+processRecordUUID conn uuid = do
+    -- this is harder than it looks....
+    -- http://stackoverflow.com/questions/18192570/insert-if-not-exists-else-return-id-in-postgresql
 
-    xs :: [ (Only Integer)] <- PG.query conn -- "insert into record(uuid,title) values (?, ?) returning id" 
+    xs :: [ (Only Integer)] <- PG.query conn
         [r|
-            insert into record(uuid,title) values (?, ?) returning id
-        |] 
-        (uuid :: String, title :: String)
+            with s as (
+                select id
+                from record
+                where uuid = ?
+            ),
+            i as (
+                insert into record(uuid)
+                select ?
+                where not exists (select 1 from s)
+                returning id
+            )
+            select id from i
+            union all
+            select id from s
+        |]
+        (uuid :: String, uuid :: String)
 
-
-    -- only is actually a type
-    -- Can we use Maybe instead
 
     let record_id = case xs of
-         [] -> Nothing
-         [ Only record_id ] -> Just record_id 
+         [] -> -99999 -- avoided because sql will return a value
+         [ Only record_id ] -> record_id
 
 
     putStrLn $ "record_id is " ++ show record_id
@@ -46,7 +58,7 @@ processRecordUUID conn uuid title = do
 
 
 
-{- 
+{-
 
 processOnlineResource conn uuid (protocol,linkage, description) = do
     PG.execute conn [r|
@@ -104,14 +116,14 @@ main = do
     recordText <- readFile "./test-data/argo.xml"
     let elts = Helpers.parseXML recordText
 
-    myRecord <- ParseMCP20.parse elts 
+    myRecord <- ParseMCP20.parse elts
     putStrLn $ showRecord myRecord
 
     -- processRecordUUID conn uuid title = do
 
     conn <- PG.connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
 
-    processRecordUUID conn "myuuid" "my title"
+    processRecordUUID conn "myuuid" 
 
 
     return ()
