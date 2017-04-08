@@ -35,7 +35,7 @@ import Helpers(parseXML, atTag, atChildName, getChildText, stripSpace)
         parameterField   -   done db join vocab  parameters we have - just join in the db and format
         platform         -   done db field join vocab
 
-        organisationField    - **** don't have yet - .
+        organisationField    **** don't have yet - .
 
         jurisdictionLink    done
         licenseLink         done
@@ -50,9 +50,12 @@ import Helpers(parseXML, atTag, atChildName, getChildText, stripSpace)
         otherCitation      ***** does not appear in summary-response
         useLimitationiField done -> useLimitation - more than one
 
-        temperalExtentBegin, -> tempExtentBegin  -> it's just a date  eg. <tempExtentBegin>1999-10-01t00:00:00.000z</tempExtentBegin>
+        temperalExtentBegin done -> tempExtentBegin  -> it's just a date  eg. <tempExtentBegin>1999-10-01t00:00:00.000z</tempExtentBegin>
 
-        linksField  -> links -> CI_Online_Resource  eg. 'View and download'
+        linksField          done -> links -> CI_Online_Resource  eg. 'View and download'  transferLinks 
+        linkedFilesField  -> linkedFiles -> ****** does not appear 
+        onlineResourcesFiled -> onlineResources ***** does not appear 
+        pointOfTruthLinkField -> pointOfTruthLink  **** does not appear 
 
 -}
 
@@ -190,6 +193,7 @@ processRecordUUID conn uuid title = do
 
 ----------------
 -- resources
+{-
 
 processOnlineResource conn uuid (protocol,linkage, description) = do
     PG.execute conn [r|
@@ -206,7 +210,7 @@ processOnlineResources conn uuid recordText = do
     putStrLn $ (++) "resource count: " $ (show.length) onlineResources
     mapM (putStrLn.show) onlineResources
     mapM (processOnlineResource conn uuid) onlineResources
-
+-}
 
 ----------------
 -- data parameters
