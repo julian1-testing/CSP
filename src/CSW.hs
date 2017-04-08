@@ -19,9 +19,11 @@ import Text.RawString.QQ
 import Helpers as Helpers
 
 
--- might be better to move the parsing to a separate file....
-
--- should this be a tuple ...
+{-
+    TODO 
+    - maybe move the CSW parsing to a separate file
+    - think about the transaction boundaries when deleting old and storing to db
+-}
 
 parseCSWSummaryRecord = atTag "csw:SummaryRecord" >>>
   proc l -> do
@@ -31,33 +33,10 @@ parseCSWSummaryRecord = atTag "csw:SummaryRecord" >>>
 
 
 
-
-
-{--- OK,,, we want to split out the parsing from retrieval...
-
-doGetIdentifiers s = do
-    identifiers <- runX (parseXML s  >>> parseCSWSummaryRecord)
-    -- print
-    -- mapM (putStrLn.format) identifiers
-    mapM (putStrLn.show) identifiers
-
-    putStrLn $ (++) "cws identifiers count: " $ (show.length) identifiers
-    return identifiers
--}
-
-
--- TODO need to think about the transaction boundary
--- DO NOT COMBINE DATABASSE WITH RETRIEVAL
-
-
--- "https://catalogue-imos.aodn.org.au/geonetwork/srv/eng/csw"
-
-
 doGetRecords url' = do
     {-
-        - we should make Type and POT arguments but this will do for now...
+        - should parametize OnlineResourceType and PointOfTruth. But this will do for now...
         - Two filters - OnlineResourceType=WMS, PointOfTruth=catalogue-imos.aodn.org.au
-        Should we specify the 
     -}
     let url = url' ++ "/srv/eng/csw"
     putStrLn $ "doGetRcords " ++ url
@@ -107,6 +86,8 @@ doGetRecords url' = do
       |]
 
 
+
+-- doGetRecordById (uuid, title) = do
 doGetRecordById uuid title = do
     -- keeping the title around is pretty useful for output formatting,
     -- TODO - pass the catalog as a parameter - or pre-apply the whole thing.
@@ -129,35 +110,22 @@ doGetRecordById uuid title = do
 
 
 
-testGetRecords = do
+testRetrievingAllRecords = do
+    
+    -- get records
     result <- doGetRecords "https://catalogue-imos.aodn.org.au/geonetwork" 
-
     let elts = Helpers.parseXML result
-
     identifiers <- runX (elts >>> parseCSWSummaryRecord)
-
-    -- parseCSWSummaryRecord = atTag "csw:SummaryRecord" >>>
-
-    -- mapM (putStrLn.show) identifiers
-    mapM print identifiers
-
-    -- mapM (\(uuid, title) -> doGetRecordById uuid title) identifiers
-    -- doGetRecordById uuid title = do
-
-    -- mapM doGetRecordById identifiers
-
+    mapM (putStrLn.show) identifiers
+    
+    -- process each record
+    mapM (uncurry doGetRecordById) identifiers
 
     return ()
 
 
 main :: IO ()
-main = testGetRecords
-{-
-  -- testArgoR
-  processAllRs conn 
-  return ()
--}
-
+main = testRetrievingAllRecords
 
 
 
