@@ -113,13 +113,21 @@ data MyRecord = MyRecord {
 
 -- ByteString?
 
+-- should pass in the formatting function to use....
+
+formatList f xs = concatMap id $ map (\x ->  "\n  -" ++ f x) xs
+
+
 showMyRecord myRecord =
 
     concatMap id [ 
-        "uuid: " ++ (uuid ) myRecord, "\n",
+        "uuid: " ++ uuid  myRecord, "\n",
     
-        "attrConstraints:\n  -",
-        concatMap (++"\n  -") $ attrConstraints myRecord 
+        "attrConstraints:", formatList id (attrConstraints myRecord), "\n",
+        
+        "useLimitations:", formatList id (useLimitations myRecord), "\n",
+        
+        "dataParameters :", formatList show (dataParameters myRecord)
 
     ]
 
