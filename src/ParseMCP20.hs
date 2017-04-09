@@ -27,6 +27,25 @@ parseFileIdentifier =
 
 
 
+parseMDCommons =
+  atTag "gmd:resourceConstraints" >>> atChildName "mcp:MD_Commons" >>> 
+  proc md_commons -> do
+
+    jurisdictionLink <- atChildName "mcp:jurisdictionLink" >>> atChildName "gmd:URL" >>> getChildText -< md_commons
+
+    licenseLink <- atChildName "mcp:licenseLink" >>> atChildName "gmd:URL" >>> getChildText -< md_commons
+
+    licenseName <- atChildName "mcp:licenseName" >>> atChildName "gco:CharacterString" >>> getChildText -< md_commons
+
+    licenseImageLink <- atChildName "mcp:imageLink" >>> atChildName "gmd:URL" >>> getChildText -< md_commons
+
+
+    returnA -< licenseName
+
+
+
+
+
 parseDataIdentification =
   -- single instance
   atTag "mcp:MD_DataIdentification" >>>
@@ -37,8 +56,16 @@ parseDataIdentification =
 
     abstract <- atChildName "gmd:abstract" >>> atChildName "gco:CharacterString" >>> getChildText -< dataIdent
 
+
+    {-
     -- and only one md_commons
     md_commons <- atChildName "gmd:resourceConstraints" >>> atChildName "mcp:MD_Commons" -< dataIdent
+
+    
+    -- no md commons...
+
+    returnA -< md_commons
+
 
     jurisdictionLink <- atChildName "mcp:jurisdictionLink" >>> atChildName "gmd:URL" >>> getChildText -< md_commons
 
@@ -47,17 +74,18 @@ parseDataIdentification =
     licenseName <- atChildName "mcp:licenseName" >>> atChildName "gco:CharacterString" >>> getChildText -< md_commons
 
     licenseImageLink <- atChildName "mcp:imageLink" >>> atChildName "gmd:URL" >>> getChildText -< md_commons
+-}
 
     -- maybe change name to DataIdentification
     returnA -< DataIdentification {
         title = title,
         abstract = abstract,
-        jurisdictionLink = jurisdictionLink,
-        licenseLink = licenseLink,
-        licenseName = licenseName,
-        licenseImageLink = licenseImageLink
-        }
 
+        jurisdictionLink = "",
+        licenseLink = "",
+        licenseName = "",
+        licenseImageLink = ""
+        }
 
 
 parseAttributionConstraints =
@@ -123,6 +151,7 @@ parseTransferLinks =
 
 
 parseDataParameters =
+  -- multiple??
   atTag "mcp:DP_Term" >>>
   proc term -> do
     term_ <- atChildName "mcp:term"  >>> atChildName "gco:CharacterString" >>> getChildText -< term
@@ -139,6 +168,10 @@ parseDataParameters =
 
 
 
+testParse elts = do
+    identifier <- runX (elts >>> parseFileIdentifier)
+    dataIdentification <- runX (elts >>> parseDataIdentification )
+    return dataIdentification
 
 
 
@@ -146,37 +179,71 @@ parse elts = do
     -- runX returns an IO type...  so this function must be monadic
 
     identifier <- runX (elts >>> parseFileIdentifier)
-
     dataIdentification <- runX (elts >>> parseDataIdentification )
-
     attrConstraints <- runX (elts >>> parseAttributionConstraints)
-
     useLimitations <- runX (elts >>> parseUseLimitations)
-
     dataParameters <- runX (elts >>> parseDataParameters)
-
     temporalBegin <- runX (elts >>> parseTemporalExtentBegin )
-
     transferLinks <- runX (elts >>> parseTransferLinks)
-
     geoPoly <- runX (elts >>> parseGeoPolygon )
 
+    -- print $ "identifier " ++ show identifier
+    -- print $ "dataIdentification " ++ show dataIdentification
+    -- print $ "temporalBegin " ++ show temporalBegin
 
-    let record = case (identifier, dataIdentification, temporalBegin) of
-            ([ uuid ], [ di ], [tb]) -> Right $ 
+    -- temporal begining is empty...
+    -- so how do we handle all this... 
+    -- I think we need to change the parsing structure....
+    -- WE need null
+    
+    -- we either use null.... or encode it something else....
+
+--    let ide
+
+-- ok if everything
+-- parsing everything optionally - means we don't really have to return left and right 
+-- we can analyze it separately later?
+-- having the record be sufficiently flexible is quite nice...
+
+-- Maybe have another structure to map from MCP2 to the Record. for other strategies
+
+-- if it has an mdcommons we expect everything in mdcommons
+
+-- VERY IMPORTANT - we should parse it in the same structure that it exists - and handle
+-- everything else later.
+
+    let uuid = case identifier of
+            [ id ] -> Just id
+            _ -> Nothing
+
+    let dataIdentification' = case dataIdentification of
+         [ di ] -> Just di
+         _ -> Nothing
+
+    let temporalBegin' = case temporalBegin of
+         [ tb ] -> Just tb  
+         _ -> Nothing
+
+
+    let record = case True of
+         True ->
+            Right $ 
              Record {
-                uuid = uuid,
-                dataIdentification = di,
+                uuid = head identifier,
+                dataIdentification = dataIdentification', -----
                 attrConstraints = attrConstraints ,
                 useLimitations = useLimitations,
                 dataParameters = dataParameters,
-                temporalBegin = tb,
+                temporalBegin = temporalBegin',    ----
                 transferLinks = transferLinks,
                 geoPoly = geoPoly
             }
-            ( _, _, _) -> Left "missing uuid, dataIdentification or temporalBegin"
+         False ->
+            Left "no good" 
+            -- ( _, _, _) -> Left "missing uuid, dataIdentification or temporalBegin"
 
     return record
+
 
 
 
@@ -185,13 +252,29 @@ testArgoRecord = do
     recordText <- readFile "./test-data/aus-cpr.xml"
     -- recordText <- readFile "./test-data/argo.xml"
     let elts = Helpers.parseXML recordText
+
+    -- ok there must be other stuff it's missing...
+
     myRecord <- parse elts
-   
 
-    print $ myRecord
+    print $ show  myRecord
 
 
--- we should still see if it can get through everything  
+    return ()
+
+
+main = testArgoRecord
+
+
+
+    -- we really need to have this....
+    -- but maybe we can handle another way....
+    -- blah blah 
+    -- might be easier to just set error?
+-- case (identifier, dataIdentification, temporalBegin) of
+            -- ([ uuid ], [ di ], [tb]) -> 
+
+
 
 {- 
     putStrLn $ case myRecord of
@@ -201,13 +284,6 @@ testArgoRecord = do
 
     -- try ( print $ Left "whoot" ) -- putStrLn.showRecord $ myRecord)
     -- catch (print $ head []) $ \(e ::  Exception NoMethodError) -> print "good message"
-
-
-    return ()
-
-
-main = testArgoRecord
-
 
 
 {-

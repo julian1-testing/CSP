@@ -59,6 +59,7 @@ data DataIdentification = DataIdentification {
     licenseLink :: String , 
     licenseName :: String , 
     licenseImageLink:: String
+
 } deriving (Show, Eq)
 
 
@@ -81,12 +82,11 @@ data DataParameter = DataParameter {
 data Record = Record {
 
     uuid :: String,
-    dataIdentification :: DataIdentification , 
+    dataIdentification :: Maybe DataIdentification , 
     attrConstraints :: [ String ],
     useLimitations :: [ String ],
     dataParameters :: [ DataParameter ], 
-    temporalBegin :: String,
-    -- links :: [ TransferLink ],
+    temporalBegin :: Maybe String,
     transferLinks :: [ TransferLink ],
     geoPoly :: [ String ]
 } deriving (Show, Eq)
@@ -106,17 +106,19 @@ showRecord myRecord =
         "uuid= " ++ uuid  myRecord, "\n",
 
         -- TODO -- tidy        
+{-
         "dataIdentification.title= " ++ (show $ (title.dataIdentification) myRecord), "\n",
         "dataIdentification.abstract= " ++ (show $ (abstract.dataIdentification) myRecord), "\n",
         "dataIdentification.jurisdictionLinke = " ++ (show $ (jurisdictionLink.dataIdentification) myRecord), "\n",
         "dataIdentification.licenseLink= " ++ (show $ (licenseLink.dataIdentification) myRecord), "\n",
         "dataIdentification.licenseName= " ++ (show $ (licenseName.dataIdentification) myRecord), "\n",
         "dataIdentification.licenseImageLink = " ++ (show $ (licenseImageLink.dataIdentification) myRecord), "\n",
+-}
  
         "attrConstraints= ", formatList id (attrConstraints myRecord), "\n",
         "useLimitations= ", formatList id (useLimitations myRecord), "\n",
         "dataParameters= ", formatList show (dataParameters myRecord), "\n",
-        "temporalBegin= ",  temporalBegin myRecord, "\n",
+        "temporalBegin= ",  show $ temporalBegin myRecord, "\n",
         "transferLinks= ", formatList show (transferLinks myRecord), "\n",
         "geoPoly= ", formatList id (geoPoly myRecord), "\n"
     ]
