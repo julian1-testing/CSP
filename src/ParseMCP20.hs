@@ -165,7 +165,7 @@ parse elts = do
     dataParameters <- runX (elts >>> parseDataParameters)
     temporalBegin <- runX (elts >>> parseTemporalExtentBegin )
     transferLinks <- runX (elts >>> parseTransferLinks)
-    geoPoly <- runX (elts >>> parseGeoPolygon )
+    geopoly <- runX (elts >>> parseGeoPolygon )
 
     -- print $ "identifier " ++ show identifier
     -- print $ "dataIdentification " ++ show dataIdentification
@@ -202,7 +202,7 @@ parse elts = do
 			dataParameters = dataParameters,
 			temporalBegin = temporalBegin',    ----
 			transferLinks = transferLinks,
-			geoPoly = geoPoly
+			geopoly = geopoly
 			}
 
     return record

@@ -133,10 +133,10 @@ CREATE UNIQUE INDEX my_data_parameter_unique_idx ON data_parameter(record_id, co
 
 
 
-    attrConstraints :: [ String ],   -- todo
-    useLimitations :: [ String ],    -- todo
+    attrConstraints :: [ String ],   -- done todo
+    useLimitations :: [ String ],    -- done todo
     dataParameters :: [ DataParameter ], 
-    temporalBegin :: Maybe String,   -- todo
+    temporalBegin :: Maybe String,   -- done todo
     transferLinks :: [ TransferLink ],
     geoPoly :: [ String ]            -- todo
 
@@ -167,7 +167,7 @@ create table temporal_begin (
 );
 
 
-create table geo_poly (
+create table geopoly (
 
   id serial   primary key not null,
 

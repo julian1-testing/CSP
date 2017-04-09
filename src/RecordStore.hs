@@ -288,22 +288,26 @@ storeUseLimitations conn record_id useLimitations = do
         PG.execute conn "insert into use_limitation(record_id, limitation) values (?, ?)" 
           (record_id, useLimitation)
 
-
-
--- it's actually a Maybe type
--- temporalBegin :: Maybe String,   -- todo
--- could be stored directly with the record... since it's one-to-one
--- join is fine too
+------------
+-- temporalBegin
 
 storeTemporalBegin conn record_id temporalBegin = do
     PG.execute conn "delete from temporal_begin where record_id = ?" (Only record_id)
-    -- mapM (store conn record_id) temporalBegin
-    -- where
     PG.execute conn "insert into temporal_begin(record_id, begin_) values (?, ?)" (record_id, temporalBegin)
     return ()
-
-
  
+------------
+-- storeGeoPoly
+
+storeGeopolys conn record_id geopolys = do
+    PG.execute conn "delete from geopoly where record_id = ?" (Only record_id)
+    mapM (store conn record_id) geopolys
+    where
+    store conn record_id geopoly = do
+        PG.execute conn "insert into geopoly(record_id, poly) values (?, ?)" 
+          (record_id, geopoly)
+
+
 
 
 
@@ -311,6 +315,8 @@ storeAll conn record = do
 
     case (Record.uuid record) of 
             Just uuid_ -> do
+
+                -- TODO need to do this entire thing transactionally,
 
                 -- change name storeOrGetUUID
                 -- if we can't get the recordId we're really stuck
@@ -330,6 +336,7 @@ storeAll conn record = do
                 --
                 maybe (return ()) (storeTemporalBegin conn record_id) (Record.temporalBegin record) 
 
+                storeGeopolys conn record_id (Record.geopoly record)
 
                 return ()
             _ ->
@@ -344,7 +351,7 @@ deleteAll conn = do
     PG.execute conn [r|
         truncate record, transfer_link, data_parameter, data_identification, 
         md_commons, attr_constraint, use_limitation, temporal_begin,
-        geo_poly
+        geopoly
         ;
     |] ()
 

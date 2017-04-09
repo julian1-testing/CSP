@@ -98,7 +98,7 @@ data Record = Record {
     dataParameters :: [ DataParameter ], 
     temporalBegin :: Maybe String,   -- todo
     transferLinks :: [ TransferLink ],
-    geoPoly :: [ String ]            -- todo
+    geopoly :: [ String ]            -- todo
 } deriving (Show, Eq)
 
 

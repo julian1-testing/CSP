@@ -15,6 +15,7 @@ drop view if exists wfs_view;
 drop view if exists transfer_link_view;
 drop view if exists concept_view;
 drop view if exists parent_view;
+drop view if exists record_view;
 
 
 -- associate concept parent (eg. skos:broader) relationships between concepts via skos:narrower and skos:narrowMatch
@@ -89,30 +90,12 @@ select
 
 
 
-
--- TODO remove this - do we use it...
--- should this be by record,
--- drop view if exists facet_match_view;
---
--- create view facet_match_view as
--- select
---   record.uuid,
---  record.title,
---  concept.url,
---  concept.label
---  from record
---
---  left join facet on facet.record_id = record.id
---  left join concept on concept.id = facet.concept_id
--- ;
-
-------
-
 -- change name wms_view
 
 
 create or replace view transfer_link_view as
 select
+  record.id as record_id,
   record.uuid,
   data_identification.title,
   transfer_link.protocol,
@@ -131,7 +114,6 @@ create view wms_view as
 select * from transfer_link_view where protocol = 'OGC:WMS-1.1.1-http-get-map'
 ;
 
--- select * from transfer_link where protocol ~ 'WFS';
 
 create view wfs_view as
 select * from transfer_link_view where protocol = 'OGC:WFS-1.0.0-http-get-capabilities'
@@ -177,10 +159,13 @@ select
     mdc.jurisdiction_link,
     mdc.license_link,
     mdc.license_name,
-    mdc.license_image_link 
+    mdc.license_image_link,
+
+	tb.begin_
 from record 
 left join data_identification di on di.record_id = record.id 
 left join md_commons mdc on mdc.record_id = record.id 
+left join temporal_begin tb on tb.record_id = record.id 
 ;
 
 
