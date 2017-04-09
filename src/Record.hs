@@ -54,13 +54,37 @@ module Record where
 data DataIdentification = DataIdentification { 
 
     title:: String, 
-    abstract:: String, 
+    abstract:: String
+
+} deriving (Show, Eq)
+
+
+
+
+data MDCommons = MDCommons { 
+
     jurisdictionLink :: String, 
     licenseLink :: String , 
     licenseName :: String , 
     licenseImageLink:: String
 
 } deriving (Show, Eq)
+
+
+{-
+  proc md_commons -> do
+
+    jurisdictionLink <- atChildName "mcp:jurisdictionLink" >>> atChildName "gmd:URL" >>> getChildText -< md_commons
+
+    licenseLink <- atChildName "mcp:licenseLink" >>> atChildName "gmd:URL" >>> getChildText -< md_commons
+
+    licenseName <- atChildName "mcp:licenseName" >>> atChildName "gco:CharacterString" >>> getChildText -< md_commons
+
+    licenseImageLink <- atChildName "mcp:imageLink" >>> atChildName "gmd:URL" >>> getChildText -< md_commons
+-}
+
+
+
 
 
 data TransferLink = TransferLink {
@@ -83,6 +107,7 @@ data Record = Record {
 
     uuid :: String,
     dataIdentification :: Maybe DataIdentification , 
+    mdCommons :: Maybe MDCommons,
     attrConstraints :: [ String ],
     useLimitations :: [ String ],
     dataParameters :: [ DataParameter ], 

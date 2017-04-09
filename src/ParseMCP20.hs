@@ -39,8 +39,12 @@ parseMDCommons =
 
     licenseImageLink <- atChildName "mcp:imageLink" >>> atChildName "gmd:URL" >>> getChildText -< md_commons
 
-
-    returnA -< licenseName
+    returnA -< MDCommons {
+        jurisdictionLink = jurisdictionLink,
+        licenseLink = licenseLink,
+        licenseName = licenseName,
+        licenseImageLink = licenseImageLink
+        }
 
 
 
@@ -72,12 +76,7 @@ parseDataIdentification =
     -- maybe change name to DataIdentification
     returnA -< DataIdentification {
         title = title,
-        abstract = abstract,
-
-        jurisdictionLink = "",
-        licenseLink = "",
-        licenseName = "",
-        licenseImageLink = ""
+        abstract = abstract
         }
 
 
@@ -183,12 +182,12 @@ parse elts = do
 
     -- print $ "identifier " ++ show identifier
     -- print $ "dataIdentification " ++ show dataIdentification
-    print $ "mdCommons " ++ show mdCommons
+    -- print $ "mdCommons " ++ show mdCommons
     -- print $ "temporalBegin " ++ show temporalBegin
 
     -- temporal begining is empty...
 
-    let uuid = case identifier of
+    let uuid' = case identifier of
             [ id ] -> Just id
             _ -> Nothing
 
@@ -205,22 +204,17 @@ parse elts = do
          _ -> Nothing
 
 
-    let record = case True of
-         True ->
-            Right $ 
-             Record {
-                uuid = head identifier,
+    let record = Record {
+                uuid = "myident",--uuid',
                 dataIdentification = dataIdentification', -----
+                mdCommons = mdCommons', -----
                 attrConstraints = attrConstraints ,
                 useLimitations = useLimitations,
                 dataParameters = dataParameters,
                 temporalBegin = temporalBegin',    ----
                 transferLinks = transferLinks,
                 geoPoly = geoPoly
-            }
-         False ->
-            Left "no good" 
-            -- ( _, _, _) -> Left "missing uuid, dataIdentification or temporalBegin"
+                }
 
     return record
 
@@ -237,7 +231,7 @@ testArgoRecord = do
 
     myRecord <- parse elts
 
-    -- print $ show  myRecord
+    print $ show  myRecord
 
 
     return ()
