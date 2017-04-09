@@ -161,7 +161,7 @@ getTestFacetList conn = do
   -- get all facets and facet count from db and return as flat list
   let query = [r|
         select
-          id as concept_id,
+          concept_id,
           parent_id,
           label ,
           count
@@ -172,6 +172,9 @@ getTestFacetList conn = do
 
 
 
+{-
+  Main test is in facetrequest
+
 main :: IO ()
 main = do
 
@@ -181,20 +184,8 @@ main = do
   let  facetList' = map (\f (a,b,c, d) -> (a,b,c, 123) )  facetList
   let  facetList' = facetList
 
-{-
-  let m = fromList facetList'
-
-  FacetFormat.print m
-
-  -- nestings <- Facet.getConceptNesting conn
-  -- let m' =  Facet.propagateAllRecordsToRoot nestings m
-
-  let m' = sort m
-
-  FacetFormat.print m'
--}
   return ()
-
+-}
 
 
 

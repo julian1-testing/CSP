@@ -1,6 +1,8 @@
 
 {-# LANGUAGE OverloadedStrings #-}
 
+module FacetRequest where
+
 import qualified Database.PostgreSQL.Simple as PG(query, connectPostgreSQL)
 
 import qualified Facet as Facet--(buildLeafFacetMap,main)

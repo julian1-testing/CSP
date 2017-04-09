@@ -49,7 +49,7 @@ getConceptNesting conn  = do
   xs :: [ (Integer, Maybe Integer ) ] <- PG.query conn query1 ()
   return xs
 
-
+-- THESE FUNCTIONS ARE THE SAME one of these should be deleted....
 
 getConceptLabels conn  = do
   let query1 = [r|
@@ -80,9 +80,9 @@ getFacetList conn  = do
       select
         concept_view.concept_id,
         concept_view.parent_id,
-        facet.record_id
+        data_parameter.record_id
       from concept_view
-      left join facet on facet.concept_id = concept_view.concept_id
+      left join data_parameter on data_parameter.concept_id = concept_view.concept_id
   |]
   xs :: [ (Integer, Maybe Integer, Maybe Integer ) ] <- PG.query conn query1 ()
   -- mapM putStrLn xs
