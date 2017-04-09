@@ -113,13 +113,13 @@ create table data_identification (
 alter table record owner to harvest;
 
 
-
+-- have a secondary/derived view - that truncates the abstract - 
 create or replace view record_view as
 select 
     record.id, 
     record.uuid,
     di.title,
-    di.abstract,
+    left( di.abstract, 100) as abstract,
     di.jurisdiction_link,
     di.license_link,
     di.license_name,

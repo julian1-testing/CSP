@@ -27,7 +27,7 @@ import Record
 -}
 
 
-storeRecordUUID conn uuid = do
+storeUUID conn uuid = do
 
 
     -- must get the id, so we can delete all old bits,
@@ -200,14 +200,19 @@ storeDataParameters conn uuid recordText = do
 
 storeAll conn record = do
 
-
-    record_id <- storeRecordUUID conn (Record.uuid record) 
+    -- change name storeOrGetUUID
+    record_id <- storeUUID conn (Record.uuid record) 
 
     storeDataIdentification conn record_id (Record.dataIdentification record)
 
     storeTransferLinks conn record_id (Record.transferLinks record)
 
 
+
+deleteAll conn = do
+    -- this is useful for testing
+    -- truncate record, transfer_link, facet, data_identification   ;
+    return ()
 
 
 main = do
@@ -229,8 +234,8 @@ main = do
 
 
 {-
-            -- storeRecordUUID conn uuid title = do
-            record_id <- storeRecordUUID conn "myuuid"
+            -- storeUUID conn uuid title = do
+            record_id <- storeUUID conn 
             storeDataIdentification conn record_id (Record.dataIdentification record)
             storeTransferLinks conn record_id (Record.transferLinks record)
 -}
