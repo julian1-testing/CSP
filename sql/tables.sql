@@ -1,14 +1,6 @@
 
 -- psql -h postgres.localnet -U admin -d postgres -f db.sql
 
-drop database if exists harvest; 
-drop role if exists harvest; 
-
-create role harvest password 'harvest' login; 
-create database harvest owner harvest; 
-
-\c harvest
-
 
 begin;
 
@@ -17,15 +9,6 @@ begin;
 
 -- this is all vocab - distinct from facet or relationship with records 
 
-/*
-create table scheme (
-
-  id serial   primary key not null,
-  url         text not null unique,
-  title       text not null
-);
-alter table scheme owner to harvest;
-*/
 
 
 create table concept (
@@ -36,7 +19,6 @@ create table concept (
   url         text not null unique,
   label       text not null
 );
-alter table concept owner to harvest;
 
 
 -- skos relationships
@@ -47,7 +29,6 @@ create table narrower (
   concept_id  integer references concept(id), 
   narrower_id integer references concept(id)
 );
-alter table narrower owner to harvest;
 
 -- TODO uniqueness constraint on the combination  that link things,
 
@@ -58,7 +39,6 @@ create table narrow_match (
   concept_id  integer references concept(id), 
   narrower_id integer references concept(id)
 );
-alter table narrow_match owner to harvest;
 
 
 create table scheme_has_top_concept (
@@ -68,7 +48,6 @@ create table scheme_has_top_concept (
   concept_id  integer references concept(id), 
   scheme_id   integer references concept(id)
 );
-alter table scheme_has_top_concept owner to harvest;
 
 
 
@@ -94,7 +73,6 @@ create table record (
   uuid        text not null unique
 );
 
-alter table record owner to harvest;
 
 
 create table data_identification (
@@ -106,7 +84,6 @@ create table data_identification (
     abstract            text
 );
 
-alter table data_identification owner to harvest;
 
 
 
@@ -120,7 +97,6 @@ create table md_commons (
     license_image_link  text
 );
 
-alter table md_commons owner to harvest;
 
 
 
@@ -157,7 +133,6 @@ create table transfer_link (
 -- should be unique on these three...
 CREATE UNIQUE INDEX my_transfer_link_unique_idx ON transfer_link(record_id, protocol, linkage);
 
-alter table transfer_link owner to harvest;
 
 
 
@@ -186,6 +161,5 @@ create table data_parameter (
 -- important
 CREATE UNIQUE INDEX my_data_parameter_unique_idx ON data_parameter(record_id, concept_id);
 
-alter table data_parameter owner to harvest;
 
 commit;
