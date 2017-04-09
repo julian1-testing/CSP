@@ -42,6 +42,9 @@ doGetAndProcessRecord conn uuid title = do
         Right record -> do
             RS.storeAll conn record
             return ()
+        Left msg -> do
+          -- print $ concatMap id [ "error ", msg, " ",  uuid, title ]
+          print $ mconcat [ "error ", msg, " ",  uuid, title ]
 
     return ()
 
