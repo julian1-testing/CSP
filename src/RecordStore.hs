@@ -27,10 +27,8 @@ import Record
 -}
 
 
-storeRecordUUID conn = do
+storeRecordUUID conn uuid = do
 
-    -- storeRecordUUID should use the uuid in the record!!!!
-    let uuid = "whoot"
 
     -- must get the id, so we can delete all old bits,
     -- this is harder than it looks....
@@ -202,9 +200,13 @@ storeDataParameters conn uuid recordText = do
 
 storeAll conn record = do
 
-    let uuid = "whoot" -- Record.dataIdentification.uuid record
+    -- IMPORTANT - should 
+    -- storeRecordUUID should use the uuid in the record!!!!
+    let uuid = "whoot"
+--    let uuid = (Record.dataIdentification record)
 
-    record_id <- storeRecordUUID conn
+
+    record_id <- storeRecordUUID conn uuid
 
     storeDataIdentification conn record_id (Record.dataIdentification record)
 
