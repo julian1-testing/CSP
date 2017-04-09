@@ -103,14 +103,26 @@ create table data_identification (
     record_id integer references record(id) unique, 
 
     title               text, -- not null? 
-    abstract            text, 
+    abstract            text
+);
+
+alter table data_identification owner to harvest;
+
+
+
+create table md_commons (
+    id serial primary key not null,
+    record_id integer references record(id) unique, 
+
     jurisdiction_link   text, 
     license_link        text, 
     license_name        text, 
     license_image_link  text
 );
 
-alter table record owner to harvest;
+alter table md_commons owner to harvest;
+
+
 
 
 -- have a secondary/derived view - that truncates the abstract - 
@@ -120,18 +132,19 @@ select
     record.uuid,
     di.title,
     left( di.abstract, 100) as abstract,
-    di.jurisdiction_link,
-    di.license_link,
-    di.license_name,
-    di.license_image_link 
+
+    mdc.jurisdiction_link,
+    mdc.license_link,
+    mdc.license_name,
+    mdc.license_image_link 
 from record 
-left join data_identification di 
-on di.record_id = record.id 
+left join data_identification di on di.record_id = record.id 
+left join md_commons mdc on mdc.record_id = record.id 
 ;
 
 
 create table transfer_link (
-  -- mcp2 resource
+  -- mcp2 online resource
 
   id serial   primary key not null,
   record_id  integer references record(id),  -- more than one
@@ -144,6 +157,8 @@ create table transfer_link (
 -- should be unique on these three...
 CREATE UNIQUE INDEX my_transfer_link_unique_idx ON transfer_link(record_id, protocol, linkage);
 
+alter table transfer_link owner to harvest;
+
 
 
 
@@ -152,7 +167,6 @@ CREATE UNIQUE INDEX my_transfer_link_unique_idx ON transfer_link(record_id, prot
 -- actually probably only needs to be on protocol...
 -- actually it's unique on record_id, protocol, linkage 
 
-alter table resource owner to harvest;
 
 --------------
 
@@ -172,6 +186,6 @@ create table data_parameter (
 -- important
 CREATE UNIQUE INDEX my_data_parameter_unique_idx ON data_parameter(record_id, concept_id);
 
-alter table facet owner to harvest;
+alter table data_parameter owner to harvest;
 
 commit;

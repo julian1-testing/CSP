@@ -48,8 +48,6 @@ parseMDCommons =
 
 
 
-
-
 parseDataIdentification =
   -- single instance
   atTag "mcp:MD_DataIdentification" >>>
@@ -59,19 +57,6 @@ parseDataIdentification =
         >>> atChildName "gco:CharacterString" >>> getChildText -< dataIdent
 
     abstract <- atChildName "gmd:abstract" >>> atChildName "gco:CharacterString" >>> getChildText -< dataIdent
-
-    {-
-    -- and only one md_commons
-    md_commons <- atChildName "gmd:resourceConstraints" >>> atChildName "mcp:MD_Commons" -< dataIdent
-    -- no md commons...
-
-    returnA -< md_commons
-
-    jurisdictionLink <- atChildName "mcp:jurisdictionLink" >>> atChildName "gmd:URL" >>> getChildText -< md_commons
-    licenseLink <- atChildName "mcp:licenseLink" >>> atChildName "gmd:URL" >>> getChildText -< md_commons
-    licenseName <- atChildName "mcp:licenseName" >>> atChildName "gco:CharacterString" >>> getChildText -< md_commons
-    licenseImageLink <- atChildName "mcp:imageLink" >>> atChildName "gmd:URL" >>> getChildText -< md_commons
--}
 
     -- maybe change name to DataIdentification
     returnA -< DataIdentification {
@@ -196,7 +181,7 @@ parse elts = do
          _ -> Nothing
 
     let mdCommons' = case mdCommons of
-         [ mcd ] -> Just mcd
+         [ mdc ] -> Just mdc
          _ -> Nothing
 
     let temporalBegin' = case temporalBegin of
@@ -225,15 +210,13 @@ parse elts = do
 
 testArgoRecord = do
 
-    -- recordText <- readFile "./test-data/aus-cpr.xml"
-    recordText <- readFile "./test-data/argo.xml"
+    recordText <- readFile "./test-data/aus-cpr.xml"
+    -- recordText <- readFile "./test-data/argo.xml"
     let elts = Helpers.parseXML recordText
-
-    -- ok there must be other stuff it's missing...
 
     myRecord <- parse elts
 
-    print $ show  myRecord
+    print $ show myRecord
 
 
     return ()

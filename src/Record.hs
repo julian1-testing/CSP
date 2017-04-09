@@ -49,7 +49,6 @@
 module Record where
 
 
--- why is there no uuid????
 
 data DataIdentification = DataIdentification { 
 
@@ -57,7 +56,6 @@ data DataIdentification = DataIdentification {
     abstract:: String
 
 } deriving (Show, Eq)
-
 
 
 
@@ -71,21 +69,6 @@ data MDCommons = MDCommons {
 } deriving (Show, Eq)
 
 
-{-
-  proc md_commons -> do
-
-    jurisdictionLink <- atChildName "mcp:jurisdictionLink" >>> atChildName "gmd:URL" >>> getChildText -< md_commons
-
-    licenseLink <- atChildName "mcp:licenseLink" >>> atChildName "gmd:URL" >>> getChildText -< md_commons
-
-    licenseName <- atChildName "mcp:licenseName" >>> atChildName "gco:CharacterString" >>> getChildText -< md_commons
-
-    licenseImageLink <- atChildName "mcp:imageLink" >>> atChildName "gmd:URL" >>> getChildText -< md_commons
--}
-
-
-
-
 
 data TransferLink = TransferLink {
 
@@ -95,6 +78,7 @@ data TransferLink = TransferLink {
 } deriving (Show, Eq)
 
 
+
 data DataParameter = DataParameter {
 
     term :: String,
@@ -102,7 +86,8 @@ data DataParameter = DataParameter {
 } deriving (Show, Eq)
 
 
--- change name - PortalRecord, or MCP2 Record
+
+-- change name - PortalRecord, or MCP2 Record - depending on how we end up using it...
 data Record = Record {
 
     uuid :: Maybe String,
