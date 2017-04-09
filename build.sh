@@ -16,9 +16,9 @@ FLAGS="-i./src -O2 -outputdir tmp"
 
 # ghc $FLAGS -main-is ParseMCP20.main   ./src/ParseMCP20.hs  -o target/ParseMCP20
 
-ghc $FLAGS -main-is RecordStore.main  ./src/RecordStore.hs  -o target/RecordStore
+# ghc $FLAGS -main-is RecordStore.main  ./src/RecordStore.hs  -o target/RecordStore
 
-# ghc $FLAGS -main-is Harvest.main  ./src/Harvest.hs  -o target/Harvest
+ghc $FLAGS -main-is Harvest.main  ./src/Harvest.hs  -o target/Harvest
 
 
 

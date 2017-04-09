@@ -261,12 +261,6 @@ storeDataParameters conn record_id dataParameters = do
 
 
 
--- destructure a Maybe type and apply f if possible, otherwise return defaultVal
-applyJust f x defaultVal = 
-    case x of 
-        Just x' -> f x'
-        Nothing -> defaultVal 
-
 
 storeAll conn record = do
 
@@ -277,10 +271,9 @@ storeAll conn record = do
                 -- if we can't get the recordId we're really stuck
                 record_id <- storeUUID conn uuid_ 
 
-                applyJust (storeDataIdentification conn record_id) (Record.dataIdentification record) (return ())
-                -- storeDataIdentification conn record_id (Record.dataIdentification record)
-
-                applyJust (storeMDCommons conn record_id) (Record.mdCommons record) (return ())
+                -- https://downloads.haskell.org/~ghc/8.0.1/docs/html/libraries/base-4.9.0.0/Data-Maybe.html
+                maybe (return ()) (storeDataIdentification conn record_id) (Record.dataIdentification record) 
+                maybe (return ()) (storeMDCommons conn record_id) (Record.mdCommons record) 
 
                 storeTransferLinks conn record_id (Record.transferLinks record)
                 storeDataParameters conn record_id (Record.dataParameters record)
@@ -294,7 +287,7 @@ storeAll conn record = do
 deleteAll conn = do
     -- pretty useful for testing
     PG.execute conn [r|
-        truncate record, transfer_link, data_parameter, data_identification;
+        truncate record, transfer_link, data_parameter, data_identification, md_commons;
     |] ()
 
     return ()

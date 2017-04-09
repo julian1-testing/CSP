@@ -19,14 +19,14 @@ import qualified Record as R
 import qualified RecordStore as RS
 import qualified ParseMCP20 as ParseMCP20
 
-
+{-
 -- apply left or right function according to Either type
 -- probably in stdlib
 applyEither lf rf x 
   = case x of
     Right a -> lf a
     Left a -> rf a
-
+-}
 
 ----------------
 
@@ -35,9 +35,9 @@ doGetAndProcessRecord conn uuid title = do
     print $ "doGetAndProcessRecord " ++ uuid ++ " " ++ title
 
     recordText <- CSW.doGetRecordById uuid title
-    myRecord <- ParseMCP20.parse $ Helpers.parseXML recordText
+    record <- ParseMCP20.parse $ Helpers.parseXML recordText
     -- putStrLn $ applyEither Record.showRecord id myRecord 
-
+{-
     case myRecord of
         Right record -> do
             RS.storeAll conn record
@@ -45,6 +45,8 @@ doGetAndProcessRecord conn uuid title = do
         Left msg -> do
           -- print $ concatMap id [ "error ", msg, " ",  uuid, title ]
           print $ mconcat [ "error ", msg, " ",  uuid, title ]
+-}
+    RS.storeAll conn record
 
     return ()
 
