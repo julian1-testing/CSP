@@ -14,15 +14,14 @@ import Text.RawString.QQ
 
 import qualified Helpers as Helpers
 import qualified CSW as CSW
--- import qualified Record as R(Record, Record(..),DataIdentification(..),showRecord )
--- import qualified Record as R(Record, dataIdentification, transferLinks, showRecord, Record)
-import qualified Record --as Record(Record(..))--(Record, dataIdentification, transferLinks, showRecord, Record)
+-- import qualified Record --as Record(Record(..))--(Record, dataIdentification, transferLinks, showRecord, Record)
+import qualified Record as R
 import qualified RecordStore as RS
 import qualified ParseMCP20 as ParseMCP20
 
 
--- should have a simple function to do something if it's the right
-
+-- apply left or right function according to Either type
+-- probably in stdlib
 applyEither lf rf x 
   = case x of
     Right a -> lf a
@@ -35,54 +34,14 @@ doGetAndProcessRecord conn uuid title = do
 
     print $ "doGetAndProcessRecord " ++ uuid ++ " " ++ title
 
-
     recordText <- CSW.doGetRecordById uuid title
+    myRecord <- ParseMCP20.parse $ Helpers.parseXML recordText
+    -- putStrLn $ applyEither Record.showRecord id myRecord 
 
-    let elts = Helpers.parseXML recordText
-    myRecord <- ParseMCP20.parse elts 
-
-    -- TODO if showRecord was just show, then we wouldn't have to destructure
-    {-
-    putStrLn $ case myRecord of
-        Right record -> 
-          R.showRecord record
-        Left msg -> 
-          msg
-    -}
-
-  -- change name store to store
-  -- uuid should match....
-  -- 
-
-    -- myRecord <- ParseMCP20.parse elts
     case myRecord of
         Right record -> do
-
-            putStrLn $ Record.showRecord record --myRecord
-
-            -- storeRecordUUID conn uuid title = do
-            conn <- PG.connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
-            record_id <- RS.storeRecordUUID conn "myuuid" 
-            RS.storeDataIdentification conn record_id (Record.dataIdentification record)
-            RS.storeTransferLinks conn record_id (Record.transferLinks record) 
-
-            -- PG.close conn
-
+            RS.storeAll conn record
             return ()
-
-
-{-
-    record_id <- RS.storeRecordUUID conn uuid
-    RS.storeDataIdentification conn record_id (Record.dataIdentification record)
-    RS.storeTransferLinks conn record_id (Record.transferLinks record) 
--}
-
-
-
-    putStrLn $ applyEither Record.showRecord id myRecord 
-
-    
-    -- OK, want to store the damn thing to the db...
 
     return ()
 
@@ -118,4 +77,18 @@ main = do
   return ()
 
 
+    -- TODO if showRecord was just show, then we wouldn't have to destructure
+    {-
+    putStrLn $ case myRecord of
+        Right record -> 
+          R.showRecord record
+        Left msg -> 
+          msg
+    -}
+
+  -- change name store to store
+  -- uuid should match....
+  -- 
+
+    -- myRecord <- ParseMCP20.parse elts
 

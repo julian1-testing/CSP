@@ -15,7 +15,7 @@ import Text.RawString.QQ
 import Helpers as H -- (parseXML)
 import ParseMCP20(parse)
 import Record
- 
+
 
 ----------------
 
@@ -27,7 +27,11 @@ import Record
 -}
 
 
-storeRecordUUID conn uuid = do
+storeRecordUUID conn = do
+
+    -- storeRecordUUID should use the uuid in the record!!!!
+    let uuid = "whoot"
+
     -- must get the id, so we can delete all old bits,
     -- this is harder than it looks....
     -- insert or select item, returning id
@@ -74,16 +78,16 @@ storeDataIdentification conn record_id dataIdentification = do
             -- using upsert
             -- we use cte in order not to pass the arguments more than once....
             with a as (
-                select 
+                select
                 ? as record_id,
                 ? as title,
-                ? as abstract, 
+                ? as abstract,
                 ? as jurisdiction_link,
                 ? as license_link,
                 ? as license_name,
                 ? as license_image_link
             )
-            insert into data_identification( 
+            insert into data_identification(
                 record_id,
                 title,
                 abstract,
@@ -93,7 +97,7 @@ storeDataIdentification conn record_id dataIdentification = do
                 license_image_link
             )
             (select * from a)
-            on conflict (record_id) 
+            on conflict (record_id)
             do update set
                 title = (select title from a),
                 abstract = (select abstract from a),
@@ -105,7 +109,7 @@ storeDataIdentification conn record_id dataIdentification = do
         |]
         -- there's a limit of 9 elements in the tuple....
         $ let d = dataIdentification in
-        (   record_id :: Integer, 
+        (   record_id :: Integer,
             title d,-- :: String,
             abstract d,-- :: String,
             jurisdictionLink d,-- :: String,
@@ -123,32 +127,32 @@ storeTransferLink conn record_id transferLink = do
     xs :: [ (Only Integer)] <- PG.query conn
         [r|
             with a as (
-                select 
+                select
                 ? as record_id,
                 ? as protocol,
-                ? as linkage, 
+                ? as linkage,
                 ? as description
             )
             insert into transfer_link (
                 record_id,
                 protocol,
-                linkage, 
+                linkage,
                 description
             )
             (select * from a)
-            on conflict(record_id, protocol, linkage) -- (my_transfer_protocol_unique_idx ) 
+            on conflict(record_id, protocol, linkage) -- (my_transfer_protocol_unique_idx )
             do update set
                 protocol = (select protocol from a),
                 linkage = (select linkage from a),
                 description = (select description from a)
 
             returning transfer_link.id
-        |] 
+        |]
         $ let t = transferLink in
         (
             record_id, -- :: Integer,
-            protocol t,-- :: String, 
-            linkage t, -- :: String, 
+            protocol t,-- :: String,
+            linkage t, -- :: String,
             description t-- :: String
         )
     return ()
@@ -196,28 +200,41 @@ storeDataParameters conn uuid recordText = do
 -}
 
 
+storeAll conn record = do
+
+    let uuid = "whoot" -- Record.dataIdentification.uuid record
+
+    record_id <- storeRecordUUID conn
+
+    storeDataIdentification conn record_id (Record.dataIdentification record)
+
+    storeTransferLinks conn record_id (Record.transferLinks record)
+
+
+
 
 main = do
     print "hi"
+
+    conn <- PG.connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
 
     recordText <- readFile "./test-data/argo.xml"
     let elts = parseXML recordText
     myRecord <- ParseMCP20.parse elts
     case myRecord of
         Right record -> do
-
-            putStrLn $ showRecord record --myRecord
-
-            -- storeRecordUUID conn uuid title = do
-            conn <- PG.connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
-            record_id <- storeRecordUUID conn "myuuid" 
-            storeDataIdentification conn record_id (Record.dataIdentification record)
-            storeTransferLinks conn record_id (Record.transferLinks record) 
-
-            PG.close conn
-
+            putStrLn $ showRecord record
+            storeAll conn record
             return ()
 
+    PG.close conn
 
 
+
+{-
+            -- storeRecordUUID conn uuid title = do
+            record_id <- storeRecordUUID conn "myuuid"
+            storeDataIdentification conn record_id (Record.dataIdentification record)
+            storeTransferLinks conn record_id (Record.transferLinks record)
+-}
 
