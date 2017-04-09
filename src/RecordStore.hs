@@ -63,8 +63,10 @@ storeUUID conn uuid = do
 
 
 
-storeDataIdentification conn record_id dataIdentification = do
-    print "hi this is dataIdentification"
+
+
+storeMDCommons conn record_id mdCommons = do
+    print "hi this is mdCommons"
     {- deleting each time isn't nearly as nice
     -- upsert....
     -- but if there are multiple items......  then we have to do a delete first... in case one has been removed????
@@ -78,8 +80,6 @@ storeDataIdentification conn record_id dataIdentification = do
             with a as (
                 select
                 ? as record_id,
-                ? as title,
-                ? as abstract,
                 ? as jurisdiction_link,
                 ? as license_link,
                 ? as license_name,
@@ -87,8 +87,6 @@ storeDataIdentification conn record_id dataIdentification = do
             )
             insert into data_identification(
                 record_id,
-                title,
-                abstract,
                 jurisdiction_link,
                 license_link,
                 license_name,
@@ -97,8 +95,6 @@ storeDataIdentification conn record_id dataIdentification = do
             (select * from a)
             on conflict (record_id)
             do update set
-                title = (select title from a),
-                abstract = (select abstract from a),
                 jurisdiction_link = (select jurisdiction_link from a),
                 license_link = (select license_link from a),
                 license_name = (select license_name from a),
@@ -106,14 +102,54 @@ storeDataIdentification conn record_id dataIdentification = do
             returning data_identification.id
         |]
         -- there's a limit of 9 elements in the tuple....
+        (   record_id :: Integer,
+            jurisdictionLink mdCommons,-- :: String, --ckk
+            licenseLink mdCommons,-- :: String,
+            licenseName mdCommons,-- :: String,
+            licenseImageLink mdCommons--  :: String
+        )
+    return ()
+
+
+
+
+
+storeDataIdentification conn record_id dataIdentification = do
+    print "hi this is dataIdentification"
+    {- deleting each time isn't nearly as nice
+    -- upsert....
+    -- but if there are multiple items......  then we have to do a delete first... in case one has been removed????
+    -- Note that we can insert the last modified time in the on conflict clause which is quite nice.
+    -}
+    -- cvould be null
+
+    xs :: [ (Only Integer)] <- PG.query conn
+        [r|
+            -- using upsert
+            -- we use cte in order not to pass the arguments more than once....
+            with a as (
+                select
+                ? as record_id,
+                ? as title,
+                ? as abstract
+            )
+            insert into data_identification(
+                record_id,
+                title,
+                abstract
+            )
+            (select * from a)
+            on conflict (record_id)
+            do update set
+                title = (select title from a),
+                abstract = (select abstract from a)
+            returning data_identification.id
+        |]
+        -- there's a limit of 9 elements in the tuple....
         $ let d = dataIdentification in
         (   record_id :: Integer,
-            title d,-- :: String,
-            abstract d,-- :: String,
-            jurisdictionLink d,-- :: String,
-            licenseLink d,-- :: String,
-            licenseName d,-- :: String,
-            licenseImageLink d--  :: String
+            title dataIdentification,-- :: String,
+            abstract dataIdentification-- :: String,
         )
     return ()
 
@@ -227,12 +263,16 @@ storeDataParameters conn record_id dataParameters = do
 
 storeAll conn record = do
 
-    -- change name storeOrGetUUID
-    record_id <- storeUUID conn (Record.uuid record) 
+    case (Record.uuid record) of 
+            Just uuid_ -> do
 
-    storeDataIdentification conn record_id (Record.dataIdentification record)
-    storeTransferLinks conn record_id (Record.transferLinks record)
-    storeDataParameters conn record_id (Record.dataParameters record)
+                -- change name storeOrGetUUID
+                -- if we can't get the recordId we're really stuck
+                record_id <- storeUUID conn uuid_ 
+
+--                storeDataIdentification conn record_id (Record.dataIdentification record)
+                storeTransferLinks conn record_id (Record.transferLinks record)
+                storeDataParameters conn record_id (Record.dataParameters record)
 
 
 
@@ -253,12 +293,9 @@ main = do
 
     recordText <- readFile "./test-data/argo.xml"
     let elts = parseXML recordText
-    myRecord <- ParseMCP20.parse elts
-    case myRecord of
-        Right record -> do
-            putStrLn $ showRecord record
-            storeAll conn record
-            return ()
+    record <- ParseMCP20.parse elts
+    print record
+    storeAll conn record
 
     PG.close conn
 

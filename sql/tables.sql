@@ -130,25 +130,13 @@ create table transfer_link (
   description text 
 );
 
--- should be unique on these three...
+-- unique on combination - eg. allow multi-wms 
 CREATE UNIQUE INDEX my_transfer_link_unique_idx ON transfer_link(record_id, protocol, linkage);
 
 
 
-
-
-
--- TODO need uniqueness constraints - on protocol and linkage 
--- actually probably only needs to be on protocol...
--- actually it's unique on record_id, protocol, linkage 
-
-
---------------
-
--- facet is the relationship between the concept and record table.
-
--- TODO MAYBE change name of table to facetIndex or facet - postgres join table name
--- conceptRecord --- as the assocation.... or conceptRecordMap
+-- relationship between concept_id and record_id
+-- used to be called facet,
 
 create table data_parameter (
 
