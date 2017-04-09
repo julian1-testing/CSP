@@ -56,23 +56,16 @@ parseDataIdentification =
 
     abstract <- atChildName "gmd:abstract" >>> atChildName "gco:CharacterString" >>> getChildText -< dataIdent
 
-
     {-
     -- and only one md_commons
     md_commons <- atChildName "gmd:resourceConstraints" >>> atChildName "mcp:MD_Commons" -< dataIdent
-
-    
     -- no md commons...
 
     returnA -< md_commons
 
-
     jurisdictionLink <- atChildName "mcp:jurisdictionLink" >>> atChildName "gmd:URL" >>> getChildText -< md_commons
-
     licenseLink <- atChildName "mcp:licenseLink" >>> atChildName "gmd:URL" >>> getChildText -< md_commons
-
     licenseName <- atChildName "mcp:licenseName" >>> atChildName "gco:CharacterString" >>> getChildText -< md_commons
-
     licenseImageLink <- atChildName "mcp:imageLink" >>> atChildName "gmd:URL" >>> getChildText -< md_commons
 -}
 
@@ -180,6 +173,7 @@ parse elts = do
 
     identifier <- runX (elts >>> parseFileIdentifier)
     dataIdentification <- runX (elts >>> parseDataIdentification )
+    mdCommons <- runX (elts >>> parseMDCommons)
     attrConstraints <- runX (elts >>> parseAttributionConstraints)
     useLimitations <- runX (elts >>> parseUseLimitations)
     dataParameters <- runX (elts >>> parseDataParameters)
@@ -189,28 +183,10 @@ parse elts = do
 
     -- print $ "identifier " ++ show identifier
     -- print $ "dataIdentification " ++ show dataIdentification
+    print $ "mdCommons " ++ show mdCommons
     -- print $ "temporalBegin " ++ show temporalBegin
 
     -- temporal begining is empty...
-    -- so how do we handle all this... 
-    -- I think we need to change the parsing structure....
-    -- WE need null
-    
-    -- we either use null.... or encode it something else....
-
---    let ide
-
--- ok if everything
--- parsing everything optionally - means we don't really have to return left and right 
--- we can analyze it separately later?
--- having the record be sufficiently flexible is quite nice...
-
--- Maybe have another structure to map from MCP2 to the Record. for other strategies
-
--- if it has an mdcommons we expect everything in mdcommons
-
--- VERY IMPORTANT - we should parse it in the same structure that it exists - and handle
--- everything else later.
 
     let uuid = case identifier of
             [ id ] -> Just id
@@ -218,6 +194,10 @@ parse elts = do
 
     let dataIdentification' = case dataIdentification of
          [ di ] -> Just di
+         _ -> Nothing
+
+    let mdCommons' = case mdCommons of
+         [ mcd ] -> Just mcd
          _ -> Nothing
 
     let temporalBegin' = case temporalBegin of
@@ -249,15 +229,15 @@ parse elts = do
 
 testArgoRecord = do
 
-    recordText <- readFile "./test-data/aus-cpr.xml"
-    -- recordText <- readFile "./test-data/argo.xml"
+    -- recordText <- readFile "./test-data/aus-cpr.xml"
+    recordText <- readFile "./test-data/argo.xml"
     let elts = Helpers.parseXML recordText
 
     -- ok there must be other stuff it's missing...
 
     myRecord <- parse elts
 
-    print $ show  myRecord
+    -- print $ show  myRecord
 
 
     return ()
@@ -265,6 +245,29 @@ testArgoRecord = do
 
 main = testArgoRecord
 
+
+
+
+
+    -- so how do we handle all this... 
+    -- I think we need to change the parsing structure....
+    -- WE need null
+    
+    -- we either use null.... or encode it something else....
+
+--    let ide
+
+-- ok if everything
+-- parsing everything optionally - means we don't really have to return left and right 
+-- we can analyze it separately later?
+-- having the record be sufficiently flexible is quite nice...
+
+-- Maybe have another structure to map from MCP2 to the Record. for other strategies
+
+-- if it has an mdcommons we expect everything in mdcommons
+
+-- VERY IMPORTANT - we should parse it in the same structure that it exists - and handle
+-- everything else later.
 
 
     -- we really need to have this....
