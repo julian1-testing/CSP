@@ -203,18 +203,20 @@ parse elts = do
          [ tb ] -> Just tb  
          _ -> Nothing
 
+	-- if the thing doesn't have a uuid it's not recognisable
+	-- but we should still continue parsing the data.
 
     let record = Record {
-                uuid = "myident",--uuid',
-                dataIdentification = dataIdentification', -----
-                mdCommons = mdCommons', -----
-                attrConstraints = attrConstraints ,
-                useLimitations = useLimitations,
-                dataParameters = dataParameters,
-                temporalBegin = temporalBegin',    ----
-                transferLinks = transferLinks,
-                geoPoly = geoPoly
-                }
+			uuid = uuid', --identifier, --"myident",--uuid',
+			dataIdentification = dataIdentification', -----
+			mdCommons = mdCommons', -----
+			attrConstraints = attrConstraints ,
+			useLimitations = useLimitations,
+			dataParameters = dataParameters,
+			temporalBegin = temporalBegin',    ----
+			transferLinks = transferLinks,
+			geoPoly = geoPoly
+			}
 
     return record
 

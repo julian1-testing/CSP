@@ -105,7 +105,7 @@ data DataParameter = DataParameter {
 -- change name - PortalRecord, or MCP2 Record
 data Record = Record {
 
-    uuid :: String,
+    uuid :: Maybe String,
     dataIdentification :: Maybe DataIdentification , 
     mdCommons :: Maybe MDCommons,
     attrConstraints :: [ String ],
@@ -128,7 +128,7 @@ showRecord myRecord =
     let formatList f xs = concatMap id $ map (\x ->  "\n  -" ++ f x) xs in
 
     concatMap id [ 
-        "uuid= " ++ uuid  myRecord, "\n",
+        "uuid= ",  show (uuid  myRecord), "\n",
 
         -- TODO -- tidy        
 {-
