@@ -12,27 +12,19 @@ FLAGS="-i./src -O2 -outputdir tmp"
 # - setting the module main function explicitly for the executable - avoids Main.o files being generated in tmp and confusing the build.
 # - Using -i will pull in dependnecies 
 
-# ghc $FLAGS -main-is ParseMCP20.main   ./src/ParseMCP20.hs  -o target/ParseMCP20
+ghc $FLAGS -main-is ParseMCP20.main   ./src/ParseMCP20.hs  -o target/ParseMCP20
 
 # ghc $FLAGS -main-is RecordStore.main  ./src/RecordStore.hs  -o target/RecordStore
 
-ghc $FLAGS -main-is Harvest.main  ./src/Harvest.hs  -o target/Harvest
+# ghc $FLAGS -main-is Harvest.main  ./src/Harvest.hs  -o target/Harvest
 
 # ghc $FLAGS -main-is CSW.main  ./src/CSW.hs  -o target/CSW
 
 
 
-ghc $FLAGS -main-is FacetCalc.main src/FacetCalc.hs -o target/FacetCalc
 
+# ghc $FLAGS -main-is FacetRequest.main ./src/FacetRequest.hs -o target/FacetRequest
 
-ghc $FLAGS -main-is FacetRequest.main ./src/FacetRequest.hs -o target/FacetRequest
-
-
-# compile Facet test code,
-# ghc -main-is Facet.main -outputdir tmp Facet.hs  -o ./Facet
-
-# Format only...
-# ghc -main-is Facet.main -outputdir tmp  FacetFormat.hs  -o ./FacetFormat
 
 ############
 
@@ -59,4 +51,10 @@ ghc $FLAGS -main-is FacetRequest.main ./src/FacetRequest.hs -o target/FacetReque
 ## pushd ./src
 ##ghc -main-is RecordStore.main -outputdir ../tmp RecordStore.hs  -o ../target/RecordStore
 
+
+# compile Facet test code,
+# ghc -main-is Facet.main -outputdir tmp Facet.hs  -o ./Facet
+
+# Format only...
+# ghc -main-is Facet.main -outputdir tmp  FacetFormat.hs  -o ./FacetFormat
 
