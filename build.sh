@@ -22,7 +22,8 @@ ghc $FLAGS -main-is Harvest.main  ./src/Harvest.hs  -o target/Harvest
 
 
 
-# ghc $FLAGS src/Facet.hs src/FacetFormat.hs src/FacetRequest.hs -o target/FacetRequest
+ghc $FLAGS -main-is FacetFormat.main src/FacetFormat.hs -o target/FacetFormat
+
 
 # compile Facet test code,
 # ghc -main-is Facet.main -outputdir tmp Facet.hs  -o ./Facet

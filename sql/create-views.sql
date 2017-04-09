@@ -8,7 +8,7 @@
 begin;
 
 -- drop view if exists facet_view_3 ;
--- drop view if exists facet_view;
+drop view if exists facet_view;
 drop view if exists facet_count_basic_view;
 drop view if exists wms_view;
 drop view if exists wfs_view;
@@ -153,16 +153,16 @@ select
 ;
 
 
--- change name to facet_view?
--- because it includes all the useful stuff
-/*
+-- facet is the count of the concept
+
 create view facet_view as
 select
-  *
+  facet_count_basic_view.count as count,  
+  concept_view.*
+
   from facet_count_basic_view
-  left join concept_view on concept_view.id = facet_count_basic_view.concept_id
+  left join concept_view on concept_view.concept_id = facet_count_basic_view.concept_id
 ;
-*/
 
 
 
