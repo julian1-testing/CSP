@@ -200,13 +200,8 @@ storeDataParameters conn uuid recordText = do
 
 storeAll conn record = do
 
-    -- IMPORTANT - should 
-    -- storeRecordUUID should use the uuid in the record!!!!
-    let uuid = "whoot"
---    let uuid = (Record.dataIdentification record)
 
-
-    record_id <- storeRecordUUID conn uuid
+    record_id <- storeRecordUUID conn (Record.uuid record) 
 
     storeDataIdentification conn record_id (Record.dataIdentification record)
 
