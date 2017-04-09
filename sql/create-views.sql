@@ -8,11 +8,11 @@
 begin;
 
 -- drop view if exists facet_view_3 ;
-drop view if exists facet_view;
+-- drop view if exists facet_view;
 drop view if exists facet_count_basic_view;
 drop view if exists wms_view;
 drop view if exists wfs_view;
-drop view if exists resource_view;
+drop view if exists transfer_link_view;
 drop view if exists concept_view;
 drop view if exists parent_view;
 
@@ -111,28 +111,30 @@ select
 -- change name wms_view
 
 
-create view resource_view as
+create or replace view transfer_link_view as
 select
   record.uuid,
-  resource.protocol,
-  resource.linkage,
-  resource.description
+  data_identification.title,
+  transfer_link.protocol,
+  transfer_link.linkage,
+  transfer_link.description
   from record
 
-  left join resource on resource.record_id = record.id
+  left join transfer_link on transfer_link.record_id = record.id
+  left join data_identification on data_identification.record_id = record.id
 ;
 
 -----
 -- quite cool
 
 create view wms_view as
-select * from resource_view where protocol = 'OGC:WMS-1.1.1-http-get-map'
+select * from transfer_link_view where protocol = 'OGC:WMS-1.1.1-http-get-map'
 ;
 
--- select * from resource where protocol ~ 'WFS';
+-- select * from transfer_link where protocol ~ 'WFS';
 
 create view wfs_view as
-select * from resource_view where protocol = 'OGC:WFS-1.0.0-http-get-capabilities'
+select * from transfer_link_view where protocol = 'OGC:WFS-1.0.0-http-get-capabilities'
 ;
 
 
@@ -144,9 +146,9 @@ select * from resource_view where protocol = 'OGC:WFS-1.0.0-http-get-capabilitie
 create view facet_count_basic_view as
 select
   concept.id as concept_id,
-  count(facet.record_id) as count
+  count(data_parameter.record_id) as count
   from concept
-  left join facet on facet.concept_id = concept.id
+  left join data_parameter on data_parameter.concept_id = concept.id
   group by concept.id
 ;
 
