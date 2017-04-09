@@ -102,7 +102,7 @@ create table md_commons (
 
 
 -- have a secondary/derived view - that truncates the abstract - 
-create or replace view record_view as
+create view record_view as
 select 
     record.id, 
     record.uuid,
