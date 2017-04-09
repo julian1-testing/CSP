@@ -63,9 +63,10 @@ alter table in_scheme owner to harvest;
 
 
 --------------
+-- record
 
--- want a catalog table as well - dependening on harvest source?
--- actually may not even need...
+-- 
+-- probably want a catalog source as well
 
 create table record (
 
@@ -86,7 +87,6 @@ create table data_identification (
 
 
 
-
 create table md_commons (
     id serial primary key not null,
     record_id integer references record(id) unique, 
@@ -96,7 +96,6 @@ create table md_commons (
     license_name        text, 
     license_image_link  text
 );
-
 
 
 
@@ -116,8 +115,7 @@ CREATE UNIQUE INDEX my_transfer_link_unique_idx ON transfer_link(record_id, prot
 
 
 
--- relationship between concept_id and record_id
--- used to be called facet,
+-- relationship between concept_id and record_id -- used to be called facet,
 
 create table data_parameter (
 
@@ -131,14 +129,6 @@ create table data_parameter (
 CREATE UNIQUE INDEX my_data_parameter_unique_idx ON data_parameter(record_id, concept_id);
 
 
-
-
-    attrConstraints :: [ String ],   -- done todo
-    useLimitations :: [ String ],    -- done todo
-    dataParameters :: [ DataParameter ], 
-    temporalBegin :: Maybe String,   -- done todo
-    transferLinks :: [ TransferLink ],
-    geoPoly :: [ String ]            -- todo
 
 create table attr_constraint  (
 
@@ -179,17 +169,5 @@ create table geopoly (
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 commit;
+
