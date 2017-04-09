@@ -121,7 +121,7 @@ data Record = Record {
 
 -- should pass in the formatting function to use....
 
-
+{-
 showRecord myRecord =
   -- change to show 
 
@@ -147,6 +147,6 @@ showRecord myRecord =
         "transferLinks= ", formatList show (transferLinks myRecord), "\n",
         "geoPoly= ", formatList id (geoPoly myRecord), "\n"
     ]
-
+-}
 
 
