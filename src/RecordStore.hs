@@ -179,7 +179,7 @@ storeDataParameter conn record_id dataParameter  = do
 
     -- look up the required concept
     -- use separate sql statements to make it easier to write stdout/log
-    xs :: [ (Integer, String) ] <- query conn [r|
+    xs :: [ (Integer, String) ] <- PG.query conn [r|
         select id, label 
         from concept where url = ?
         |]
@@ -207,36 +207,22 @@ storeDataParameter conn record_id dataParameter  = do
 -}
 
     return ()
-{- 
-    -- look up the required concept
-    -- think we want to do this separately 
-    xs :: [ (Integer, String) ] <- query conn "select id, label from concept where url = ?" (Only url)
-    -- putStrLn $ (show.length) xs
-    case length xs of
-      1 -> do
-        -- store the concept
-        let (concept_id, concept_label) : _ = xs
-        PG.execute conn [r|
-          insert into facet(concept_id, record_id)
-          values (?, (select record.id from record where record.uuid = ?))
-          on conflict
-          do nothing
-        |] (concept_id :: Integer, uuid :: String)
-        return ()
-
-      0 -> putStrLn $ "dataParameter '" ++ url ++ "' not found!"
-      _ -> putStrLn $ "dataParameter '" ++ url ++ "' found multiple matches?"
-
--}
 
 
 storeDataParameters conn record_id dataParameters = do
-    -- delete....
-    -- TODO IMPORTANT - should remove the uuid first...
-    -- dataParameters <- runX (parseXML recordText >>> parseDataParameters)
-    -- putStrLn $ "data parameter count: " ++ (show.length) dataParameters
-    -- mapM (putStrLn.show) dataParameters
+    -- delete existing data parameters associated with record_id first, so that
+    -- if a item is removed from record it will be removed here
+    -- it might be nicer to do upsert - but need more complicated mechanism - to 
+    -- track removals...
+    PG.execute conn [r|
+        delete from data_parameter
+        where record_id = ?
+        |]
+        (Only record_id)
+
+    -- store the new data parameters
     mapM (storeDataParameter conn record_id) dataParameters
+
 
 
 storeAll conn record = do
@@ -245,22 +231,19 @@ storeAll conn record = do
     record_id <- storeUUID conn (Record.uuid record) 
 
     storeDataIdentification conn record_id (Record.dataIdentification record)
-
     storeTransferLinks conn record_id (Record.transferLinks record)
-
     storeDataParameters conn record_id (Record.dataParameters record)
 
 
-deleteAll conn = do
-    -- changeName deleteAllRecords ?
-    -- this is useful for testing
-    -- truncate record, transfer_link, data_parameter, data_identification   ;
 
+deleteAll conn = do
+    -- pretty useful for testing
     PG.execute conn [r|
         truncate record, transfer_link, data_parameter, data_identification;
     |] ()
 
     return ()
+
 
 
 main = do
@@ -287,4 +270,28 @@ main = do
             storeDataIdentification conn record_id (Record.dataIdentification record)
             storeTransferLinks conn record_id (Record.transferLinks record)
 -}
+{- 
+    -- look up the required concept
+    -- think we want to do this separately 
+    xs :: [ (Integer, String) ] <- query conn "select id, label from concept where url = ?" (Only url)
+    -- putStrLn $ (show.length) xs
+    case length xs of
+      1 -> do
+        -- store the concept
+        let (concept_id, concept_label) : _ = xs
+        PG.execute conn [r|
+          insert into facet(concept_id, record_id)
+          values (?, (select record.id from record where record.uuid = ?))
+          on conflict
+          do nothing
+        |] (concept_id :: Integer, uuid :: String)
+        return ()
+
+      0 -> putStrLn $ "dataParameter '" ++ url ++ "' not found!"
+      _ -> putStrLn $ "dataParameter '" ++ url ++ "' found multiple matches?"
+
+-}
+    -- dataParameters <- runX (parseXML recordText >>> parseDataParameters)
+    -- putStrLn $ "data parameter count: " ++ (show.length) dataParameters
+    -- mapM (putStrLn.show) dataParameters
 
