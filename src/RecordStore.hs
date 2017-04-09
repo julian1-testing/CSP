@@ -210,7 +210,9 @@ data DataParameter = DataParameter {
 
 
 storeDataParameter conn record_id dataParameter  = do
-
+{-
+    Important - must load vocab before hand - or this wont index!!!!
+-}
     let url_ = url dataParameter
 
     -- look up the required concept
@@ -239,8 +241,6 @@ storeDataParameter conn record_id dataParameter  = do
 
       0 -> putStrLn $ "dataParameter '" ++ url_ ++ "' not found!"
       _ -> putStrLn $ "dataParameter '" ++ url_ ++ "' found multiple matches?"
-{-
--}
 
     return ()
 
@@ -277,6 +277,8 @@ storeAll conn record = do
 
                 storeTransferLinks conn record_id (Record.transferLinks record)
                 storeDataParameters conn record_id (Record.dataParameters record)
+
+
                 return ()
             _ ->
                 -- unlikely - but nothing we can do except log...

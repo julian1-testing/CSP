@@ -19,15 +19,6 @@ import qualified Record as R
 import qualified RecordStore as RS
 import qualified ParseMCP20 as ParseMCP20
 
-{-
--- apply left or right function according to Either type
--- probably in stdlib
-applyEither lf rf x 
-  = case x of
-    Right a -> lf a
-    Left a -> rf a
--}
-
 ----------------
 
 doGetAndProcessRecord conn uuid title = do
@@ -36,26 +27,15 @@ doGetAndProcessRecord conn uuid title = do
 
     recordText <- CSW.doGetRecordById uuid title
     record <- ParseMCP20.parse $ Helpers.parseXML recordText
-    -- putStrLn $ applyEither Record.showRecord id myRecord 
-{-
-    case myRecord of
-        Right record -> do
-            RS.storeAll conn record
-            return ()
-        Left msg -> do
-          -- print $ concatMap id [ "error ", msg, " ",  uuid, title ]
-          print $ mconcat [ "error ", msg, " ",  uuid, title ]
--}
     RS.storeAll conn record
 
     return ()
 
 
 
-
 doGetAndProcessRecords conn = do
 
-    -- delete current index
+    -- delete current index for all records
     RS.deleteAll conn
     
     -- get records to process
@@ -78,18 +58,33 @@ main = do
   return ()
 
 
-    -- TODO if showRecord was just show, then we wouldn't have to destructure
-    {-
-    putStrLn $ case myRecord of
-        Right record -> 
-          R.showRecord record
-        Left msg -> 
-          msg
-    -}
-
-  -- change name store to store
-  -- uuid should match....
-  -- 
+{-
+-- TODO if showRecord was just show, then we wouldn't have to destructure
+putStrLn $ case myRecord of
+    Right record -> 
+      R.showRecord record
+    Left msg -> 
+      msg
+-}
 
     -- myRecord <- ParseMCP20.parse elts
+    -- putStrLn $ applyEither Record.showRecord id myRecord 
+{-
+    case myRecord of
+        Right record -> do
+            RS.storeAll conn record
+            return ()
+        Left msg -> do
+          -- print $ concatMap id [ "error ", msg, " ",  uuid, title ]
+          print $ mconcat [ "error ", msg, " ",  uuid, title ]
+-}
+{-
+-- apply left or right function according to Either type
+-- probably in stdlib
+applyEither lf rf x 
+  = case x of
+    Right a -> lf a
+    Left a -> rf a
+-}
+
 

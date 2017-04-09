@@ -1,21 +1,3 @@
--- stack --install-ghc --resolver lts-5.13 runghc --package http-conduit
-
--- {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE Arrows, NoMonomorphismRestriction #-}
-
--- {-# LANGUAGE ScopedTypeVariables, OverloadedStrings #-}
-
-{-# LANGUAGE QuasiQuotes #-}
-
-import Text.XML.HXT.Core
-
-
-import Database.PostgreSQL.Simple
-
-import Text.RawString.QQ
-
-import Helpers(parseXML, atTag, atChildName, getChildText, stripSpace) -- we don't use all these
-
 {-
   http://vocabs.ands.org.au/repository/api/lda/aodn/aodn-discovery-parameter-vocabulary/version-1-2/resource.xml?uri=http://vocab.aodn.org.au/def/discovery_parameter/894
 
@@ -27,9 +9,24 @@ import Helpers(parseXML, atTag, atChildName, getChildText, stripSpace) -- we don
 
 -}
 
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE Arrows, NoMonomorphismRestriction #-}
+{-# LANGUAGE QuasiQuotes #-}
+
+module LoadScheme where
+
+
+import Text.XML.HXT.Core
+import Database.PostgreSQL.Simple
+import Text.RawString.QQ
+
+import Helpers(parseXML, atTag, atChildName, getChildText, stripSpace) -- we don't use all these
+
+
 
 isDescription = do
   isElem >>> hasName "rdf:Description"
+
 
 
 isCoreScheme = do
@@ -49,12 +46,14 @@ isCoreConcept = do
 
 
 
-
 --------------------------
--- Conceptscheme stuff
--- we store the conceptscheme as a concept since it makes dealing with concepts and their parent 
--- relationships a lot easier.
--- need to change the name
+{-
+  Conceptscheme stuff
+  we store the conceptscheme in the same table as a concept since it makes dealing with concepts and their parent 
+  relationships a lot easier.
+  perhaps need to change the name of concept table to resource or conceptResource etc.
+-}
+
 
 parseScheme =
   deep (isElem >>> hasName "rdf:Description") >>>
@@ -64,8 +63,6 @@ parseScheme =
     title <- getChildren >>> hasName "dcterms:title" >>> getChildren >>> getText -< e
     -- description, etc.
     returnA -< (about, title)
-
-
 
 
 
@@ -82,8 +79,6 @@ storeSchemes conn s = do
 
 
 
-
-
 --------------------------
 -- concept stuff
 
@@ -94,6 +89,7 @@ parseConcept =
     about <- getAttrValue "rdf:about" -< e
     prefLabel <- getChildren >>> hasName "skos:prefLabel" >>> getChildren >>> getText -< e
     returnA -< (about, prefLabel)
+
 
 
 storeConcepts conn s = do
@@ -241,14 +237,11 @@ storeAll conn vocab vocabCategory = do
   storeSchemes conn  vocab
   storeSchemes conn vocabCategory
 
-
   storeConcepts conn vocab
   storeConcepts conn vocabCategory
 
-  -- we need to make sure we are 
   storeSchemeHasTopConcept conn vocab
   storeSchemeHasTopConcept conn vocabCategory
-
 
   -- storeInScheme conn  vocab
   -- storeInScheme conn vocabCategory
@@ -271,8 +264,7 @@ main = do
 
   -- should we be using plural?
   -- cannot rebuild the facets from out under - actually we can we just need to reindex,..
---  execute conn "truncate record, facet, resource,  scheme, concept, narrower, narrow_match, in_scheme ;" ()
-  execute conn "truncate record, facet, resource,  concept, narrower, narrow_match, scheme_has_top_concept ;" ()
+  -- db needs to be empty - otherwise all record linking via will need to be removed 
 
   -- platform
   print "doing platform"

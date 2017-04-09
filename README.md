@@ -34,6 +34,8 @@ psql -h postgres.localnet -U admin -d postgres -f sql/db.sql
 psql -h postgres.localnet -U harvest -d harvest -f sql/tables.sql
 psql -h postgres.localnet -U harvest -d harvest -f sql/views.sql
 
+./target/LoadScheme
+
 ```
 
 

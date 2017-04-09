@@ -20,6 +20,8 @@ FLAGS="-i./src -O2 -outputdir tmp"
 
 ghc $FLAGS -main-is Harvest.main  ./src/Harvest.hs  -o target/Harvest
 
+ghc $FLAGS -main-is LoadScheme.main  ./src/LoadScheme.hs  -o target/LoadScheme
+
 
 
 

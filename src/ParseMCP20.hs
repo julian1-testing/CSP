@@ -5,7 +5,9 @@ module ParseMCP20 where
 
 {-
     IMPORTANT must close resources !!!
-    responseClose :: Response a -> IO ()
+
+	not sure if have closed HXT resources...
+	but we're only doing a string?
 -}
 
 
@@ -170,7 +172,7 @@ parse elts = do
     -- print $ "mdCommons " ++ show mdCommons
     -- print $ "temporalBegin " ++ show temporalBegin
 
-    -- temporal begining is empty...
+    -- temporal begin is sometimes empty...
 
     let uuid' = case identifier of
             [ id ] -> Just id
