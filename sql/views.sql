@@ -9,7 +9,7 @@ begin;
 
 -- drop view if exists facet_view_3 ;
 drop view if exists facet_view;
-drop view if exists facet_count_basic_view;
+drop view if exists facet_basic_view;
 drop view if exists wms_view;
 drop view if exists wfs_view;
 drop view if exists transfer_link_view;
@@ -143,7 +143,8 @@ select * from transfer_link_view where protocol = 'OGC:WFS-1.0.0-http-get-capabi
 -- may need to be turned into a function - so that we can filter by resource and scheme
 -- which means we cannot use views...
 
-create view facet_count_basic_view as
+create view facet_basic_view as
+	-- rename 
 select
   concept.id as concept_id,
   count(data_parameter.record_id) as count
@@ -157,12 +158,31 @@ select
 
 create view facet_view as
 select
-  facet_count_basic_view.count as count,  
+  facet_basic_view.count as count,  
   concept_view.*
 
-  from facet_count_basic_view
-  left join concept_view on concept_view.concept_id = facet_count_basic_view.concept_id
+  from facet_basic_view
+  left join concept_view on concept_view.concept_id = facet_basic_view.concept_id
 ;
+
+
+
+create view record_view as
+select 
+    record.id, 
+    record.uuid,
+    di.title,
+    left( di.abstract, 100) as abstract,
+
+    mdc.jurisdiction_link,
+    mdc.license_link,
+    mdc.license_name,
+    mdc.license_image_link 
+from record 
+left join data_identification di on di.record_id = record.id 
+left join md_commons mdc on mdc.record_id = record.id 
+;
+
 
 
 

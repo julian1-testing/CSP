@@ -90,15 +90,15 @@ data DataParameter = DataParameter {
 -- change name - PortalRecord, or MCP2 Record - depending on how we end up using it...
 data Record = Record {
 
-    uuid :: Maybe String,
+    uuid :: Maybe String, 
     dataIdentification :: Maybe DataIdentification , 
     mdCommons :: Maybe MDCommons,
-    attrConstraints :: [ String ],
-    useLimitations :: [ String ],
+    attrConstraints :: [ String ],   -- todo
+    useLimitations :: [ String ],    -- todo
     dataParameters :: [ DataParameter ], 
-    temporalBegin :: Maybe String,
+    temporalBegin :: Maybe String,   -- todo
     transferLinks :: [ TransferLink ],
-    geoPoly :: [ String ]
+    geoPoly :: [ String ]            -- todo
 } deriving (Show, Eq)
 
 

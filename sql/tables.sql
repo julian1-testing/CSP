@@ -100,25 +100,6 @@ create table md_commons (
 
 
 
-
--- have a secondary/derived view - that truncates the abstract - 
-create view record_view as
-select 
-    record.id, 
-    record.uuid,
-    di.title,
-    left( di.abstract, 100) as abstract,
-
-    mdc.jurisdiction_link,
-    mdc.license_link,
-    mdc.license_name,
-    mdc.license_image_link 
-from record 
-left join data_identification di on di.record_id = record.id 
-left join md_commons mdc on mdc.record_id = record.id 
-;
-
-
 create table transfer_link (
   -- mcp2 online resource
 
@@ -148,6 +129,67 @@ create table data_parameter (
 
 -- important
 CREATE UNIQUE INDEX my_data_parameter_unique_idx ON data_parameter(record_id, concept_id);
+
+
+
+
+    attrConstraints :: [ String ],   -- todo
+    useLimitations :: [ String ],    -- todo
+    dataParameters :: [ DataParameter ], 
+    temporalBegin :: Maybe String,   -- todo
+    transferLinks :: [ TransferLink ],
+    geoPoly :: [ String ]            -- todo
+
+create table attr_constraint  (
+
+  id serial   primary key not null,
+
+  record_id  integer references record(id), 
+  attr       text not null
+);
+
+
+create table use_limitation (
+
+  id serial   primary key not null,
+
+  record_id  integer references record(id), 
+  limitation text not null
+);
+
+
+create table temporal_begin (
+
+  id serial   primary key not null,
+
+  record_id  integer references record(id), 
+  begin_	text not null
+);
+
+
+create table geo_poly (
+
+  id serial   primary key not null,
+
+  record_id  integer references record(id), 
+	-- should be postgis type
+  poly		  text not null
+);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 commit;
