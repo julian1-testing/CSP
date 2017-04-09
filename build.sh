@@ -22,7 +22,7 @@ ghc $FLAGS -main-is Harvest.main  ./src/Harvest.hs  -o target/Harvest
 
 
 
-# ghc $FLAGS -main-is FacetFormat.main src/FacetFormat.hs -o target/FacetFormat
+ghc $FLAGS -main-is FacetCalc.main src/FacetCalc.hs -o target/FacetCalc
 
 
 ghc $FLAGS -main-is FacetRequest.main ./src/FacetRequest.hs -o target/FacetRequest

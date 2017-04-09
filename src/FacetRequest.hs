@@ -5,7 +5,7 @@ module FacetRequest where
 
 import qualified Database.PostgreSQL.Simple as PG(query, connectPostgreSQL)
 
-import qualified Facet as Facet--(buildLeafFacetMap,main)
+import qualified FacetCalc as FacetCalc --(buildLeafFacetMap,main)
 import qualified FacetFormat as FacetFormat--(main)
 import qualified Data.Map as Map
 import qualified Data.Text.Lazy.IO as LT(putStrLn)
@@ -35,22 +35,22 @@ main = do
   -----------------------
   -- get stuff parent/child nestings
   -- is this a fast lookup, should we move this out of the facet code...
-  nestings <- Facet.getConceptNesting conn 
+  nestings <- FacetCalc.getConceptNesting conn 
   -- mapM print nestings
 
 
-  facetLeafCounts <- Facet.getFacetList conn
+  facetLeafCounts <- FacetCalc.getFacetList conn
   -- print "##### the facetLeaf counts "
   -- mapM print facetLeafCounts
 
 
   -- compute facet counts
-  let facetCounts = Facet.buildLeafFacetMap facetLeafCounts
+  let facetCounts = FacetCalc.buildLeafFacetMap facetLeafCounts
   -- print "##### the facetCounts after creating the leaf map "
   -- (mapM print).(Map.toList) $ facetCounts
 
 
-  let (propagated, allRecordIds) = Facet.doAll nestings  facetCounts
+  let (propagated, allRecordIds) = FacetCalc.doAll nestings  facetCounts
   -- print "##### the facetCounts after propagating"
   -- (mapM print).(Map.toList) $ propagated
 
@@ -61,7 +61,7 @@ main = do
   let makePair (concept, parent, label) = 
         (Just concept, (parent, label))  -- turn into key,val pairs needed for map,
 
-  labels <- Facet.getConceptLabels conn 
+  labels <- FacetCalc.getConceptLabels conn 
       >>= return.(Map.fromList).(map makePair)
       -- >>= return.(\m ->  Map.insert Nothing ( Nothing, "this si wrong ") m )  -- insert a root node -- this isn't right
 

@@ -23,7 +23,7 @@ import Debug.Trace(trace)
 import Text.RawString.QQ
 
 
-import qualified Facet as Facet
+import qualified FacetCalc as FacetCalc
 
 
 

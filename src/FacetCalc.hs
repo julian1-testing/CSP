@@ -1,13 +1,12 @@
 {-
-  # To compile module to an executable,
-    ghc  -main-is Facet.main -outputdir tmp Facet.hs  -o ./Facet
+  Calculate the Facet graph
 -}
 
 {-# LANGUAGE ScopedTypeVariables, OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes #-}
 -- {-#  NoMonomorphismRestriction #-}
 
-module Facet where
+module FacetCalc where
 
 
 import qualified Database.PostgreSQL.Simple as PG(query, connectPostgreSQL)
