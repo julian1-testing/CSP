@@ -197,21 +197,15 @@ storeTransferLinks conn record_id transferLinks = do
     mapM (storeTransferLink conn record_id) transferLinks
 
 
-{-
-data DataParameter = DataParameter {
-
-    term :: String,
-    url :: String
-} deriving (Show, Eq)
--}
 
 
-
+------------
+-- dataParameter
 
 
 storeDataParameter conn record_id dataParameter  = do
 {-
-    Important - must load vocab before hand - or this wont index!!!!
+    Important - vocab must be loaded for indexing parameters!!!!
 -}
     let url_ = url dataParameter
 
@@ -242,7 +236,6 @@ storeDataParameter conn record_id dataParameter  = do
       0 -> putStrLn $ "dataParameter '" ++ url_ ++ "' not found!"
       _ -> putStrLn $ "dataParameter '" ++ url_ ++ "' found multiple matches?"
 
-    return ()
 
 
 storeDataParameters conn record_id dataParameters = do
@@ -256,9 +249,61 @@ storeDataParameters conn record_id dataParameters = do
         |]
         (Only record_id)
 
-    -- store the new data parameters
     mapM (storeDataParameter conn record_id) dataParameters
 
+
+
+------------
+-- attrConstraints
+
+
+storeAttrConstraints conn record_id attrConstraints = do
+    PG.execute conn [r|
+        delete from attr_constraint
+        where record_id = ?
+        |] (Only record_id)
+
+    mapM (storeAttrConstraint conn record_id) attrConstraints
+    where
+    storeAttrConstraint conn record_id attrConstraint = do
+        -- this should be normalized ... eg. find the text and just rejoin
+        -- VERY IMPORTANT this solves the problem, of making the data static... 
+        -- each time harvest we just create new mapping table rows
+        -- it's going to be an upsert...
+      
+        PG.execute conn [r|
+            insert into attr_constraint(record_id, attr)
+            values (?, ?)
+            |] (record_id, attrConstraint)
+
+
+------------
+-- useLimitations
+
+storeUseLimitations conn record_id useLimitations = do
+    PG.execute conn "delete from use_limitation where record_id = ?" (Only record_id)
+    mapM (store conn record_id) useLimitations
+    where
+    store conn record_id useLimitation = do
+        PG.execute conn "insert into use_limitation(record_id, limitation) values (?, ?)" 
+          (record_id, useLimitation)
+
+
+
+-- it's actually a Maybe type
+-- temporalBegin :: Maybe String,   -- todo
+-- could be stored directly with the record... since it's one-to-one
+-- join is fine too
+
+storeTemporalBegin conn record_id temporalBegin = do
+    PG.execute conn "delete from temporal_begin where record_id = ?" (Only record_id)
+    -- mapM (store conn record_id) temporalBegin
+    -- where
+    PG.execute conn "insert into temporal_begin(record_id, begin_) values (?, ?)" (record_id, temporalBegin)
+    return ()
+
+
+ 
 
 
 
@@ -278,18 +323,29 @@ storeAll conn record = do
                 storeTransferLinks conn record_id (Record.transferLinks record)
                 storeDataParameters conn record_id (Record.dataParameters record)
 
+                -- need normalizing
+                storeAttrConstraints conn record_id (Record.attrConstraints record)
+                storeUseLimitations conn record_id (Record.useLimitations record)
+
+                --
+                maybe (return ()) (storeTemporalBegin conn record_id) (Record.temporalBegin record) 
+
 
                 return ()
             _ ->
-                -- unlikely - but nothing we can do except log...
+                -- unlikely - but there's nothign we can do except log to stdout...
                 print "error -> No uuid in record????"
 
 
 
 deleteAll conn = do
-    -- pretty useful for testing
+    -- rename deleteAllRecords
+    -- pretty useful for testing - leaves vocab
     PG.execute conn [r|
-        truncate record, transfer_link, data_parameter, data_identification, md_commons;
+        truncate record, transfer_link, data_parameter, data_identification, 
+        md_commons, attr_constraint, use_limitation, temporal_begin,
+        geo_poly
+        ;
     |] ()
 
     return ()
