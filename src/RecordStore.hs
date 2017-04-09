@@ -260,6 +260,11 @@ storeDataParameters conn record_id dataParameters = do
     mapM (storeDataParameter conn record_id) dataParameters
 
 
+doJust f x defaultVal = 
+    case x of 
+        Just x' -> f x'
+        Nothing -> defaultVal 
+
 
 storeAll conn record = do
 
@@ -270,7 +275,11 @@ storeAll conn record = do
                 -- if we can't get the recordId we're really stuck
                 record_id <- storeUUID conn uuid_ 
 
---                storeDataIdentification conn record_id (Record.dataIdentification record)
+                doJust (storeDataIdentification conn record_id) (Record.dataIdentification record) (return ())
+                
+                -- storeDataIdentification conn record_id (Record.dataIdentification record)
+
+
                 storeTransferLinks conn record_id (Record.transferLinks record)
                 storeDataParameters conn record_id (Record.dataParameters record)
 
