@@ -4,7 +4,6 @@ Move this
 Focus on the difficult things,
 
 
-
 state pain-points
   - popularity order - eg. argo on top
   - greyscale logo subsitution - needed for harmonious presentation
@@ -24,16 +23,18 @@ other pain points
 
 
 what was done.
-  - look at javascript portal GN metadata store and look at fields
-  - trace the mappings back to the GN xmls.search
+  - reverse-engineer the javascript portal GN metadata store and look at all the fields
+  - tracing the store extraction mechanism to understand representation in the GN xmls.search
 
 
-- vocab ingest - platform and parameter concepts in a relational model - capturing the relationsihps 
+- vocab ingest - to parse and store platform and parameter concepts in a relational model - capturing the relationsihps 
 
 - csw harvest code - to retrieve all record ids, and then download records in their native scheme 
 - parse the records - to scrape the subset of information needed to drive portal - title, abstract, attr constraints, uselimitations, transfer links/online resources. 
 - index the records - using the facet relationships in the vocab 
-- do facet propagaion - so can provide the xml summary searc
+- do facet propagaion - so can provide the xml summary - with counts propagated up to high-level concepts. 
+
+- so we have a db - with all the basic information - required to drive the front-end 
 
 
 
