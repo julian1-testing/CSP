@@ -161,7 +161,7 @@ alter table resource owner to harvest;
 -- TODO MAYBE change name of table to facetIndex or facet - postgres join table name
 -- conceptRecord --- as the assocation.... or conceptRecordMap
 
-create table facet (
+create table data_parameter (
 
   id serial   primary key not null,
 
@@ -170,7 +170,7 @@ create table facet (
 );
 
 -- important
-CREATE UNIQUE INDEX my_facet_unique_idx ON facet(record_id, concept_id);
+CREATE UNIQUE INDEX my_data_parameter_unique_idx ON data_parameter(record_id, concept_id);
 
 alter table facet owner to harvest;
 

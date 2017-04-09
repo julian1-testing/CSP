@@ -161,14 +161,51 @@ storeTransferLinks conn record_id transferLinks = do
     mapM (storeTransferLink conn record_id) transferLinks
 
 
-
-
 {-
+data DataParameter = DataParameter {
+
+    term :: String,
+    url :: String
+} deriving (Show, Eq)
+-}
 
 
 
-storeDataParameter conn uuid (term, url) = do
+
+
+storeDataParameter conn record_id dataParameter  = do
+
+    -- this has to know - record_id and dataParameter Id 
+    -- returning ...
+
+    let url_ = url dataParameter
+
     -- look up the required concept
+    -- think we want to do this separately 
+    xs :: [ (Integer, String) ] <- query conn "select id, label from concept where url = ?" (Only url_)
+{-
+    -- putStrLn $ (show.length) xs
+    case length xs of
+      1 -> do
+        -- store the concept
+        let (concept_id, concept_label) : _ = xs
+        PG.execute conn [r|
+          insert into facet(concept_id, record_id)
+          values (?, (select record.id from record where record.uuid = ?))
+          on conflict
+          do nothing
+        |] (concept_id :: Integer, uuid :: String)
+        return ()
+
+      0 -> putStrLn $ "dataParameter '" ++ url ++ "' not found!"
+      _ -> putStrLn $ "dataParameter '" ++ url ++ "' found multiple matches?"
+
+-}
+
+    return ()
+{- 
+    -- look up the required concept
+    -- think we want to do this separately 
     xs :: [ (Integer, String) ] <- query conn "select id, label from concept where url = ?" (Only url)
     -- putStrLn $ (show.length) xs
     case length xs of
@@ -186,16 +223,16 @@ storeDataParameter conn uuid (term, url) = do
       0 -> putStrLn $ "dataParameter '" ++ url ++ "' not found!"
       _ -> putStrLn $ "dataParameter '" ++ url ++ "' found multiple matches?"
 
-
-
-storeDataParameters conn uuid recordText = do
-
-    -- TODO IMPORTANT - should remove the uuid first...
-    dataParameters <- runX (parseXML recordText >>> parseDataParameters)
-    putStrLn $ "data parameter count: " ++ (show.length) dataParameters
-    mapM (putStrLn.show) dataParameters
-    mapM (storeDataParameter conn uuid) dataParameters
 -}
+
+
+storeDataParameters conn record_id dataParameters = do
+    -- delete....
+    -- TODO IMPORTANT - should remove the uuid first...
+    -- dataParameters <- runX (parseXML recordText >>> parseDataParameters)
+    -- putStrLn $ "data parameter count: " ++ (show.length) dataParameters
+    -- mapM (putStrLn.show) dataParameters
+    mapM (storeDataParameter conn record_id) dataParameters
 
 
 storeAll conn record = do
