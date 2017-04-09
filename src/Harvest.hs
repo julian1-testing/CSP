@@ -14,7 +14,9 @@ import Text.RawString.QQ
 
 import qualified Helpers as Helpers
 import qualified CSW as CSW
-import qualified Record as R
+-- import qualified Record as R(Record, Record(..),DataIdentification(..),showRecord )
+-- import qualified Record as R(Record, dataIdentification, transferLinks, showRecord, Record)
+import qualified Record --as Record(Record(..))--(Record, dataIdentification, transferLinks, showRecord, Record)
 import qualified RecordStore as RS
 import qualified ParseMCP20 as ParseMCP20
 
@@ -48,7 +50,36 @@ doGetAndProcessRecord conn uuid title = do
           msg
     -}
 
-    putStrLn $ applyEither R.showRecord id myRecord 
+  -- change name store to store
+  -- uuid should match....
+  -- 
+
+    -- myRecord <- ParseMCP20.parse elts
+    case myRecord of
+        Right record -> do
+
+            putStrLn $ Record.showRecord record --myRecord
+
+            -- storeRecordUUID conn uuid title = do
+            conn <- PG.connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
+            record_id <- RS.storeRecordUUID conn "myuuid" 
+            RS.storeDataIdentification conn record_id (Record.dataIdentification record)
+            RS.storeTransferLinks conn record_id (Record.transferLinks record) 
+
+            -- PG.close conn
+
+            return ()
+
+
+{-
+    record_id <- RS.storeRecordUUID conn uuid
+    RS.storeDataIdentification conn record_id (Record.dataIdentification record)
+    RS.storeTransferLinks conn record_id (Record.transferLinks record) 
+-}
+
+
+
+    putStrLn $ applyEither Record.showRecord id myRecord 
 
     
     -- OK, want to store the damn thing to the db...

@@ -27,7 +27,7 @@ import Record
 -}
 
 
-processRecordUUID conn uuid = do
+storeRecordUUID conn uuid = do
     -- must get the id, so we can delete all old bits,
     -- this is harder than it looks....
     -- insert or select item, returning id
@@ -61,7 +61,7 @@ processRecordUUID conn uuid = do
 
 
 
-processDataIdentification conn record_id dataIdentification = do
+storeDataIdentification conn record_id dataIdentification = do
     print "hi this is dataIdentification"
     {- deleting each time isn't nearly as nice
     -- upsert....
@@ -118,7 +118,7 @@ processDataIdentification conn record_id dataIdentification = do
 
 
 
-processTransferLink conn record_id transferLink = do
+storeTransferLink conn record_id transferLink = do
 
     xs :: [ (Only Integer)] <- PG.query conn
         [r|
@@ -154,9 +154,9 @@ processTransferLink conn record_id transferLink = do
     return ()
 
 
-processTransferLinks conn record_id transferLinks = do
+storeTransferLinks conn record_id transferLinks = do
     -- mapM (putStrLn.show) transferLinks
-    mapM (processTransferLink conn record_id) transferLinks
+    mapM (storeTransferLink conn record_id) transferLinks
 
 
 
@@ -165,7 +165,7 @@ processTransferLinks conn record_id transferLinks = do
 
 
 
-processDataParameter conn uuid (term, url) = do
+storeDataParameter conn uuid (term, url) = do
     -- look up the required concept
     xs :: [ (Integer, String) ] <- query conn "select id, label from concept where url = ?" (Only url)
     -- putStrLn $ (show.length) xs
@@ -186,13 +186,13 @@ processDataParameter conn uuid (term, url) = do
 
 
 
-processDataParameters conn uuid recordText = do
+storeDataParameters conn uuid recordText = do
 
     -- TODO IMPORTANT - should remove the uuid first...
     dataParameters <- runX (parseXML recordText >>> parseDataParameters)
     putStrLn $ "data parameter count: " ++ (show.length) dataParameters
     mapM (putStrLn.show) dataParameters
-    mapM (processDataParameter conn uuid) dataParameters
+    mapM (storeDataParameter conn uuid) dataParameters
 -}
 
 
@@ -208,11 +208,11 @@ main = do
 
             putStrLn $ showRecord record --myRecord
 
-            -- processRecordUUID conn uuid title = do
+            -- storeRecordUUID conn uuid title = do
             conn <- PG.connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
-            record_id <- processRecordUUID conn "myuuid" 
-            processDataIdentification conn record_id (Record.dataIdentification record)
-            processTransferLinks conn record_id (Record.transferLinks record) 
+            record_id <- storeRecordUUID conn "myuuid" 
+            storeDataIdentification conn record_id (Record.dataIdentification record)
+            storeTransferLinks conn record_id (Record.transferLinks record) 
 
             PG.close conn
 
