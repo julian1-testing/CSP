@@ -85,7 +85,7 @@ storeMDCommons conn record_id mdCommons = do
                 ? as license_name,
                 ? as license_image_link
             )
-            insert into data_identification(
+            insert into md_commons(
                 record_id,
                 jurisdiction_link,
                 license_link,
@@ -99,7 +99,7 @@ storeMDCommons conn record_id mdCommons = do
                 license_link = (select license_link from a),
                 license_name = (select license_name from a),
                 license_image_link = (select license_image_link from a)
-            returning data_identification.id
+            returning md_commons.id
         |]
         -- there's a limit of 9 elements in the tuple....
         (   record_id :: Integer,
@@ -260,7 +260,9 @@ storeDataParameters conn record_id dataParameters = do
     mapM (storeDataParameter conn record_id) dataParameters
 
 
-doJust f x defaultVal = 
+
+-- destructure a Maybe type and apply f if possible, otherwise return defaultVal
+applyJust f x defaultVal = 
     case x of 
         Just x' -> f x'
         Nothing -> defaultVal 
@@ -275,13 +277,17 @@ storeAll conn record = do
                 -- if we can't get the recordId we're really stuck
                 record_id <- storeUUID conn uuid_ 
 
-                doJust (storeDataIdentification conn record_id) (Record.dataIdentification record) (return ())
-                
+                applyJust (storeDataIdentification conn record_id) (Record.dataIdentification record) (return ())
                 -- storeDataIdentification conn record_id (Record.dataIdentification record)
 
+                applyJust (storeMDCommons conn record_id) (Record.mdCommons record) (return ())
 
                 storeTransferLinks conn record_id (Record.transferLinks record)
                 storeDataParameters conn record_id (Record.dataParameters record)
+                return ()
+            _ ->
+                -- unlikely - but nothing we can do except log...
+                print "error -> No uuid in record????"
 
 
 
