@@ -52,13 +52,9 @@ doGetAndProcessRecord conn uuid title = do
 
 
 doGetAndProcessRecords conn = do
-    {-
-        -- THIS IS NOT RIGHT - NEEDS TO be a deletion as we do each record 
-        -- and need to know if a record has been removed.
-        PG.execute conn "delete from resource *" ()
-        PG.execute conn "delete from facet *" ()
-        PG.execute conn "delete from record *" ()
-    -}
+
+    -- delete current index
+    RS.deleteAll conn
     
     -- get records to process
     result <- CSW.doGetRecords "https://catalogue-imos.aodn.org.au/geonetwork" 
