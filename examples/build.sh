@@ -1,9 +1,7 @@
 #!/bin/bash 
 
-
 # do we need -make also ?
 FLAGS="-i./src -O2 -outputdir tmp"
-
 
 [ -d tmp ] || mkdir tmp
 [ -d target ] || mkdir target
@@ -14,20 +12,15 @@ FLAGS="-i./src -O2 -outputdir tmp"
 
 
 # i=HttpClient.hs
-
-
 for i in src/*.hs; do
 
-  f=$(basename $i)
+                        # src/Warp.hs 
+  f="$(basename $i)"    # Warp.hs
+  w="${f%.hs}"          # Warp
+
   echo $f; 
 
-  ghc $FLAGS -main-is "${f%.hs}.main" "src/$f"  -o   "target/${f%.hs}" 
+  ghc $FLAGS -main-is "$w.main" "$i" -o "target/$w" 
 done
 
-
-
-############
-
-
-#### OLD
 
