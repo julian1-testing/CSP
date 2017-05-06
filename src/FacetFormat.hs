@@ -118,7 +118,7 @@ formatXML rootRecordCount m =
     outputSummary (parent, label, count) depth  = 
       myConcat [
           pad $ depth * 3,
-          "<", LT.pack label, " count=\"", LT.pack.show $ count, "\" type=\"local\"/>\n",
+          "<", LT.pack label, " count=\"", LT.pack.show $ count, "\" type=\"local\">\n",
           outputChildren (parent, label, count) depth
       ]
 
@@ -127,7 +127,7 @@ formatXML rootRecordCount m =
       -- single closed tag...
       myConcat [
           pad $ depth * 3,
-          "<dimension value=\"", LT.pack label, "\" count=\"", LT.pack.show $ count, "\" />\n", 
+          "<dimension value=\"", LT.pack label, "\" count=\"", LT.pack.show $ count, "\">\n", 
           outputChildren (parent, label, count) depth
       ]
 
@@ -136,7 +136,7 @@ formatXML rootRecordCount m =
       myConcat [ 
         -- start tag
         pad $ depth * 3,
-        "<category value=\"", LT.pack label, "\" count=", LT.pack.show $ count, " >\n",
+        "<category value=\"", LT.pack label, "\" count=\"", LT.pack.show $ count, "\">\n",
         -- children
         outputChildren (parent, label, count) depth ,
         -- end tag
