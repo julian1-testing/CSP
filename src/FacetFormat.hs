@@ -22,6 +22,13 @@ import Debug.Trace(trace)
 
 import Text.RawString.QQ
 
+-- import qualified Text.XML.HXT.DOM.Util as XML(attrEscapeXML)
+-- import qualified Text.XML.HXT.DOM.Util as XML(stringTrim, escapeUri )
+
+-- import qualified Text.XML.HXT.DOM.Util as X(escapeUri )
+-- import qualified Text.XML.HXT.DOM.Util as X(stringTrim) -- OK
+import qualified Text.XML.HXT.DOM.Util as X(attrEscapeXml) -- worked
+
 
 import qualified FacetCalc as FacetCalc
 
