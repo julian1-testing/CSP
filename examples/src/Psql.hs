@@ -1,6 +1,9 @@
 {-# LANGUAGE OverloadedStrings #-}
 
+module Psql where
+
 import Database.PostgreSQL.Simple
+
 
 main = hello
 

@@ -4,6 +4,9 @@
 -- needed for disambiguating types,
 {-# LANGUAGE ScopedTypeVariables #-}
 
+
+module Psql2 where
+
 import Database.PostgreSQL.Simple
 
 main = hello

@@ -1,5 +1,11 @@
 
+
+
+module Hello where
+
 import Text.XML.HXT.Core
+
+
 
 {-
   attempt to combine the mkelem stuff to create the structure...

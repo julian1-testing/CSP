@@ -1,13 +1,3 @@
-*.o
-*.hi
-*.dyn_hi
-*.dyn_ho
-examples/parse
-examples/psql
-examples/psql2
-examples/transform
-examples/Utf
-examples/Warp
-target/*
-tmp/*
+target
+tmp
 

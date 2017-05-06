@@ -1,4 +1,8 @@
 {-# LANGUAGE Arrows, NoMonomorphismRestriction #-}
+
+
+module Parse where
+
 import Text.XML.HXT.Core
 
 -- parses xml -> to data structure

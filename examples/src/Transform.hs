@@ -2,8 +2,7 @@
 -- good doc -> https://wiki.haskell.org/HXT#Installation
 -- transforms xml -> xml
 
-module Main
-where
+module Transform where
  
 import Text.XML.HXT.Core
 -- import Text.XML.HXT....   -- further HXT packages

@@ -2,6 +2,7 @@
 
 {-# LANGUAGE OverloadedStrings #-}
 
+module HttpClient where
 
 import Network.HTTP.Client
 import Network.HTTP.Client.TLS

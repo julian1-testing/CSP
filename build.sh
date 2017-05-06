@@ -21,9 +21,11 @@ FLAGS="-i./src -O2 -outputdir tmp"
 # ghc $FLAGS -main-is RecordStore.main  ./src/RecordStore.hs  -o target/RecordStore
 
 
-ghc $FLAGS -main-is Harvest.main  ./src/Harvest.hs  -o target/Harvest
+# ghc $FLAGS -main-is Harvest.main  ./src/Harvest.hs  -o target/Harvest
 
-# ghc $FLAGS -main-is FacetRequest.main ./src/FacetRequest.hs -o target/FacetRequest
+ghc $FLAGS -main-is FacetRequest.main ./src/FacetRequest.hs -o target/FacetRequest
+
+#ghc $FLAGS -main-is OutputMCP.main ./src/FacetRequest.hs -o target/FacetRequest
 
 
 ############

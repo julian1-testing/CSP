@@ -11,6 +11,7 @@
 
 -}
 
+module Set where
 
 import qualified Data.Set as Set
 
