@@ -70,15 +70,17 @@ app req res = do
   printKeyVal "queryString " $ BS.pack $ show $ queryString req 
 
 
-  x <- whootRoute
-  res  x
-{-
-  res $ case path of
-    "/whoot" -> do whootRoute
+  -- x <- whootRoute
+  --res  x
+
+  x <- case path of
+    "/whoot" -> whootRoute
     "/" -> helloRoute
     _   -> notFoundRoute
 
--}
+
+  res  x
+
 -- note that there is a vault - for storing data between apps and middleware.
 
 -- ok, now need to get parameters....
@@ -105,13 +107,11 @@ whootRoute =  do
 
 
 -- helloRoute :: Response
-helloRoute =
-  responseLBS status200 [(hContentType, "application/json")] . encode $ "Hello World"
+helloRoute = return $ responseLBS status200 [(hContentType, "application/json")] . encode $ "Hello World"
 
 
 -- notFoundRoute :: Response
-notFoundRoute =
-    responseLBS status404 [(hContentType, "application/json")] "404 - Not Found"
+notFoundRoute = return $ responseLBS status404 [(hContentType, "application/json")] "404 - Not Found"
 
 
 
