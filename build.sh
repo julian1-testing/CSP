@@ -1,13 +1,33 @@
-#!/bin/bash -x
-
+#!/bin/bash 
 
 # do we need -make also ?
 FLAGS="-i./src -O2 -outputdir tmp"
 
-
 [ -d tmp ] || mkdir tmp
 [ -d target ] || mkdir target
 
+
+# - setting the module main function explicitly for the executable - avoids Main.o files being generated in tmp and confusing the build.
+# - Using -i will pull in dependnecies 
+
+
+
+files=' src/FacetRequest.hs src/CSW.hs  '
+# files=src/*.hs
+
+for i in $files; do
+
+  # i                     src/Warp.hs 
+  f="$(basename $i)"    # Warp.hs
+  w="${f%.hs}"          # Warp
+
+  echo $f; 
+
+  ghc $FLAGS -main-is "$w.main" "$i" -o "target/$w" 
+done
+
+
+###############
 
 # - setting the module main function explicitly for the executable - avoids Main.o files being generated in tmp and confusing the build.
 # - Using -i will pull in dependnecies 
@@ -23,13 +43,9 @@ FLAGS="-i./src -O2 -outputdir tmp"
 
 # ghc $FLAGS -main-is Harvest.main  ./src/Harvest.hs  -o target/Harvest
 
-ghc $FLAGS -main-is FacetRequest.main ./src/FacetRequest.hs -o target/FacetRequest
+# here,
+# ghc $FLAGS -main-is FacetRequest.main ./src/FacetRequest.hs -o target/FacetRequest
 
 #ghc $FLAGS -main-is OutputMCP.main ./src/FacetRequest.hs -o target/FacetRequest
 
-
-############
-
-
-#### OLD
 

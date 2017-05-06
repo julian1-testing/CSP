@@ -11,10 +11,13 @@ FLAGS="-i./src -O2 -outputdir tmp"
 # - Using -i will pull in dependnecies 
 
 
-# i=HttpClient.hs
-for i in src/*.hs; do
 
-                        # src/Warp.hs 
+# files=' src/HttpClient.hs src/Warp.hs  '
+files=src/*.hs
+
+for i in $files; do
+
+  # i                     src/Warp.hs 
   f="$(basename $i)"    # Warp.hs
   w="${f%.hs}"          # Warp
 
