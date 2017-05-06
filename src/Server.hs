@@ -73,14 +73,16 @@ app req res = do
   -- putStrLn $ "length " ++ (show.length) params
 
   -- log params 
+  putStrLn "----"
   let f (key, Just val) = BS.putStrLn $ BS.concat  [ key , E.encodeUtf8 ":", val ]  
   mapM f params
+  putStrLn "----"
 
 
   -- route delegation
   x <- case (pathInfo req) of
-    [ "whoot", "hello" ] -> helloRoute
-    [ "whoot" ] -> whootRoute
+    [ "srv","eng","xml.search.imos" ] -> whootRoute
+    [ "whoot" ] -> helloRoute
     _   -> notFoundRoute
 
   -- do it...

@@ -110,7 +110,6 @@ request conn = do
 
   let s = FacetFormat.formatXML (length allRecordIds) sortedGraph
 
-
   return s
 
 
