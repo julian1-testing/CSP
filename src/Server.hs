@@ -71,12 +71,6 @@ app req res = do
   let f (key, Just val) = BS.putStrLn $ BS.concat  [ key , E.encodeUtf8 ":", val ]  
   mapM f params
 
-  -- test db 
-  conn <- PG.connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
-  let query = "select 123" 
-  xs :: [ (Only Integer ) ] <- PG.query conn query ()
-  mapM (putStrLn.show) xs
-
 
 
 
@@ -94,7 +88,15 @@ app req res = do
 whootRoute :: IO Response 
 whootRoute =  do
 
-  LBS.putStrLn $ encode "in whoot" 
+  BS.putStrLn $ E.encodeUtf8 "in whoot" 
+
+  -- test db 
+  conn <- PG.connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
+  let query = "select 123" 
+  xs :: [ (Only Integer ) ] <- PG.query conn query ()
+  mapM (putStrLn.show) xs
+
+
   return $ responseLBS status200 [(hContentType, "application/json")] . encode $ "Whoot"
 
 
