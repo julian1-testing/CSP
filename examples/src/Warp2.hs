@@ -18,7 +18,7 @@
 
 module Warp2 where
 
-import Network.Wai (responseLBS, Application, Response, rawPathInfo, requestMethod)
+import Network.Wai (responseLBS, Application, Response, rawPathInfo, requestMethod, remoteHost)
 import Network.Wai.Handler.Warp (run)
 import Network.HTTP.Types (status200, status404)
 import Network.HTTP.Types.Header (hContentType)
@@ -56,10 +56,13 @@ main = do
 app :: Application
 app req res = do
 
+
+  -- see, https://hackage.haskell.org/package/wai-3.2.1.1/docs/Network-Wai.html
   let path = rawPathInfo req
   LBS.putStrLn $ encode "got request" 
   BS.putStrLn $ BS.append (BS.pack "path ") path
   BS.putStrLn $ BS.append (BS.pack "method ") $ requestMethod req 
+  BS.putStrLn $ BS.append (BS.pack "remote host ") $ BS.pack $ show $ remoteHost req 
 
   res $ case path of
     "/whoot" -> whootRoute
@@ -68,6 +71,7 @@ app req res = do
 
 
 -- ok, now need to get parameters....
+-- and url encoding/decoding...
 -- actually we are directly matching this stuff... so perhaps we need a regex.... 
 -- need to urlEncode / urlDecode 
 
