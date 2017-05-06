@@ -12,8 +12,8 @@ FLAGS="-i./src -O2 -outputdir tmp"
 
 
 
-# files=' src/HttpClient.hs src/Warp.hs  '
-files=src/*.hs
+files=' src/Warp2.hs  '
+# files=src/*.hs
 
 for i in $files; do
 
