@@ -18,7 +18,7 @@
 
 module Warp2 where
 
-import Network.Wai (responseLBS, Application, Response, pathInfo, rawPathInfo, requestMethod, remoteHost, requestHeaders, queryString)
+import Network.Wai (responseLBS, Application, Response, pathInfo, rawPathInfo, requestMethod, remoteHost, requestHeaders, queryString, rawQueryString )
 import Network.Wai.Handler.Warp (run)
 import Network.HTTP.Types (status200, status404)
 import Network.HTTP.Types.Header (hContentType)
@@ -32,6 +32,7 @@ import qualified Data.Text.Lazy    as LT
 import qualified Data.Text.Lazy.IO as LT  -- 
 -}
 import qualified Data.Text.Lazy.Encoding as LE(encodeUtf8)
+import qualified Data.Text.Encoding as E(encodeUtf8)
 
 
 -- for putStrLn
@@ -39,6 +40,7 @@ import qualified Data.ByteString.Char8 as BS
 import qualified Data.ByteString.Lazy.Char8 as LBS
 
 
+-- import qualified Data.List as List(sortOn, unfoldr)
 
 encode = LE.encodeUtf8 
 
@@ -49,7 +51,7 @@ main = do
     run port app
 
 
--- rather than keyval might be easier as an array
+-- might be cleaner to format as a List
 printKeyVal key val =
   BS.putStrLn $ BS.append (BS.pack key) val
 
@@ -59,12 +61,22 @@ app req res = do
 
   -- see, https://hackage.haskell.org/package/wai-3.2.1.1/docs/Network-Wai.html
   LBS.putStrLn $ encode "got request" 
-  printKeyVal "path" $ rawPathInfo req
-  printKeyVal "pathInfo " $ (BS.pack.show) $ pathInfo req
-  printKeyVal "method " $ requestMethod req 
-  printKeyVal "host " $ (BS.pack.show) $ remoteHost req 
-  printKeyVal "headers " $ BS.pack $ show $ requestHeaders req 
-  printKeyVal "queryString " $ BS.pack $ show $ queryString req 
+  printKeyVal "path"          $ rawPathInfo req
+  printKeyVal "rawQuery "     $ (BS.pack.show) $ rawQueryString req
+  printKeyVal "pathInfo "     $ (BS.pack.show) $ pathInfo req
+  printKeyVal "method "       $ requestMethod req 
+  printKeyVal "host "         $ (BS.pack.show) $ remoteHost req 
+  printKeyVal "headers "      $ BS.pack $ show $ requestHeaders req 
+
+  -- params,
+  let params =  queryString req 
+
+  printKeyVal "params "       $ BS.pack $ show $ params
+  putStrLn $ "length " ++ (show.length) params
+
+  let f (key, Just val) = BS.putStrLn $ BS.concat  [ key , E.encodeUtf8 ":", val ]  
+  mapM f params
+
 
 
   x <- case (pathInfo req) of
@@ -72,8 +84,11 @@ app req res = do
     [ "whoot" ] -> whootRoute
     _   -> notFoundRoute
 
-  res  x
+  res x
 
+{-
+queryString [("protocol",Just "OGC:WMS-1.1.1-http-get-map or OGC:WMS-1.3.0-http-get-map or IMOS:NCWMS--proto"),("sortBy",Just "popularity"),("from",Just "1"),("to",Just "10"),("fast",Just "index"),("filters",Just "collectionavailability")
+-}
 
 whootRoute :: IO Response 
 whootRoute =  do
@@ -84,11 +99,14 @@ whootRoute =  do
 
 
 
+
+
+
 helloRoute :: IO Response
 helloRoute = do
-
   LBS.putStrLn $ encode "in whoot hello" 
   return $ responseLBS status200 [(hContentType, "application/json")] . encode $ "Hello World"
+
 
 
 notFoundRoute :: IO Response
