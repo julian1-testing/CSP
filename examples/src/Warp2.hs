@@ -51,8 +51,18 @@ main = do
 app :: Application
 app req res =
   res $ case rawPathInfo req of
+    "/whoot" -> whootRoute
     "/" -> helloRoute
     _   -> notFoundRoute
+
+
+
+whootRoute :: Response
+whootRoute =
+  responseLBS
+  status200
+  [(hContentType, "application/json")]
+  . encode $ "Whoot"
 
 
 
