@@ -58,11 +58,8 @@ app :: Application
 app req res = do
 
   -- see, https://hackage.haskell.org/package/wai-3.2.1.1/docs/Network-Wai.html
-  let path = rawPathInfo req
   LBS.putStrLn $ encode "got request" 
-
-  printKeyVal "path" path 
-  -- TODO the pathInfo list will be better for case matching than the raw string
+  printKeyVal "path" $ rawPathInfo req
   printKeyVal "pathInfo " $ (BS.pack.show) $ pathInfo req
   printKeyVal "method " $ requestMethod req 
   printKeyVal "host " $ (BS.pack.show) $ remoteHost req 
@@ -70,34 +67,15 @@ app req res = do
   printKeyVal "queryString " $ BS.pack $ show $ queryString req 
 
 
-  -- x <- whootRoute
-  --res  x
-
-  x <- case path of
-    "/whoot" -> whootRoute
-    "/" -> helloRoute
+  x <- case (pathInfo req) of
+    [ "whoot", "hello" ] -> helloRoute
+    [ "whoot" ] -> whootRoute
     _   -> notFoundRoute
-
 
   res  x
 
--- note that there is a vault - for storing data between apps and middleware.
 
--- ok, now need to get parameters....
--- parameters are a list in queryString 
--- eg. http://localhost:3000/sdf/sssss?x=123&y=456 -> [("x",Just "123"),("y",Just "456")]
--- and url encoding/decoding...
--- actually we are directly matching this stuff... so perhaps we need a regex.... 
--- need to urlEncode / urlDecode 
-
--- note also, the difference between rawPathInfo and rawQueryString...
-
--- https://hackage.haskell.org/package/http-types-0.9.1/docs/Network-HTTP-Types-URI.html#t:Query
-
--- whootRoute :: Response
-
--- we're going to need to pick up a db connection - so this has to be io
-
+whootRoute :: IO Response 
 whootRoute =  do
 
   LBS.putStrLn $ encode "in whoot" 
@@ -106,12 +84,32 @@ whootRoute =  do
 
 
 
--- helloRoute :: Response
-helloRoute = return $ responseLBS status200 [(hContentType, "application/json")] . encode $ "Hello World"
+helloRoute :: IO Response
+helloRoute = do
+
+  LBS.putStrLn $ encode "in whoot hello" 
+  return $ responseLBS status200 [(hContentType, "application/json")] . encode $ "Hello World"
 
 
--- notFoundRoute :: Response
+notFoundRoute :: IO Response
 notFoundRoute = return $ responseLBS status404 [(hContentType, "application/json")] "404 - Not Found"
+
+
+
+
+-- vault - for storing data between apps and middleware.
+
+-- ok, now need to get parameters....
+-- parameters are a list in queryString 
+-- eg. http://localhost:3000/sdf/sssss?x=123&y=456 -> [("x",Just "123"),("y",Just "456")]
+-- and url encoding/decoding...
+-- actually we are directly matching this stuff... so perhaps we need a regex.... 
+-- need to urlEncode / urlDecode 
+-- note also, the difference between rawPathInfo and rawQueryString...
+
+-- https://hackage.haskell.org/package/http-types-0.9.1/docs/Network-HTTP-Types-URI.html#t:Query
+-- whootRoute :: Response
+-- we're going to need to pick up a db connection - so this has to be io
 
 
 
