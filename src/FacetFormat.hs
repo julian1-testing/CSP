@@ -118,7 +118,7 @@ formatXML rootRecordCount m =
     outputSummary (parent, label, count) depth  = 
       myConcat [
           pad $ depth * 3,
-          "<", LT.pack label, " count=", LT.pack.show $ count, " type=\"local\"/>\n",
+          "<", LT.pack label, " count=\"", LT.pack.show $ count, "\" type=\"local\"/>\n",
           outputChildren (parent, label, count) depth
       ]
 
@@ -301,7 +301,7 @@ printXML rootRecordCount m = do
       putStrLn $ concatMap id [
         -- TODO don't use concatMap here...
         (pad $ depth * 3),
-        "<summary count=", show count, " type=\"local\"/>"
+        "<summary counta=\"", show count, "\" type=\"local\"/>"
         ]
       processChildren (parent_id, label, count) depth
 
