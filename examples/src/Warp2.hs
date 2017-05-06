@@ -52,6 +52,9 @@ main = do
 
 -- bytestring to putStrLn with bytestring 
 
+printKeyVal key val =
+  BS.putStrLn $ BS.append (BS.pack key) val
+
 
 app :: Application
 app req res = do
@@ -60,9 +63,11 @@ app req res = do
   -- see, https://hackage.haskell.org/package/wai-3.2.1.1/docs/Network-Wai.html
   let path = rawPathInfo req
   LBS.putStrLn $ encode "got request" 
-  BS.putStrLn $ BS.append (BS.pack "path ") path
-  BS.putStrLn $ BS.append (BS.pack "method ") $ requestMethod req 
-  BS.putStrLn $ BS.append (BS.pack "remote host ") $ BS.pack $ show $ remoteHost req 
+  printKeyVal "path" path 
+
+  printKeyVal "method " $ requestMethod req 
+  printKeyVal "host " $ BS.pack $ show $ remoteHost req 
+
 
   res $ case path of
     "/whoot" -> whootRoute
