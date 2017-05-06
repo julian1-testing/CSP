@@ -18,7 +18,7 @@
 
 module Warp2 where
 
-import Network.Wai (responseLBS, Application, Response, rawPathInfo, requestMethod, remoteHost, requestHeaders)
+import Network.Wai (responseLBS, Application, Response, pathInfo, rawPathInfo, requestMethod, remoteHost, requestHeaders, queryString)
 import Network.Wai.Handler.Warp (run)
 import Network.HTTP.Types (status200, status404)
 import Network.HTTP.Types.Header (hContentType)
@@ -27,22 +27,21 @@ import Network.HTTP.Types.Header (hContentType)
 import qualified Data.Text as T
 import qualified Data.Text.IO as T
 import qualified Data.Text.Encoding as E
--}
 
 import qualified Data.Text.Lazy    as LT
 import qualified Data.Text.Lazy.IO as LT  -- 
-import qualified Data.Text.Lazy.Encoding as LE
+-}
+import qualified Data.Text.Lazy.Encoding as LE(encodeUtf8)
 
 
 -- for putStrLn
-import qualified Data.ByteString.Lazy.Char8 as LBS
 import qualified Data.ByteString.Char8 as BS
+import qualified Data.ByteString.Lazy.Char8 as LBS
 
--- import qualified Data.ByteString.Char8 as BC
 
 
--- change to encodeBS
 encode = LE.encodeUtf8 
+
 
 main = do
     let port = 3000
@@ -63,37 +62,54 @@ app req res = do
   LBS.putStrLn $ encode "got request" 
 
   printKeyVal "path" path 
+  -- TODO the pathInfo list will be better for case matching than the raw string
+  printKeyVal "pathInfo " $ (BS.pack.show) $ pathInfo req
   printKeyVal "method " $ requestMethod req 
-  printKeyVal "host " $ BS.pack $ show $ remoteHost req 
+  printKeyVal "host " $ (BS.pack.show) $ remoteHost req 
   printKeyVal "headers " $ BS.pack $ show $ requestHeaders req 
+  printKeyVal "queryString " $ BS.pack $ show $ queryString req 
 
 
+  x <- whootRoute
+  res  x
+{-
   res $ case path of
-    "/whoot" -> whootRoute
+    "/whoot" -> do whootRoute
     "/" -> helloRoute
     _   -> notFoundRoute
 
+-}
+-- note that there is a vault - for storing data between apps and middleware.
 
 -- ok, now need to get parameters....
+-- parameters are a list in queryString 
+-- eg. http://localhost:3000/sdf/sssss?x=123&y=456 -> [("x",Just "123"),("y",Just "456")]
 -- and url encoding/decoding...
 -- actually we are directly matching this stuff... so perhaps we need a regex.... 
 -- need to urlEncode / urlDecode 
 
--- no there's a difference between rawPathInfo and rawQueryString...
+-- note also, the difference between rawPathInfo and rawQueryString...
+
+-- https://hackage.haskell.org/package/http-types-0.9.1/docs/Network-HTTP-Types-URI.html#t:Query
+
+-- whootRoute :: Response
+
+-- we're going to need to pick up a db connection - so this has to be io
+
+whootRoute =  do
+
+  LBS.putStrLn $ encode "in whoot" 
+
+  return $ responseLBS status200 [(hContentType, "application/json")] . encode $ "Whoot"
 
 
-whootRoute :: Response
-whootRoute =
-  responseLBS status200 [(hContentType, "application/json")] . encode $ "Whoot"
 
-
-
-helloRoute :: Response
+-- helloRoute :: Response
 helloRoute =
   responseLBS status200 [(hContentType, "application/json")] . encode $ "Hello World"
 
 
-notFoundRoute :: Response
+-- notFoundRoute :: Response
 notFoundRoute =
     responseLBS status404 [(hContentType, "application/json")] "404 - Not Found"
 
