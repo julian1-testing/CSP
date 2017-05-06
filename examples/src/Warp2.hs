@@ -18,7 +18,7 @@
 
 module Warp2 where
 
-import Network.Wai (responseLBS, Application, Response, rawPathInfo)
+import Network.Wai (responseLBS, Application, Response, rawPathInfo, requestMethod)
 import Network.Wai.Handler.Warp (run)
 import Network.HTTP.Types (status200, status404)
 import Network.HTTP.Types.Header (hContentType)
@@ -34,10 +34,14 @@ import qualified Data.Text.Lazy.IO as LT  --
 import qualified Data.Text.Lazy.Encoding as LE
 
 
--- needed for using print
+-- for putStrLn
 import qualified Data.ByteString.Lazy.Char8 as LBS
+import qualified Data.ByteString.Char8 as BS
+
+-- import qualified Data.ByteString.Char8 as BC
 
 
+-- change to encodeBS
 encode = LE.encodeUtf8 
 
 main = do
@@ -46,40 +50,44 @@ main = do
     run port app
 
 
+-- bytestring to putStrLn with bytestring 
 
 
 app :: Application
-app req res =
-  res $ case rawPathInfo req of
+app req res = do
+
+  let path = rawPathInfo req
+  LBS.putStrLn $ encode "got request" 
+  BS.putStrLn $ BS.append (BS.pack "path ") path
+  BS.putStrLn $ BS.append (BS.pack "method ") $ requestMethod req 
+
+  res $ case path of
     "/whoot" -> whootRoute
     "/" -> helloRoute
     _   -> notFoundRoute
 
 
+-- ok, now need to get parameters....
+-- actually we are directly matching this stuff... so perhaps we need a regex.... 
+-- need to urlEncode / urlDecode 
+
+-- no there's a difference between rawPathInfo and rawQueryString...
+
 
 whootRoute :: Response
 whootRoute =
-  responseLBS
-  status200
-  [(hContentType, "application/json")]
-  . encode $ "Whoot"
+  responseLBS status200 [(hContentType, "application/json")] . encode $ "Whoot"
 
 
 
 helloRoute :: Response
 helloRoute =
-  responseLBS
-  status200
-  [(hContentType, "application/json")]
-  . encode $ " Hello World"
+  responseLBS status200 [(hContentType, "application/json")] . encode $ "Hello World"
 
 
 notFoundRoute :: Response
 notFoundRoute =
-    responseLBS
-    status404
-    [(hContentType, "application/json")]
-    "404 - Not Found"
+    responseLBS status404 [(hContentType, "application/json")] "404 - Not Found"
 
 
 
