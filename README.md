@@ -19,6 +19,12 @@ cabal install postgresql-simple
 
 ```
 
+### Usage example,
+
+```
+curl -s http://10.1.1.1:3000/srv/eng/xml.search.imos | xmllint --format
+```
+
 
 ### create the db
 ```
