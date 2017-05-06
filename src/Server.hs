@@ -25,8 +25,9 @@ import Network.HTTP.Types (status200, status404)
 import Network.HTTP.Types.Header (hContentType)
 
 
-import qualified Data.Text.Lazy.Encoding as LE(encodeUtf8)
 import qualified Data.Text.Encoding as E(encodeUtf8)
+import qualified Data.Text.Lazy.Encoding as LE(encodeUtf8)
+import qualified Data.Text.Lazy as LT
 
 -- for putStrLn
 import qualified Data.ByteString.Char8 as BS
@@ -35,6 +36,10 @@ import qualified Data.ByteString.Lazy.Char8 as LBS
 import qualified Database.PostgreSQL.Simple as PG(query, connectPostgreSQL)
 import Database.PostgreSQL.Simple.Types as PG(Only(..))
 
+
+
+
+import FacetRequest(request) 
 
 encode = LE.encodeUtf8 
 
@@ -72,8 +77,6 @@ app req res = do
   mapM f params
 
 
-
-
   -- route delegation
   x <- case (pathInfo req) of
     [ "whoot", "hello" ] -> helloRoute
@@ -96,8 +99,13 @@ whootRoute =  do
   xs :: [ (Only Integer ) ] <- PG.query conn query ()
   mapM (putStrLn.show) xs
 
+  s <- FacetRequest.request conn
+  -- let ss = LT.pack s
+  -- let ss = encode s
+  -- LBS.putStrLn ss
 
-  return $ responseLBS status200 [(hContentType, "application/json")] . encode $ "Whoot"
+  return $ 
+    responseLBS status200 [(hContentType, "application/json")] .  encode $  s --"Whoot"
 
 
 

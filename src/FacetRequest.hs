@@ -4,15 +4,19 @@
 module FacetRequest where
 
 import qualified Database.PostgreSQL.Simple as PG(query, connectPostgreSQL)
+-- import qualified Database.PostgreSQL.Simple.Internal(Conection(..)) -- as Internal( Connection(..) )
+-- import Database.PostgreSQL.Simple.Types as PG(Only(..))
 
 import qualified FacetCalc as FacetCalc --(buildLeafFacetMap,main)
 import qualified FacetFormat as FacetFormat--(main)
 import qualified Data.Map as Map
 import qualified Data.Text.Lazy.IO as LT(putStrLn)
--- import qualified Data.Text.Lazy as LT
+import qualified Data.Text.Lazy as LT
 
 import Debug.Trace(trace)
 import Data.Function( (&) )
+
+import Database.PostgreSQL.Simple.Internal as Internal(Connection)
 
 
 -- should put this in a module TestFacets - 
@@ -23,15 +27,15 @@ mapGet e m =
 
 
 
-main :: IO ()
-main = do
 
-  conn <- PG.connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
+
+-- this is monadic
+request :: Connection -> IO LT.Text
+
+request conn = do 
 
   -- TODO - maybe put all the DB actions into another file -- so there's a clear module interface...
   -- change to getNestingFromDB
-
-
   -----------------------
   -- get stuff parent/child nestings
   -- is this a fast lookup, should we move this out of the facet code...
@@ -101,17 +105,24 @@ main = do
   let sortedGraph = FacetFormat.sort facetGraph
   -- (mapM print).(Map.toList) $ facetGraph
 
-
   -- format the thing -
   -- FacetFormat.printXML (length allRecordIds) sortedGraph
 
   let s = FacetFormat.formatXML (length allRecordIds) sortedGraph
 
 
+  return s
+
+
+
+-- request :: IO String 
+main :: IO ()
+main = do
+  conn <- PG.connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
+  s <- request conn
+
   LT.putStrLn $ s
 
-  return () 
-
-
+  return ()
 
 
