@@ -18,7 +18,7 @@
 
 module Warp2 where
 
-import Network.Wai (responseLBS, Application, Response, rawPathInfo, requestMethod, remoteHost)
+import Network.Wai (responseLBS, Application, Response, rawPathInfo, requestMethod, remoteHost, requestHeaders)
 import Network.Wai.Handler.Warp (run)
 import Network.HTTP.Types (status200, status404)
 import Network.HTTP.Types.Header (hContentType)
@@ -50,8 +50,7 @@ main = do
     run port app
 
 
--- bytestring to putStrLn with bytestring 
-
+-- rather than keyval might be easier as an array
 printKeyVal key val =
   BS.putStrLn $ BS.append (BS.pack key) val
 
@@ -59,14 +58,14 @@ printKeyVal key val =
 app :: Application
 app req res = do
 
-
   -- see, https://hackage.haskell.org/package/wai-3.2.1.1/docs/Network-Wai.html
   let path = rawPathInfo req
   LBS.putStrLn $ encode "got request" 
-  printKeyVal "path" path 
 
+  printKeyVal "path" path 
   printKeyVal "method " $ requestMethod req 
   printKeyVal "host " $ BS.pack $ show $ remoteHost req 
+  printKeyVal "headers " $ BS.pack $ show $ requestHeaders req 
 
 
   res $ case path of
