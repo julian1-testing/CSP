@@ -1,20 +1,17 @@
 
 {-# LANGUAGE OverloadedStrings #-}
 
-
--- IMPORTANT - how to wait/throttle according to the number of db connections - until one was available?
-
--- see here on routes, http://cjwebb.github.io/blog/2016/12/16/getting-started-with-haskells-warp/
--- more good doc (eg. middleware - gzip) http://www.yesodweb.com/book/web-application-interface   
--- https://crypto.stanford.edu/~blynn/haskell/warp.html
-
 {-
-  app :: Application
-  app req res =
-    res $ case rawPathInfo req of
-      "/" -> helloRoute
-      _   -> notFoundRoute
+  IMPORTANT - how to wait/throttle according to the number of db connections - until one was available?
+
+  for routes, 
+    http://cjwebb.github.io/blog/2016/12/16/getting-started-with-haskells-warp/
+  middleware - eg. gzip  
+    http://www.yesodweb.com/book/web-application-interface   
+
+  https://crypto.stanford.edu/~blynn/haskell/warp.html
 -}
+
 
 module Warp2 where
 
@@ -27,20 +24,17 @@ import Network.HTTP.Types.Header (hContentType)
 import qualified Data.Text as T
 import qualified Data.Text.IO as T
 import qualified Data.Text.Encoding as E
-
 import qualified Data.Text.Lazy    as LT
 import qualified Data.Text.Lazy.IO as LT  -- 
 -}
 import qualified Data.Text.Lazy.Encoding as LE(encodeUtf8)
 import qualified Data.Text.Encoding as E(encodeUtf8)
 
-
 -- for putStrLn
 import qualified Data.ByteString.Char8 as BS
 import qualified Data.ByteString.Lazy.Char8 as LBS
 
 
--- import qualified Data.List as List(sortOn, unfoldr)
 
 encode = LE.encodeUtf8 
 
@@ -78,17 +72,16 @@ app req res = do
   mapM f params
 
 
-
+  -- route delegation
   x <- case (pathInfo req) of
     [ "whoot", "hello" ] -> helloRoute
     [ "whoot" ] -> whootRoute
     _   -> notFoundRoute
 
+  -- do it...
   res x
 
-{-
-queryString [("protocol",Just "OGC:WMS-1.1.1-http-get-map or OGC:WMS-1.3.0-http-get-map or IMOS:NCWMS--proto"),("sortBy",Just "popularity"),("from",Just "1"),("to",Just "10"),("fast",Just "index"),("filters",Just "collectionavailability")
--}
+
 
 whootRoute :: IO Response 
 whootRoute =  do
@@ -96,8 +89,6 @@ whootRoute =  do
   LBS.putStrLn $ encode "in whoot" 
 
   return $ responseLBS status200 [(hContentType, "application/json")] . encode $ "Whoot"
-
-
 
 
 
