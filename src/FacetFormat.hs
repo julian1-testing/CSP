@@ -27,6 +27,8 @@ import Text.RawString.QQ
 
 -- import qualified Text.XML.HXT.DOM.Util as X(escapeUri )
 -- import qualified Text.XML.HXT.DOM.Util as X(stringTrim) -- OK
+
+-- https://www.stackage.org/haddock/lts-7.21/hxt-9.3.1.16/Text-XML-HXT-DOM-Util.html
 import qualified Text.XML.HXT.DOM.Util as X(attrEscapeXml) -- worked
 
 
@@ -140,10 +142,13 @@ formatXML rootRecordCount m =
 
 
     outputCategory (parent, label, count) depth =
+
+      let value = LT.pack $ X.attrEscapeXml label in
       myConcat [ 
         -- start tag
         pad $ depth * 3,
-        "<category value=\"", LT.pack label, "\" count=\"", LT.pack.show $ count, "\">\n",
+        -- here
+        "<category value=\"", value, "\" count=\"", LT.pack.show $ count, "\">\n",
         -- children
         outputChildren (parent, label, count) depth ,
         -- end tag
