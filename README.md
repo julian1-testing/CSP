@@ -22,11 +22,15 @@ cabal install postgresql-simple
 ### Usage example,
 
 ```
-curl -s http://10.1.1.1:3000/srv/eng/xml.search.imos | xmllint --format
+# start server
+./target/Server
+
+# dtest xml.search request
+curl -s http://10.1.1.1:3000/srv/eng/xml.search.imos | xmllint --format -
 ```
 
 
-### create the db
+### create db and load schemes
 ```
 psql -h postgres.localnet -U admin -d postgres -f sql/db.sql
 
