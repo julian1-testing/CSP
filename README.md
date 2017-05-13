@@ -81,22 +81,21 @@ from, vim /usr/share/vim/vim80/syntax/haskell.vim
   - minimalistic - no ssl/https support
   - someone else says it does have tls 
 
-http-client-tls
-    - has tls. 
+- http-client-tls
+  - has tls. 
 
-http    
+- http    
   https://hackage.haskell.org/package/HTTP 
   - no https - "NOTE: This package only supports HTTP; it does not support HTTPS. Attempts to use HTTPS result in an error."
   - cabal install http-conduit 
   - absolutely huge
 
 
-warp
-  The biggest issue with warp-tls has nothing to do with performance, but that it uses an obscure TLS implementation that has received fairly little review, and almost certainly has bugs.  but It has gotten top marks in every audit. We are comfortable with relying on it in production. If the alternative is an OpenSSL-based implementation,
+- warp
+  - The biggest issue with warp-tls has nothing to do with performance, but that it uses an obscure TLS implementation that has received fairly little review, and almost certainly has bugs.  but It has gotten top marks in every audit. We are comfortable with relying on it in production. If the alternative is an OpenSSL-based implementation,
 
-wreq - 
-  supposedly simple
-  uses lenses.
+- wreq - 
+  - supposedly simple uses lenses.
 
 
 
