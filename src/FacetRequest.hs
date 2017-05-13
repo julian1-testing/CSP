@@ -17,7 +17,7 @@ import qualified Data.Text.Lazy as LT
 import Debug.Trace(trace)
 import Data.Function( (&) )
 
-
+import Control.Monad(unless, when)
 
 -- should put this in a module TestFacets - 
 
@@ -34,6 +34,8 @@ request :: Connection -> IO LT.Text
 
 request conn = do 
 
+  let trace_ = False
+
   -- TODO - maybe put all the DB actions into another file -- so there's a clear module interface...
   -- TODO - control logging in a switch
   -- change to getNestingFromDB
@@ -41,12 +43,14 @@ request conn = do
   -- get stuff parent/child nestings
   -- is this a fast lookup, should we move this out of the facet code...
   nestings <- FacetCalc.getConceptNesting conn 
-  -- mapM print nestings
+  -- if trace_ then mapM print nestings else return [ ]
+  -- case trace_ of True -> mapM print nestings 
+  -- when trace_ $ ( mapM print nestings >> return ())
 
 
   facetLeafCounts <- FacetCalc.getFacetList conn
-  -- print "##### the facetLeaf counts "
-  -- mapM print facetLeafCounts
+  print "##### the facetLeaf counts "
+  mapM print facetLeafCounts
 
 
   -- compute facet counts
