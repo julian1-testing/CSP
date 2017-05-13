@@ -4,6 +4,7 @@
 module FacetRequest where
 
 import qualified Database.PostgreSQL.Simple as PG(query, connectPostgreSQL)
+import Database.PostgreSQL.Simple.Internal as Internal(Connection)
 -- import qualified Database.PostgreSQL.Simple.Internal(Conection(..)) -- as Internal( Connection(..) )
 -- import Database.PostgreSQL.Simple.Types as PG(Only(..))
 
@@ -16,7 +17,6 @@ import qualified Data.Text.Lazy as LT
 import Debug.Trace(trace)
 import Data.Function( (&) )
 
-import Database.PostgreSQL.Simple.Internal as Internal(Connection)
 
 
 -- should put this in a module TestFacets - 
@@ -35,6 +35,7 @@ request :: Connection -> IO LT.Text
 request conn = do 
 
   -- TODO - maybe put all the DB actions into another file -- so there's a clear module interface...
+  -- TODO - control logging in a switch
   -- change to getNestingFromDB
   -----------------------
   -- get stuff parent/child nestings
