@@ -72,6 +72,11 @@ data Record = Record {
     geopoly :: [ String ]            -- todo
 } deriving (Show, Eq)
 
+    jurisdictionLink :: String, 
+    licenseLink :: String , 
+    licenseName :: String , 
+    licenseImageLink:: String
+
 
 
 -}
@@ -87,7 +92,10 @@ getRecordList conn = do
         uuid,
 
         di.title,
-        di.abstract
+        di.abstract,
+
+        c.jurisdiction_link,
+        c.license_link
 
       from record
 
@@ -97,13 +105,12 @@ getRecordList conn = do
       -- left join record on data_parameter.record_id = record.id
   |]
   xs :: [ 
-    (Integer, 
-    String, 
+    (Integer, -- record_id 
+    String,   -- uuid 
 
-    String, String  -- di
+    String, String,  -- data identfication
+    Maybe String, Maybe String  -- md commons
 
-    -- String,
-    -- String
     ) ] <- PG.query conn query1 ()
 {-
   let f (\id uuid title abstract ->  Record uuid DataIdentificatoin title abstract 
@@ -116,9 +123,9 @@ getRecordList conn = do
           )
 -}
   
-  let di = DataIdentification "ssss" "ppppp"
+  let di = Just $ DataIdentification "ssss" "ppppp"
   let c = MDCommons "a" "b" "c" "d" 
-  let record = Record (Just "uuid") (Just di) (Just c)  [] [] [] Nothing [] []  
+  let record = Record (Just "uuid") di (Just c)  [] [] [] Nothing [] []  
 
   let xs' = map id xs 
 
