@@ -72,10 +72,15 @@ data Record = Record {
     geopoly :: [ String ]            -- todo
 } deriving (Show, Eq)
 
+
+data MDCommons = MDCommons { 
+
     jurisdictionLink :: String, 
     licenseLink :: String , 
     licenseName :: String , 
     licenseImageLink:: String
+
+} deriving (Show, Eq)
 
 
 
@@ -95,7 +100,9 @@ getRecordList conn = do
         di.abstract,
 
         c.jurisdiction_link,
-        c.license_link
+        c.license_link,
+        c.license_name,
+        c.license_image_link
 
       from record
 
@@ -109,7 +116,7 @@ getRecordList conn = do
     String,   -- uuid 
 
     String, String,  -- data identfication
-    Maybe String, Maybe String  -- md commons
+    Maybe String, Maybe String, Maybe String, Maybe String    -- md commons
 
     ) ] <- PG.query conn query1 ()
 {-
