@@ -16,7 +16,7 @@ FLAGS="-i./src -O2 -outputdir tmp"
 # files=' src/FacetRequest.hs '
 # files=src/*.hs
 # files=src/CSW.hs
-files=' src/Server.hs '
+files=' src/CSP.hs '
 
 for i in $files; do
 

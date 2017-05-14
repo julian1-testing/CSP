@@ -24,7 +24,7 @@ cabal install postgresql-simple
 
 ```
 # start server
-./target/Server
+./target/CSP
 
 # dtest xml.search request
 curl -s http://10.1.1.1:3000/srv/eng/xml.search.imos | xmllint --format -

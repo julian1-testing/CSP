@@ -14,7 +14,7 @@
 -}
 
 
-module Server where
+module CSP where
 
 
 import Network.Wai 
