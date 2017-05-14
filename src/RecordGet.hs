@@ -94,7 +94,15 @@ main = do
   conn <- PG.connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
   let record_id = 289
   record <- getRecord conn record_id 
-  (putStrLn.show) record 
+
+  -- (putStrLn.show) $ record.uuid 
+--- fucking helll
+  let b = case (uuid record) of 
+                  Just a -> ""
+                  Nothing -> ""
+
+
+  (putStrLn.show) $ record
 
 
 
