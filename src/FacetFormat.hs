@@ -10,7 +10,7 @@ https://catalogue-portal.aodn.org.au/geonetwork/srv/eng/xml.search.imos?protocol
 {-# LANGUAGE ScopedTypeVariables, OverloadedStrings, QuasiQuotes #-}
 
 
-module ConceptRecordFormat where
+module FacetFormat where
 
 
 import qualified Data.Map as Map
@@ -32,7 +32,7 @@ import Text.RawString.QQ
 import qualified Text.XML.HXT.DOM.Util as X(attrEscapeXml) -- worked
 
 
-import qualified ConceptRecordCalc as ConceptRecordCalc
+import qualified FacetCalc as FacetCalc
 
 
 

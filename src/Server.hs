@@ -20,6 +20,7 @@ module Server where
 import Network.Wai 
   (responseLBS, Application, Response, pathInfo, rawPathInfo, requestMethod, 
     remoteHost, requestHeaders, queryString, rawQueryString )
+
 import Network.Wai.Handler.Warp (run)
 import Network.HTTP.Types (status200, status404)
 import Network.HTTP.Types.Header (hContentType)
@@ -39,7 +40,7 @@ import Database.PostgreSQL.Simple.Types as PG(Only(..))
 
 
 
-import ConceptRecordRequest(request) 
+import FacetRequest(request) 
 
 encode = LE.encodeUtf8 
 
@@ -101,7 +102,7 @@ whootRoute =  do
   xs :: [ (Only Integer ) ] <- PG.query conn query ()
   mapM (putStrLn.show) xs
 
-  s <- ConceptRecordRequest.request conn
+  s <- FacetRequest.request conn
   -- let ss = LT.pack s
   -- let ss = encode s
   -- LBS.putStrLn ss

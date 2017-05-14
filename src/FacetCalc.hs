@@ -6,7 +6,7 @@
 {-# LANGUAGE QuasiQuotes #-}
 -- {-#  NoMonomorphismRestriction #-}
 
-module ConceptRecordCalc where
+module FacetCalc where
 
 
 import qualified Database.PostgreSQL.Simple as PG(query, connectPostgreSQL)
@@ -32,10 +32,10 @@ mapGet e m =
   -- trace  ("mytrace - mapGet e: " ++ show e ++ " m: " ++ show m) $
   (Map.!) m e
 
-
+-- TODO  consider factoring the sql actions out of here.
 
 getConceptNesting conn  = do
-  -- TODO change name - get ConceptParents   conceptParents ?
+  -- TODO change name - get ConceptParents   conceptParents ? ConceptRelationships?
   -- return a flat list of concept nestings
   -- get parent child concept nestings
   -- we want the concept_id, parent_id, record_id
@@ -84,6 +84,7 @@ getConceptRecordList conn  = do
 
 
 buildLeafConceptRecordMap xs =
+  -- TODO change name buildInitialConceptRecordMap
   -- TODO change this so we just insert a new - maybe
   -- we make the concept a Maybe type - so that we can handle Nothing as root node later
 

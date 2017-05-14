@@ -1,15 +1,13 @@
 
 {-# LANGUAGE OverloadedStrings #-}
 
-module ConceptRecordRequest where
+module FacetRequest where
 
 import qualified Database.PostgreSQL.Simple as PG(query, connectPostgreSQL)
 import Database.PostgreSQL.Simple.Internal as Internal(Connection)
 -- import qualified Database.PostgreSQL.Simple.Internal(Conection(..)) -- as Internal( Connection(..) )
 -- import Database.PostgreSQL.Simple.Types as PG(Only(..))
 
-import qualified ConceptRecordCalc as ConceptRecordCalc --(buildLeafConceptRecordMap,main)
-import qualified ConceptRecordFormat as ConceptRecordFormat--(main)
 import qualified Data.Map as Map
 import qualified Data.Text.Lazy.IO as LT(putStrLn)
 import qualified Data.Text.Lazy as LT
@@ -20,6 +18,10 @@ import Data.Function( (&) )
 import Control.Monad(unless, when)
 
 -- should put this in a module TestConceptRecords - 
+
+import qualified FacetCalc as FacetCalc --(buildLeafFacetMap,main)
+import qualified FacetFormat as FacetFormat--(main)
+
 
 mapGet e m =
   -- trace  ("mytrace - mapGet e: " ++ show e ++ " m: " ++ show m) $
@@ -42,24 +44,24 @@ request conn = do
   -----------------------
   -- get stuff parent/child nestings
   -- is this a fast lookup, should we move this out of the facet code...
-  nestings <- ConceptRecordCalc.getConceptNesting conn 
+  nestings <- FacetCalc.getConceptNesting conn 
   -- if trace_ then mapM print nestings else return [ ]
   -- case trace_ of True -> mapM print nestings 
   -- when trace_ $ ( mapM print nestings >> return ())
 
 
-  facetLeafCounts <- ConceptRecordCalc.getConceptRecordList conn
+  facetLeafCounts <- FacetCalc.getConceptRecordList conn
   print "##### the facetLeaf counts "
   mapM print facetLeafCounts
 
 
   -- compute facet counts
-  let facetCounts = ConceptRecordCalc.buildLeafConceptRecordMap facetLeafCounts
+  let facetCounts = FacetCalc.buildLeafConceptRecordMap facetLeafCounts
   -- print "##### the facetCounts after creating the leaf map "
   -- (mapM print).(Map.toList) $ facetCounts
 
 
-  let (propagated, allRecordIds) = ConceptRecordCalc.doAll nestings  facetCounts
+  let (propagated, allRecordIds) = FacetCalc.doAll nestings  facetCounts
   -- print "##### the facetCounts after propagating"
   -- (mapM print).(Map.toList) $ propagated
 
@@ -70,7 +72,7 @@ request conn = do
   let makePair (concept, parent, label) = 
         (Just concept, (parent, label))  -- turn into key,val pairs needed for map,
 
-  labels <- ConceptRecordCalc.getConceptLabels conn 
+  labels <- FacetCalc.getConceptLabels conn 
       >>= return.(Map.fromList).(map makePair)
       -- >>= return.(\m ->  Map.insert Nothing ( Nothing, "this si wrong ") m )  -- insert a root node -- this isn't right
 
@@ -103,17 +105,17 @@ request conn = do
 
 
   -- build the graph for output formatting 
-  let facetGraph = ConceptRecordFormat.fromList completeConceptRecordList
+  let facetGraph = FacetFormat.fromList completeConceptRecordList
   -- (mapM print).(Map.toList) $ facetGraph
 
 
-  let sortedGraph = ConceptRecordFormat.sort facetGraph
+  let sortedGraph = FacetFormat.sort facetGraph
   -- (mapM print).(Map.toList) $ facetGraph
 
   -- format the thing -
   -- ConceptRecordFormat.printXML (length allRecordIds) sortedGraph
 
-  let s = ConceptRecordFormat.formatXML (length allRecordIds) sortedGraph
+  let s = FacetFormat.formatXML (length allRecordIds) sortedGraph
 
   return s
 
