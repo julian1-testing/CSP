@@ -99,58 +99,33 @@ data MDCommons = MDCommons {
 
 -- but if that's the case... - we should compose it - bit by bit according to the record id 
 
-{-
-    xs :: [ (Only Integer)] <- PG.query conn
-        [r|
-            with s as (
-                select id
-                from record
-                where uuid = ?
-            ),
-            i as (
-                insert into record(uuid)
-                select ?
-                where not exists (select 1 from s)
-                returning id
-            )
-            select id from i
-            union all
-            select id from s
-        |]
-        (uuid :: String, uuid :: String)
 
-        (   record_id :: Integer,
--}
-
-getRecordUuid conn record = do
-
-  xs :: [ (Integer, String)] <- PG.query conn 
-    [r|
-        select
-          record.id,
-          uuid
-        from record
-        where record.id = ?
+getRecordUuid conn record record_id = do
+  xs :: [ (Integer, String)] <- PG.query conn [r|
+      select
+        record.id,
+        uuid
+      from record
+      where record.id = ?
     |]
-    $ Only (289 :: Integer )
+    $ Only (record_id :: Integer )
   return $ 
     case xs of 
       [ (record_id, uuid ) ] -> record { uuid = Just uuid } 
+      _ -> record
 
 
 
-
-
-getRecordDataIdentification conn record = do
-  let query1 = [r|
+getRecordDataIdentification conn record record_id = do
+  xs ::  [ (Maybe String, Maybe String) ]  <- PG.query conn [r|
       select
         di.title,
         di.abstract
       from record
       left join data_identification di on di.record_id = record.id 
-      where record.id = 289
-  |]
-  xs ::  [ (Maybe String, Maybe String) ]  <- PG.query conn query1 ()
+      where record.id = ?
+   |]
+   $ Only (record_id :: Integer )
   return $
     case xs of 
       [ (Just title, Just abstract) ] -> record { dataIdentification = Just $ DataIdentification title abstract } 
@@ -158,9 +133,25 @@ getRecordDataIdentification conn record = do
 
 
 
+getRecordMDCommons conn record record_id = do
+  xs ::  [ (Maybe String, Maybe String, Maybe String, Maybe String) ]  <- PG.query conn [r|
+      select
+        md.jurisdiction_link, 
+        md.license_link, 
+        md.license_name, 
+        md.license_image_link
+      from record
+      left join md_commons md on md.record_id = record.id 
+      where record.id = ?
+   |]
+   $ Only (record_id :: Integer )
+  return $
+    case xs of 
+      [ (Just jurisdictionLink, Just licenseLink, Just licenseName, Just licenseImageLink) ] 
+          -> record { mdCommons = Just $ MDCommons jurisdictionLink licenseLink licenseName licenseImageLink }
+      _ -> record
 
-  -- return $ record' -- {  uuid = Just "xxxx" } -- some change...  
-  -- return record
+
 
 
 
@@ -168,12 +159,16 @@ main :: IO ()
 main = do
   conn <- PG.connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
 
-  record <- getRecordUuid conn emptyRecord
-  (putStrLn.show) record 
+  let record_id = 289
 
-  putStrLn "----"
+  record <- getRecordUuid conn emptyRecord record_id
+  -- (putStrLn.show) record 
 
-  record <- getRecordDataIdentification conn record 
+  record <- getRecordMDCommons conn record record_id 
+
+  -- putStrLn "----"
+
+  record <- getRecordDataIdentification conn record record_id
   (putStrLn.show) record 
 
   return ()
