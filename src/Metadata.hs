@@ -115,7 +115,8 @@ getRecordList conn = do
 
 
 getRecordDataIdentification conn record = do
-  return record
+  return $ record {  uuid = Just "xxxx" } -- some change...  
+  -- return record
 
 
 
@@ -125,7 +126,6 @@ main = do
 
   record <- getRecordList conn
   (putStrLn.show) record 
-
 
   record <- getRecordDataIdentification conn record 
   (putStrLn.show) record 
