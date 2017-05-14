@@ -30,7 +30,11 @@ getRecordList conn = do
       left join data_parameter on data_parameter.concept_id = concept_view.concept_id
       left join record on data_parameter.record_id = record.id
   |]
-  xs :: [ (Integer, Maybe Integer, Maybe Integer ) ] <- PG.query conn query1 ()
+  xs :: [ 
+    (Integer, 
+    Maybe Integer, 
+    Maybe Integer 
+    ) ] <- PG.query conn query1 ()
   mapM (putStrLn.show) xs
   return xs
 
