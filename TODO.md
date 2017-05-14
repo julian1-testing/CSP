@@ -1,4 +1,26 @@
 
+
+- extract visual database structure - to png. etc.
+- extract Config references for Scheme loading to a Config.hs
+    eg. postgres url, port
+    schema
+    catalogue. to scan
+
+- identify the damn query.
+
+- pull out the transform for the query selection
+  - two stages
+    - matching records
+    - records matching 
+
+    - then make unique - no concept is a bucket.
+   
+  This is the fundamental requirement 
+    concept -> [ records ]
+
+- rename facet to ConceptRecord. when dealing with the join of Concept and Record
+
+
 1.  check the complete harvest
     - issue with empty fields.
 1. store other fields

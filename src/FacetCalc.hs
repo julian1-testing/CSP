@@ -48,9 +48,9 @@ getConceptNesting conn  = do
   xs :: [ (Integer, Maybe Integer ) ] <- PG.query conn query1 ()
   return xs
 
--- THESE FUNCTIONS ARE THE SAME one of these should be deleted....
 
 getConceptLabels conn  = do
+  -- same as above - except with labels - maybe delete
   let query1 = [r|
       select
         concept_id,
@@ -64,17 +64,11 @@ getConceptLabels conn  = do
 
 
 
-{-
-        facet.concept_id,
-        concept_view.parent_id,   -- parent concept
-        facet.record_id           -- the record
-      from facet
-      left join concept_view on concept_view.id = facet.concept_id
-      order by concept_id
--}
 
 getFacetList conn  = do
+  -- associate concepts with records
   -- we want all concepts - regardless of whether there were facet match counts
+  -- shouldn't this be data_parameter ???
   let query1 = [r|
       select
         concept_view.concept_id,
