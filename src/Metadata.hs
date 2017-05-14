@@ -35,7 +35,6 @@ maybeToString m =
     Just uuid -> uuid
     Nothing -> ""
 
--- should use maybe()
 
 
 
@@ -52,22 +51,24 @@ main = do
   (putStrLn.show) $ record
 
   let s = myConcat [
-          LT.pack "<metadata>\n",
+          "<metadata>",
 
           -- source - can we factor the Just destructuring?
-          LT.pack "<source>",
-          maybeToString $ uuid record ,
-          LT.pack "</source>",
+          LT.pack "\n<source>", maybeToString $ uuid record , "</source>",
 
-          LT.pack $ (title.fromJust.dataIdentification ) $ record,
+          -- data identification
+          case dataIdentification record of
+            Just di -> 
+              myConcat [
+                "\n",
+                "<title>", LT.pack $ title di, LT.pack "</title>"
+              ]
+          ,
 
+          -- LT.pack $ (title.fromJust.dataIdentification) $ record,
 
-
-          LT.pack "\n</metadata>"
+          "\n</metadata>"
         ]
-
-
-  -- putStrputStrLn jjj
 
   LT.putStrLn $ s
 
