@@ -88,56 +88,41 @@ data MDCommons = MDCommons {
 
 -- constructing this thing back into a sensible object is not that simple ...
 
+-- VERY IMPORTANT - 
+-- I think - we may want to do it object by object.... - that way we can assemble everything 
+-- then we can just call sql for each record that we have to process 
+-- and not do anything....
+
+-- but if that's the case... - we should compose it - bit by bit according to the record id 
 
 getRecordList conn = do
 
   let query1 = [r|
       select
         record.id,
-        uuid,
-
-        di.title,
-        di.abstract,
-
-        c.jurisdiction_link,
-        c.license_link,
-        c.license_name,
-        c.license_image_link
-
+        uuid
       from record
-
-      left join data_identification di on di.record_id = record.id 
-      left join md_commons c on c.record_id = record.id 
-      -- left join data_parameter on data_parameter.concept_id = concept_view.concept_id
-      -- left join record on data_parameter.record_id = record.id
+      where record.id = 289
   |]
-  xs :: [ 
-    (Integer, -- record_id 
-    String,   -- uuid 
+  xs ::  [
+    (   Integer, -- record_id 
+        String   -- uuid 
+    ) ]  <- PG.query conn query1 ()
 
-    String, String,  -- data identfication
-    Maybe String, Maybe String, Maybe String, Maybe String    -- md commons
+  let record = 
+        case xs of  
+          [ (record_id, uuid ) ] -> Record (Just uuid) Nothing Nothing [] [] [] Nothing [] []  
+          -- [ record_id ] -> record_id -- Record (Just uuid) Nothing Nothing [] [] [] Nothing [] []  
 
-    ) ] <- PG.query conn query1 ()
-{-
-  let f (\id uuid title abstract ->  Record uuid DataIdentificatoin title abstract 
-              []
-              []
-              []
-              None
-              []
-              []
-          )
--}
-  
-  let di = Just $ DataIdentification "ssss" "ppppp"
-  let c = MDCommons "a" "b" "c" "d" 
-  let record = Record (Just "uuid") di (Just c)  [] [] [] Nothing [] []  
 
-  let xs' = map id xs 
 
-  mapM (putStrLn.show) xs
-  return xs
+--  let r = head xs 
+--   let record = Record (Just $ snd r) Nothing Nothing [] [] [] Nothing [] []  
+
+  (putStrLn.show) record 
+
+  -- mapM (putStrLn.show) xs
+  -- return xs
 
 
 
@@ -148,3 +133,22 @@ main = do
   return ()
 
 
+
+
+
+{-
+  let f (\id uuid title abstract ->  Record uuid DataIdentificatoin title abstract 
+              []
+              []
+              []
+              None
+              []
+              []
+          )
+-}
+ {- 
+  let di = Just $ DataIdentification "ssss" "ppppp"
+  let c = MDCommons "a" "b" "c" "d" 
+  let record = Record (Just "uuid") di (Just c)  [] [] [] Nothing [] []  
+  let xs' = map id xs 
+-}
