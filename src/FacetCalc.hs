@@ -83,7 +83,7 @@ getConceptRecordList conn  = do
 
 
 
-buildLeafConceptRecordMap xs =
+buildInitialConceptMap xs =
   -- TODO change name buildInitialConceptRecordMap
   -- TODO change this so we just insert a new - maybe
   -- we make the concept a Maybe type - so that we can handle Nothing as root node later
@@ -232,7 +232,7 @@ testPropagateOnce = do
   -- mapM putStrLn $ facetList
 
   putStrLn "######################## 0 - leafmap"
-  let m = buildLeafConceptRecordMap facetList
+  let m = buildInitialConceptMap facetList
   putStrLnConceptRecordMap m
 
   putStrLn "\n######################## 1 - after processing one level"
@@ -275,7 +275,7 @@ testPropagateAll = do
   -- putStrLn "facet list"
   -- mapM putStrLn $ facetList
 
-  let m = buildLeafConceptRecordMap facetList
+  let m = buildInitialConceptMap facetList
   --  putStrLnConceptRecordMap m
 
   let m' =  propagateAllRecordsToRoot nestings m

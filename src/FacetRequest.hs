@@ -56,7 +56,7 @@ request conn = do
 
 
   -- compute facet counts
-  let facetCounts = FacetCalc.buildLeafConceptRecordMap facetLeafCounts
+  let facetCounts = FacetCalc.buildInitialConceptMap facetLeafCounts
   -- print "##### the facetCounts after creating the leaf map "
   -- (mapM print).(Map.toList) $ facetCounts
 
