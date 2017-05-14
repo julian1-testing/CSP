@@ -10,7 +10,7 @@ https://catalogue-portal.aodn.org.au/geonetwork/srv/eng/xml.search.imos?protocol
 {-# LANGUAGE ScopedTypeVariables, OverloadedStrings, QuasiQuotes #-}
 
 
-module FacetFormat where
+module Summary where
 
 
 import qualified Data.Map as Map
@@ -94,7 +94,6 @@ sort m =
 myConcat lst = foldl LT.append LT.empty lst
 
 -- myConcat lst = concatMap LT.append lst
-
 
 
 
@@ -189,7 +188,7 @@ getTestConceptRecordList conn = do
 
 
 {-
-  Main test/example is in ConceptRecordRequest
+  Main test/example is in FacetRequest
 
 
 -}

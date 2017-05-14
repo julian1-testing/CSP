@@ -66,6 +66,7 @@ getConceptLabels conn  = do
 
 
 getConceptRecordList conn  = do
+  -- OK - this thing needs to be changed --- so that we have the damn record 
   -- associate concepts with records
   -- we want all concepts - regardless of whether there were facet match counts
   -- shouldn't this be data_parameter ???
@@ -76,6 +77,7 @@ getConceptRecordList conn  = do
         data_parameter.record_id
       from concept_view
       left join data_parameter on data_parameter.concept_id = concept_view.concept_id
+      left join record on data_parameter.record_id = record.id
   |]
   xs :: [ (Integer, Maybe Integer, Maybe Integer ) ] <- PG.query conn query1 ()
   -- mapM putStrLn xs

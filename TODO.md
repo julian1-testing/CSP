@@ -1,4 +1,20 @@
 
+
+-- TODO Change to name to summary ?
+-- Summary
+-- and change FacetRequest to Search
+
+
+https://catalogue-portal.aodn.org.au/geonetwork/srv/eng/xml.search.imos?protocol=OGC%3AWMS-1.1.1-http-get-map%20or%20OGC%3AWMS-1.3.0-http-get-map%20or%20IMOS%3ANCWMS--proto&sortBy=popularity&from=1&to=1&fast=index&filters=collectionavailability
+
+- need to return and tack on metadata
+  - need test code to format this....
+    - metadataFormat?
+
+
+
+- need to use the record - list - to generate stuff and xml format it - before we do anything else 
+
 - analyze the real portal - query - and break it down into tables from there...
 
 - extract visual database structure - to png. etc.

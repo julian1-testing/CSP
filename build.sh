@@ -16,7 +16,7 @@ FLAGS="-i./src -O2 -outputdir tmp"
 # files=' src/FacetRequest.hs '
 # files=src/*.hs
 # files=src/CSW.hs
-files=' src/CSP.hs '
+files=' src/CSP.hs src/FacetCalc.hs '
 
 for i in $files; do
 
@@ -25,6 +25,8 @@ for i in $files; do
   w="${f%.hs}"          # Warp
 
   echo $f; 
+
+  # echo ghc $FLAGS -main-is "$w.main" "$i" -o "target/$w" 
 
   ghc $FLAGS -main-is "$w.main" "$i" -o "target/$w" 
 done
