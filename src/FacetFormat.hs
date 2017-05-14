@@ -1,6 +1,6 @@
 {-
   
-  Format the result of xml.search.imos, used for Facets
+  Format the result of xml.search.imos, used for ConceptRecords
 
 https://catalogue-portal.aodn.org.au/geonetwork/srv/eng/xml.search.imos?protocol=OGC%3AWMS-1.1.1-http-get-map%20or%20OGC%3AWMS-1.3.0-http-get-map%20or%20IMOS%3ANCWMS--proto&sortBy=popularity&from=1&to=10&fast=index&filters=collectionavailability
 
@@ -10,7 +10,7 @@ https://catalogue-portal.aodn.org.au/geonetwork/srv/eng/xml.search.imos?protocol
 {-# LANGUAGE ScopedTypeVariables, OverloadedStrings, QuasiQuotes #-}
 
 
-module FacetFormat where
+module ConceptRecordFormat where
 
 
 import qualified Data.Map as Map
@@ -32,7 +32,7 @@ import Text.RawString.QQ
 import qualified Text.XML.HXT.DOM.Util as X(attrEscapeXml) -- worked
 
 
-import qualified FacetCalc as FacetCalc
+import qualified ConceptRecordCalc as ConceptRecordCalc
 
 
 
@@ -78,7 +78,7 @@ fromList xs =
 
 
 sort m =
-  -- TODO move to Facet?
+  -- TODO move to ConceptRecord?
   -- sort the children according to their count
   -- should sort before adding labels to tuples?
   Map.mapWithKey f m
@@ -173,7 +173,7 @@ formatXML rootRecordCount m =
 
 
 
-getTestFacetList conn = do
+getTestConceptRecordList conn = do
   -- get all facets and facet count from db and return as flat list
   let query = [r|
         select
@@ -189,7 +189,7 @@ getTestFacetList conn = do
 
 
 {-
-  Main test/example is in FacetRequest
+  Main test/example is in ConceptRecordRequest
 
 
 -}

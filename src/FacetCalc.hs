@@ -1,12 +1,12 @@
 {-
-  Calculate the Facet graph
+  Calculate the ConceptRecord graph
 -}
 
 {-# LANGUAGE ScopedTypeVariables, OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes #-}
 -- {-#  NoMonomorphismRestriction #-}
 
-module FacetCalc where
+module ConceptRecordCalc where
 
 
 import qualified Database.PostgreSQL.Simple as PG(query, connectPostgreSQL)
@@ -65,7 +65,7 @@ getConceptLabels conn  = do
 
 
 
-getFacetList conn  = do
+getConceptRecordList conn  = do
   -- associate concepts with records
   -- we want all concepts - regardless of whether there were facet match counts
   -- shouldn't this be data_parameter ???
@@ -83,7 +83,7 @@ getFacetList conn  = do
 
 
 
-buildLeafFacetMap xs =
+buildLeafConceptRecordMap xs =
   -- TODO change this so we just insert a new - maybe
   -- we make the concept a Maybe type - so that we can handle Nothing as root node later
 
@@ -204,7 +204,7 @@ doAll nestings m  =
 
 
 
---  let (propagated, records) = Facet.doAll nestings  facetCounts
+--  let (propagated, records) = ConceptRecord.doAll nestings  facetCounts
 
 
 
@@ -216,7 +216,7 @@ doAll nestings m  =
 -- we need to change this around...
 
 
-putStrLnFacetMap m = -- do
+putStrLnConceptRecordMap m = -- do
   (mapM $ putStrLn.show).Map.toList $ m
 
 
@@ -226,36 +226,36 @@ testPropagateOnce = do
   conn <- PG.connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
 
   nestings <- getConceptNesting conn
-  facetList <- getFacetList conn
+  facetList <- getConceptRecordList conn
   -- putStrLn "facet list"
   -- mapM putStrLn $ facetList
 
   putStrLn "######################## 0 - leafmap"
-  let m = buildLeafFacetMap facetList
-  putStrLnFacetMap m
+  let m = buildLeafConceptRecordMap facetList
+  putStrLnConceptRecordMap m
 
   putStrLn "\n######################## 1 - after processing one level"
   let m'  = propagateRecordsToParentConcept nestings m
-  putStrLnFacetMap m'
+  putStrLnConceptRecordMap m'
 
 
   putStrLn "######################## 2"
   let m''  = propagateRecordsToParentConcept nestings m'
-  putStrLnFacetMap m''
+  putStrLnConceptRecordMap m''
 
 
   putStrLn "######################## 3"
   let m'''  = propagateRecordsToParentConcept nestings m''
-  putStrLnFacetMap m'''
+  putStrLnConceptRecordMap m'''
 
   putStrLn "######################## 4"
   let m''''  = propagateRecordsToParentConcept nestings m'''
-  putStrLnFacetMap m''''
+  putStrLnConceptRecordMap m''''
 
 
   putStrLn "######################## 5"
   let m'''''  = propagateRecordsToParentConcept nestings m''''
-  putStrLnFacetMap m'''''
+  putStrLnConceptRecordMap m'''''
 
   return ()
 
@@ -270,18 +270,18 @@ testPropagateAll = do
   -- mapM putStrLn nestings
 
   -- get the facet concept and record associations from the db
-  facetList <- getFacetList conn
+  facetList <- getConceptRecordList conn
   -- putStrLn "facet list"
   -- mapM putStrLn $ facetList
 
-  let m = buildLeafFacetMap facetList
-  --  putStrLnFacetMap m
+  let m = buildLeafConceptRecordMap facetList
+  --  putStrLnConceptRecordMap m
 
   let m' =  propagateAllRecordsToRoot nestings m
 
   let (m'', records) = adjustRootRecord m'
 
-  putStrLnFacetMap m''
+  putStrLnConceptRecordMap m''
   return ()
 
 
