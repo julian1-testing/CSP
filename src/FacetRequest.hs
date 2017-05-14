@@ -51,8 +51,8 @@ request conn = do
 
 
   facetLeafCounts <- FacetCalc.getConceptRecordList conn
-  print "##### the facetLeaf counts "
-  mapM print facetLeafCounts
+  -- print "##### the facetLeaf counts "
+  -- mapM print facetLeafCounts
 
 
   -- compute facet counts

@@ -53,20 +53,24 @@ main = do
 
 -- might be cleaner to format as a List
 printKeyVal key val =
-  BS.putStrLn $ BS.append (BS.pack key) val
+  BS.putStrLn $ BS.concat  [ (BS.pack key), E.encodeUtf8 " -> ", val ]  
+
 
 
 app :: Application
 app req res = do
 
   -- see, https://hackage.haskell.org/package/wai-3.2.1.1/docs/Network-Wai.html
-  LBS.putStrLn $ encode "got request" 
+  -- LBS.putStrLn $ encode "got request" 
+
+  putStrLn "----"
+  -- TODO tidy this crap....
   printKeyVal "path"          $ rawPathInfo req
-  printKeyVal "rawQuery "     $ (BS.pack.show) $ rawQueryString req
+  printKeyVal "rawQuery "     $ rawQueryString req
   printKeyVal "pathInfo "     $ (BS.pack.show) $ pathInfo req
   printKeyVal "method "       $ requestMethod req 
   printKeyVal "host "         $ (BS.pack.show) $ remoteHost req 
-  printKeyVal "headers "      $ BS.pack $ show $ requestHeaders req 
+  printKeyVal "headers "      $ (BS.pack.show) $ requestHeaders req 
 
   -- params,
   let params =  queryString req 
@@ -75,7 +79,7 @@ app req res = do
 
   -- log params 
   putStrLn "----"
-  let f (key, Just val) = BS.putStrLn $ BS.concat  [ key , E.encodeUtf8 ":", val ]  
+  let f (key, Just val) = BS.putStrLn $ BS.concat  [ key , E.encodeUtf8 " -> ", val ]  
   mapM f params
   putStrLn "----"
 
