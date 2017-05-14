@@ -102,8 +102,10 @@ data Record = Record {
 } deriving (Show, Eq)
 
 
--- should use ByteString?
 
+emptyRecord = Record Nothing  Nothing Nothing [] [] [] Nothing [] []  
+
+-- should use ByteString?
 -- should pass in the formatting function to use....
 
 {-

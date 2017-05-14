@@ -13,7 +13,11 @@
 module Metadata where
 
 
-import qualified Database.PostgreSQL.Simple as PG(query, connectPostgreSQL)
+-- import qualified Database.PostgreSQL.Simple as PG(query, connectPostgreSQL)
+
+import Database.PostgreSQL.Simple as PG
+import Database.PostgreSQL.Simple.Types as PG(Only(..))
+
 import Text.RawString.QQ
 
 -- import qualified Record.DataIdentification as Record(DataIdentification(..))  
@@ -95,27 +99,67 @@ data MDCommons = MDCommons {
 
 -- but if that's the case... - we should compose it - bit by bit according to the record id 
 
-getRecordList conn = do
-  let query1 = [r|
-      select
-        record.id,
-        uuid
-      from record
-      where record.id = 289
-  |]
-  xs ::  [ ( 
-        Integer, -- record_id 
-        String   -- uuid 
-    ) ]  <- PG.query conn query1 ()
-  let record = 
-       case xs of  
-        [ (record_id, uuid ) ] -> Record (Just uuid) Nothing Nothing [] [] [] Nothing [] []  
-  return record
+{-
+    xs :: [ (Only Integer)] <- PG.query conn
+        [r|
+            with s as (
+                select id
+                from record
+                where uuid = ?
+            ),
+            i as (
+                insert into record(uuid)
+                select ?
+                where not exists (select 1 from s)
+                returning id
+            )
+            select id from i
+            union all
+            select id from s
+        |]
+        (uuid :: String, uuid :: String)
+
+        (   record_id :: Integer,
+-}
+
+getRecordUuid conn record = do
+
+  xs :: [ (Integer, String)] <- PG.query conn 
+    [r|
+        select
+          record.id,
+          uuid
+        from record
+        where record.id = ?
+    |]
+    (  123  :: Integer, 456 :: Integer )
+  return $ 
+    case xs of 
+      [ (record_id, uuid ) ] -> record { uuid = Just uuid } 
+
+
 
 
 
 getRecordDataIdentification conn record = do
-  return $ record {  uuid = Just "xxxx" } -- some change...  
+  let query1 = [r|
+      select
+        di.title,
+        di.abstract
+      from record
+      left join data_identification di on di.record_id = record.id 
+      where record.id = 289
+  |]
+  xs ::  [ (Maybe String, Maybe String) ]  <- PG.query conn query1 ()
+  return $
+    case xs of 
+      [ (Just title, Just abstract) ] -> record { dataIdentification = Just $ DataIdentification title abstract } 
+      _ -> record
+
+
+
+
+  -- return $ record' -- {  uuid = Just "xxxx" } -- some change...  
   -- return record
 
 
@@ -124,8 +168,10 @@ main :: IO ()
 main = do
   conn <- PG.connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
 
-  record <- getRecordList conn
+  record <- getRecordUuid conn emptyRecord
   (putStrLn.show) record 
+
+  putStrLn "----"
 
   record <- getRecordDataIdentification conn record 
   (putStrLn.show) record 
