@@ -1,4 +1,5 @@
 
+- analyze the real portal - query - and break it down into tables from there...
 
 - extract visual database structure - to png. etc.
 - extract Config references for Scheme loading to a Config.hs
