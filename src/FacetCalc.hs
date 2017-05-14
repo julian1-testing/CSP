@@ -1,5 +1,8 @@
 {-
   Calculate the ConceptRecord graph
+-- TODO  consider factoring the sql actions out of here.
+-- although they are required
+
 -}
 
 {-# LANGUAGE ScopedTypeVariables, OverloadedStrings #-}
@@ -32,13 +35,11 @@ mapGet e m =
   -- trace  ("mytrace - mapGet e: " ++ show e ++ " m: " ++ show m) $
   (Map.!) m e
 
--- TODO  consider factoring the sql actions out of here.
+
 
 getConceptNesting conn  = do
-  -- TODO change name - get ConceptParents   conceptParents ? ConceptRelationships?
-  -- return a flat list of concept nestings
-  -- get parent child concept nestings
-  -- we want the concept_id, parent_id, record_id
+  -- TODO maybe change name - get ConceptParents   conceptParents ? ConceptRelationships?
+  -- returns a flat list of concept nestings
   let query1 = [r|
       select
         concept_id,
@@ -49,8 +50,9 @@ getConceptNesting conn  = do
   return xs
 
 
+
 getConceptLabels conn  = do
-  -- same as above - except with labels - maybe delete
+  -- same as above - except with the concept labels
   let query1 = [r|
       select
         concept_id,
@@ -60,8 +62,6 @@ getConceptLabels conn  = do
   |]
   xs :: [ (Integer, Maybe Integer, String ) ] <- PG.query conn query1 ()
   return xs
-
-
 
 
 
@@ -84,9 +84,7 @@ getConceptRecordList conn  = do
 
 
 buildInitialConceptMap xs =
-  -- TODO change name buildInitialConceptRecordMap
-  -- TODO change this so we just insert a new - maybe
-  -- we make the concept a Maybe type - so that we can handle Nothing as root node later
+  -- create a map of concept -> records, for all the leaf/terminal concepts
 
   Map.empty
   & \m -> foldl initForConcept m xs
@@ -109,9 +107,6 @@ buildInitialConceptMap xs =
           -- nothing means null in the left join so no records
           m
 
-
--- we need to know how this is working?
--- it's the finish condition that we need to test....
 
 propagateRecordsToParentConcept nestings m =
   {-
@@ -204,17 +199,6 @@ doAll nestings m  =
   & adjustRootRecord
 
 
-
---  let (propagated, records) = ConceptRecord.doAll nestings  facetCounts
-
-
-
----- NO just run the propagation 
----- and manually set the root node and take the elements from it...
----- easy peasy.
-
--- holdy k
--- we need to change this around...
 
 
 putStrLnConceptRecordMap m = -- do
