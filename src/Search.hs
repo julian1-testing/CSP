@@ -1,7 +1,7 @@
 
 {-# LANGUAGE OverloadedStrings #-}
 
-module FacetRequest where
+module Search where
 
 import qualified Database.PostgreSQL.Simple as PG(query, connectPostgreSQL)
 import Database.PostgreSQL.Simple.Internal as Internal(Connection)

@@ -40,7 +40,7 @@ import Database.PostgreSQL.Simple.Types as PG(Only(..))
 
 
 
-import FacetRequest(request) 
+import Search(request) 
 
 encode = LE.encodeUtf8 
 
@@ -106,7 +106,7 @@ whootRoute =  do
   xs :: [ (Only Integer ) ] <- PG.query conn query ()
   mapM (putStrLn.show) xs
 
-  s <- FacetRequest.request conn
+  s <- Search.request conn
   -- let ss = LT.pack s
   -- let ss = encode s
   -- LBS.putStrLn ss
