@@ -17,6 +17,8 @@ import qualified Database.PostgreSQL.Simple as PG(query, connectPostgreSQL)
 import Text.RawString.QQ
 
 -- THINK we want a proper constructor with the actual values...
+-- is left outer join ok? 
+-- that will probably take care of the formatting also,
 
 
 getRecordList conn = do
