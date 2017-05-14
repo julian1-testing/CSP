@@ -96,7 +96,6 @@ data MDCommons = MDCommons {
 -- but if that's the case... - we should compose it - bit by bit according to the record id 
 
 getRecordList conn = do
-
   let query1 = [r|
       select
         record.id,
@@ -104,35 +103,42 @@ getRecordList conn = do
       from record
       where record.id = 289
   |]
-  xs ::  [
-    (   Integer, -- record_id 
+  xs ::  [ ( 
+        Integer, -- record_id 
         String   -- uuid 
     ) ]  <- PG.query conn query1 ()
-
   let record = 
-        case xs of  
-          [ (record_id, uuid ) ] -> Record (Just uuid) Nothing Nothing [] [] [] Nothing [] []  
-          -- [ record_id ] -> record_id -- Record (Just uuid) Nothing Nothing [] [] [] Nothing [] []  
+       case xs of  
+        [ (record_id, uuid ) ] -> Record (Just uuid) Nothing Nothing [] [] [] Nothing [] []  
+  return record
 
 
 
---  let r = head xs 
---   let record = Record (Just $ snd r) Nothing Nothing [] [] [] Nothing [] []  
-
-  (putStrLn.show) record 
-
-  -- mapM (putStrLn.show) xs
-  -- return xs
+getRecordDataIdentification conn record = do
+  return record
 
 
 
 main :: IO ()
 main = do
   conn <- PG.connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
-  getRecordList conn
+
+  record <- getRecordList conn
+  (putStrLn.show) record 
+
+
+  record <- getRecordDataIdentification conn record 
+  (putStrLn.show) record 
+
   return ()
 
 
+
+
+--  let r = head xs 
+--   let record = Record (Just $ snd r) Nothing Nothing [] [] [] Nothing [] []  
+-- mapM (putStrLn.show) xs
+-- return xs
 
 
 
