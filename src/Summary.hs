@@ -96,6 +96,7 @@ myConcat lst = foldl LT.append LT.empty lst
 -- myConcat lst = concatMap LT.append lst
 
 
+-- TODO change format to format
 
 formatXML rootRecordCount m = 
   {-  we will recurse from the root node down...
@@ -111,40 +112,40 @@ formatXML rootRecordCount m =
       -- what's going on here?
       case label of 
         "summary" ->
-          outputSummary (parent, label, count) depth 
+          formatSummary (parent, label, count) depth 
 
-        -- should we be outputing this label substitution here? or when loading the vocab scheme and set the label? ...
+        -- should we be formating this label substitution here? or when loading the vocab scheme and set the label? ...
         "AODN Parameter Category Vocabulary" ->
-          outputDimension (parent, "Measured Parameter", count) depth 
+          formatDimension (parent, "Measured Parameter", count) depth 
 
         "AODN Platform Category Vocabulary" ->
-          outputDimension (parent, "Platform", count) depth 
+          formatDimension (parent, "Platform", count) depth 
 
         _ ->
-          outputCategory (parent, label, count) depth 
+          formatCategory (parent, label, count) depth 
 
-    outputSummary (parent, label, count) depth  = 
+    formatSummary (parent, label, count) depth  = 
       myConcat [
           pad $ depth * 3,
           "<", LT.pack label, " count=\"", LT.pack.show $ count, "\" type=\"local\">\n",
-          outputChildren (parent, label, count) depth,
+          formatChildren (parent, label, count) depth,
           pad $ depth * 3,
           "</", LT.pack label, ">"
       ]
 
 
-    outputDimension (parent, label, count) depth =
+    formatDimension (parent, label, count) depth =
       -- single closed tag...
       myConcat [
           pad $ depth * 3,
           "<dimension value=\"", LT.pack label, "\" count=\"", LT.pack.show $ count, "\">\n", 
-          outputChildren (parent, label, count) depth,
+          formatChildren (parent, label, count) depth,
           pad $ depth * 3,
           "</dimension>"
       ]
 
 
-    outputCategory (parent, label, count) depth =
+    formatCategory (parent, label, count) depth =
 
       let value = LT.pack $ X.attrEscapeXml label in
       myConcat [ 
@@ -153,14 +154,14 @@ formatXML rootRecordCount m =
         -- here
         "<category value=\"", value, "\" count=\"", LT.pack.show $ count, "\">\n",
         -- children
-        outputChildren (parent, label, count) depth ,
+        formatChildren (parent, label, count) depth ,
         -- end tag
         pad $ depth * 3,
         "</category>\n"
       ]
 
 
-    outputChildren (parent, label, count) depth =
+    formatChildren (parent, label, count) depth =
         -- take children
         let children = mapGet parent m  in
         -- recurse into children

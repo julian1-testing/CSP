@@ -35,7 +35,7 @@ maybeToString m =
     Just uuid -> uuid
     Nothing -> ""
 
-
+-- OK. so if we have a set of record_id - we should be able to format them all 
 
 
 main :: IO ()
