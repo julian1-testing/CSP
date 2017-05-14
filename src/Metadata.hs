@@ -35,7 +35,7 @@ maybeToString m =
     Just uuid -> uuid
     Nothing -> ""
 
-
+-- should use maybe()
 
 
 
@@ -59,9 +59,8 @@ main = do
           maybeToString $ uuid record ,
           LT.pack "</source>",
 
-          -- case  
-          -- dataIdentification.title
-          -- maybeToString $ title $ dataIdentification record ,
+          LT.pack $ (title.fromJust.dataIdentification ) $ record,
+
 
 
           LT.pack "\n</metadata>"
