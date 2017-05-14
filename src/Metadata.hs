@@ -132,7 +132,7 @@ getRecordUuid conn record = do
         from record
         where record.id = ?
     |]
-    (  123  :: Integer, 456 :: Integer )
+    $ Only (289 :: Integer )
   return $ 
     case xs of 
       [ (record_id, uuid ) ] -> record { uuid = Just uuid } 
