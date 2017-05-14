@@ -16,24 +16,27 @@ module Metadata where
 import qualified Database.PostgreSQL.Simple as PG(query, connectPostgreSQL)
 import Text.RawString.QQ
 
-
+-- THINK we want a proper constructor with the actual values...
 
 
 getRecordList conn = do
 
   let query1 = [r|
       select
-        concept_view.concept_id,
-        concept_view.parent_id,
-        data_parameter.record_id
-      from concept_view
-      left join data_parameter on data_parameter.concept_id = concept_view.concept_id
-      left join record on data_parameter.record_id = record.id
+        record.id,
+        uuid,
+        di.title
+      from record
+
+      left join data_identification di on di.record_id = record.id 
+      left join md_commons c on c.record_id = record.id 
+      -- left join data_parameter on data_parameter.concept_id = concept_view.concept_id
+      -- left join record on data_parameter.record_id = record.id
   |]
   xs :: [ 
     (Integer, 
-    Maybe Integer, 
-    Maybe Integer 
+    String, 
+    String
     ) ] <- PG.query conn query1 ()
   mapM (putStrLn.show) xs
   return xs
