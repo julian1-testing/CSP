@@ -273,66 +273,8 @@ testPropagateAll = do
 
 
 
-
--- change name to test?
 main :: IO ()
--- main = testPropagateOnce
 main = testPropagateAll
 
 
-
-
-
-
-
-{-
-    f2 m (concept_id, parent_id) =
-        -- propagate records up to their parent concept, and adjust counts
-
-        -- get the record list for this concept
-        let (countForConcept, recordsForConcept) =
-              mapGet m (Just concept_id)
-        in
-        -- get the records for the parent
-        let (countForParent, recordsForParent) = (
-              case Map.member parent_id m of
-                False -> (0, [])
-                True -> mapGet m parent_id
-              )
-        in
-        -- concat recordsForConcept to the recordsForParent and de-duplicate
-        let newParentLst  = mkUniq (recordsForParent ++ recordsForConcept)  in
-
-        -- and then store against the parent concept. countForParent is unchanged
-        Map.insert parent_id (countForParent, newParentLst) m
-
-
-        & Map.insert (Just concept_id) (countForConcept + length recordsForConcept, []) -- m
-
-
-    f3 m (concept_id, parent_id) =
-        -- get the record list for this concept
-        let (countForConcept, recordsForConcept) =
-              mapGet m (Just concept_id)
-        in
-
-        -- now clear the list for child/narrower concept, and increment count by nymber of records moved to parent
-        Map.insert (Just concept_id) (countForConcept + length recordsForConcept, []) m
--}
-
-{-
-    -- uggh - we cannot just go and clean the reocrds - as then there is nothing to propagate...
-    clearRecords k (count, records) =
-        -- clean records but keep the count
-        (count, [] :: [ Integer ])
--}
-
-{-
-
-        -- let (count, records) = v
-        -- TODO don't compute length - just test if empty or not
-        in case length records of
-          0 -> False
-          _ -> True
--}
 

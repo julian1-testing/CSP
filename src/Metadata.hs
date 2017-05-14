@@ -39,18 +39,11 @@ getRecordList conn = do
   return xs
 
 
--- main = getRecordList 
-
 
 main :: IO ()
 main = do
   conn <- PG.connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
-
   getRecordList conn
-
-  -- s <- request conn
-  --- LT.putStrLn $ s
-
   return ()
 
 
