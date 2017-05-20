@@ -28,7 +28,7 @@ import qualified Data.Text.Lazy.IO as LT(putStrLn)
 import Data.Maybe
 
 
-import qualified Helpers as Helpers(concatLT, pad)
+import qualified Helpers as H(concatLT, pad)
 
 
 -- TODO use Option.maybe()
@@ -63,7 +63,7 @@ main = do
 
   let depth = 0
 
-  let s = Helpers.concatLT [
+  let s = H.concatLT [
           "<metadata>",
 
 
@@ -79,16 +79,16 @@ main = do
         ]
         where
           formatTitle di depth  = 
-            Helpers.concatLT [
+            H.concatLT [
                 "\n",
-                Helpers.pad $ depth * 3,
+                H.pad $ depth * 3,
                 "<title>", LT.pack $ title di, LT.pack "</title>"
             ]
 
           formatSource uuid depth =   
-            Helpers.concatLT [
+            H.concatLT [
                 "\n",
-                Helpers.pad $ depth * 3,
+                H.pad $ depth * 3,
                 "<source>", LT.pack uuid, "</source>"
             ]
 
