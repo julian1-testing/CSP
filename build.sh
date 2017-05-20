@@ -17,8 +17,8 @@ FLAGS="-i./src -O2 -outputdir tmp"
 # files=src/*.hs
 # files=src/CSW.hs
 # files=' src/CSP.hs src/FacetCalc.hs '
-# files=' src/Metadata.hs src/FacetCalc.hs src/CSP.hs '
-files=' src/Metadata.hs '
+files=' src/Metadata.hs src/FacetCalc.hs src/CSP.hs '
+# files=' src/Metadata.hs '
 
 for i in $files; do
 

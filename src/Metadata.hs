@@ -58,6 +58,7 @@ main = do
       it's going to be a different call...
   -}
 
+  {-
   record <- RecordGet.getRecord conn 289
 
   (putStrLn.show.fromJust.uuid) $ record
@@ -65,21 +66,18 @@ main = do
   (putStrLn.show) $ record
 
   let depth = 0
-
+  -}
 
   records <- RecordGet.getRecords conn [ 289, 290 ]
   
-
-  -- let s = formatRecord record depth 
 
   let s = formatRecords records 0
         where
 
           formatRecords records depth =  
             H.concatLT $ map (\record -> formatRecord record depth) records
+            -- H.concatLT $ map (flip $ formatRecord depth ) records
 
-          -- H.concatLT or 
-        
 
           formatRecord record depth =  
             H.concatLT [
@@ -107,9 +105,6 @@ main = do
                 H.pad $ depth * 3,
                 "<source>", LT.pack uuid, "</source>"
             ]
-
-
-
 
 
   LT.putStrLn $ s

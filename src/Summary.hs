@@ -32,7 +32,7 @@ import qualified Text.XML.HXT.DOM.Util as X(attrEscapeXml) -- worked
 
 import qualified FacetCalc as FacetCalc
 
-import qualified Helpers as Helpers(concatLT, pad)
+import qualified Helpers as H(concatLT, pad)
 
 
 -- ease syntax
@@ -112,22 +112,22 @@ formatXML rootRecordCount m =
           formatCategory (parent, label, count) depth 
 
     formatSummary (parent, label, count) depth  = 
-      Helpers.concatLT [
-          Helpers.pad $ depth * 3,
+      H.concatLT [
+          H.pad $ depth * 3,
           "<", LT.pack label, " count=\"", LT.pack.show $ count, "\" type=\"local\">\n",
           formatChildren (parent, label, count) depth,
-          Helpers.pad $ depth * 3,
+          H.pad $ depth * 3,
           "</", LT.pack label, ">"
       ]
 
 
     formatDimension (parent, label, count) depth =
       -- single closed tag...
-      Helpers.concatLT [
-          Helpers.pad $ depth * 3,
+      H.concatLT [
+          H.pad $ depth * 3,
           "<dimension value=\"", LT.pack label, "\" count=\"", LT.pack.show $ count, "\">\n", 
           formatChildren (parent, label, count) depth,
-          Helpers.pad $ depth * 3,
+          H.pad $ depth * 3,
           "</dimension>"
       ]
 
@@ -135,15 +135,15 @@ formatXML rootRecordCount m =
     formatCategory (parent, label, count) depth =
 
       let value = LT.pack $ X.attrEscapeXml label in
-      Helpers.concatLT [ 
+      H.concatLT [ 
         -- start tag
-        Helpers.pad $ depth * 3,
+        H.pad $ depth * 3,
         -- here
         "<category value=\"", value, "\" count=\"", LT.pack.show $ count, "\">\n",
         -- children
         formatChildren (parent, label, count) depth ,
         -- end tag
-        Helpers.pad $ depth * 3,
+        H.pad $ depth * 3,
         "</category>\n"
       ]
 
