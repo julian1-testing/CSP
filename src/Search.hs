@@ -131,12 +131,12 @@ request conn = do
   return s 
   -}
   return $ H.concatLT [
-          "<response from=\"1\" to=\"10\" selected = \"0\">\n",
-          s,
-          s2,
-          "\n",
-          "</response>"
-      ]
+        "<response from=\"1\" to=\"10\" selected = \"0\">\n",
+        s,
+        s2,
+        "\n",
+        "</response>"
+    ]
 
 
 
