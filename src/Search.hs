@@ -115,13 +115,13 @@ request conn = do
   -- generate xml
   let s = Summary.formatXML (length allRecordIds) sortedGraph
 
-  --- 
+  ---  do the record stuff...
   records <- RecordGet.getRecords conn allRecordIds
   
   let s2 = Metadata.formatXML records 0
 
 
-  return s
+  return $ LT.append s s2  
 
 
 
