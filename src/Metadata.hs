@@ -1,5 +1,4 @@
 {-
-
   Format the metadata part of xml.search.imos
 
   https://catalogue-portal.aodn.org.au/geonetwork/srv/eng/xml.search.imos?protocol=OGC%3AWMS-1.1.1-http-get-map%20or%20OGC%3AWMS-1.3.0-http-get-map%20or%20IMOS%3ANCWMS--proto&sortBy=popularity&from=1&to=10&fast=index&filters=collectionavailability
@@ -11,34 +10,55 @@
 
 {-# LANGUAGE OverloadedStrings #-}
 
-
 module Metadata where
 
 
-import Database.PostgreSQL.Simple as PG
-import qualified Database.PostgreSQL.Simple as PG(query, connectPostgreSQL, Only(..))
-
-import RecordGet as RecordGet(getRecord, getRecords)
-import Record
-
-
-import qualified Data.Text.Lazy as LT(pack, empty, append)
+import qualified Database.PostgreSQL.Simple as PG(connectPostgreSQL)
+import qualified Data.Text.Lazy as LT(pack)
 import qualified Data.Text.Lazy.IO as LT(putStrLn)
 
-import Data.Maybe
 
-
+import Record
+import RecordGet as RecordGet(getRecords)
 import qualified Helpers as H(concatLT, pad)
 
-{-
--- TODO use Option.maybe()
-maybeToString m = 
-  LT.pack $ case m of
-    Just uuid -> uuid
-    Nothing -> ""
--}
 
--- OK. so if we have a set of record_id - we should be able to format them all 
+
+formatRecords records depth =  
+  H.concatLT $ map (\record -> formatRecord record depth) records
+  -- H.concatLT $ map (flip $ formatRecord depth ) records
+  where
+
+    formatRecord record depth =  
+      H.concatLT [
+        "\n",
+        H.pad $ depth * 3,
+        "<metadata>"
+        ,
+        case uuid record of 
+          Just uuid_ -> formatSource uuid_ (depth + 1)
+        ,
+        case dataIdentification record of
+          Just di -> formatTitle di (depth + 1)
+        ,
+        "\n",
+        H.pad $ depth * 3,
+        "</metadata>"
+      ]
+
+    formatTitle di depth  = 
+      H.concatLT [
+          "\n",
+          H.pad $ depth * 3,
+          "<title>", LT.pack $ title di, LT.pack "</title>"
+      ]
+
+    formatSource uuid depth =   
+      H.concatLT [
+          "\n",
+          H.pad $ depth * 3,
+          "<source>", LT.pack uuid, "</source>"
+      ]
 
 
 
@@ -70,42 +90,7 @@ main = do
 
   records <- RecordGet.getRecords conn [ 289, 290 ]
   
-
   let s = formatRecords records 0
-        where
-
-          formatRecords records depth =  
-            H.concatLT $ map (\record -> formatRecord record depth) records
-            -- H.concatLT $ map (flip $ formatRecord depth ) records
-
-
-          formatRecord record depth =  
-            H.concatLT [
-              "<metadata>"
-              ,
-              case uuid record of 
-                Just uuid_ -> formatSource uuid_ (depth + 1)
-              ,
-              case dataIdentification record of
-                Just di -> formatTitle di (depth + 1)
-              ,
-              "\n</metadata>"
-            ]
-
-          formatTitle di depth  = 
-            H.concatLT [
-                "\n",
-                H.pad $ depth * 3,
-                "<title>", LT.pack $ title di, LT.pack "</title>"
-            ]
-
-          formatSource uuid depth =   
-            H.concatLT [
-                "\n",
-                H.pad $ depth * 3,
-                "<source>", LT.pack uuid, "</source>"
-            ]
-
 
   LT.putStrLn $ s
 

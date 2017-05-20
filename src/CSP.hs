@@ -3,7 +3,8 @@
 {-# LANGUAGE ScopedTypeVariables, OverloadedStrings #-}
 
 {-
-  IMPORTANT - how to wait/throttle according to the number of db connections - until one was available?
+  CSP - catalog services for portal
+  TODO - need to wait/throttle http connections to not db connections - until one was available?
 
   for routes, 
     http://cjwebb.github.io/blog/2016/12/16/getting-started-with-haskells-warp/
@@ -86,8 +87,11 @@ app req res = do
 
   -- route delegation
   x <- case (pathInfo req) of
-    [ "srv","eng","xml.search.imos" ] -> whootRoute
+
+    [ "srv","eng","xml.search.imos" ] -> xmlSearchImos
+
     [ "whoot" ] -> helloRoute
+
     _   -> notFoundRoute
 
   -- do it...
@@ -95,10 +99,10 @@ app req res = do
 
 
 
-whootRoute :: IO Response 
-whootRoute =  do
+xmlSearchImos :: IO Response 
+xmlSearchImos =  do
 
-  BS.putStrLn $ E.encodeUtf8 "in whoot" 
+  BS.putStrLn $ E.encodeUtf8 "in xmlSearchImos" 
 
   -- test db 
   conn <- PG.connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
@@ -124,7 +128,8 @@ helloRoute = do
 
 
 notFoundRoute :: IO Response
-notFoundRoute = return $ responseLBS status404 [(hContentType, "application/json")] "404 - Not Found"
+notFoundRoute = 
+  return $ responseLBS status404 [(hContentType, "application/json")] "404 - Not Found"
 
 
 
@@ -140,7 +145,7 @@ notFoundRoute = return $ responseLBS status404 [(hContentType, "application/json
 -- note also, the difference between rawPathInfo and rawQueryString...
 
 -- https://hackage.haskell.org/package/http-types-0.9.1/docs/Network-HTTP-Types-URI.html#t:Query
--- whootRoute :: Response
+-- xmlSearchImos :: Response
 -- we're going to need to pick up a db connection - so this has to be io
 
 

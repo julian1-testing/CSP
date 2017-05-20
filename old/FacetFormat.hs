@@ -25,6 +25,15 @@ import Text.RawString.QQ
 
 import qualified FacetCalc as FacetCalc
 
+-- TODO use Option.maybe()
+maybeToString m = 
+  LT.pack $ case m of
+    Just uuid -> uuid
+    Nothing -> ""
+-}
+
+-- OK. so if we have a set of record_id - we should be able to format them all 
+
 
 
 

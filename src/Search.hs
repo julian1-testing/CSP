@@ -5,8 +5,6 @@ module Search where
 
 import qualified Database.PostgreSQL.Simple as PG(query, connectPostgreSQL)
 import Database.PostgreSQL.Simple.Internal as Internal(Connection)
--- import qualified Database.PostgreSQL.Simple.Internal(Conection(..)) -- as Internal( Connection(..) )
--- import Database.PostgreSQL.Simple.Types as PG(Only(..))
 
 import qualified Data.Map as Map
 import qualified Data.Text.Lazy.IO as LT(putStrLn)
@@ -18,7 +16,6 @@ import Data.Function( (&) )
 import Control.Monad(unless, when)
 
 -- should put this in a module TestConceptRecords - 
-
 import qualified FacetCalc as FacetCalc --(buildLeafFacetMap,main)
 import qualified Summary as Summary--(main)
 
@@ -31,9 +28,7 @@ mapGet e m =
 
 
 
--- this is monadic
 request :: Connection -> IO LT.Text
-
 request conn = do 
 
   let trace_ = False

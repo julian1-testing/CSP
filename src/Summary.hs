@@ -25,13 +25,13 @@ import Text.RawString.QQ
 -- import qualified Text.XML.HXT.DOM.Util as XML(attrEscapeXML)
 -- import qualified Text.XML.HXT.DOM.Util as XML(stringTrim, escapeUri )
 -- import qualified Text.XML.HXT.DOM.Util as X(escapeUri )
--- import qualified Text.XML.HXT.DOM.Util as X(stringTrim) -- OK
+-- import qualified Text.XML.HXT.DOM.Util as X(stringTrim)
 
 -- https://www.stackage.org/haddock/lts-7.21/hxt-9.3.1.16/Text-XML-HXT-DOM-Util.html
-import qualified Text.XML.HXT.DOM.Util as X(attrEscapeXml) -- worked
+import qualified Text.XML.HXT.DOM.Util as X(attrEscapeXml)
+
 
 import qualified FacetCalc as FacetCalc
-
 import qualified Helpers as H(concatLT, pad)
 
 
