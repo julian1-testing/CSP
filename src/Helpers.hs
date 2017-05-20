@@ -22,6 +22,8 @@ import qualified Data.ByteString.Char8 as BC  -- TODO change to BS -- see Warp2.
 
 import Data.Char(isSpace)
 
+import qualified Data.Text.Lazy as LT(pack, empty, append)
+import qualified Data.List as List(unfoldr)
 
 
 
@@ -70,6 +72,22 @@ doHTTPPost url body = do
     response <- httpLbs request manager
     Prelude.putStrLn $ "The status code was: " ++ (show $ statusCode $ responseStatus response)
     return response
+
+
+
+
+
+-- return white space String with length of count
+-- TODO move to Helpers
+pad count = 
+  LT.pack $ List.unfoldr f count
+    where f x = case x of
+            0 -> Nothing
+            _ -> Just (' ', x - 1)
+
+
+-- concat list of lazy text - TODO move to Helpers?
+concatLT lst = foldl LT.append LT.empty lst
 
 
 

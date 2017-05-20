@@ -14,7 +14,7 @@ module Summary where
 
 
 import qualified Data.Map as Map
-import qualified Data.List as List(sortOn, unfoldr)
+import qualified Data.List as List(sortOn)
 import qualified Database.PostgreSQL.Simple as PG(query, connectPostgreSQL)
 import qualified Data.Text.Lazy as LT(pack, empty, append)
 import Data.Function( (&) )
@@ -24,16 +24,15 @@ import Text.RawString.QQ
 
 -- import qualified Text.XML.HXT.DOM.Util as XML(attrEscapeXML)
 -- import qualified Text.XML.HXT.DOM.Util as XML(stringTrim, escapeUri )
-
 -- import qualified Text.XML.HXT.DOM.Util as X(escapeUri )
 -- import qualified Text.XML.HXT.DOM.Util as X(stringTrim) -- OK
 
 -- https://www.stackage.org/haddock/lts-7.21/hxt-9.3.1.16/Text-XML-HXT-DOM-Util.html
 import qualified Text.XML.HXT.DOM.Util as X(attrEscapeXml) -- worked
 
-
 import qualified FacetCalc as FacetCalc
 
+import qualified Helpers as Helpers(concatLT, pad)
 
 
 -- ease syntax
@@ -41,15 +40,6 @@ mapGet e m =
   -- trace  ("mytrace - mapGet e: " ++ show e ++ " m: " ++ show m) $
   (Map.!) m e
 
-
-
-
--- generate a white space String with length of count
-pad count = 
-  LT.pack $ List.unfoldr f count
-    where f x = case x of
-            0 -> Nothing
-            _ -> Just (' ', x - 1)
 
 
 
@@ -90,10 +80,7 @@ sort m =
 -- so all we need to do is pass the actual root node in here explicitly 
 -- VERY IMPORTANT - it might be possible to do this more simply - by having separate lists. 
 
--- lazy string concat
-myConcat lst = foldl LT.append LT.empty lst
-
--- myConcat lst = concatMap LT.append lst
+-- concatLT lst = concatMap LT.append lst
 
 
 -- TODO change format to format
@@ -125,22 +112,22 @@ formatXML rootRecordCount m =
           formatCategory (parent, label, count) depth 
 
     formatSummary (parent, label, count) depth  = 
-      myConcat [
-          pad $ depth * 3,
+      Helpers.concatLT [
+          Helpers.pad $ depth * 3,
           "<", LT.pack label, " count=\"", LT.pack.show $ count, "\" type=\"local\">\n",
           formatChildren (parent, label, count) depth,
-          pad $ depth * 3,
+          Helpers.pad $ depth * 3,
           "</", LT.pack label, ">"
       ]
 
 
     formatDimension (parent, label, count) depth =
       -- single closed tag...
-      myConcat [
-          pad $ depth * 3,
+      Helpers.concatLT [
+          Helpers.pad $ depth * 3,
           "<dimension value=\"", LT.pack label, "\" count=\"", LT.pack.show $ count, "\">\n", 
           formatChildren (parent, label, count) depth,
-          pad $ depth * 3,
+          Helpers.pad $ depth * 3,
           "</dimension>"
       ]
 
@@ -148,15 +135,15 @@ formatXML rootRecordCount m =
     formatCategory (parent, label, count) depth =
 
       let value = LT.pack $ X.attrEscapeXml label in
-      myConcat [ 
+      Helpers.concatLT [ 
         -- start tag
-        pad $ depth * 3,
+        Helpers.pad $ depth * 3,
         -- here
         "<category value=\"", value, "\" count=\"", LT.pack.show $ count, "\">\n",
         -- children
         formatChildren (parent, label, count) depth ,
         -- end tag
-        pad $ depth * 3,
+        Helpers.pad $ depth * 3,
         "</category>\n"
       ]
 
@@ -168,7 +155,7 @@ formatXML rootRecordCount m =
         let f acc (concept, label, count) = acc $ recurse m (concept, label, count) (depth + 1) in
         -- fold over children appending text
         foldl (f.LT.append) LT.empty children
-        -- TODO use myConcat? eg.
+        -- TODO use concatLT? eg.
         -- concatMap f children
 
 
@@ -190,8 +177,6 @@ getTestConceptRecordList conn = do
 
 {-
   Main test/example is in Search
-
-
 -}
 
 

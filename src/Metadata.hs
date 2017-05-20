@@ -4,6 +4,9 @@
 
   https://catalogue-portal.aodn.org.au/geonetwork/srv/eng/xml.search.imos?protocol=OGC%3AWMS-1.1.1-http-get-map%20or%20OGC%3AWMS-1.3.0-http-get-map%20or%20IMOS%3ANCWMS--proto&sortBy=popularity&from=1&to=10&fast=index&filters=collectionavailability
 
+
+  http://localhost:3000/srv/eng/xml.search.imos?protocol=OGC%3AWMS-1.1.1-http-get-map%20or%20OGC%3AWMS-1.3.0-http-get-map%20or%20IMOS%3ANCWMS--proto&sortBy=popularity&from=1&to=10&fast=index&filters=collectionavailability
+
 -}
 
 {-# LANGUAGE OverloadedStrings #-}
@@ -24,12 +27,11 @@ import qualified Data.Text.Lazy.IO as LT(putStrLn)
 
 import Data.Maybe
 
--- So we actually need to format the damn xml...
--- lazy string concat
-myConcat lst = foldl LT.append LT.empty lst
+
+import qualified Helpers as Helpers(concatLT, pad)
 
 
-
+-- TODO use Option.maybe()
 maybeToString m = 
   LT.pack $ case m of
     Just uuid -> uuid
@@ -38,10 +40,19 @@ maybeToString m =
 -- OK. so if we have a set of record_id - we should be able to format them all 
 
 
+
+
 main :: IO ()
 main = do
   conn <- PG.connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
 
+  {- 
+    what we want is a list of record_id's  - which we have, in the propgated root node- 
+      1. then can do a query to join - to get a list  
+      2. then xml format
+
+    think we also want the pad...
+  -}
   let record_id = 289
 
   record <- RecordGet.getRecord conn record_id
@@ -50,7 +61,7 @@ main = do
   (putStrLn.show.title.fromJust.dataIdentification ) $ record
   (putStrLn.show) $ record
 
-  let s = myConcat [
+  let s = Helpers.concatLT [
           "<metadata>",
 
           -- source - can we factor the Just destructuring?
@@ -59,7 +70,7 @@ main = do
           -- data identification
           case dataIdentification record of
             Just di -> 
-              myConcat [
+              Helpers.concatLT [
                 "\n",
                 "<title>", LT.pack $ title di, LT.pack "</title>"
               ]
