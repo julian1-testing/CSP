@@ -117,7 +117,9 @@ request conn = do
   let s = Summary.formatXML (length allRecordIds) sortedGraph
 
   ---  do the record stuff...
-  records <- RecordGet.getRecords conn allRecordIds
+
+  let selectedIds = take 10 allRecordIds
+  records <- RecordGet.getRecords conn selectedIds
   
   let s2 = Metadata.formatXML records 1
 
