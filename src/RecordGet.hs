@@ -88,6 +88,10 @@ getRecord conn record_id = do
 
 
 
+getRecords conn records = do
+  mapM (getRecord conn) records
+
+
 
 main :: IO ()
 main = do

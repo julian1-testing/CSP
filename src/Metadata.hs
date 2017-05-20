@@ -18,7 +18,7 @@ module Metadata where
 import Database.PostgreSQL.Simple as PG
 import qualified Database.PostgreSQL.Simple as PG(query, connectPostgreSQL, Only(..))
 
-import RecordGet as RecordGet(getRecord)
+import RecordGet as RecordGet(getRecord, getRecords)
 import Record
 
 
@@ -30,12 +30,13 @@ import Data.Maybe
 
 import qualified Helpers as H(concatLT, pad)
 
-
+{-
 -- TODO use Option.maybe()
 maybeToString m = 
   LT.pack $ case m of
     Just uuid -> uuid
     Nothing -> ""
+-}
 
 -- OK. so if we have a set of record_id - we should be able to format them all 
 
@@ -52,10 +53,12 @@ main = do
       2. then xml format
 
     think we also want the pad...
-  -}
-  let record_id = 289
 
-  record <- RecordGet.getRecord conn record_id
+    - ok, lets try to return a compounded list structure...
+      it's going to be a different call...
+  -}
+
+  record <- RecordGet.getRecord conn 289
 
   (putStrLn.show.fromJust.uuid) $ record
   (putStrLn.show.title.fromJust.dataIdentification ) $ record
@@ -63,21 +66,34 @@ main = do
 
   let depth = 0
 
-  let s = H.concatLT [
-          "<metadata>",
 
+  records <- RecordGet.getRecords conn [ 289, 290 ]
+  
 
-          case uuid record of 
-            Just uuid_ -> formatSource uuid_ (depth + 1)
-          ,
+  -- let s = formatRecord record depth 
 
-          case dataIdentification record of
-            Just di -> formatTitle di (depth + 1)
-          ,
-
-          "\n</metadata>"
-        ]
+  let s = formatRecords records 0
         where
+
+          formatRecords records depth =  
+            H.concatLT $ map (\record -> formatRecord record depth) records
+
+          -- H.concatLT or 
+        
+
+          formatRecord record depth =  
+            H.concatLT [
+              "<metadata>"
+              ,
+              case uuid record of 
+                Just uuid_ -> formatSource uuid_ (depth + 1)
+              ,
+              case dataIdentification record of
+                Just di -> formatTitle di (depth + 1)
+              ,
+              "\n</metadata>"
+            ]
+
           formatTitle di depth  = 
             H.concatLT [
                 "\n",
