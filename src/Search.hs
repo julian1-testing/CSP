@@ -22,6 +22,7 @@ import qualified Summary as Summary(fromList, sort, formatXML) --(main)
 import qualified RecordGet as RecordGet(getRecords)
 import qualified Metadata as Metadata(formatXML)
 
+import qualified Helpers as H(concatLT, pad)
 
 
 mapGet e m =
@@ -118,10 +119,22 @@ request conn = do
   ---  do the record stuff...
   records <- RecordGet.getRecords conn allRecordIds
   
-  let s2 = Metadata.formatXML records 0
+  let s2 = Metadata.formatXML records 1
 
 
-  return $ LT.append s s2  
+  {-
+  return $ LT.append [
+    s 
+    s2  
+  return s 
+  -}
+  return $ H.concatLT [
+          "<response from=\"1\" to=\"10\" selected = \"0\">\n",
+          s,
+          s2,
+          "\n",
+          "</response>"
+      ]
 
 
 
