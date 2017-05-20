@@ -61,24 +61,19 @@ main = do
   (putStrLn.show.title.fromJust.dataIdentification ) $ record
   (putStrLn.show) $ record
 
+  let depth = 0
+
   let s = Helpers.concatLT [
           "<metadata>",
 
-          -- source - can we factor the Just destructuring?
-          LT.pack "\n<source>", maybeToString $ uuid record , "</source>",
 
-          -- data identification
-          case dataIdentification record of
-            Just di -> 
-              Helpers.concatLT [
-                "\n",
-                "<title>", LT.pack $ title di, LT.pack "</title>",
-
-                formatTitle di 1
-              ]
+          case uuid record of 
+            Just uuid_ -> formatSource uuid_ (depth + 1)
           ,
 
-          -- LT.pack $ (title.fromJust.dataIdentification) $ record,
+          case dataIdentification record of
+            Just di -> formatTitle di (depth + 1)
+          ,
 
           "\n</metadata>"
         ]
@@ -89,6 +84,15 @@ main = do
                 Helpers.pad $ depth * 3,
                 "<title>", LT.pack $ title di, LT.pack "</title>"
             ]
+
+          formatSource uuid depth =   
+            Helpers.concatLT [
+                "\n",
+                Helpers.pad $ depth * 3,
+                "<source>", LT.pack uuid, "</source>"
+            ]
+
+
 
 
 
