@@ -19,12 +19,12 @@ import qualified Data.Text.Lazy.IO as LT(putStrLn)
 
 
 import Record
-import RecordGet as RecordGet(getRecords)
+import qualified RecordGet as RecordGet(getRecords)
 import qualified Helpers as H(concatLT, pad)
 
 
 
-formatRecords records depth =  
+formatXML records depth =  
   H.concatLT $ map (\record -> formatRecord record depth) records
   -- H.concatLT $ map (flip $ formatRecord depth ) records
   where
@@ -90,7 +90,7 @@ main = do
 
   records <- RecordGet.getRecords conn [ 289, 290 ]
   
-  let s = formatRecords records 0
+  let s = formatXML records 0
 
   LT.putStrLn $ s
 

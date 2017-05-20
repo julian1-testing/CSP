@@ -17,7 +17,11 @@ import Control.Monad(unless, when)
 
 -- should put this in a module TestConceptRecords - 
 import qualified FacetCalc as FacetCalc --(buildLeafFacetMap,main)
-import qualified Summary as Summary--(main)
+import qualified Summary as Summary(fromList, sort, formatXML) --(main)
+
+import qualified RecordGet as RecordGet(getRecords)
+import qualified Metadata as Metadata(formatXML)
+
 
 
 mapGet e m =
@@ -107,10 +111,15 @@ request conn = do
   let sortedGraph = Summary.sort facetGraph
   -- (mapM print).(Map.toList) $ facetGraph
 
-  -- format the thing -
-  -- ConceptRecordFormat.printXML (length allRecordIds) sortedGraph
 
+  -- generate xml
   let s = Summary.formatXML (length allRecordIds) sortedGraph
+
+  --- 
+  records <- RecordGet.getRecords conn allRecordIds
+  
+  let s2 = Metadata.formatXML records 0
+
 
   return s
 
