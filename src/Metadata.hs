@@ -72,7 +72,9 @@ main = do
             Just di -> 
               Helpers.concatLT [
                 "\n",
-                "<title>", LT.pack $ title di, LT.pack "</title>"
+                "<title>", LT.pack $ title di, LT.pack "</title>",
+
+                formatTitle di 1
               ]
           ,
 
@@ -80,6 +82,15 @@ main = do
 
           "\n</metadata>"
         ]
+        where
+          formatTitle di depth  = 
+            Helpers.concatLT [
+                "\n",
+                Helpers.pad $ depth * 3,
+                "<title>", LT.pack $ title di, LT.pack "</title>"
+            ]
+
+
 
   LT.putStrLn $ s
 
