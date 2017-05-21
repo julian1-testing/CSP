@@ -59,7 +59,7 @@ main = do
 
 
 printKeyVal key val =
-  BS.putStrLn $ BS.concat [ (BS.pack key), E.encodeUtf8 " -> ", val ]
+  BS.putStrLn $ BS.concat [ (BS.pack key), " -> ", val ]
 
 
 
@@ -80,9 +80,10 @@ printParams params = do
   putStrLn "params "
   -- putStrLn $ "length " ++ (show.length) params
   -- printKeyVal "params "       $ BS.pack $ show $ params
-  let f (key, Just val) = BS.putStrLn $ BS.concat  [ key , E.encodeUtf8 " -> ", val ]
-  mapM f params
-  putStrLn "----"
+  mapM (BS.putStrLn. BS.concat .f) params
+  where
+    f (key, Just val) = [ key , " -> ", val ]
+    f (key, _ ) = [ key , " -> _ " ]
 
 
 
@@ -93,7 +94,7 @@ app req res = do
 
   let params =  queryString req
   -- LBS.putStrLn $ encode "got request"
-  -- printReq req
+  printReq req
   -- printParams params
 
   -- TODO check if this works for POST and GET?
