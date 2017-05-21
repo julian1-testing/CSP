@@ -1,9 +1,9 @@
 {-
   CSP - catalog services for portal
 
-  main webapp and routing 
+  main webapp and routing
 
-  TODO - maybe change the name of this to Router? or Service or Web ? 
+  TODO - maybe change the name of this to Router? or Service or Web ?
 
   TODO - need to wait/throttle http connections to not db connections - until one was available?
 
@@ -63,13 +63,13 @@ main = do
 
 printReq req = do
   putStrLn "----"
-  BS.putStrLn. BS.concat $ [ 
-    "\npath: ",     rawPathInfo req, 
+  BS.putStrLn. BS.concat $ [
+    "\npath: ",     rawPathInfo req,
     "\nrawQuery: ", rawQueryString req,
     "\npathInfo: ", (BS.pack.show) $ pathInfo req,
     "\nmethod: ",   requestMethod req,
     "\nhost: ",     (BS.pack.show) $ remoteHost req,
-    "\nheaders: ",  (BS.pack.show) $ requestHeaders req 
+    "\nheaders: ",  (BS.pack.show) $ requestHeaders req
     ]
 
 
@@ -116,21 +116,26 @@ extractParam1 params key =
   case L.find f params of
     Just (k, Just v) -> v
     _ -> ""  -- TODO return Just? ugly...
-  where 
+  where
     f (k, _) = k == key
 
 
 
 extractIntParam params key = do
-  -- over an option monad
-  (k, v_) <- L.find f params 
-
-
-  v <- v_ --Just $ BS.pack "123" 
-  
+  -- over an option monad, find, readInt, and the val are all option types
+  (_, v_) <- L.find f params
+  v <- v_
   (i, _) <- BS.readInt v
   return i
-  where 
+  where
+    f (k, _) = k == key
+
+
+extractStringParam params key = do
+  -- over an option monad
+  (_, v_) <- L.find f params
+  v_
+  where
     f (k, _) = k == key
 
 
@@ -138,33 +143,21 @@ extractIntParam params key = do
 
 -- xmlSearchImos :: IO Response
 xmlSearchImos params = do
-  -- get a db connection, extract the params and delegate off to search 
+  -- get a db connection, extract the params and delegate off to search
   BS.putStrLn $ E.encodeUtf8 "xmlSearchImos"
   printParams params
 
 
-  -- readInt is a damn
-  -- there's to much optioning....
-  -- can we write it using a monad...
 
-  -- let from = BS.readInt $ extractParam params "from"
-  
-  let Just from = extractIntParam params $ BS.pack "from"
+  -- this destructuring is no good
+  let Just from = extractIntParam params  "from"
+  let Just to = extractIntParam params "to"
 
- {- -- let from_ = BS.readInt from
-
-  BS.putStrLn $ BS.concat [ "from = ", (BS.pack.show) from ]
-
-  -- ok, so I think we may want a structure to build all this stuff...
-
-
-  let to = BS.readInt.extractParam $ params $ BS.pack "to"
-  BS.putStrLn $ BS.concat [ "to = ", to ]
--}
 
 
   let searchParams = Search.Params {
-      to = 123 , from = from
+      to = to,
+      from = from
     }
 
 
@@ -183,7 +176,7 @@ xmlSearchImos params = do
 
 
 imagesLogos imageId = do
-  BS.putStrLn $ E.encodeUtf8 imageId 
+  BS.putStrLn $ E.encodeUtf8 imageId
   s <- LBS.readFile "resources/logo.png"
   return $
     responseLBS status200 [ (hContentType, "image/png") ] s
