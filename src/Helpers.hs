@@ -9,13 +9,13 @@ import Text.XML.HXT.Core
 
 
 import Network.HTTP.Client(responseBody, responseStatus, managerResponseTimeout, RequestBody(RequestBodyBS), method, requestBody, requestHeaders, responseTimeoutMicro, parseRequest, newManager, httpLbs  )
-import Network.HTTP.Client.TLS(tlsManagerSettings) 
+import Network.HTTP.Client.TLS(tlsManagerSettings)
 import Network.HTTP.Types.Status(statusCode)
 
 -- import Network.HTTP.Types.Method()
 import Network.HTTP.Types.Header(HeaderName(..), hContentType)
 
--- 
+--
 -- import qualified Data.ByteString as B
 import qualified Data.ByteString.Char8 as BC  -- TODO change to BS -- see Warp2.hs
 -- import qualified Data.ByteString.Lazy.Char8 as BLC  -- TODO change to LBS
@@ -79,7 +79,7 @@ doHTTPPost url body = do
 
 -- return white space String with length of count
 -- TODO move to Helpers
-pad count = 
+pad count =
   LT.pack $ List.unfoldr f count
     where f x = case x of
             0 -> Nothing

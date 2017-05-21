@@ -24,18 +24,18 @@ import qualified Helpers as H(concatLT, pad)
 
 
 
-formatXML records depth =  
+formatXML records depth =
   H.concatLT $ map (\record -> formatRecord record depth) records
   -- H.concatLT $ map (flip $ formatRecord depth ) records
   where
 
-    formatRecord record depth =  
+    formatRecord record depth =
       H.concatLT [
         "\n",
         H.pad $ depth * 3,
         "<metadata>"
         ,
-        case uuid record of 
+        case uuid record of
           Just uuid_ -> formatSource uuid_ (depth + 1)
         ,
         case dataIdentification record of
@@ -46,14 +46,14 @@ formatXML records depth =
         "</metadata>"
       ]
 
-    formatTitle di depth  = 
+    formatTitle di depth  =
       H.concatLT [
           "\n",
           H.pad $ depth * 3,
           "<title>", LT.pack $ title di, LT.pack "</title>"
       ]
 
-    formatSource uuid depth =   
+    formatSource uuid depth =
       H.concatLT [
           "\n",
           H.pad $ depth * 3,
@@ -67,9 +67,9 @@ main :: IO ()
 main = do
   conn <- PG.connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
 
-  {- 
-    what we want is a list of record_id's  - which we have, in the propgated root node- 
-      1. then can do a query to join - to get a list  
+  {-
+    what we want is a list of record_id's  - which we have, in the propgated root node-
+      1. then can do a query to join - to get a list
       2. then xml format
 
     think we also want the pad...
@@ -89,7 +89,7 @@ main = do
   -}
 
   records <- RecordGet.getRecords conn [ 289, 290 ]
-  
+
   let s = formatXML records 0
 
   LT.putStrLn $ s

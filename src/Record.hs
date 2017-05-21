@@ -6,9 +6,9 @@
         2. looking at the fields in the response.xml
         3. then mapping the values in response.xml back into original argo.xml record to get tag name
 
-    If any field is genuinely optional then we should use Maybe 
+    If any field is genuinely optional then we should use Maybe
 
-    Eg. 
+    Eg.
     ./web-app/js/portal/data/MetadataRecord.js
         title               done
         abstract            done
@@ -31,39 +31,39 @@
         otherCitation      ***** does not appear in summary-response
         useLimitationiField done -> useLimitation - more than one
 
-        temperalExtentBegin done -> tempExtentBegin  -> it's just a date  
+        temperalExtentBegin done -> tempExtentBegin  -> it's just a date
             eg. <tempExtentBegin>1999-10-01t00:00:00.000z</tempExtentBegin>
 
-        linksField          done -> links -> CI_Online_Resource  eg. 'View and download'  transferLinks 
-        linkedFilesField  -> linkedFiles -> ****** does not appear 
-        onlineResourcesFiled -> onlineResources ***** does not appear 
-        pointOfTruthLinkField -> pointOfTruthLink  **** does not appear 
-        bboxField -> bbox -> 
+        linksField          done -> links -> CI_Online_Resource  eg. 'View and download'  transferLinks
+        linkedFilesField  -> linkedFiles -> ****** does not appear
+        onlineResourcesFiled -> onlineResources ***** does not appear
+        pointOfTruthLinkField -> pointOfTruthLink  **** does not appear
+        bboxField -> bbox ->
                             -> geoBox  ** don't have for argo.... but do for satellite... i think
                             -> geoPolygon  done.
 
-        wmsLayer             **** does not appear 
-        iconSourceUuid   -> source -> which is the uuid 
+        wmsLayer             **** does not appear
+        iconSourceUuid   -> source -> which is the uuid
 -}
 
 module Record where
 
 
 
-data DataIdentification = DataIdentification { 
+data DataIdentification = DataIdentification {
 
-    title:: String, 
+    title:: String,
     abstract:: String
 
 } deriving (Show, Eq)
 
 
 
-data MDCommons = MDCommons { 
+data MDCommons = MDCommons {
 
-    jurisdictionLink :: String, 
-    licenseLink :: String , 
-    licenseName :: String , 
+    jurisdictionLink :: String,
+    licenseLink :: String ,
+    licenseName :: String ,
     licenseImageLink:: String
 
 } deriving (Show, Eq)
@@ -90,12 +90,12 @@ data DataParameter = DataParameter {
 -- change name - PortalRecord, or MCP2 Record - depending on how we end up using it...
 data Record = Record {
 
-    uuid :: Maybe String, 
-    dataIdentification :: Maybe DataIdentification , 
+    uuid :: Maybe String,
+    dataIdentification :: Maybe DataIdentification ,
     mdCommons :: Maybe MDCommons,
     attrConstraints :: [ String ],   -- todo
     useLimitations :: [ String ],    -- todo
-    dataParameters :: [ DataParameter ], 
+    dataParameters :: [ DataParameter ],
     temporalBegin :: Maybe String,   -- todo
     transferLinks :: [ TransferLink ],
     geopoly :: [ String ]            -- todo
@@ -103,21 +103,21 @@ data Record = Record {
 
 
 
-emptyRecord = Record Nothing  Nothing Nothing [] [] [] Nothing [] []  
+emptyRecord = Record Nothing  Nothing Nothing [] [] [] Nothing [] []
 
 -- should use ByteString?
 -- should pass in the formatting function to use....
 
 {-
 showRecord myRecord =
-  -- change to show 
+  -- change to show
 
     let formatList f xs = concatMap id $ map (\x ->  "\n  -" ++ f x) xs in
 
-    concatMap id [ 
+    concatMap id [
         "uuid= ",  show (uuid  myRecord), "\n",
 
-        -- TODO -- tidy        
+        -- TODO -- tidy
 {-
         "dataIdentification.title= " ++ (show $ (title.dataIdentification) myRecord), "\n",
         "dataIdentification.abstract= " ++ (show $ (abstract.dataIdentification) myRecord), "\n",
@@ -126,7 +126,7 @@ showRecord myRecord =
         "dataIdentification.licenseName= " ++ (show $ (licenseName.dataIdentification) myRecord), "\n",
         "dataIdentification.licenseImageLink = " ++ (show $ (licenseImageLink.dataIdentification) myRecord), "\n",
 -}
- 
+
         "attrConstraints= ", formatList id (attrConstraints myRecord), "\n",
         "useLimitations= ", formatList id (useLimitations myRecord), "\n",
         "dataParameters= ", formatList show (dataParameters myRecord), "\n",

@@ -15,7 +15,7 @@ import Data.Function( (&) )
 
 import Control.Monad(unless, when)
 
--- should put this in a module TestConceptRecords - 
+-- should put this in a module TestConceptRecords -
 import qualified FacetCalc as FacetCalc --(buildLeafFacetMap,main)
 import qualified Summary as Summary(fromList, sort, formatXML) --(main)
 
@@ -34,7 +34,7 @@ mapGet e m =
 
 
 request :: Connection -> IO LT.Text
-request conn = do 
+request conn = do
 
   let trace_ = False
 
@@ -44,9 +44,9 @@ request conn = do
   -----------------------
   -- get stuff parent/child nestings
   -- is this a fast lookup, should we move this out of the facet code...
-  nestings <- FacetCalc.getConceptNesting conn 
+  nestings <- FacetCalc.getConceptNesting conn
   -- if trace_ then mapM print nestings else return [ ]
-  -- case trace_ of True -> mapM print nestings 
+  -- case trace_ of True -> mapM print nestings
   -- when trace_ $ ( mapM print nestings >> return ())
 
 
@@ -65,14 +65,14 @@ request conn = do
   -- print "##### the facetCounts after propagating"
   -- (mapM print).(Map.toList) $ propagated
 
-  print $ allRecordIds 
- 
+  print $ allRecordIds
+
 
   -- get the concept, parents and labels from db as a Map
-  let makePair (concept, parent, label) = 
+  let makePair (concept, parent, label) =
         (Just concept, (parent, label))  -- turn into key,val pairs needed for map,
 
-  labels <- FacetCalc.getConceptLabels conn 
+  labels <- FacetCalc.getConceptLabels conn
       >>= return.(Map.fromList).(map makePair)
       -- >>= return.(\m ->  Map.insert Nothing ( Nothing, "this si wrong ") m )  -- insert a root node -- this isn't right
 
@@ -82,19 +82,19 @@ request conn = do
 
   -- now join the label information with the facet list
   -- TODO propagated should be passed as an argument
-  let completeConceptRecordList = 
-       Map.foldlWithKey f [] propagated 
+  let completeConceptRecordList =
+       Map.foldlWithKey f [] propagated
         where
-        f m concept (count, records) = 
+        f m concept (count, records) =
           let (parent, label) = mapGet concept labels in
             case concept of
-              Nothing -> 
+              Nothing ->
                 {-
                   the root node, which appears once - and is'nt a concept or something that we have a label
                   and we cannot store the parent parent_id which will be Nothing since then we get a self-referential child/parent
                   that will create infinite recursion when we go to format the graph.
                 -}
-                -- trace ("this is the rootNode count " ++ show count ) $ 
+                -- trace ("this is the rootNode count " ++ show count ) $
                 m
               Just concept_id ->
                 -- a normal concept
@@ -104,7 +104,7 @@ request conn = do
   -- (mapM print) completeConceptRecordList
 
 
-  -- build the graph for output formatting 
+  -- build the graph for output formatting
   let facetGraph = Summary.fromList completeConceptRecordList
   -- (mapM print).(Map.toList) $ facetGraph
 
@@ -120,15 +120,15 @@ request conn = do
 
   let selectedIds = take 10 allRecordIds
   records <- RecordGet.getRecords conn selectedIds
-  
+
   let s2 = Metadata.formatXML records 1
 
 
   {-
   return $ LT.append [
-    s 
-    s2  
-  return s 
+    s
+    s2
+  return s
   -}
   return $ H.concatLT [
         "<response from=\"1\" to=\"10\" selected = \"0\">\n",
@@ -140,7 +140,7 @@ request conn = do
 
 
 
--- request :: IO String 
+-- request :: IO String
 main :: IO ()
 main = do
   conn <- PG.connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"

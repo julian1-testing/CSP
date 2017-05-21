@@ -1,5 +1,5 @@
 {-
-  
+
   Format the summary part of xml.search.imos
 
 https://catalogue-portal.aodn.org.au/geonetwork/srv/eng/xml.search.imos?protocol=OGC%3AWMS-1.1.1-http-get-map%20or%20OGC%3AWMS-1.3.0-http-get-map%20or%20IMOS%3ANCWMS--proto&sortBy=popularity&from=1&to=10&fast=index&filters=collectionavailability
@@ -77,41 +77,41 @@ sort m =
     reverse. List.sortOn (\(_, _, count) -> count) $ children
 
 
--- so all we need to do is pass the actual root node in here explicitly 
--- VERY IMPORTANT - it might be possible to do this more simply - by having separate lists. 
+-- so all we need to do is pass the actual root node in here explicitly
+-- VERY IMPORTANT - it might be possible to do this more simply - by having separate lists.
 
 -- concatLT lst = concatMap LT.append lst
 
 
 -- TODO change format to format
 
-formatXML rootRecordCount m = 
+formatXML rootRecordCount m =
   {-  we will recurse from the root node down...
-      remember that we cannot have a Nothing node above the Nothing node. so there's nowhere else to store label or count 
+      remember that we cannot have a Nothing node above the Nothing node. so there's nowhere else to store label or count
       information which isn't a known concept or scheme anyway
   -}
   let rootNode = (Nothing, "summary", rootRecordCount ) in
   recurse m rootNode 0
   where
     -- drill into child nodes
-    recurse m (parent, label, count) depth = 
+    recurse m (parent, label, count) depth =
 
       -- what's going on here?
-      case label of 
+      case label of
         "summary" ->
-          formatSummary (parent, label, count) depth 
+          formatSummary (parent, label, count) depth
 
         -- should we be formating this label substitution here? or when loading the vocab scheme and set the label? ...
         "AODN Parameter Category Vocabulary" ->
-          formatDimension (parent, "Measured Parameter", count) depth 
+          formatDimension (parent, "Measured Parameter", count) depth
 
         "AODN Platform Category Vocabulary" ->
-          formatDimension (parent, "Platform", count) depth 
+          formatDimension (parent, "Platform", count) depth
 
         _ ->
-          formatCategory (parent, label, count) depth 
+          formatCategory (parent, label, count) depth
 
-    formatSummary (parent, label, count) depth  = 
+    formatSummary (parent, label, count) depth  =
       H.concatLT [
           H.pad $ depth * 3,
           "<", LT.pack label, " count=\"", LT.pack.show $ count, "\" type=\"local\">\n",
@@ -125,7 +125,7 @@ formatXML rootRecordCount m =
       -- single closed tag...
       H.concatLT [
           H.pad $ depth * 3,
-          "<dimension value=\"", LT.pack label, "\" count=\"", LT.pack.show $ count, "\">\n", 
+          "<dimension value=\"", LT.pack label, "\" count=\"", LT.pack.show $ count, "\">\n",
           formatChildren (parent, label, count) depth,
           H.pad $ depth * 3,
           "</dimension>"
@@ -135,7 +135,7 @@ formatXML rootRecordCount m =
     formatCategory (parent, label, count) depth =
 
       let value = LT.pack $ X.attrEscapeXml label in
-      H.concatLT [ 
+      H.concatLT [
         -- start tag
         H.pad $ depth * 3,
         -- here
