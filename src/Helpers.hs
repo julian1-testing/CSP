@@ -81,10 +81,10 @@ doHTTPPost url body = do
 -- TODO should probably use Bytestring or lazy text,  LT.pack LT.append 
 pad count =
   LT.pack $ List.unfoldr f count
-    where 
-      f x = case x of
-        0 -> Nothing
-        _ -> Just (' ', x - 1)
+  where 
+    f x = case x of
+      0 -> Nothing
+      _ -> Just (' ', x - 1)
 
 
 -- concat list of lazy text
