@@ -127,7 +127,7 @@ request conn params = do
 
 
   -- generate xml
-  let s = Summary.formatXML (length allRecordIds) sortedGraph
+  let s1 = Summary.formatXML (length allRecordIds) sortedGraph
 
 
 
@@ -148,7 +148,7 @@ request conn params = do
         " to=\"", LT.pack.show $ to params, "\"", 
         " selected = \"0\">",
       "\n",
-      s,
+      s1,
       s2,
       "\n",
       "</response>"
