@@ -66,12 +66,18 @@ printKeyVal key val =
 printReq req = do
   putStrLn "----"
   -- TODO tidy this crap....
+  {-
   printKeyVal "path"          $ rawPathInfo req
   printKeyVal "rawQuery "     $ rawQueryString req
   printKeyVal "pathInfo "     $ (BS.pack.show) $ pathInfo req
   printKeyVal "method "       $ requestMethod req
   printKeyVal "host "         $ (BS.pack.show) $ remoteHost req
   printKeyVal "headers "      $ (BS.pack.show) $ requestHeaders req
+  -}
+  BS.putStrLn. BS.concat $
+    [ "\npath", rawPathInfo req, 
+    "\nrawQuery ", rawQueryString req,
+    "\nheaders ", (BS.pack.show) $ requestHeaders req ]
 
 
 printParams params = do
