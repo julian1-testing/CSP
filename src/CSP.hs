@@ -1,9 +1,8 @@
-
-
-{-# LANGUAGE ScopedTypeVariables, OverloadedStrings #-}
-
 {-
   CSP - catalog services for portal
+
+  TODO - maybe change the name of this to Router? or Service or Web ? 
+
   TODO - need to wait/throttle http connections to not db connections - until one was available?
 
   for routes,
@@ -15,6 +14,10 @@
 
   -- see vault - for storing data between apps and middleware.
 -}
+
+
+
+{-# LANGUAGE ScopedTypeVariables, OverloadedStrings #-}
 
 
 module CSP where

@@ -17,7 +17,7 @@ import Network.HTTP.Types.Header(HeaderName(..), hContentType)
 
 --
 -- import qualified Data.ByteString as B
-import qualified Data.ByteString.Char8 as BC  -- TODO change to BS -- see Warp2.hs
+import qualified Data.ByteString.Char8 as BC(pack)  -- TODO change to BS -- see Warp2.hs
 -- import qualified Data.ByteString.Lazy.Char8 as BLC  -- TODO change to LBS
 
 import Data.Char(isSpace)
@@ -82,9 +82,8 @@ doHTTPPost url body = do
 pad count =
   LT.pack $ List.unfoldr f count
   where 
-    f x = case x of
-      0 -> Nothing
-      _ -> Just (' ', x - 1)
+    f 0 = Nothing
+    f x = Just (' ', x - 1)
 
 
 -- concat list of lazy text
