@@ -36,19 +36,17 @@ import Network.HTTP.Types.Header (hContentType, hContentEncoding)
 
 import qualified Data.Text.Encoding as E(encodeUtf8)
 import qualified Data.Text.Lazy.Encoding as LE(encodeUtf8)
-import qualified Data.Text.Lazy as LT
+-- import qualified Data.Text.Lazy as LT
 
--- for putStrLn
-import qualified Data.ByteString.Char8 as BS
-import qualified Data.ByteString.Lazy.Char8 as LBS
+import qualified Data.ByteString.Char8 as BS(putStrLn, pack, concat)
+import qualified Data.ByteString.Lazy.Char8 as LBS(readFile)
 
 import qualified Database.PostgreSQL.Simple as PG(query, connectPostgreSQL)
 import Database.PostgreSQL.Simple.Types as PG(Only(..))
 
 
-
-
 import Search(request)
+
 
 encode = LE.encodeUtf8
 
@@ -59,9 +57,9 @@ main = do
     run port app
 
 
--- might be cleaner to format as a List
+
 printKeyVal key val =
-  BS.putStrLn $ BS.concat  [ (BS.pack key), E.encodeUtf8 " -> ", val ]
+  BS.putStrLn $ BS.concat [ (BS.pack key), E.encodeUtf8 " -> ", val ]
 
 
 
@@ -91,12 +89,10 @@ printParams params = do
 app :: Application
 app req res = do
   -- application routing
-
   -- see, https://hackage.haskell.org/package/wai-3.2.1.1/docs/Network-Wai.html
-  -- LBS.putStrLn $ encode "got request"
-
 
   let params =  queryString req
+  -- LBS.putStrLn $ encode "got request"
   -- printReq req
   -- printParams params
 
@@ -107,11 +103,10 @@ app req res = do
 
     [ "images", "logos", imageId ] -> imagesLogos imageId
 
-    [ "whoot" ] -> hello
+    [ "hello" ] -> hello
 
-    _   -> notFound
+    _ -> notFound
 
-  -- respond
   res x
 
 
@@ -144,8 +139,8 @@ imagesLogos imageId = do
 
 hello :: IO Response
 hello = do
-  BS.putStrLn "in whoot hello"
-  return $ responseLBS status200 [(hContentType, "application/json")] . encode $ "Hello World"
+  BS.putStrLn "got hello"
+  return $ responseLBS status200 [(hContentType, "application/json")] . encode $ "Hello World!"
 
 
 
