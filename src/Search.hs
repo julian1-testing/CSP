@@ -31,44 +31,23 @@ import qualified Metadata as Metadata(formatXML)
 import qualified Helpers as H(concatLT, pad)
 
 
+-- ease syntax
 mapGet e m =
   -- trace  ("mytrace - mapGet e: " ++ show e ++ " m: " ++ show m) $
   (Map.!) m e
 
 
-{-
-printParams params = do
-  -- log params
-  putStrLn "----"
-  putStrLn "params "
-  -- putStrLn $ "length " ++ (show.length) params
-  -- printKeyVal "params "       $ BS.pack $ show $ params
-  let f (key, Just val) = BS.putStrLn $ BS.concat  [ key , E.encodeUtf8 " -> ", val ]
-  mapM f params
-  putStrLn "----"
-
--}
-
---t (BS.ByteString, Maybe BS.ByteString)
-
--- request :: Connection [ (a b)] t -> IO LT.Text
--- request :: Connection t0  -> IO LT.Text
 
 data Params = Params {
 
-    -- TODO change to Int
     to :: Int,
     from :: Int
-
 } deriving (Show, Eq)
 
 
 
-
+request :: Connection -> Params -> IO LT.Text
 request conn params = do
-
-  -- printParams params
-
 
   let trace_ = False
 
@@ -152,19 +131,23 @@ request conn params = do
 
 
 
-  -- handle paging
+  -- handle pagination
   let count = to params - from params
   let pagedIds = take count $ drop (from params - 1) allRecordIds
 
   print $ "paged: " ++ show pagedIds
 
+  -- get record data to return
   records <- RecordGet.getRecords conn pagedIds
 
   let s2 = Metadata.formatXML records 1
 
-
   return $ H.concatLT [
-      "<response from=\"1\" to=\"10\" selected = \"0\">\n",
+      "<response", 
+        " from=\"", LT.pack.show $ from params, "\"", 
+        " to=\"", LT.pack.show $ to params, "\"", 
+        " selected = \"0\">",
+      "\n",
       s,
       s2,
       "\n",
