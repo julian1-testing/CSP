@@ -1,5 +1,16 @@
 
 
+ok, got rhs with some data as well as lhs.
+
+need to fill in extra data.
+and get the actual selection criteria to work.
+
+it would be nice to get the abstract in place and the logos.
+
+- need to be able to log the non-logo requests.
+
+----
+
 -- TODO Change to name to summary ?
 -- Summary
 -- and change FacetRequest to Search
