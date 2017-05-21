@@ -41,6 +41,9 @@ formatXML records depth =
         case dataIdentification record of
           Just di -> formatTitle di (depth + 1)
         ,
+
+        formatImage (depth + 1),
+
         "\n",
         H.pad $ depth * 3,
         "</metadata>"
@@ -60,6 +63,18 @@ formatXML records depth =
           "<source>", LT.pack uuid, "</source>"
       ]
 
+    formatImage depth =
+      -- appears that portal disregards the image link in favor of explicit lookup... 
+      H.concatLT [
+          "\n",
+          H.pad $ depth * 3,
+          -- "<image>thumbnail|http://whoot/image.jpg</image>"
+          "<image>https://portal.aodn.org.au/images/AODN/AODN_logo_fullText.png</image>"
+      ]
+
+
+
+-- <image>thumbnail|../../srv/en/resources.get?uuid=c317b0fe-02e8-4ff9-96c9-563fd58e82ac&fname=gliders_map_s.png&access=public</image>
 
 
 
