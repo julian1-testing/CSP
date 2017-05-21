@@ -66,7 +66,7 @@ data Params = Params {
 
 
 request conn params = do
-  
+
   -- printParams params
 
 
@@ -163,18 +163,12 @@ request conn params = do
   let s2 = Metadata.formatXML records 1
 
 
-  {-
-  return $ LT.append [
-    s
-    s2
-  return s
-  -}
   return $ H.concatLT [
-        "<response from=\"1\" to=\"10\" selected = \"0\">\n",
-        s,
-        s2,
-        "\n",
-        "</response>"
+      "<response from=\"1\" to=\"10\" selected = \"0\">\n",
+      s,
+      s2,
+      "\n",
+      "</response>"
     ]
 
 
@@ -183,7 +177,7 @@ request conn params = do
 main :: IO ()
 main = do
   conn <- PG.connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
-  s <- request conn $ Params { from = 0, to = 10000 } 
+  s <- request conn $ Params { from = 0, to = 10000 }
 
   LT.putStrLn $ s
 
