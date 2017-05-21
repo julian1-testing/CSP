@@ -78,15 +78,16 @@ doHTTPPost url body = do
 
 
 -- return white space String with length of count
--- TODO move to Helpers
+-- TODO should probably use Bytestring or lazy text,  LT.pack LT.append 
 pad count =
   LT.pack $ List.unfoldr f count
-    where f x = case x of
-            0 -> Nothing
-            _ -> Just (' ', x - 1)
+    where 
+      f x = case x of
+        0 -> Nothing
+        _ -> Just (' ', x - 1)
 
 
--- concat list of lazy text - TODO move to Helpers?
+-- concat list of lazy text
 concatLT lst = foldl LT.append LT.empty lst
 
 
