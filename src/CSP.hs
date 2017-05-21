@@ -87,29 +87,30 @@ app req res = do
   -- see, https://hackage.haskell.org/package/wai-3.2.1.1/docs/Network-Wai.html
   -- LBS.putStrLn $ encode "got request" 
 
-  printReq req
 
   let params =  queryString req 
-
-  printParams params
-
+  -- printReq req
+  -- printParams params
 
   -- route delegation
   x <- case (pathInfo req) of
 
-    [ "srv","eng","xml.search.imos" ] -> xmlSearchImos
+    [ "srv","eng","xml.search.imos" ] -> xmlSearchImos params
 
     [ "whoot" ] -> helloRoute
 
     _   -> notFoundRoute
 
-  -- do it...
+  -- respond
   res x
 
 
 
-xmlSearchImos :: IO Response 
-xmlSearchImos =  do
+-- xmlSearchImos :: IO Response 
+xmlSearchImos params =  do
+  -- TODO only expose enough of the request to be able to handle it,
+  -- printReq req
+  printParams params
 
   BS.putStrLn $ E.encodeUtf8 "in xmlSearchImos" 
 
