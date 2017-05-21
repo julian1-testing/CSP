@@ -110,19 +110,22 @@ app req res = do
 
 -- xmlSearchImos :: IO Response
 xmlSearchImos params =  do
-  -- TODO only expose enough of the request to be able to handle it,
-  -- printReq req
-  printParams params
+  -- get a db connection, extract the params and delegate off to search 
 
-  BS.putStrLn $ E.encodeUtf8 "in xmlSearchImos"
+  BS.putStrLn $ E.encodeUtf8 "xmlSearchImos"
+
+  printParams params
 
   -- test db
   conn <- PG.connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
+  {-
   let query = "select 123"
   xs :: [ (Only Integer ) ] <- PG.query conn query ()
   mapM (putStrLn.show) xs
+  -}
 
-  s <- Search.request conn
+  s <- Search.request conn  params
+
   return $
     -- application/xml;charset=UTF-8
     responseLBS status200 [

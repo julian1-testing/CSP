@@ -1,5 +1,7 @@
 
-{-# LANGUAGE OverloadedStrings #-}
+-- {-# LANGUAGE OverloadedStrings #-}
+
+{-# LANGUAGE ScopedTypeVariables, OverloadedStrings #-}
 
 module Search where
 
@@ -14,6 +16,10 @@ import Debug.Trace(trace)
 import Data.Function( (&) )
 
 import Control.Monad(unless, when)
+
+
+import qualified Data.ByteString.Char8 as BS
+import qualified Data.Text.Encoding as E(encodeUtf8)
 
 -- should put this in a module TestConceptRecords -
 import qualified FacetCalc as FacetCalc --(buildLeafFacetMap,main)
@@ -31,10 +37,26 @@ mapGet e m =
 
 
 
+printParams params = do
+  -- log params
+  putStrLn "----"
+  putStrLn "params "
+  -- putStrLn $ "length " ++ (show.length) params
+  -- printKeyVal "params "       $ BS.pack $ show $ params
+  let f (key, Just val) = BS.putStrLn $ BS.concat  [ key , E.encodeUtf8 " -> ", val ]
+  mapM f params
+  putStrLn "----"
 
 
-request :: Connection -> IO LT.Text
-request conn = do
+
+--t (BS.ByteString, Maybe BS.ByteString)
+
+-- request :: Connection [ (BS.ByteString, Maybe BS.ByteString) ] -> IO LT.Text
+-- request :: Connection t0  -> IO LT.Text
+request conn params = do
+  
+  printParams params
+
 
   let trace_ = False
 
@@ -144,7 +166,7 @@ request conn = do
 main :: IO ()
 main = do
   conn <- PG.connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
-  s <- request conn
+  s <- request conn []
 
   LT.putStrLn $ s
 
