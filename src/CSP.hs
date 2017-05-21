@@ -110,10 +110,14 @@ app req res = do
   res x
 
 
-extractParam params key_ =
-  case L.find (\(key, _) -> key == BS.pack key_) params of
-    Just (a, Just b) -> b
-    
+-- perhaps should pack first 
+
+extractParam params key =
+  case L.find f params of
+    Just (k, Just v) -> v
+    _ -> ""  -- TODO return Just? ugly...
+  where 
+    f (k, _) = k == key
 
 
 
@@ -123,16 +127,13 @@ xmlSearchImos params = do
   BS.putStrLn $ E.encodeUtf8 "xmlSearchImos"
   printParams params
 
-  -- let to = BS.pack .  fst $ L.find (\(key, _) -> key == BS.pack "to" ) params
-  -- let Just (a, Just b) =  L.find (\(key, _) -> key == BS.pack "to" ) params -- works
-  
-  -- surely there's an api for this extract key
 
-  let Just (a, Just b) =  L.find (\(key, _) -> key == BS.pack "to" ) params
+  let from = extractParam params $ BS.pack "from"
+  BS.putStrLn $ BS.concat [ "from = ", from ]
 
-  let val = extractParam params "to"
+  let to = extractParam params $ BS.pack "to"
+  BS.putStrLn $ BS.concat [ "to = ", to ]
 
-  BS.putStrLn $ BS.concat [ "to = ", val ]
 
 
 
