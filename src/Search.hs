@@ -53,6 +53,17 @@ printParams params = do
 
 -- request :: Connection [ (a b)] t -> IO LT.Text
 -- request :: Connection t0  -> IO LT.Text
+
+data Params = Params {
+
+    to :: Integer ,
+    from :: Integer 
+
+} deriving (Show, Eq)
+
+
+
+
 request conn params = do
   
   -- printParams params

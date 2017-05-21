@@ -47,7 +47,7 @@ import Database.PostgreSQL.Simple.Types as PG(Only(..))
 
 import qualified Data.List as L(find)
 
-import Search(request)
+import Search(request, Params(..))
 
 
 encode = LE.encodeUtf8
@@ -112,12 +112,27 @@ app req res = do
 
 
 
-extractParam params key =
+extractParam1 params key =
   case L.find f params of
     Just (k, Just v) -> v
     _ -> ""  -- TODO return Just? ugly...
   where 
     f (k, _) = k == key
+
+
+
+extractIntParam params key = do
+  -- over an option monad
+  
+  (k, v) <- L.find f params 
+  -- v <- return v
+
+  -- shouldn't need the return
+  BS.readInt "123" 
+
+  where 
+    f (k, _) = k == key
+
 
 
 
@@ -128,16 +143,29 @@ xmlSearchImos params = do
   printParams params
 
 
-  let from = extractParam params "from"
-  let from_ = BS.readInt from
+  -- readInt is a damn
+  -- there's to much optioning....
+  -- can we write it using a monad...
+
+  -- let from = BS.readInt $ extractParam params "from"
+  
+  let Just from = extractIntParam params $ BS.pack "from"
+
+ {- -- let from_ = BS.readInt from
 
   BS.putStrLn $ BS.concat [ "from = ", (BS.pack.show) from ]
 
+  -- ok, so I think we may want a structure to build all this stuff...
 
 
-  let to = extractParam params $ BS.pack "to"
+  let to = BS.readInt.extractParam $ params $ BS.pack "to"
   BS.putStrLn $ BS.concat [ "to = ", to ]
+-}
 
+
+  let searchParams = Search.Params {
+      to = 123 , from = 456 
+    }
 
 
 
