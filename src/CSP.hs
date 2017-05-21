@@ -24,7 +24,7 @@ import Network.Wai
 
 import Network.Wai.Handler.Warp (run)
 import Network.HTTP.Types (status200, status404)
-import Network.HTTP.Types.Header (hContentType)
+import Network.HTTP.Types.Header (hContentType, hContentEncoding )
 
 
 import qualified Data.Text.Encoding as E(encodeUtf8)
@@ -121,12 +121,12 @@ xmlSearchImos params =  do
   mapM (putStrLn.show) xs
 
   s <- Search.request conn
-  -- let ss = LT.pack s
-  -- let ss = encode s
-  -- LBS.putStrLn ss
-
   return $ 
-    responseLBS status200 [(hContentType, "application/json")] .  encode $  s --"Whoot"
+    -- application/xml;charset=UTF-8
+    responseLBS status200 [
+      (hContentType, "application/xml") , 
+      (hContentEncoding, "UTF-8")    
+      ] .  encode $  s
 
 
 
