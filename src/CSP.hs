@@ -123,15 +123,13 @@ extractParam1 params key =
 
 extractIntParam params key = do
   -- over an option monad
-  
   (k, v_) <- L.find f params 
-  -- v <- return v
 
-  v <- v_
 
-  -- shouldn't need the return
-  BS.readInt v -- "123" 
-
+  v <- v_ --Just $ BS.pack "123" 
+  
+  (i, _) <- BS.readInt v
+  return i
   where 
     f (k, _) = k == key
 
@@ -166,7 +164,7 @@ xmlSearchImos params = do
 
 
   let searchParams = Search.Params {
-      to = 123 , from = 456 
+      to = 123 , from = from
     }
 
 
