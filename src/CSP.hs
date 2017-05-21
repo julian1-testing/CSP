@@ -128,7 +128,7 @@ xmlSearchImos params = do
   printParams params
 
 
-  let from = extractParam params $ BS.pack "from"
+  let from = extractParam params "from"
   let from_ = BS.readInt from
 
   BS.putStrLn $ BS.concat [ "from = ", (BS.pack.show) from ]
