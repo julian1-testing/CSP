@@ -44,6 +44,7 @@ import qualified Data.ByteString.Lazy.Char8 as LBS(readFile)
 import qualified Database.PostgreSQL.Simple as PG(query, connectPostgreSQL)
 import Database.PostgreSQL.Simple.Types as PG(Only(..))
 
+import qualified Data.List as L(find)
 
 import Search(request)
 
@@ -82,6 +83,8 @@ printParams params = do
     f (key, _ ) = [ key , ": _ " ]
 
 
+-- important - we should probably be decoding and validating params before dispatching...
+
 
 app :: Application
 app req res = do
@@ -109,10 +112,21 @@ app req res = do
 
 
 -- xmlSearchImos :: IO Response
-xmlSearchImos params =  do
+xmlSearchImos params = do
   -- get a db connection, extract the params and delegate off to search 
   BS.putStrLn $ E.encodeUtf8 "xmlSearchImos"
   printParams params
+
+
+  -- let to = BS.pack .  fst $ L.find (\(key, _) -> key == BS.pack "to" ) params
+  -- let Just (a, Just b) =  L.find (\(key, _) -> key == BS.pack "to" ) params -- works
+
+  let Just (a, Just b) =  L.find (\(key, _) -> key == BS.pack "to" ) params
+
+  BS.putStrLn $ BS.concat [ "to = ",  b ]
+
+
+
   -- test db
   conn <- PG.connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
   s <- Search.request conn  params
@@ -122,7 +136,7 @@ xmlSearchImos params =  do
     responseLBS status200 [
       (hContentType, "application/xml") ,
       (hContentEncoding, "UTF-8")
-      ] . encode $  s
+      ] . encode $ s
 
 
 
