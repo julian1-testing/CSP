@@ -80,7 +80,7 @@ doHTTPPost url body = do
 -- BS/string helpers
 
 -- return white space String with length of count
--- TODO should probably use Bytestring or lazy text,  LT.pack LT.append 
+-- TODO should probably use Bytestring or lazy text,  LT.pack LT.append etc
 pad count =
   LT.pack $ List.unfoldr f count
   where 

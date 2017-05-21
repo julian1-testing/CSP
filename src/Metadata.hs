@@ -69,39 +69,17 @@ formatXML records depth =
           "\n",
           H.pad $ depth * 3,
           -- "<image>thumbnail|http://whoot/image.jpg</image>"
+          -- <image>thumbnail|../../srv/en/resources.get?uuid=c317b0fe-02e8-4ff9-96c9-563fd58e82ac&fname=gliders_map_s.png&access=public</image>
           "<image>https://portal.aodn.org.au/images/AODN/AODN_logo_fullText.png</image>"
       ]
 
 
-
--- <image>thumbnail|../../srv/en/resources.get?uuid=c317b0fe-02e8-4ff9-96c9-563fd58e82ac&fname=gliders_map_s.png&access=public</image>
 
 
 
 main :: IO ()
 main = do
   conn <- PG.connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
-
-  {-
-    what we want is a list of record_id's  - which we have, in the propgated root node-
-      1. then can do a query to join - to get a list
-      2. then xml format
-
-    think we also want the pad...
-
-    - ok, lets try to return a compounded list structure...
-      it's going to be a different call...
-  -}
-
-  {-
-  record <- RecordGet.getRecord conn 289
-
-  (putStrLn.show.fromJust.uuid) $ record
-  (putStrLn.show.title.fromJust.dataIdentification ) $ record
-  (putStrLn.show) $ record
-
-  let depth = 0
-  -}
 
   records <- RecordGet.getRecords conn [ 289, 290 ]
 
