@@ -58,38 +58,28 @@ main = do
 
 
 
-printKeyVal key val =
-  BS.putStrLn $ BS.concat [ (BS.pack key), " -> ", val ]
-
-
 
 printReq req = do
   putStrLn "----"
-  -- TODO tidy this crap....
-  {-
-  printKeyVal "path"          $ rawPathInfo req
-  printKeyVal "rawQuery "     $ rawQueryString req
-  printKeyVal "pathInfo "     $ (BS.pack.show) $ pathInfo req
-  printKeyVal "method "       $ requestMethod req
-  printKeyVal "host "         $ (BS.pack.show) $ remoteHost req
-  printKeyVal "headers "      $ (BS.pack.show) $ requestHeaders req
-  -}
-  BS.putStrLn. BS.concat $
-    [ "\npath", rawPathInfo req, 
-    "\nrawQuery ", rawQueryString req,
-    "\nheaders ", (BS.pack.show) $ requestHeaders req ]
+  BS.putStrLn. BS.concat $ [ 
+    "\npath: ",     rawPathInfo req, 
+    "\nrawQuery: ", rawQueryString req,
+    "\npathInfo: ", (BS.pack.show) $ pathInfo req,
+    "\nmethod: ",   requestMethod req,
+    "\nhost: ",     (BS.pack.show) $ remoteHost req,
+    "\nheaders: ",  (BS.pack.show) $ requestHeaders req 
+    ]
 
 
 printParams params = do
-  -- log params
   putStrLn "----"
   putStrLn "params "
   -- putStrLn $ "length " ++ (show.length) params
   -- printKeyVal "params "       $ BS.pack $ show $ params
   mapM (BS.putStrLn. BS.concat .f) params
   where
-    f (key, Just val) = [ key , " -> ", val ]
-    f (key, _ ) = [ key , " -> _ " ]
+    f (key, Just val) = [ key , ": ", val ]
+    f (key, _ ) = [ key , ": _ " ]
 
 
 
@@ -100,7 +90,7 @@ app req res = do
 
   let params =  queryString req
   -- LBS.putStrLn $ encode "got request"
-  printReq req
+  -- printReq req
   -- printParams params
 
   -- TODO check if this works for POST and GET?
