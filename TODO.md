@@ -1,11 +1,17 @@
 
+also set the image explicitly in the metadata that we return - should be trivial  - and demonstrate it working...
 
-ok, got rhs with some data as well as lhs.
+do the "to" and "from" to test the param decoding...
 
-need to fill in extra data.
-and get the actual selection criteria to work.
 
-it would be nice to get the abstract in place and the logos.
+---
+
+done - get portal rhs panel with some data as well as lhs.
+
+- need to fill in extra metadata data.
+- and get the actual selection criteria to work.
+
+- get the abstract in place and the logos.
 
 - need to be able to log the non-logo requests.
 

@@ -36,7 +36,7 @@ mapGet e m =
   (Map.!) m e
 
 
-
+{-
 printParams params = do
   -- log params
   putStrLn "----"
@@ -47,15 +47,15 @@ printParams params = do
   mapM f params
   putStrLn "----"
 
-
+-}
 
 --t (BS.ByteString, Maybe BS.ByteString)
 
--- request :: Connection [ (BS.ByteString, Maybe BS.ByteString) ] -> IO LT.Text
+-- request :: Connection [ (a b)] t -> IO LT.Text
 -- request :: Connection t0  -> IO LT.Text
 request conn params = do
   
-  printParams params
+  -- printParams params
 
 
   let trace_ = False
