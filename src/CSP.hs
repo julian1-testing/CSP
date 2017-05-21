@@ -12,6 +12,8 @@
     http://www.yesodweb.com/book/web-application-interface   
 
   https://crypto.stanford.edu/~blynn/haskell/warp.html
+
+  -- see vault - for storing data between apps and middleware.
 -}
 
 
@@ -24,7 +26,7 @@ import Network.Wai
 
 import Network.Wai.Handler.Warp (run)
 import Network.HTTP.Types (status200, status404)
-import Network.HTTP.Types.Header (hContentType, hContentEncoding )
+import Network.HTTP.Types.Header (hContentType, hContentEncoding)
 
 
 import qualified Data.Text.Encoding as E(encodeUtf8)
@@ -83,6 +85,7 @@ printParams params = do
 
 app :: Application
 app req res = do
+  -- application routing
 
   -- see, https://hackage.haskell.org/package/wai-3.2.1.1/docs/Network-Wai.html
   -- LBS.putStrLn $ encode "got request" 
@@ -92,7 +95,6 @@ app req res = do
   -- printReq req
   -- printParams params
 
-  -- route delegation
   x <- case (pathInfo req) of
 
     [ "srv","eng","xml.search.imos" ] -> xmlSearchImos params
@@ -140,51 +142,5 @@ helloRoute = do
 notFoundRoute :: IO Response
 notFoundRoute = 
   return $ responseLBS status404 [(hContentType, "application/json")] "404 - Not Found"
-
-
-
-
--- vault - for storing data between apps and middleware.
-
--- ok, now need to get parameters....
--- parameters are a list in queryString 
--- eg. http://localhost:3000/sdf/sssss?x=123&y=456 -> [("x",Just "123"),("y",Just "456")]
--- and url encoding/decoding...
--- actually we are directly matching this stuff... so perhaps we need a regex.... 
--- need to urlEncode / urlDecode 
--- note also, the difference between rawPathInfo and rawQueryString...
-
--- https://hackage.haskell.org/package/http-types-0.9.1/docs/Network-HTTP-Types-URI.html#t:Query
--- xmlSearchImos :: Response
--- we're going to need to pick up a db connection - so this has to be io
-
-
-
-{-
-
-app :: Application
-app req f = do
-    print "got request"
-
-    -- this works by itself, it's using Data.Text.Text
-    let a = LT.pack "čušpajž日本語"  
-    let b = LT.pack " whoot"  
-    let c = LT.append a b
-
-    -- 
-    let d = LE.encodeUtf8 c
-
-    print $ LBS.unpack d -- "sending data " -- kind of works.
-
-    -- LBS.putStrLn  LBS.unpack d
-
-    -- x <- f $ responseLBS status200 [(hContentType, "text/plain")] d --"Hello world!" 
-    -- x <- f $ responseLBS status200 [(hContentType, "text/plain")] d --"Hello world!" 
-    x <- f $ responseLBS status200 [(hContentType,  "text/html; charset=utf-8")] d --"Hello world!" 
-
-    print "done request"
-    return x
--}
-
 
 
