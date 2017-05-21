@@ -1,6 +1,8 @@
 {-
   CSP - catalog services for portal
 
+  main webapp and routing 
+
   TODO - maybe change the name of this to Router? or Service or Web ? 
 
   TODO - need to wait/throttle http connections to not db connections - until one was available?
@@ -98,13 +100,16 @@ app req res = do
   -- printReq req
   -- printParams params
 
+  -- TODO check if this works for POST and GET?
   x <- case (pathInfo req) of
 
     [ "srv","eng","xml.search.imos" ] -> xmlSearchImos params
 
-    [ "whoot" ] -> helloRoute
+    [ "images", "logos", imageId ] -> imagesLogos imageId
 
-    _   -> notFoundRoute
+    [ "whoot" ] -> hello
+
+    _   -> notFound
 
   -- respond
   res x
@@ -114,19 +119,10 @@ app req res = do
 -- xmlSearchImos :: IO Response
 xmlSearchImos params =  do
   -- get a db connection, extract the params and delegate off to search 
-
   BS.putStrLn $ E.encodeUtf8 "xmlSearchImos"
-
   printParams params
-
   -- test db
   conn <- PG.connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
-  {-
-  let query = "select 123"
-  xs :: [ (Only Integer ) ] <- PG.query conn query ()
-  mapM (putStrLn.show) xs
-  -}
-
   s <- Search.request conn  params
 
   return $
@@ -138,15 +134,32 @@ xmlSearchImos params =  do
 
 
 
-helloRoute :: IO Response
-helloRoute = do
-  LBS.putStrLn $ encode "in whoot hello"
+imagesLogos imageId = do
+  BS.putStrLn $ E.encodeUtf8 imageId 
+  s <- LBS.readFile "resources/logo.png"
+  return $
+    responseLBS status200 [ (hContentType, "image/png") ] s
+
+
+
+hello :: IO Response
+hello = do
+  BS.putStrLn "in whoot hello"
   return $ responseLBS status200 [(hContentType, "application/json")] . encode $ "Hello World"
 
 
 
-notFoundRoute :: IO Response
-notFoundRoute =
+notFound :: IO Response
+notFound =
   return $ responseLBS status404 [(hContentType, "application/json")] "404 - Not Found"
+
+
+
+{-
+  simple db query
+  let query = "select 123"
+  xs :: [ (Only Integer ) ] <- PG.query conn query ()
+  mapM (putStrLn.show) xs
+-}
 
 
