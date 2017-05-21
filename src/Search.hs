@@ -56,8 +56,8 @@ printParams params = do
 
 data Params = Params {
 
-    to :: Integer ,
-    from :: Integer 
+    to :: Int,
+    from :: Int
 
 } deriving (Show, Eq)
 
