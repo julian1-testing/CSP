@@ -124,11 +124,13 @@ extractParam1 params key =
 extractIntParam params key = do
   -- over an option monad
   
-  (k, v) <- L.find f params 
+  (k, v_) <- L.find f params 
   -- v <- return v
 
+  v <- v_
+
   -- shouldn't need the return
-  BS.readInt "123" 
+  BS.readInt v -- "123" 
 
   where 
     f (k, _) = k == key
