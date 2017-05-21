@@ -110,6 +110,12 @@ app req res = do
   res x
 
 
+extractParam params key_ =
+  case L.find (\(key, _) -> key == BS.pack key_) params of
+    Just (a, Just b) -> b
+    
+
+
 
 -- xmlSearchImos :: IO Response
 xmlSearchImos params = do
@@ -117,13 +123,16 @@ xmlSearchImos params = do
   BS.putStrLn $ E.encodeUtf8 "xmlSearchImos"
   printParams params
 
-
   -- let to = BS.pack .  fst $ L.find (\(key, _) -> key == BS.pack "to" ) params
   -- let Just (a, Just b) =  L.find (\(key, _) -> key == BS.pack "to" ) params -- works
+  
+  -- surely there's an api for this extract key
 
   let Just (a, Just b) =  L.find (\(key, _) -> key == BS.pack "to" ) params
 
-  BS.putStrLn $ BS.concat [ "to = ",  b ]
+  let val = extractParam params "to"
+
+  BS.putStrLn $ BS.concat [ "to = ", val ]
 
 
 
