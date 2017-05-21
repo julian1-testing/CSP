@@ -112,17 +112,9 @@ app req res = do
 
 
 
-extractParam1 params key =
-  case L.find f params of
-    Just (k, Just v) -> v
-    _ -> ""  -- TODO return Just? ugly...
-  where
-    f (k, _) = k == key
-
-
 
 extractIntParam params key = do
-  -- over an option monad, find, readInt, and the val are all option types
+  -- over an option monad - find, the tuple val, and readInt are all option types
   (_, v_) <- L.find f params
   v <- v_
   (i, _) <- BS.readInt v
@@ -147,24 +139,20 @@ xmlSearchImos params = do
   BS.putStrLn $ E.encodeUtf8 "xmlSearchImos"
   printParams params
 
-
-
-  -- this destructuring is no good
-  let Just from = extractIntParam params  "from"
+  -- TODO fix this destructuring is no good
+  let Just from = extractIntParam params "from"
   let Just to = extractIntParam params "to"
 
-
+  -- facet.q: Platform/Vessel/vessel%20of%20opportunity
 
   let searchParams = Search.Params {
       to = to,
       from = from
-    }
-
-
+  }
 
   -- test db
   conn <- PG.connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
-  s <- Search.request conn  params
+  s <- Search.request conn searchParams
 
   return $
     -- application/xml;charset=UTF-8

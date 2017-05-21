@@ -99,7 +99,7 @@ request conn params = do
   -- print "##### the facetCounts after propagating"
   -- (mapM print).(Map.toList) $ propagated
 
-  print $ allRecordIds
+  print $ "all ids: " ++ show allRecordIds
 
 
   -- get the concept, parents and labels from db as a Map
@@ -150,10 +150,15 @@ request conn params = do
   -- generate xml
   let s = Summary.formatXML (length allRecordIds) sortedGraph
 
-  ---  do the record stuff...
 
-  let selectedIds = take 10 allRecordIds
-  records <- RecordGet.getRecords conn selectedIds
+
+  -- handle paging
+  let count = to params - from params
+  let pagedIds = take count $ drop (from params - 1) allRecordIds
+
+  print $ "paged: " ++ show pagedIds
+
+  records <- RecordGet.getRecords conn pagedIds
 
   let s2 = Metadata.formatXML records 1
 
@@ -178,7 +183,7 @@ request conn params = do
 main :: IO ()
 main = do
   conn <- PG.connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
-  s <- request conn []
+  s <- request conn $ Params { from = 0, to = 10000 } 
 
   LT.putStrLn $ s
 
