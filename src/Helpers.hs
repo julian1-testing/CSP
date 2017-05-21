@@ -1,3 +1,6 @@
+{-
+    general helper functions
+-}
 
 {-# LANGUAGE Arrows , NoMonomorphismRestriction #-}
 
@@ -16,9 +19,8 @@ import Network.HTTP.Types.Status(statusCode)
 import Network.HTTP.Types.Header(HeaderName(..), hContentType)
 
 --
--- import qualified Data.ByteString as B
-import qualified Data.ByteString.Char8 as BC(pack)  -- TODO change to BS -- see Warp2.hs
--- import qualified Data.ByteString.Lazy.Char8 as BLC  -- TODO change to LBS
+import qualified Data.ByteString.Char8 as BS(pack)
+-- import qualified Data.ByteString.Lazy.Char8 as LBS 
 
 import Data.Char(isSpace)
 
@@ -26,6 +28,7 @@ import qualified Data.Text.Lazy as LT(pack, empty, append)
 import qualified Data.List as List(unfoldr)
 
 
+-- XML helpers
 
 parseXML s = readString [ withValidate no
     , withRemoveWS yes  -- throw away formating WS
@@ -41,7 +44,7 @@ getChildText = getChildren >>> getText
 stripSpace = filter $ not.isSpace
 
 
-
+-- Http helpers
 
 doHTTPGet url = do
     let settings = tlsManagerSettings { managerResponseTimeout = responseTimeoutMicro $ 60 * 1000000 }
@@ -50,7 +53,6 @@ doHTTPGet url = do
     response <- httpLbs request manager
     -- Prelude.putStrLn $ "The status code was: " ++ (show $ statusCode $ responseStatus response)
     return response
-
 
 
 
@@ -63,10 +65,10 @@ doHTTPPost url body = do
     initialRequest <- parseRequest url
     -- modify for post
     let request = initialRequest {
-        method = BC.pack "POST",
-        requestBody = RequestBodyBS $ BC.pack body,
+        method = BS.pack "POST",
+        requestBody = RequestBodyBS $ BS.pack body,
         requestHeaders = [
-            (hContentType, BC.pack "application/xml")
+            (hContentType, BS.pack "application/xml")
         ]
     }
     response <- httpLbs request manager
@@ -75,7 +77,7 @@ doHTTPPost url body = do
 
 
 
-
+-- BS/string helpers
 
 -- return white space String with length of count
 -- TODO should probably use Bytestring or lazy text,  LT.pack LT.append 
