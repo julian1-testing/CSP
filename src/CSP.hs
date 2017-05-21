@@ -206,7 +206,7 @@ notFound =
 {-
   simple db query
   let query = "select 123"
-  xs :: [ (Only Integer ) ] <- PG.query conn query ()
+  xs :: [ (Only Int ) ] <- PG.query conn query ()
   mapM (putStrLn.show) xs
 -}
 

@@ -46,7 +46,7 @@ getConceptNesting conn  = do
         parent_id
       from concept_view ;
   |]
-  xs :: [ (Integer, Maybe Integer ) ] <- PG.query conn query1 ()
+  xs :: [ (Int, Maybe Int ) ] <- PG.query conn query1 ()
   return xs
 
 
@@ -60,7 +60,7 @@ getConceptLabels conn  = do
         label
       from concept_view ;
   |]
-  xs :: [ (Integer, Maybe Integer, String ) ] <- PG.query conn query1 ()
+  xs :: [ (Int, Maybe Int, String ) ] <- PG.query conn query1 ()
   return xs
 
 
@@ -79,7 +79,7 @@ getConceptRecordList conn  = do
       left join data_parameter on data_parameter.concept_id = concept_view.concept_id
       left join record on data_parameter.record_id = record.id
   |]
-  xs :: [ (Integer, Maybe Integer, Maybe Integer ) ] <- PG.query conn query1 ()
+  xs :: [ (Int, Maybe Int, Maybe Int ) ] <- PG.query conn query1 ()
   -- mapM putStrLn xs
   return xs
 

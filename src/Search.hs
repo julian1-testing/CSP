@@ -56,6 +56,7 @@ printParams params = do
 
 data Params = Params {
 
+    -- TODO change to Int
     to :: Int,
     from :: Int
 

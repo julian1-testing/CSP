@@ -35,7 +35,7 @@ storeUUID conn uuid = do
     -- insert or select item, returning id
     -- http://stackoverflow.com/questions/18192570/insert-if-not-exists-else-return-id-in-postgresql
 
-    xs :: [ (Only Integer)] <- PG.query conn
+    xs :: [ (Only Int)] <- PG.query conn
         [r|
             with s as (
                 select id
@@ -73,7 +73,7 @@ storeMDCommons conn record_id mdCommons = do
     -- Note that we can insert the last modified time in the on conflict clause which is quite nice.
     -}
 
-    xs :: [ (Only Integer)] <- PG.query conn
+    xs :: [ (Only Int)] <- PG.query conn
         [r|
             -- using upsert
             -- we use cte in order not to pass the arguments more than once....
@@ -102,7 +102,7 @@ storeMDCommons conn record_id mdCommons = do
             returning md_commons.id
         |]
         -- there's a limit of 9 elements in the tuple....
-        (   record_id :: Integer,
+        (   record_id :: Int,
             jurisdictionLink mdCommons,-- :: String, --ckk
             licenseLink mdCommons,-- :: String,
             licenseName mdCommons,-- :: String,
@@ -123,7 +123,7 @@ storeDataIdentification conn record_id dataIdentification = do
     -}
     -- cvould be null
 
-    xs :: [ (Only Integer)] <- PG.query conn
+    xs :: [ (Only Int)] <- PG.query conn
         [r|
             -- using upsert
             -- we use cte in order not to pass the arguments more than once....
@@ -147,7 +147,7 @@ storeDataIdentification conn record_id dataIdentification = do
         |]
         -- there's a limit of 9 elements in the tuple....
         $ let d = dataIdentification in
-        (   record_id :: Integer,
+        (   record_id :: Int,
             title dataIdentification,-- :: String,
             abstract dataIdentification-- :: String,
         )
@@ -158,7 +158,7 @@ storeDataIdentification conn record_id dataIdentification = do
 
 storeTransferLink conn record_id transferLink = do
 
-    xs :: [ (Only Integer)] <- PG.query conn
+    xs :: [ (Only Int)] <- PG.query conn
         [r|
             with a as (
                 select
@@ -184,7 +184,7 @@ storeTransferLink conn record_id transferLink = do
         |]
         $ let t = transferLink in
         (
-            record_id, -- :: Integer,
+            record_id, -- :: Int,
             protocol t,-- :: String,
             linkage t, -- :: String,
             description t-- :: String
@@ -211,7 +211,7 @@ storeDataParameter conn record_id dataParameter  = do
 
     -- look up the required concept
     -- use separate sql statements to make it easier to write stdout/log
-    xs :: [ (Integer, String) ] <- PG.query conn [r|
+    xs :: [ (Int, String) ] <- PG.query conn [r|
         select id, label 
         from concept where url = ?
         |]
@@ -230,7 +230,7 @@ storeDataParameter conn record_id dataParameter  = do
             -- the same parameter gets repeated in the record because of poor modelling
           on conflict
           do nothing
-        |] (concept_id :: Integer, record_id:: Integer)
+        |] (concept_id :: Int, record_id:: Int)
         return ()
 
       0 -> putStrLn $ "dataParameter '" ++ url_ ++ "' not found!"
@@ -383,7 +383,7 @@ main = do
 {- 
     -- look up the required concept
     -- think we want to do this separately 
-    xs :: [ (Integer, String) ] <- query conn "select id, label from concept where url = ?" (Only url)
+    xs :: [ (Int, String) ] <- query conn "select id, label from concept where url = ?" (Only url)
     -- putStrLn $ (show.length) xs
     case length xs of
       1 -> do
@@ -394,7 +394,7 @@ main = do
           values (?, (select record.id from record where record.uuid = ?))
           on conflict
           do nothing
-        |] (concept_id :: Integer, uuid :: String)
+        |] (concept_id :: Int, uuid :: String)
         return ()
 
       0 -> putStrLn $ "dataParameter '" ++ url ++ "' not found!"

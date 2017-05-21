@@ -27,14 +27,14 @@ import Record
 
 
 getRecordUuid conn record record_id = do
-  xs :: [ (Integer, String)] <- PG.query conn [r|
+  xs :: [ (Int, String)] <- PG.query conn [r|
       select
         record.id,
         uuid
       from record
       where record.id = ?
     |]
-    $ Only (record_id :: Integer )
+    $ Only (record_id :: Int )
   return $ 
     case xs of 
       [ (record_id, uuid ) ] -> record { uuid = Just uuid } 
@@ -51,7 +51,7 @@ getRecordDataIdentification conn record record_id = do
       left join data_identification di on di.record_id = record.id 
       where record.id = ?
    |]
-   $ Only (record_id :: Integer )
+   $ Only (record_id :: Int )
   return $
     case xs of 
       [ (Just title, Just abstract) ] -> record { dataIdentification = Just $ DataIdentification title abstract } 
@@ -70,7 +70,7 @@ getRecordMDCommons conn record record_id = do
       left join md_commons md on md.record_id = record.id 
       where record.id = ?
    |]
-   $ Only (record_id :: Integer )
+   $ Only (record_id :: Int )
   return $
     case xs of 
       [ (Just jurisdictionLink, Just licenseLink, Just licenseName, Just licenseImageLink) ] 

@@ -170,7 +170,7 @@ getTestConceptRecordList conn = do
           count
         from facet_view
   |]
-  xs :: [ (Integer, Maybe Integer, String, Integer) ] <- PG.query conn query ()
+  xs :: [ (Int, Maybe Int, String, Int) ] <- PG.query conn query ()
   return xs
 
 

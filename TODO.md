@@ -1,4 +1,6 @@
 
+-- done CHANGE INTEGER to INT
+
 also set the image explicitly in the metadata that we return - should be trivial  - and demonstrate it working...
 
 do the "to" and "from" to test the param decoding...
