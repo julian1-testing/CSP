@@ -38,8 +38,9 @@ import qualified Data.Text.Encoding as E(encodeUtf8)
 import qualified Data.Text.Lazy.Encoding as LE(encodeUtf8)
 -- import qualified Data.Text.Lazy as LT
 
-import qualified Data.ByteString.Char8 as BS(putStrLn, pack, concat)
+import qualified Data.ByteString.Char8 as BS(putStrLn, pack, concat, readInt)
 import qualified Data.ByteString.Lazy.Char8 as LBS(readFile)
+
 
 import qualified Database.PostgreSQL.Simple as PG(query, connectPostgreSQL)
 import Database.PostgreSQL.Simple.Types as PG(Only(..))
@@ -110,7 +111,6 @@ app req res = do
   res x
 
 
--- perhaps should pack first 
 
 extractParam params key =
   case L.find f params of
@@ -129,7 +129,11 @@ xmlSearchImos params = do
 
 
   let from = extractParam params $ BS.pack "from"
-  BS.putStrLn $ BS.concat [ "from = ", from ]
+  let from_ = BS.readInt from
+
+  BS.putStrLn $ BS.concat [ "from = ", (BS.pack.show) from ]
+
+
 
   let to = extractParam params $ BS.pack "to"
   BS.putStrLn $ BS.concat [ "to = ", to ]
