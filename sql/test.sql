@@ -8,6 +8,10 @@ select
   left(concept_view_parent_parent.parent_label, 20) as label1,
   left(concept_view_parent.parent_label, 20) as label1,
   left(concept_view.parent_label, 20) as label2,
+
+
+  data_parameter_parent.record_id,
+
   left( concept_view.label, 40) as label3,
   -- concept_view.parent_id,
 
@@ -16,9 +20,8 @@ select
 from concept_view
 left join data_parameter 
   on data_parameter.concept_id = concept_view.concept_id   
-  -- and ( concept_view.parent_label = 'Mooring and buoy' 
-    -- or concept_view.parent_label = 'mooring' 
-  -- )
+
+
 
 left join concept_view concept_view_parent
   on concept_view_parent.concept_id = concept_view.parent_id 
@@ -28,14 +31,25 @@ left join concept_view concept_view_parent_parent
 
 
 
+left join data_parameter data_parameter_parent 
+  on data_parameter_parent.concept_id = concept_view_parent.concept_id   
+
+
+
+
 order by concept_id
 ;
+
+
 
 /*
   VERY IMPORTANT
 
   concept_view.label = 'mooring' 
 
+  -- and ( concept_view.parent_label = 'Mooring and buoy' 
+    -- or concept_view.parent_label = 'mooring' 
+  -- )
 
 -- very important - we can structure the levels.... without a linear explosion
 
