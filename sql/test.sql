@@ -35,6 +35,8 @@ left join data_parameter data_parameter_parent
   on data_parameter_parent.concept_id = concept_view_parent.concept_id   
 
 
+-- make sure
+where concept_view_parent_parent.parent_id is not null
 
 
 order by concept_id
