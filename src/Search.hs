@@ -132,7 +132,7 @@ request conn params = do
   -- (mapM print).(Map.toList) $ facetGraph
 
 
-  -- generate xml
+  -- generate summary xml
   let s1 = Summary.formatXML (length allRecordIds) sortedGraph
 
 
@@ -146,8 +146,10 @@ request conn params = do
   -- get record data to return
   records <- RecordGet.getRecords conn pagedIds
 
+  -- generate metadata xml
   let s2 = Metadata.formatXML records 1
 
+  -- generate response,
   return $ H.concatLT [
       "<response",
         " from=\"", LT.pack.show.from $ params, "\"",
