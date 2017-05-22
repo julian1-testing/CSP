@@ -69,20 +69,23 @@ request conn params = do
   -- when trace_ $ ( mapM print nestings >> return ())
 
 
-  facetLeafCounts <- FacetCalc.getConceptRecordList conn
-  -- print "##### the facetLeaf counts "
-  -- mapM print facetLeafCounts
+  -- facetLeafCounts <- FacetCalc.getConceptRecordList conn
+  facetLeafCounts <- FacetCalc.getConceptRecordList2 conn
+  print "##### the facetLeaf counts "
+  mapM print facetLeafCounts
 
+
+  -- actually because it's lazy, it's not clear
 
   -- compute facet counts
   let facetCounts = FacetCalc.buildInitialConceptMap facetLeafCounts
-  -- print "##### the facetCounts after creating the leaf map "
-  -- (mapM print).(Map.toList) $ facetCounts
+  print "##### the facetCounts after creating the leaf map "
+  (mapM print).(Map.toList) $ facetCounts
 
 
   let (propagated, allRecordIds) = FacetCalc.doAll nestings  facetCounts
-  -- print "##### the facetCounts after propagating"
-  -- (mapM print).(Map.toList) $ propagated
+  print "##### the facetCounts after propagating"
+  (mapM print).(Map.toList) $ propagated
 
   print $ "all ids: " ++ show allRecordIds
 
@@ -141,7 +144,7 @@ request conn params = do
   let count = to params - from params
   let pagedIds = take count $ drop (from params - 1) allRecordIds
 
-  print $ "paged: " ++ show pagedIds
+  print $ "paged ids: " ++ show pagedIds
 
   -- get record data to return
   records <- RecordGet.getRecords conn pagedIds

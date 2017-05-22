@@ -1,6 +1,6 @@
 {-
   Calculate the ConceptRecord graph
--- TODO  consider factoring the sql actions out of here.
+-- TODO  consider factoring all the sql actions out of here - similar to what we did with RecordStore and RecordGet.
 -- although they are required
 
 -}
@@ -82,6 +82,27 @@ getConceptRecordList conn  = do
   xs :: [ (Int, Maybe Int, Maybe Int ) ] <- PG.query conn query1 ()
   -- mapM putStrLn xs
   return xs
+
+
+getConceptRecordList2 conn  = do
+  let query1 = [r|
+    select
+      concept_view.concept_id,
+      concept_view.parent_id,
+      data_parameter.record_id
+    from concept_view
+    left join data_parameter on data_parameter.concept_id = concept_view.concept_id
+    where concept_view.label = 'mooring'
+  |]
+  xs :: [ (Int, Maybe Int, Maybe Int ) ] <- PG.query conn query1 ()
+  -- mapM putStrLn xs
+  return xs
+
+
+-- left join record on data_parameter.record_id = record.id
+-- order by concept_id
+
+
 
 
 

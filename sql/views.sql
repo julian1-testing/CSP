@@ -67,9 +67,9 @@ select
 
 create view concept_view as
 select
-  concept.id    as concept_id,
+  concept.id    as concept_id,  -- could rename to just id...
   concept.label as label,
-  concept.url   as url,
+  concept.url   as url,    -- rename as concept_url? no because this is not a join table, but concept only
 
   parent_concept.id as parent_id,
   parent_concept.url as parent_url,
