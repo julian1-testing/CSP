@@ -1,16 +1,25 @@
 
+
+-- need a simple concept limited query - for faceted search...
+  - then develop the full nested matching
+    - should work - with just a recursive generated function with parent_url = ... etc. 
+    - but also need or.
+
+
+---
+
 -- done CHANGE INTEGER to INT
 
-also set the image explicitly in the metadata that we return - should be trivial  - and demonstrate it working...
+- done - also set the image explicitly in the metadata that we return - should be trivial  - and demonstrate it working...
 
-do the "to" and "from" to test the param decoding...
+- done - do the "to" and "from" to test the param decoding...
 
 
 ---
 
 done - get portal rhs panel with some data as well as lhs.
 
-- need to fill in extra metadata data.
+- done - need to fill in extra metadata data.
 - and get the actual selection criteria to work.
 
 - get the abstract in place and the logos.

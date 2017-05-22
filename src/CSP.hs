@@ -43,9 +43,12 @@ import qualified Data.ByteString.Lazy.Char8 as LBS(readFile)
 
 
 import qualified Database.PostgreSQL.Simple as PG(query, connectPostgreSQL)
-import Database.PostgreSQL.Simple.Types as PG(Only(..))
+import qualified Database.PostgreSQL.Simple.Types as PG(Only(..))
 
 import qualified Data.List as L(find)
+
+import qualified Network.HTTP.Types as HTTP(urlEncode, urlDecode)
+
 
 import Search(request, Params(..))
 
@@ -126,7 +129,9 @@ extractIntParam params key = do
 extractStringParam params key = do
   -- over an option monad
   (_, v_) <- L.find f params
-  v_
+  v <- v_
+  -- it's not clear urlDecode is needed for 'facet.q' but not for 'protocol'
+  return $ HTTP.urlDecode False v
   where
     f (k, _) = k == key
 
@@ -142,12 +147,16 @@ xmlSearchImos params = do
   -- TODO fix this destructuring is no good
   let Just from = extractIntParam params "from"
   let Just to = extractIntParam params "to"
+  let facetQ = extractStringParam params "facet.q"
 
   -- facet.q: Platform/Vessel/vessel%20of%20opportunity
+  -- HTTP.urlDecode False v
+
 
   let searchParams = Search.Params {
       to = to,
-      from = from
+      from = from,
+      facetQ = facetQ
   }
 
   -- test db

@@ -1,4 +1,7 @@
-
+{-
+  the main facetted search
+  Maybe change name to xmlSearchImos
+-}
 -- {-# LANGUAGE OverloadedStrings #-}
 
 {-# LANGUAGE ScopedTypeVariables, OverloadedStrings #-}
@@ -21,14 +24,14 @@ import Control.Monad(unless, when)
 import qualified Data.ByteString.Char8 as BS
 import qualified Data.Text.Encoding as E(encodeUtf8)
 
--- should put this in a module TestConceptRecords -
-import qualified FacetCalc as FacetCalc --(buildLeafFacetMap,main)
-import qualified Summary as Summary(fromList, sort, formatXML) --(main)
 
+
+import qualified FacetCalc as FacetCalc --(buildLeafFacetMap,main)
+import qualified Summary as Summary(fromList, sort, formatXML)
 import qualified RecordGet as RecordGet(getRecords)
 import qualified Metadata as Metadata(formatXML)
-
 import qualified Helpers as H(concatLT, pad)
+
 
 
 -- ease syntax
@@ -41,7 +44,8 @@ mapGet e m =
 data Params = Params {
 
     to :: Int,
-    from :: Int
+    from :: Int,
+    facetQ :: Maybe BS.ByteString
 } deriving (Show, Eq)
 
 
@@ -50,6 +54,8 @@ request :: Connection -> Params -> IO LT.Text
 request conn params = do
 
   let trace_ = False
+
+  print $ "facetQ: " ++ (show. facetQ) params
 
   -- TODO - maybe put all the DB actions into another file -- so there's a clear module interface...
   -- TODO - control logging in a switch
@@ -131,7 +137,7 @@ request conn params = do
 
 
 
-  -- handle pagination
+  -- do pagination
   let count = to params - from params
   let pagedIds = take count $ drop (from params - 1) allRecordIds
 
@@ -143,9 +149,9 @@ request conn params = do
   let s2 = Metadata.formatXML records 1
 
   return $ H.concatLT [
-      "<response", 
-        " from=\"", LT.pack.show $ from params, "\"", 
-        " to=\"", LT.pack.show $ to params, "\"", 
+      "<response",
+        " from=\"", LT.pack.show.from $ params, "\"",
+        " to=\"", LT.pack.show.to $ params, "\"",
         " selected = \"0\">",
       "\n",
       s1,
@@ -160,7 +166,7 @@ request conn params = do
 main :: IO ()
 main = do
   conn <- PG.connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
-  s <- request conn $ Params { from = 0, to = 10000 }
+  s <- request conn $ Params { from = 0, to = 10000, facetQ = Nothing }
 
   LT.putStrLn $ s
 
