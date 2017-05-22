@@ -84,19 +84,21 @@ getConceptRecordList conn  = do
   return xs
 
 
+
+-- ok, this restricts the view - to just matching labels...
+-- the question is can we structure this - to handle the full nesting... 
+
 getConceptRecordList2 conn  = do
   let query1 = [r|
 
       select
         concept_view.concept_id,
         concept_view.parent_id,
-        case concept_view.label
-          when 'mooring' then data_parameter.record_id 
-          else null
-        end
-        as record_id
+        data_parameter.record_id
       from concept_view
-      left join data_parameter on data_parameter.concept_id = concept_view.concept_id
+      left join data_parameter on data_parameter.concept_id = concept_view.concept_id and concept_view.label = 'mooring' 
+
+
 
   |]
   xs :: [ (Int, Maybe Int, Maybe Int ) ] <- PG.query conn query1 ()
@@ -104,8 +106,6 @@ getConceptRecordList2 conn  = do
   return xs
 
 
--- left join record on data_parameter.record_id = record.id
--- order by concept_id
 
 
 
