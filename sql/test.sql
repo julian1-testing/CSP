@@ -4,7 +4,7 @@
 select
   concept_view.concept_id,
   left(concept_view.parent_label, 20),
-  left( concept_view.label, 20),
+  left( concept_view.label, 40),
   -- concept_view.parent_id,
 
   data_parameter.record_id
@@ -12,9 +12,9 @@ select
 from concept_view
 left join data_parameter 
   on data_parameter.concept_id = concept_view.concept_id   
-  and ( concept_view.parent_label = 'Mooring and buoy' 
+  -- and ( concept_view.parent_label = 'Mooring and buoy' 
     -- or concept_view.parent_label = 'mooring' 
-  )
+  -- )
 
 
 order by concept_id
