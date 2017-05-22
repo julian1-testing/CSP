@@ -5,9 +5,10 @@ select
   concept_view.concept_id,
 
 
-  left(concept_view_parent.parent_label, 20),
-  left(concept_view.parent_label, 20),
-  left( concept_view.label, 40),
+  left(concept_view_parent_parent.parent_label, 20) as label1,
+  left(concept_view_parent.parent_label, 20) as label1,
+  left(concept_view.parent_label, 20) as label2,
+  left( concept_view.label, 40) as label3,
   -- concept_view.parent_id,
 
   data_parameter.record_id
@@ -21,6 +22,11 @@ left join data_parameter
 
 left join concept_view concept_view_parent
   on concept_view_parent.concept_id = concept_view.parent_id 
+
+left join concept_view concept_view_parent_parent
+  on concept_view_parent_parent.concept_id = concept_view_parent.parent_id 
+
+
 
 order by concept_id
 ;
