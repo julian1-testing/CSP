@@ -37,7 +37,7 @@ mapGet e m =
 
 
 
-getConceptNesting conn  = do
+getConceptNesting conn = do
   -- TODO maybe change name - get ConceptParents   conceptParents ? ConceptRelationships?
   -- returns a flat list of concept nestings
   let query1 = [r|
@@ -51,7 +51,7 @@ getConceptNesting conn  = do
 
 
 
-getConceptLabels conn  = do
+getConceptLabels conn = do
   -- same as above - except with the concept labels
   let query1 = [r|
       select
@@ -65,7 +65,7 @@ getConceptLabels conn  = do
 
 
 
-getConceptRecordList conn  = do
+getConceptRecordList conn = do
   -- OK - this thing needs to be changed --- so that we have the damn record 
   -- associate concepts with records
   -- we want all concepts - regardless of whether there were facet match counts
@@ -88,7 +88,11 @@ getConceptRecordList conn  = do
 -- ok, this restricts the view - to just matching labels...
 -- the question is can we structure this - to handle the full nesting... 
 
-getConceptRecordList2 conn  = do
+
+
+-- if we select a midlevel term - then we have to pick up all the facets and records below it.
+
+getConceptRecordList2 conn = do
   let query1 = [r|
 
       select

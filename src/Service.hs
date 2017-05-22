@@ -1,10 +1,9 @@
 {-
-  CSP - catalog services for portal
+  CSP Service - catalog services for portal
 
   main webapp and routing
 
   TODO - maybe change the name of this to Router? or Service or Web ?
-
   TODO - need to wait/throttle http connections to not db connections - until one was available?
 
   for routes,
@@ -22,7 +21,7 @@
 {-# LANGUAGE ScopedTypeVariables, OverloadedStrings #-}
 
 
-module CSP where
+module Service where
 
 
 import Network.Wai
