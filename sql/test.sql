@@ -3,9 +3,9 @@
 
 select
   concept_view.concept_id,
-  concept_view.label,
-  concept_view.parent_id,
-  concept_view.parent_label,
+  left(concept_view.parent_label, 20),
+  left( concept_view.label, 20),
+  -- concept_view.parent_id,
 
   data_parameter.record_id
 
@@ -26,8 +26,6 @@ order by concept_id
   concept_view.label = 'mooring' 
 
 
-  it's curious - the label doesn't look quite right 
-
 -- very important - we can structure the levels.... without a linear explosion
 
   - so rather than matching any level. we are precise.  
@@ -38,6 +36,15 @@ order by concept_id
   so we just need a view that exposes all the parents like this.... 
 
   level1, level2, level3, level4, record_id
-*/
 
+
+  THIS SOLVES BOTH PROBLEMs
+    - being explicit about the nested term a / b / c  etc. 
+    - and picking out all the lower terms that could match
+
+  - it's curious - the label doesn't look quite right 
+
+
+
+*/
 
