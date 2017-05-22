@@ -3,6 +3,9 @@
 
 select
   concept_view.concept_id,
+
+
+  left(concept_view_parent.parent_label, 20),
   left(concept_view.parent_label, 20),
   left( concept_view.label, 40),
   -- concept_view.parent_id,
@@ -16,6 +19,8 @@ left join data_parameter
     -- or concept_view.parent_label = 'mooring' 
   -- )
 
+left join concept_view concept_view_parent
+  on concept_view_parent.concept_id = concept_view.parent_id 
 
 order by concept_id
 ;
