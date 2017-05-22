@@ -5,30 +5,39 @@ select
   concept_view.concept_id,
   concept_view.label,
   concept_view.parent_id,
+  concept_view.parent_label,
 
   data_parameter.record_id
 
-/*
-  case concept_view.label
-    when concept_view.label  then data_parameter.record_id 
-    else null
-  end
-  as record_id
-*/
-  -- record.uuid
 from concept_view
-left join data_parameter on data_parameter.concept_id = concept_view.concept_id and concept_view.label = 'mooring' 
+left join data_parameter 
+  on data_parameter.concept_id = concept_view.concept_id   
+  and ( concept_view.parent_label = 'Mooring and buoy' 
+    -- or concept_view.parent_label = 'mooring' 
+  )
+
 
 order by concept_id
 ;
 
+/*
+  VERY IMPORTANT
+
+  concept_view.label = 'mooring' 
 
 
+  it's curious - the label doesn't look quite right 
 
--- left join record on data_parameter.record_id = record.id
--- where concept_view.label = 'mooring'
--- order by concept_view
+-- very important - we can structure the levels.... without a linear explosion
 
--- transfer_link - contains protocol and resource
+  - so rather than matching any level. we are precise.  
+  and 
+
+  label_level1 = 'platform' and label_level2 = 'Mooring and buoy' and label_level3 = 'mooring' etc....
+
+  so we just need a view that exposes all the parents like this.... 
+
+  level1, level2, level3, level4, record_id
+*/
 
 

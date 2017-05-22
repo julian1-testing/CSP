@@ -100,16 +100,14 @@ getConceptRecordList2 conn = do
         concept_view.parent_id,
         data_parameter.record_id
       from concept_view
-      left join data_parameter on data_parameter.concept_id = concept_view.concept_id and concept_view.label = 'mooring' 
-
-
+      left join data_parameter on 
+        data_parameter.concept_id = concept_view.concept_id 
+        and concept_view.label = 'mooring' 
 
   |]
   xs :: [ (Int, Maybe Int, Maybe Int ) ] <- PG.query conn query1 ()
   -- mapM putStrLn xs
   return xs
-
-
 
 
 
