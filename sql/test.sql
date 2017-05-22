@@ -6,13 +6,13 @@ select
 
 
   left(concept_view_parent_parent.parent_label, 20) as label1,
-  left(concept_view_parent.parent_label, 20) as label1,
-  left(concept_view.parent_label, 20) as label2,
+  left(concept_view_parent.parent_label, 20) as label2,
+  left(concept_view.parent_label, 20) as label3,
 
 
   data_parameter_parent.record_id,
 
-  left( concept_view.label, 40) as label3,
+  left( concept_view.label, 40) as label4,
   -- concept_view.parent_id,
 
   data_parameter.record_id
@@ -35,13 +35,21 @@ left join data_parameter data_parameter_parent
   on data_parameter_parent.concept_id = concept_view_parent.concept_id   
 
 
--- make sure
+-- this may want to be tightened - so that it's only a toplevel thing... 
 where concept_view_parent_parent.parent_id is not null
 
 
-order by concept_id
+-- order by concept_id
 ;
 
+
+
+
+
+/*
+  VERY IMPORTANT
+    should put this into a view
+*/
 
 
 /*
