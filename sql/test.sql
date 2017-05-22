@@ -6,9 +6,10 @@ select
   concept_view.label,
   concept_view.parent_id,
   case concept_view.label
-    when 'asdf' then data_parameter.record_id 
-    else data_parameter.record_id 
+    when 'mooring' then data_parameter.record_id 
+    else null
   end
+  as record_id
         
   -- record.uuid
 from concept_view

@@ -86,13 +86,18 @@ getConceptRecordList conn  = do
 
 getConceptRecordList2 conn  = do
   let query1 = [r|
-    select
-      concept_view.concept_id,
-      concept_view.parent_id,
-      data_parameter.record_id
-    from concept_view
-    left join data_parameter on data_parameter.concept_id = concept_view.concept_id
-    where concept_view.label = 'mooring'
+
+      select
+        concept_view.concept_id,
+        concept_view.parent_id,
+        case concept_view.label
+          when 'mooring' then data_parameter.record_id 
+          else null
+        end
+        as record_id
+      from concept_view
+      left join data_parameter on data_parameter.concept_id = concept_view.concept_id
+
   |]
   xs :: [ (Int, Maybe Int, Maybe Int ) ] <- PG.query conn query1 ()
   -- mapM putStrLn xs
