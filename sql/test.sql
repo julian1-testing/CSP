@@ -39,7 +39,7 @@ left join data_parameter data_parameter_parent
 where concept_view_parent_parent.parent_id is not null
 
 
--- order by concept_id
+order by concept_id
 ;
 
 

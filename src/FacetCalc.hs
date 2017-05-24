@@ -160,7 +160,7 @@ propagateRecordsToParentConcept nestings m =
             True -> f m (concept_id, parent)
             False -> m
 
-    propagate m (concept_id, parent_id) =
+    propagate m (concept_id, parent) =
         {-
             Using records instead of tuples might maked this cleanermight make this clearer...
 
@@ -172,13 +172,13 @@ propagateRecordsToParentConcept nestings m =
         let (childAccum, childRecords) = mapGet (Just concept_id) m in
 
         -- get the records for the parent
-        let (parentAccum, parentRecords) = mapGet parent_id m in
+        let (parentAccum, parentRecords) = mapGet parent m in
 
         -- update and store for child -  updated Count and an empty list for child...
         Map.insert (Just concept_id) (mkUniq $ childAccum ++ childRecords, []) m
         &
         -- store for parent - parentAccum is unchanged
-        Map.insert parent_id (parentAccum, mkUniq $ parentRecords ++ childRecords)
+        Map.insert parent (parentAccum, mkUniq $ parentRecords ++ childRecords)
 
     predHasRecords k (count, records) =
         not $ null records
@@ -199,8 +199,8 @@ propagateAllRecordsToRoot nestings m =
     moreToDo m =
       Map.foldlWithKey f False m
 
-    f m concept_id (_, records) =
-      case concept_id of
+    f m concept (_, records) =
+      case concept of
         -- ignore root node
         Nothing -> m
         -- or with more records
@@ -215,14 +215,18 @@ putStrLnConceptRecordMap m = do
 
 
 flatten m = 
-  -- is just a Map.
-  -- actually no - because we need to treat the root node differently, as we never
-  -- Map.mapWithKey (\k (accum,_) -> accum) m
+  -- simplify the map of propagated record ids
   Map.mapWithKey f m
   where
     f (Just concept_id) (accum,_) = accum 
     f Nothing (_,children) = children
 
+
+
+
+doAll nestings m  =
+  propagateAllRecordsToRoot nestings m
+  & flatten
 
 
 
@@ -314,12 +318,6 @@ adjustRootRecord m =
 -}
 
 
-{-
-doAll nestings m  =
-  propagateAllRecordsToRoot nestings m
-  -- & adjustRootRecord
-
--}
 
 {-
   the termination function of having all records propagated - won't work... 

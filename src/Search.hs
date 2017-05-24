@@ -69,8 +69,8 @@ request conn params = do
   -- when trace_ $ ( mapM print nestings >> return ())
 
 
-  -- facetLeafCounts <- FacetCalc.getConceptRecordList conn
-  facetLeafCounts <- FacetCalc.getConceptRecordList2 conn
+  facetLeafCounts <- FacetCalc.getConceptRecordList conn
+  -- facetLeafCounts <- FacetCalc.getConceptRecordList2 conn
   print "##### the facetLeaf counts "
   mapM print facetLeafCounts
 
