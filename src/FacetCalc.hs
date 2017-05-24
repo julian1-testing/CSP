@@ -120,12 +120,12 @@ buildInitialConceptMap xs =
   Map.empty
   & \m -> foldl initForConcept m xs
   & \m -> foldl f m xs
-  & \m -> Map.insert Nothing (0 , []) m    -- insert a root node
+  & \m -> Map.insert Nothing ([] :: [ Int ] , []) m    -- insert a root node
 
   where
     --  insert an empty list for concept_id
     initForConcept m (concept_id, _, _) =
-      Map.insert (Just concept_id) (0, []) m
+      Map.insert (Just concept_id) ([], []) m
 
     -- populate concept list with the records
     f m (concept_id, _, record) =
@@ -158,6 +158,8 @@ propagateRecordsToParentConcept nestings m =
       while incrementing the count of records that move against the child
 
       we select the records to process first - so to avoid reprocessing things that move more than once in the same pass
+
+      - actually we have to move the records up to the parent. and into the accumulator...
   -}
   let (recordsToProcess, _) = Map.partitionWithKey predHasRecords m in
   foldl ((select recordsToProcess) propagate ) m nestings
@@ -170,27 +172,33 @@ propagateRecordsToParentConcept nestings m =
             False -> m
 
     propagate m (concept_id, parent_id) =
+        {-
+            Using records instead of tuples might maked this cleanermight make this clearer...
+
+        -}
         -- fold over the concept/parent nestings
         -- and update the records in the parent. - and record the count against the current child node.
 
         -- get the records associated with child concept
-        let (childCount, childRecords) = mapGet (Just concept_id) m in
+        let (childAccum, childRecords) = mapGet (Just concept_id) m in
 
         -- get the records for the parent
-        let (parentCount, parentRecords) = mapGet parent_id m in
+        let (parentAccum, parentRecords) = mapGet parent_id m in
 
         -- work out updated child count with records for this concept
-        let updatedChildCount = childCount + length childRecords in  -- must be the existing count
+        -- let updatedChildCount = childAccum + length childRecords in  -- must be the existing count
+
 
         -- add child's records to the parent and deduplicate
         let updatedParentRecords = mkUniq ( parentRecords ++ childRecords ) in
 
-        -- and store updated Count and an empty list for child...
-        Map.insert (Just concept_id) (updatedChildCount, []) m
+        let updatedChildAccum = childAccum ++ childRecords in
 
+        -- store for child -  updated Count and an empty list for child...
+        Map.insert (Just concept_id) (updatedChildAccum, []) m
         &
-        -- and store for parent
-        Map.insert parent_id (parentCount, updatedParentRecords)
+        -- store for parent
+        Map.insert parent_id (parentAccum, updatedParentRecords)
 
     predHasRecords k (count, records) =
         not $ null records
@@ -224,25 +232,33 @@ propagateAllRecordsToRoot nestings m =
 
 
 
-
+{-
 adjustRootRecord m =
   -- set the count of the root node and return the records as a list
   let (_, rootRecords) = mapGet Nothing m in
   let rootCount = length rootRecords  in
   let m' = Map.insert Nothing (rootCount, []) m in
   (m', rootRecords)
-
+-}
 
 
 doAll nestings m  =
   propagateAllRecordsToRoot nestings m
-  & adjustRootRecord
+  -- & adjustRootRecord
 
 
 
 
-putStrLnConceptRecordMap m = -- do
-  (mapM $ putStrLn.show).Map.toList $ m
+putStrLnConceptRecordMap m = do
+  -- (mapM $ putStrLn.show).Map.toList $ m
+  let l = Map.toList m
+
+  mapM (putStrLn.show) l
+  -- it's saying m is iehter...
+  --print m
+
+  print "hi"
+  return ()
 
 
 
@@ -259,9 +275,9 @@ testPropagateOnce = do
   let m = buildInitialConceptMap facetList
   putStrLnConceptRecordMap m
 
-  putStrLn "\n######################## 1 - after processing one level"
-  let m'  = propagateRecordsToParentConcept nestings m
-  putStrLnConceptRecordMap m'
+--  putStrLn "\n######################## 1 - after processing one level"
+--  let m'  = propagateRecordsToParentConcept nestings m
+--  putStrLnConceptRecordMap m'
 
 {-
   putStrLn "######################## 2"
@@ -285,7 +301,7 @@ testPropagateOnce = do
   return ()
 
 
-
+{-
 testPropagateAll = do
   -- one nesting level only
   conn <- PG.connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
@@ -304,11 +320,11 @@ testPropagateAll = do
 
   let m' =  propagateAllRecordsToRoot nestings m
 
-  let (m'', records) = adjustRootRecord m'
+  --let (m'', records) = adjustRootRecord m'
 
-  putStrLnConceptRecordMap m''
+  --putStrLnConceptRecordMap m''
   return ()
-
+-}
 
 
 main :: IO ()
