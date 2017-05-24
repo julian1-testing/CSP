@@ -1,6 +1,7 @@
 {-
   Calculate the ConceptRecord graph
 -- TODO  consider factoring all the sql actions out of here - similar to what we did with RecordStore and RecordGet.
+    - NO - because the test here is self contained.
 -- although they are required
 
 -}
@@ -66,7 +67,7 @@ getConceptLabels conn = do
 
 
 getConceptRecordList conn = do
-  -- OK - this thing needs to be changed --- so that we have the damn record 
+  -- OK - this thing needs to be changed --- so that we have the damn record
   -- associate concepts with records
   -- we want all concepts - regardless of whether there were facet match counts
   -- shouldn't this be data_parameter ???
@@ -86,12 +87,12 @@ getConceptRecordList conn = do
 
 
 -- ok, this restricts the view - to just matching labels...
--- the question is can we structure this - to handle the full nesting... 
+-- the question is can we structure this - to handle the full nesting...
 
 
 
 -- if we select a midlevel term - then we have to pick up all the facets and records below it.
-
+{-
 getConceptRecordList2 conn = do
   let query1 = [r|
 
@@ -100,15 +101,15 @@ getConceptRecordList2 conn = do
         concept_view.parent_id,
         data_parameter.record_id
       from concept_view
-      left join data_parameter on 
-        data_parameter.concept_id = concept_view.concept_id 
-        and concept_view.label = 'mooring' 
+      left join data_parameter on
+        data_parameter.concept_id = concept_view.concept_id
+        and concept_view.label = 'mooring'
 
   |]
   xs :: [ (Int, Maybe Int, Maybe Int ) ] <- PG.query conn query1 ()
   -- mapM putStrLn xs
   return xs
-
+-}
 
 
 
@@ -142,9 +143,9 @@ propagateRecordsToParentConcept nestings m =
   {-
       a little bit like a topological sort,
       fold over the concept/parent nestings relationships and push the list of record_id's into their parent concept list
-      while recorded the count of records moved against the child
+      while incrementing the count of records that move against the child
 
-      we select the records to process first - so to avoid reprocessing things more than once in the same pass
+      we select the records to process first - so to avoid reprocessing things that move more than once in the same pass
   -}
   let (recordsToProcess, _) = Map.partitionWithKey predHasRecords m in
   foldl ((select recordsToProcess) propagate ) m nestings
@@ -174,11 +175,11 @@ propagateRecordsToParentConcept nestings m =
         -- add child's records to the parent and deduplicate
         let updatedParentRecords = mkUniq ( parentRecords ++ childRecords ) in
 
-        -- and store for child...
+        -- and store updated Count and an empty list for child...
         Map.insert (Just concept_id) (updatedChildCount, []) m
 
         &
-        -- store for parent
+        -- and store for parent
         Map.insert parent_id (parentCount, updatedParentRecords)
 
 
@@ -189,34 +190,34 @@ propagateRecordsToParentConcept nestings m =
 
 propagateAllRecordsToRoot nestings m =
   {-
-      call propagateRecordsToParent until all record_ids have been moved to the root node
+      keep calling propagateRecordsToParent until all record_ids have been moved to the root node
       maybe we can handle this by clearing of Nothing as wel go
   -}
 
-  case countUnprocessed m of   -- change to countUnrpocessed = 0 _ otherwise
-    0 -> 
-      -- finished
+  case remainingCount m of   -- change to countUnrpocessed = 0 _ otherwise
+    0 ->
+      -- we have finished
       m
     _ ->
-      -- keep processing, more to do
+      -- more to do, keep processing
       propagateRecordsToParentConcept nestings m
       & propagateAllRecordsToRoot nestings
   where
-    countUnprocessed m =
+    remainingCount m =
       Map.foldlWithKey f 0 m
 
-    f m concept_id (_, recordsForConcept) = 
+    f m concept_id (_, recordsForConcept) =
       case concept_id of
         -- ignore root node
         Nothing -> m
-        -- sum record count 
+        -- sum record count
         Just _ -> m + length recordsForConcept
 
 
 
 
-adjustRootRecord m = 
-  -- set the count of the root node and return the records as a list 
+adjustRootRecord m =
+  -- set the count of the root node and return the records as a list
   let (_, rootRecords) = mapGet Nothing m in
   let rootCount = length rootRecords  in
   let m' = Map.insert Nothing (rootCount, []) m in
@@ -253,7 +254,7 @@ testPropagateOnce = do
   let m'  = propagateRecordsToParentConcept nestings m
   putStrLnConceptRecordMap m'
 
-
+{-
   putStrLn "######################## 2"
   let m''  = propagateRecordsToParentConcept nestings m'
   putStrLnConceptRecordMap m''
@@ -271,7 +272,7 @@ testPropagateOnce = do
   putStrLn "######################## 5"
   let m'''''  = propagateRecordsToParentConcept nestings m''''
   putStrLnConceptRecordMap m'''''
-
+-}
   return ()
 
 
@@ -302,7 +303,8 @@ testPropagateAll = do
 
 
 main :: IO ()
-main = testPropagateAll
-
+main =  do
+  -- testPropagateAll
+  testPropagateOnce
 
 
