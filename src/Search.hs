@@ -52,6 +52,13 @@ data Params = Params {
 
 request :: Connection -> Params -> IO LT.Text
 request conn params = do
+  {-
+      do a db lookup - and build a facetCountGraph 
+        then format it as XML
+      also output the metadata
+
+      TODO  - rename functions to Count.
+  -}
 
   let trace_ = False
 
@@ -75,19 +82,19 @@ request conn params = do
   mapM print facetLeafCounts
 
 
-  -- actually because it's lazy, it's not clear
-
   -- compute facet counts
   let facetCounts = FacetCalc.buildInitialConceptMap facetLeafCounts
   print "##### the facetCounts after creating the leaf map "
   (mapM print).(Map.toList) $ facetCounts
 
-
-  let (propagated, allRecordIds) = FacetCalc.doAll nestings  facetCounts
+  -- propagated is a map...
+  -- all recordId's
+  -- let (propagated, allRecordIds) = FacetCalc.doAll nestings facetCounts
+  let propagated = FacetCalc.doAll nestings facetCounts
   print "##### the facetCounts after propagating"
   (mapM print).(Map.toList) $ propagated
 
-  print $ "all ids: " ++ show allRecordIds
+  -- print $ "all ids: " ++ show allRecordIds
 
 
   -- get the concept, parents and labels from db as a Map
@@ -101,13 +108,22 @@ request conn params = do
   -- print "##### labels"
   -- (mapM print).(Map.toList) $ labels
 
+{-
+  what are we trying to do here?
 
-  -- now join the label information with the facet list
-  -- TODO propagated should be passed as an argument
-  let completeConceptRecordList =
+  just generate the damn, xml?
+  
+  I think this facetGraph might be a lot simpler? 
+
+  No i think it's ok - we don't care about the records, just the counts...
+-}
+  -- now join the label information with the concept/facet map 
+  -- and take the record count - TODO propagated should be passed as an argument
+  -- TODO - this is not a record list. - it's a conceptCountList
+  let conceptRecordCounts =
        Map.foldlWithKey f [] propagated
         where
-        f m concept (count, records) =
+        f m concept records =
           let (parent, label) = mapGet concept labels in
             case concept of
               Nothing ->
@@ -120,24 +136,36 @@ request conn params = do
                 m
               Just concept_id ->
                 -- a normal concept
-                (concept, parent, label, count) : m
+                -- (concept, parent, label, count) : m
+                (concept, parent, label, length records) : m
 
   -- print "##### complete facet list"
-  -- (mapM print) completeConceptRecordList
+  -- (mapM print) conceptRecordCounts
 
+  {-
+    TODO - review this. 
+      suspect we might be able to build it directly....
 
-  -- build the graph for output formatting
-  let facetGraph = Summary.fromList completeConceptRecordList
+  -}
+  -- rearrange graph for output formatting
+  let facetGraph = Summary.fromList conceptRecordCounts
   -- (mapM print).(Map.toList) $ facetGraph
 
 
   let sortedGraph = Summary.sort facetGraph
-  -- (mapM print).(Map.toList) $ facetGraph
+  
+  print "# sorted graph"
+  (mapM print).(Map.toList) $ facetGraph
 
+
+  -- get the records for the root node,
+  let allRecordIds = mapGet Nothing propagated
+
+  -- just need to extract the records from the nothing node...
+  
 
   -- generate summary xml
   let s1 = Summary.formatXML (length allRecordIds) sortedGraph
-
 
 
   -- do pagination
