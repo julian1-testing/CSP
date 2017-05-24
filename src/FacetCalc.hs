@@ -195,11 +195,10 @@ propagateAllRecordsToRoot nestings m =
   -}
 
   case remainingCount m of   -- change to countUnrpocessed = 0 _ otherwise
-    0 ->
-      -- we have finished
-      m
+    -- we have finished
+    0 -> m
+    -- more to do, keep processing
     _ ->
-      -- more to do, keep processing
       propagateRecordsToParentConcept nestings m
       & propagateAllRecordsToRoot nestings
   where
