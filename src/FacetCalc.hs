@@ -251,13 +251,20 @@ doAll nestings m  =
 putStrLnConceptRecordMap m = do
   -- (mapM $ putStrLn.show).Map.toList $ m
   let l = Map.toList m
-
   mapM (putStrLn.show) l
-  -- it's saying m is iehter...
-  --print m
 
-  print "hi"
-  return ()
+
+
+flatten m = 
+  -- is just a Map.
+  -- actually no - because we need to treat the root node differently, as we never
+  -- Map.mapWithKey (\k (accum,_) -> accum) m
+  Map.mapWithKey f m
+  where
+    f (Just concept_id) (accum,_) = accum 
+    f Nothing (_,children) = children
+
+
 
 
 
@@ -300,6 +307,7 @@ testPropagateOnce = do
   return ()
 
 
+
 testPropagateAll = do
   -- one nesting level only
   conn <- PG.connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
@@ -320,7 +328,8 @@ testPropagateAll = do
   let m' = propagateAllRecordsToRoot nestings m
 
   putStrLn "\n######################## after processing"
-  putStrLnConceptRecordMap m'
+  -- putStrLnConceptRecordMap m'
+  putStrLnConceptRecordMap $ flatten m' 
 
   -- get rid of this and just flatten the thing entirely
   --let (m'', records) = adjustRootRecord m'
