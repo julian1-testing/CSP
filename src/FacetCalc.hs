@@ -139,6 +139,18 @@ buildInitialConceptMap xs =
           m
 
 
+{-
+  the termination function of having all records propagated - won't work... 
+  ahhhhhhh - hang on. 
+  
+    rather than use a count . why not have another list - that is the accumulated list that passes through.
+    then we can use the same  
+
+    then we can do another parse to compute the counts....
+
+    
+-}
+
 propagateRecordsToParentConcept nestings m =
   {-
       a little bit like a topological sort,
@@ -151,13 +163,11 @@ propagateRecordsToParentConcept nestings m =
   foldl ((select recordsToProcess) propagate ) m nestings
 
   where
-
     select recordsToProcess f m (concept_id, parent) =
         -- filter for records in recordsToProcess
         case Map.member (Just concept_id) recordsToProcess of
             True -> f m (concept_id, parent)
             False -> m
-
 
     propagate m (concept_id, parent_id) =
         -- fold over the concept/parent nestings
@@ -182,7 +192,6 @@ propagateRecordsToParentConcept nestings m =
         -- and store for parent
         Map.insert parent_id (parentCount, updatedParentRecords)
 
-
     predHasRecords k (count, records) =
         not $ null records
 
@@ -193,7 +202,6 @@ propagateAllRecordsToRoot nestings m =
       keep calling propagateRecordsToParent until all record_ids have been moved to the root node
       maybe we can handle this by clearing of Nothing as wel go
   -}
-
   case remainingCount m of   -- change to countUnrpocessed = 0 _ otherwise
     -- we have finished
     0 -> m
@@ -211,6 +219,8 @@ propagateAllRecordsToRoot nestings m =
         Nothing -> m
         -- sum record count
         Just _ -> m + length recordsForConcept
+
+
 
 
 
