@@ -139,17 +139,6 @@ buildInitialConceptMap xs =
           m
 
 
-{-
-  the termination function of having all records propagated - won't work... 
-  ahhhhhhh - hang on. 
-  
-    rather than use a count . why not have another list - that is the accumulated list that passes through.
-    then we can use the same  
-
-    then we can do another parse to compute the counts....
-
-    
--}
 
 propagateRecordsToParentConcept nestings m =
   {-
@@ -177,7 +166,7 @@ propagateRecordsToParentConcept nestings m =
 
         -}
         -- fold over the concept/parent nestings
-        -- and update the records in the parent. - and record the count against the current child node.
+        -- and update the concept -> records 
 
         -- get the records associated with child concept
         let (childAccum, childRecords) = mapGet (Just concept_id) m in
@@ -185,7 +174,7 @@ propagateRecordsToParentConcept nestings m =
         -- get the records for the parent
         let (parentAccum, parentRecords) = mapGet parent_id m in
 
-        -- store for child -  updated Count and an empty list for child...
+        -- update and store for child -  updated Count and an empty list for child...
         Map.insert (Just concept_id) (mkUniq $ childAccum ++ childRecords, []) m
         &
         -- store for parent - parentAccum is unchanged
@@ -201,51 +190,21 @@ propagateAllRecordsToRoot nestings m =
       keep calling propagateRecordsToParent until all record_ids have been moved to the root node
       maybe we can handle this by clearing of Nothing as wel go
   -}
-  case remainingCount m of   -- change to countUnrpocessed = 0 _ otherwise
-    -- we have finished
-    0 -> m
-    -- more to do, keep processing
-    _ ->
+  case moreToDo m of
+    False -> m
+    True ->
       propagateRecordsToParentConcept nestings m
       & propagateAllRecordsToRoot nestings
   where
-    remainingCount m =
-      Map.foldlWithKey f 0 m
+    moreToDo m =
+      Map.foldlWithKey f False m
 
-    f m concept_id (_, recordsForConcept) =
+    f m concept_id (_, records) =
       case concept_id of
         -- ignore root node
         Nothing -> m
-        -- sum record count
-        Just _ -> m + length recordsForConcept
-
-
-{-
-    VERY IMPORTANT - we should readjust after propagation....
-    so it's a flat list again. and get the counts just by 
-
-
-    We don't need the rootAdjust
-
-    Instead we just flatten the thing out...
--}
-
-{-
-adjustRootRecord m =
-  -- set the count of the root node and return the records as a list
-  let (_, rootRecords) = mapGet Nothing m in
-  let rootCount = length rootRecords  in
-  let m' = Map.insert Nothing (rootCount, []) m in
-  (m', rootRecords)
--}
-
-
-{-
-doAll nestings m  =
-  propagateAllRecordsToRoot nestings m
-  -- & adjustRootRecord
-
--}
+        -- or with more records
+        Just _ -> m || ( not $ null records )
 
 
 putStrLnConceptRecordMap m = do
@@ -342,4 +301,35 @@ main =  do
   testPropagateAll
   --testPropagateOnce
 
+
+
+
+{-
+adjustRootRecord m =
+  -- set the count of the root node and return the records as a list
+  let (_, rootRecords) = mapGet Nothing m in
+  let rootCount = length rootRecords  in
+  let m' = Map.insert Nothing (rootCount, []) m in
+  (m', rootRecords)
+-}
+
+
+{-
+doAll nestings m  =
+  propagateAllRecordsToRoot nestings m
+  -- & adjustRootRecord
+
+-}
+
+{-
+  the termination function of having all records propagated - won't work... 
+  ahhhhhhh - hang on. 
+  
+    rather than use a count . why not have another list - that is the accumulated list that passes through.
+    then we can use the same  
+
+    then we can do another parse to compute the counts....
+
+    
+-}
 
