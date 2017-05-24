@@ -240,11 +240,12 @@ adjustRootRecord m =
 -}
 
 
+{-
 doAll nestings m  =
   propagateAllRecordsToRoot nestings m
   -- & adjustRootRecord
 
-
+-}
 
 
 putStrLnConceptRecordMap m = do
@@ -269,12 +270,12 @@ testPropagateOnce = do
   -- putStrLn "facet list"
   -- mapM putStrLn $ facetList
 
-  putStrLn "######################## 0 - leafmap"
   let m = buildInitialConceptMap facetList
+  putStrLn "######################## 0 - leafmap"
   putStrLnConceptRecordMap m
 
-  putStrLn "\n######################## 1 - after processing one level"
   let m'  = propagateRecordsToParentConcept nestings m
+  putStrLn "\n######################## 1 - after processing one level"
   putStrLnConceptRecordMap m'
 
 {-
@@ -313,13 +314,16 @@ testPropagateAll = do
   -- mapM putStrLn $ facetList
 
   let m = buildInitialConceptMap facetList
-  --  putStrLnConceptRecordMap m
+  putStrLn "######################## leafmap"
+  putStrLnConceptRecordMap m
 
-  let m' =  propagateAllRecordsToRoot nestings m
+  let m' = propagateAllRecordsToRoot nestings m
+
+  putStrLn "\n######################## after processing"
   putStrLnConceptRecordMap m'
 
+  -- get rid of this and just flatten the thing entirely
   --let (m'', records) = adjustRootRecord m'
-
   --putStrLnConceptRecordMap m''
   return ()
 
