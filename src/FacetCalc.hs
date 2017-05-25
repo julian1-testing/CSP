@@ -224,7 +224,7 @@ flatten m =
 
 
 -- TODO change name
-doAll nestings m  =
+propagate nestings m  =
   propagateAllRecordsToRoot nestings m
   & flatten
 

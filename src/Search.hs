@@ -41,6 +41,10 @@ mapGet e m =
 
 
 
+printMap m =
+  (mapM print).(Map.toList) $ m
+
+
 data Params = Params {
 
     to :: Int,
@@ -75,49 +79,32 @@ request conn params = do
   -- case trace_ of True -> mapM print nestings
   -- when trace_ $ ( mapM print nestings >> return ())
 
-
   -- get the initial leaf records
   facetLeafs <- FacetCalc.getConceptRecordList conn
-  -- facetLeafs <- FacetCalc.getConceptRecordList2 conn
-  -- print "##### the facetLeaf counts "
+  -- print "# the facetLeaf counts "
   -- mapM print facetLeafs
-
 
   -- compute facet counts
   let initialFacetMap = FacetCalc.buildInitialConceptMap facetLeafs
-  -- print "##### the initialFacetMap after creating the leaf map "
-  -- (mapM print).(Map.toList) $ initialFacetMap
-
-  -- facetMap is a map...
-  -- all recordId's
-  -- let (facetMap, allRecordIds) = FacetCalc.doAll nestings initialFacetMap
-  let facetMap = FacetCalc.doAll nestings initialFacetMap
-  -- print "##### the initialFacetMap after propagating"
-  -- (mapM print).(Map.toList) $ facetMap
-
-  -- print $ "all ids: " ++ show allRecordIds
+  -- print "# the initialFacetMap after creating the leaf map "
+  -- printMap initialFacetMap
 
 
-  -- get the concept, parents and labels from db as a Map
+  -- get the propagated map
+  let facetMap = FacetCalc.propagate nestings initialFacetMap
+  -- print "# the initialFacetMap after propagating"
+  -- printMap facetMap
+
+
+  -- get the concept, parent and label from db as a Map
   let makePair (concept, parent, label) =
         (Just concept, (parent, label))  -- turn into key,val pairs needed for map,
 
   labels <- FacetCalc.getConceptLabels conn
       >>= return.(Map.fromList).(map makePair)
-      -- >>= return.(\m ->  Map.insert Nothing ( Nothing, "this si wrong ") m )  -- insert a root node -- this isn't right
+  -- print "# labels"
+  -- printMap labels 
 
-  -- print "##### labels"
-  -- (mapM print).(Map.toList) $ labels
-
-{-
-  what are we trying to do here?
-
-  just generate the damn, xml?
-  
-  I think this facetGraph might be a lot simpler? 
-
-  No i think it's ok - we don't care about the records, just the counts...
--}
   -- now join the label information with the concept/facet map 
   -- and take the record count - TODO facetMap should be passed as an argument
   -- TODO - this is not a record list. - it's a conceptCountList
@@ -140,7 +127,7 @@ request conn params = do
                 -- (concept, parent, label, count) : m
                 (concept, parent, label, length records) : m
 
-  -- print "##### complete facet list"
+  -- print "# complete facet list"
   -- (mapM print) initialFacetMap
 
   {-
@@ -150,23 +137,20 @@ request conn params = do
   -}
   -- rearrange graph for output formatting
   let facetGraph = Summary.fromList initialFacetMap
-  -- (mapM print).(Map.toList) $ facetGraph
+  -- printMap facetGraph
 
 
   let sortedGraph = Summary.sort facetGraph
-  
   -- print "# sorted graph"
-  -- (mapM print).(Map.toList) $ facetGraph
+  -- printMap facetGraph
 
 
   -- get the records for the root node,
   let allRecordIds = mapGet Nothing facetMap
 
-  -- just need to extract the records from the nothing node...
-  
 
   -- generate summary xml
-  let s1 = Summary.formatXML (length allRecordIds) sortedGraph
+  let summaryXML = Summary.formatXML (length allRecordIds) sortedGraph
 
 
   -- do pagination
@@ -179,17 +163,17 @@ request conn params = do
   records <- RecordGet.getRecords conn pagedIds
 
   -- generate metadata xml
-  let s2 = Metadata.formatXML records 1
+  let metadataXML = Metadata.formatXML records 1
 
   -- generate response,
   return $ H.concatLT [
       "<response",
         " from=\"", LT.pack.show.from $ params, "\"",
-        " to=\"", LT.pack.show.to $ params, "\"",
+        " to=\"",   LT.pack.show.to $ params, "\"",
         " selected = \"0\">",
       "\n",
-      s1,
-      s2,
+      summaryXML,
+      metadataXML,
       "\n",
       "</response>"
     ]
