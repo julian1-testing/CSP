@@ -90,8 +90,8 @@ request conn params = do
 
   -- compute facet counts
   let initialFacetMap = FacetCalc.mapFromList facetLeafs
-  print "# initialFacetMap after creating the leaf map "
-  printMap initialFacetMap
+  -- print "# initialFacetMap after creating the leaf map "
+  -- printMap initialFacetMap
 
   -- initial facet map is not propagated....
   -- why do we even use this function....
