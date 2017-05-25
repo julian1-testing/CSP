@@ -148,13 +148,15 @@ request conn params = do
   -- get the records for the root node,
   let allRecordIds = mapGet Nothing facetMap
 
+  print $ "allRecordIds: " ++ show allRecordIds
+
 
   -- generate summary xml
   let summaryXML = Summary.formatXML (length allRecordIds) sortedGraph
 
 
   -- do pagination
-  let count = to params - from params
+  let count = to params - from params + 1
   let pagedIds = take count $ drop (from params - 1) allRecordIds
 
   print $ "paged ids: " ++ show pagedIds
