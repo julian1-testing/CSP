@@ -106,22 +106,14 @@ request conn params = do
   -- ugghhhh - ok only select records above it
 
   -- select a particular record....
-  let facetMap = Map.mapWithKey f facetMap' 
+  let facetMap'' = Map.mapWithKey f facetMap' 
         where
           f concept records = 
             case concept of 
-              Just 352 -> records
-              _ -> []
+              Just 352 -> ([], records)
+              _ -> ([],[])
 
-
-  -- i think we want to change propagate to work with a map?
-  -- it is a map - it just hasn't been flattened...
-  -- the input is a non flattened map...
-  -- i think...
-
-  -- ahhhhh I think the propagate won't work because it's a list....
-  -- I htink the type is slightly wrong
-  let facetMap'' = FacetCalc.propagate nestings initialFacetMap 
+  let facetMap = FacetCalc.propagate nestings facetMap''
 
 
 
