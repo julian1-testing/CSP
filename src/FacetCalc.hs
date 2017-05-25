@@ -223,7 +223,7 @@ flatten m =
 
 
 
-
+-- TODO change name
 doAll nestings m  =
   propagateAllRecordsToRoot nestings m
   & flatten
@@ -241,29 +241,29 @@ testPropagateOnce = do
   -- mapM putStrLn $ facetList
 
   let m = buildInitialConceptMap facetList
-  putStrLn "######################## 0 - leafmap"
+  putStrLn "# 0 - leafmap"
   putStrLnConceptRecordMap m
 
   let m'  = propagateRecordsToParentConcept nestings m
-  putStrLn "\n######################## 1 - after processing one level"
+  putStrLn "\n# 1 - after processing one level"
   putStrLnConceptRecordMap m'
 
 {-
-  putStrLn "######################## 2"
+  putStrLn "# 2"
   let m''  = propagateRecordsToParentConcept nestings m'
   putStrLnConceptRecordMap m''
 
 
-  putStrLn "######################## 3"
+  putStrLn "# 3"
   let m'''  = propagateRecordsToParentConcept nestings m''
   putStrLnConceptRecordMap m'''
 
-  putStrLn "######################## 4"
+  putStrLn "# 4"
   let m''''  = propagateRecordsToParentConcept nestings m'''
   putStrLnConceptRecordMap m''''
 
 
-  putStrLn "######################## 5"
+  putStrLn "# 5"
   let m'''''  = propagateRecordsToParentConcept nestings m''''
   putStrLnConceptRecordMap m'''''
 -}
@@ -285,12 +285,12 @@ testPropagateAll = do
   -- mapM putStrLn $ facetList
 
   let m = buildInitialConceptMap facetList
-  putStrLn "######################## leafmap"
+  putStrLn "# leafmap"
   putStrLnConceptRecordMap m
 
   let m' = propagateAllRecordsToRoot nestings m
 
-  putStrLn "\n######################## after processing"
+  putStrLn "\n# after processing"
   -- putStrLnConceptRecordMap m'
   putStrLnConceptRecordMap $ flatten m' 
 

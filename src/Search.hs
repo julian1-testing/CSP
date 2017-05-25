@@ -62,13 +62,13 @@ request conn params = do
 
   let trace_ = False
 
-  print $ "facetQ: " ++ (show. facetQ) params
+  print $ "facetQ: " ++ (show.facetQ) params
 
   -- TODO - maybe put all the DB actions into another file -- so there's a clear module interface...
   -- TODO - control logging in a switch
   -- change to getNestingFromDB
   -----------------------
-  -- get stuff parent/child nestings
+  -- get the child/parent concept nestings
   -- is this a fast lookup, should we move this out of the facet code...
   nestings <- FacetCalc.getConceptNesting conn
   -- if trace_ then mapM print nestings else return [ ]
@@ -76,23 +76,24 @@ request conn params = do
   -- when trace_ $ ( mapM print nestings >> return ())
 
 
-  facetLeafCounts <- FacetCalc.getConceptRecordList conn
-  -- facetLeafCounts <- FacetCalc.getConceptRecordList2 conn
-  print "##### the facetLeaf counts "
-  mapM print facetLeafCounts
+  -- get the initial leaf records
+  facetLeafs <- FacetCalc.getConceptRecordList conn
+  -- facetLeafs <- FacetCalc.getConceptRecordList2 conn
+  -- print "##### the facetLeaf counts "
+  -- mapM print facetLeafs
 
 
   -- compute facet counts
-  let facetCounts = FacetCalc.buildInitialConceptMap facetLeafCounts
-  print "##### the facetCounts after creating the leaf map "
-  (mapM print).(Map.toList) $ facetCounts
+  let initialFacetMap = FacetCalc.buildInitialConceptMap facetLeafs
+  -- print "##### the initialFacetMap after creating the leaf map "
+  -- (mapM print).(Map.toList) $ initialFacetMap
 
-  -- propagated is a map...
+  -- facetMap is a map...
   -- all recordId's
-  -- let (propagated, allRecordIds) = FacetCalc.doAll nestings facetCounts
-  let propagated = FacetCalc.doAll nestings facetCounts
-  print "##### the facetCounts after propagating"
-  (mapM print).(Map.toList) $ propagated
+  -- let (facetMap, allRecordIds) = FacetCalc.doAll nestings initialFacetMap
+  let facetMap = FacetCalc.doAll nestings initialFacetMap
+  -- print "##### the initialFacetMap after propagating"
+  -- (mapM print).(Map.toList) $ facetMap
 
   -- print $ "all ids: " ++ show allRecordIds
 
@@ -118,10 +119,10 @@ request conn params = do
   No i think it's ok - we don't care about the records, just the counts...
 -}
   -- now join the label information with the concept/facet map 
-  -- and take the record count - TODO propagated should be passed as an argument
+  -- and take the record count - TODO facetMap should be passed as an argument
   -- TODO - this is not a record list. - it's a conceptCountList
-  let conceptRecordCounts =
-       Map.foldlWithKey f [] propagated
+  let initialFacetMap =
+       Map.foldlWithKey f [] facetMap
         where
         f m concept records =
           let (parent, label) = mapGet concept labels in
@@ -140,7 +141,7 @@ request conn params = do
                 (concept, parent, label, length records) : m
 
   -- print "##### complete facet list"
-  -- (mapM print) conceptRecordCounts
+  -- (mapM print) initialFacetMap
 
   {-
     TODO - review this. 
@@ -148,18 +149,18 @@ request conn params = do
 
   -}
   -- rearrange graph for output formatting
-  let facetGraph = Summary.fromList conceptRecordCounts
+  let facetGraph = Summary.fromList initialFacetMap
   -- (mapM print).(Map.toList) $ facetGraph
 
 
   let sortedGraph = Summary.sort facetGraph
   
-  print "# sorted graph"
-  (mapM print).(Map.toList) $ facetGraph
+  -- print "# sorted graph"
+  -- (mapM print).(Map.toList) $ facetGraph
 
 
   -- get the records for the root node,
-  let allRecordIds = mapGet Nothing propagated
+  let allRecordIds = mapGet Nothing facetMap
 
   -- just need to extract the records from the nothing node...
   

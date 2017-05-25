@@ -14,6 +14,8 @@
   https://crypto.stanford.edu/~blynn/haskell/warp.html
 
   -- see vault - for storing data between apps and middleware.
+
+  http://localhost:3000/srv/eng/xml.search.imos?protocol=OGC%3AWMS-1.1.1-http-get-map%20or%20OGC%3AWMS-1.3.0-http-get-map%20or%20IMOS%3ANCWMS--proto&sortBy=popularity&from=1&to=10&fast=index&filters=collectionavailability
 -}
 
 
@@ -150,7 +152,6 @@ xmlSearchImos params = do
 
   -- facet.q: Platform/Vessel/vessel%20of%20opportunity
   -- HTTP.urlDecode False v
-
 
   let searchParams = Search.Params {
       to = to,
