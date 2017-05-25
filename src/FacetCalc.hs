@@ -78,7 +78,7 @@ getConceptRecordList conn = do
         data_parameter.record_id
       from concept_view
       left join data_parameter on data_parameter.concept_id = concept_view.concept_id
-      left join record on data_parameter.record_id = record.id
+      -- left join record on data_parameter.record_id = record.id
   |]
   xs :: [ (Int, Maybe Int, Maybe Int ) ] <- PG.query conn query1 ()
   -- mapM putStrLn xs
@@ -113,9 +113,10 @@ getConceptRecordList2 conn = do
 
 
 
+-- change name mapFromList
 
-buildInitialConceptMap xs =
-  -- create a map of concept -> records, for all the leaf/terminal concepts
+mapFromList xs =
+  -- turn a flat concept/record list into a map of concept -> records, for all the leaf/terminal concepts
 
   Map.empty
   & \m -> foldl initForConcept m xs
@@ -131,9 +132,9 @@ buildInitialConceptMap xs =
     f m (concept_id, _, record) =
       case record of
         Just record_id ->
-          let (count, current) = mapGet (Just concept_id) m in
+          let (accum, current) = mapGet (Just concept_id) m in
           let newLst = record_id : current in
-          Map.insert (Just concept_id) (count, newLst) m
+          Map.insert (Just concept_id) (accum, newLst) m
         Nothing ->
           -- nothing means null in the left join so no records
           m
@@ -240,7 +241,7 @@ testPropagateOnce = do
   -- putStrLn "facet list"
   -- mapM putStrLn $ facetList
 
-  let m = buildInitialConceptMap facetList
+  let m = mapFromList facetList
   putStrLn "# 0 - leafmap"
   putStrLnConceptRecordMap m
 
@@ -284,7 +285,7 @@ testPropagateAll = do
   -- putStrLn "facet list"
   -- mapM putStrLn $ facetList
 
-  let m = buildInitialConceptMap facetList
+  let m = mapFromList facetList
   putStrLn "# leafmap"
   putStrLnConceptRecordMap m
 

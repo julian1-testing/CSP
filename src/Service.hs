@@ -98,7 +98,7 @@ app req res = do
 
   let params =  queryString req
   -- LBS.putStrLn $ encode "got request"
-  -- printReq req
+  printReq req
   -- printParams params
 
   -- TODO check if this works for POST and GET?

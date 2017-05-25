@@ -53,6 +53,10 @@ data Params = Params {
 } deriving (Show, Eq)
 
 
+{-
+  No we do the search - and select the propagated map.
+  then trim
+-}
 
 request :: Connection -> Params -> IO LT.Text
 request conn params = do
@@ -81,19 +85,44 @@ request conn params = do
 
   -- get the initial leaf records
   facetLeafs <- FacetCalc.getConceptRecordList conn
-  -- print "# the facetLeaf counts "
+  -- print "# facetLeaf counts "
   -- mapM print facetLeafs
 
   -- compute facet counts
-  let initialFacetMap = FacetCalc.buildInitialConceptMap facetLeafs
-  -- print "# the initialFacetMap after creating the leaf map "
-  -- printMap initialFacetMap
+  let initialFacetMap = FacetCalc.mapFromList facetLeafs
+  print "# initialFacetMap after creating the leaf map "
+  printMap initialFacetMap
 
+  -- initial facet map is not propagated....
+  -- why do we even use this function....
 
   -- get the propagated map
-  let facetMap = FacetCalc.propagate nestings initialFacetMap
-  -- print "# the initialFacetMap after propagating"
+  let facetMap' = FacetCalc.propagate nestings initialFacetMap
+  -- print "# propagated facetMap"
   -- printMap facetMap
+
+  -- now lets try to trip the records
+  -- it's not a damnn... fold
+  -- ugghhhh - ok only select records above it
+
+  -- select a particular record....
+  let facetMap = Map.mapWithKey f facetMap' 
+        where
+          f concept records = 
+            case concept of 
+              Just 352 -> records
+              _ -> []
+
+
+  -- i think we want to change propagate to work with a map?
+  -- it is a map - it just hasn't been flattened...
+  -- the input is a non flattened map...
+  -- i think...
+
+  -- ahhhhh I think the propagate won't work because it's a list....
+  -- I htink the type is slightly wrong
+  let facetMap'' = FacetCalc.propagate nestings initialFacetMap 
+
 
 
   -- get the concept, parent and label from db as a Map
