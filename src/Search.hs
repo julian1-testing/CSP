@@ -78,6 +78,7 @@ resolveTerm conn term = do
           Just text -> BS.split '/' text 
           Nothing -> []
         & map f 
+        & reverse
         & map Just        -- turn into Maybe
         & padR 5 Nothing  -- right pad
 

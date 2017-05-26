@@ -54,13 +54,29 @@ getConceptNesting conn = do
 
 
 
+-- the parameter handling is complicated if we explicitly code the thing then it works....
+-- is null is ok. = null is not.
 
+-- see, transform_null_equals (boolean)
+--       where label0 = ? and label1 = ? and label2 = ? and label3 = ? and label4 is null -- ?
+
+
+{-
+  -[ RECORD 42 ]-----------------------------------------------------------------------------------------------------------
+  concept_id | 42
+  label0     | mooring
+  label1     | Mooring and buoy
+  label2     | AODN Platform Category Vocabulary
+  label3     |
+  label4     |
+-}
 
 resolveTerm conn qualifiedTerm = do
   let query1 = [r|
+      SET transform_null_equals TO ON;
       select concept_id 
       from qualified_concept_view 
-      where label0 = ? and label1 = ? and label2 = ? and label3 = ? and label4 is null -- ?
+      where label0 = ? and label1 = ? and label2 = ? and label3 = ? and label4 = ? 
   |]
   xs :: [ (Only Int) ] <- PG.query conn query1 (qualifiedTerm :: [ (Maybe BS.ByteString) ] )
   return xs
