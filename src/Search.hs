@@ -81,7 +81,11 @@ request conn params = do
           (Just text) -> BS.split '/' text 
           Nothing -> []
 
+  let qualifiedFacet' = 
+        map Just qualifiedFacet
 
+
+  print $ qualifiedFacet'
 
   -- we are going to have to change this to be maybe types...
   -- 
@@ -92,7 +96,6 @@ request conn params = do
   -- uggh we want to pad it with nulls....
 
   -- ok the thing works... 
-  print $ qualifiedFacet
 
   -- OK - so we use the db to resolve the symbol... we really want this as a function...
 
