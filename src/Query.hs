@@ -49,36 +49,9 @@ dbResolveTerm conn qualifiedTerm = do
 
 
 
-{-
-  view result looks like this...
-  -[ RECORD 42 ]-----------------------------------------------------------------------------------------------------------
-  concept_id | 42
-  label0     | mooring
-  label1     | Mooring and buoy
-  label2     | AODN Platform Category Vocabulary
-  label3     |
-  label4     |
-
-  TODO this stuff doesn't belong here...
--}
-
-{-
-resolveTerm conn qualifiedTerm = do
-  let query1 = [r|
-      SET transform_null_equals TO ON;
-      select concept_id 
-      from qualified_concept_view 
-      where label0 = ? and label1 = ? and label2 = ? and label3 = ? and label4 = ? 
-  |]
-  -- note, support for ByteString is really nice!
-  xs :: [ (Only Int) ] <- PG.query conn query1 (qualifiedTerm :: [ (Maybe BS.ByteString) ] )
-  return xs
-
--}
-
 resolveTerm conn term = do
-
-  -- this isn't quite right... if it's not a term - then we shouldn't be doing anything, 
+  -- we should not be destructuring the Maybe here
+  -- eg. it it's not parsed as a term then don't deal with it
   let qualifiedFacet = 
         case term of 
           Just text -> BS.split '/' text 
@@ -92,8 +65,6 @@ resolveTerm conn term = do
           f "Platform" = "AODN Platform Category Vocabulary" 
           f x = x 
           
-
-
   print "qualified facetQ: " 
   print qualifiedFacet
 
@@ -107,8 +78,7 @@ resolveTerm conn term = do
 
 
 main = do
-
   conn <- PG.connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
-  let facetTerm = Just $ BS.pack "hithere"
+  let facetTerm = Just $ BS.pack "Platform/Satellite/orbiting satellite/NOAA-19"
   Query.resolveTerm conn facetTerm
 
