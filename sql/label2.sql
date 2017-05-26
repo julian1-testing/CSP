@@ -1,55 +1,31 @@
 
+-- so create this as a view...
+-- then we can look up a qualified concept ...
+
 select
   concept_view.concept_id,
 
-
-
- -- left(concept_view_parent_parent.parent_label, 20) as label1,
- -- left(concept_view_parent.parent_label, 20) as label2,
-
-
   left(concept_view.label, 40) as label4,
-  left(concept_view_parent.label, 20) as label3,
-  left(concept_view_parent_parent.label, 20) as label1,
-  left(concept_view_parent_parent_parent.label, 20) as label0,
-  left(concept_view_parent_parent_parent_parent.label, 20) as label_1
+  left(concept_view_p.label, 20) as label3,
+  left(concept_view_pp.label, 20) as label1,
+  left(concept_view_ppp.label, 20) as label0,
+  left(concept_view_pppp.label, 20) as label_1
 
-  -- concept_view.parent_id,
+  from concept_view
 
+  left join concept_view concept_view_p
+    on concept_view_p.parent_id = concept_view.concept_id
 
-from concept_view
+  left join concept_view concept_view_pp
+    on concept_view_pp.parent_id = concept_view_p.concept_id
 
+  left join concept_view concept_view_ppp
+    on concept_view_ppp.parent_id = concept_view_pp.concept_id
 
-left join concept_view concept_view_parent
-  on concept_view_parent.parent_id = concept_view.concept_id
+  left join concept_view concept_view_pppp
+    on concept_view_pppp.parent_id = concept_view_ppp.concept_id
 
-left join concept_view concept_view_parent_parent
-  on concept_view_parent_parent.parent_id = concept_view_parent.concept_id
-
-left join concept_view concept_view_parent_parent_parent
-  on concept_view_parent_parent_parent.parent_id = concept_view_parent_parent.concept_id
-
-left join concept_view concept_view_parent_parent_parent_parent
-  on concept_view_parent_parent_parent_parent.parent_id = concept_view_parent_parent_parent.concept_id
-
-
-
-
--- left join concept_view concept_view_parent_parent
---  on concept_view_parent_parent.concept_id = concept_view_parent.parent_id 
-
--- left join concept_view concept_view_parent_parent_parent
---  on concept_view_parent_parent_parent.concept_id = concept_view_parent_parent.parent_id 
-
-
-
-
-order by concept_id
+  order by concept_id
 ;
-
--- this may want to be tightened - so that it's only a toplevel thing... 
---where concept_view_parent_parent_parent.parent_id is not null
-
--- ok we could do it...
 
 
