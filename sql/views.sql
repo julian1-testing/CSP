@@ -17,6 +17,7 @@ drop view if exists concept_view;
 drop view if exists parent_view;
 drop view if exists record_view;
 
+drop view if exists qualified_concept_view;
 
 -- associate concept parent (eg. skos:broader) relationships between concepts via skos:narrower and skos:narrowMatch
 
@@ -170,7 +171,56 @@ left join temporal_begin tb on tb.record_id = record.id
 
 
 
+create or replace view qualified_concept_view as
+select
+  /*
+    concept_view_cccc.concept_id as c4,
+    concept_view_ccc.concept_id as c3,
+    concept_view_cc.concept_id as c2,
+    concept_view_c.concept_id as c1,
+  */
+  case
+    when
+        concept_view_cccc.concept_id  is not null then concept_view_cccc.concept_id
+    when
+        concept_view_ccc.concept_id  is not null then concept_view_ccc.concept_id
+    when
+        concept_view_cc.concept_id  is not null then concept_view_cc.concept_id
+    when
+        concept_view_c.concept_id  is not null then concept_view_c.concept_id
+    when
+        concept_view.concept_id  is not null then concept_view.concept_id
+    else
+        null
+    end as concept_id,
 
+  /*
+    left(concept_view.label, 40)      as label0,
+    left(concept_view_c.label, 20)    as label1,
+    left(concept_view_cc.label, 20)   as label2,
+    left(concept_view_ccc.label, 20)  as label3,
+    left(concept_view_cccc.label, 20) as label4
+  */
+  concept_view.label      as label0,
+  concept_view_c.label    as label1,
+  concept_view_cc.label   as label2,
+  concept_view_ccc.label  as label3,
+  concept_view_cccc.label as label4
+
+  from concept_view
+
+  left join concept_view concept_view_c
+    on concept_view_c.parent_id = concept_view.concept_id
+
+  left join concept_view concept_view_cc
+    on concept_view_cc.parent_id = concept_view_c.concept_id
+
+  left join concept_view concept_view_ccc
+    on concept_view_ccc.parent_id = concept_view_cc.concept_id
+
+  left join concept_view concept_view_cccc
+    on concept_view_cccc.parent_id = concept_view_ccc.concept_id
+;
 
 
 commit;
