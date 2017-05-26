@@ -71,9 +71,31 @@ request conn params = do
       TODO  - rename functions to Count.
   -}
 
-  let trace_ = False
+  -- let trace_ = False
 
+  ------------------------------------
   print $ "facetQ: " ++ (show.facetQ) params
+
+  let qualifiedFacet = 
+        case facetQ params of 
+          (Just text) -> BS.split '/' text 
+          Nothing -> []
+
+
+
+  -- we are going to have to change this to be maybe types...
+  -- 
+
+
+
+  ------------------------------------
+  -- uggh we want to pad it with nulls....
+
+  -- ok the thing works... 
+  print $ qualifiedFacet
+
+  -- OK - so we use the db to resolve the symbol... we really want this as a function...
+
 
   -- TODO - maybe put all the DB actions into another file -- so there's a clear module interface...
   -- TODO - control logging in a switch
@@ -104,10 +126,11 @@ request conn params = do
   -- print "# propagated facetMap"
   -- printMap facetMap
 
-  -- now lets try to trip the records
-  -- it's not a damnn... fold
-  -- ugghhhh - ok only select records above it
 
+  {-
+      TODO: - just introduce a corresponding unflatten function to the flatten function 
+                to ease all this translation
+  -}
   -- select a particular record....
   -- we should consider whether we use flatten() or not...
   -- LOOKS like it worked...
@@ -120,7 +143,8 @@ request conn params = do
 
   let facetMap = FacetCalc.propagate nestings facetMap''
 
-
+  -- OK - this is a flat map.... -- 
+  -- we can either drill down. jk 
 
   -- get the concept, parent and label from db as a Map
   let makePair (concept, parent, label) =
