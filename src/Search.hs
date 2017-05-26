@@ -11,6 +11,7 @@ module Search where
 import qualified Database.PostgreSQL.Simple as PG(query, connectPostgreSQL)
 import Database.PostgreSQL.Simple.Internal as Internal(Connection)
 
+-- TODO Should be Data.Map.Lazy as Map ?
 import qualified Data.Map as Map
 import qualified Data.Text.Lazy.IO as LT(putStrLn)
 import qualified Data.Text.Lazy as LT
@@ -35,6 +36,7 @@ import qualified Helpers as H(concatLT, pad)
 
 
 -- ease syntax
+-- change to Map.lookup that returns Maybe - can then specify the error action...
 mapGet e m =
   -- trace  ("mytrace - mapGet e: " ++ show e ++ " m: " ++ show m) $
   (Map.!) m e
@@ -43,6 +45,7 @@ mapGet e m =
 
 printMap m =
   (mapM print).(Map.toList) $ m
+  -- mapM print $ Map.toList $ m
 
 
 data Params = Params {
@@ -106,6 +109,8 @@ request conn params = do
   -- ugghhhh - ok only select records above it
 
   -- select a particular record....
+  -- we should consider whether we use flatten() or not...
+  -- LOOKS like it worked...
   let facetMap'' = Map.mapWithKey f facetMap' 
         where
           f concept records = 
