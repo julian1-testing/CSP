@@ -15,6 +15,7 @@ import Database.PostgreSQL.Simple.Internal as Internal(Connection)
 import qualified Data.Map as Map
 import qualified Data.Text.Lazy.IO as LT(putStrLn)
 import qualified Data.Text.Lazy as LT
+-- import qualified Data.Utils.List as List(pad)
 
 import Debug.Trace(trace)
 import Data.Function( (&) )
@@ -33,6 +34,13 @@ import qualified RecordGet as RecordGet(getRecords)
 import qualified Metadata as Metadata(formatXML)
 import qualified Helpers as H(concatLT, pad)
 
+
+-- TODO move to Utils,
+-- data
+pad :: Int -> a -> [a] -> [a]
+pad l x xs = replicate (l - length xs) x ++ xs
+
+padR l x xs = xs ++ replicate (l - length xs) x 
 
 
 -- ease syntax
@@ -61,6 +69,37 @@ data Params = Params {
   then trim
 -}
 
+
+resolveTerm term = do
+
+  -- this isn't quite right... if it's not a term - then we shouldn't be doing anything, 
+  let qualifiedFacet = 
+        case term of 
+          Just text -> BS.split '/' text 
+          Nothing -> []
+
+        & map f 
+
+        & map Just        -- turn into Maybe
+        & padR 5 Nothing  -- right pad
+
+        where 
+          f "Platform" = "AODN Platform Category Vocabulary" 
+          f x = x 
+          
+
+
+  print $ "qualified facetQ: " 
+    
+  print $ qualifiedFacet
+
+
+  -- this isn't quite right - it should be parsed, and then if there is no
+  --  thing 
+  -- ok it works but it replicates on the wrong side...
+  -- ok it works.... now can we 
+
+
 request :: Connection -> Params -> IO LT.Text
 request conn params = do
   {-
@@ -70,22 +109,15 @@ request conn params = do
 
       TODO  - rename functions to Count.
   -}
-
   -- let trace_ = False
 
   ------------------------------------
   print $ "facetQ: " ++ (show.facetQ) params
 
-  let qualifiedFacet = 
-        case facetQ params of 
-          (Just text) -> BS.split '/' text 
-          Nothing -> []
+  let facetTerm = facetQ params 
 
-  let qualifiedFacet' = 
-        map Just qualifiedFacet
-
-
-  print $ qualifiedFacet'
+  
+  resolveTerm facetTerm
 
   -- we are going to have to change this to be maybe types...
   -- 

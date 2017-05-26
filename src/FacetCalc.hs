@@ -52,6 +52,21 @@ getConceptNesting conn = do
 
 
 
+
+
+-- where label1 = 'Satellite' and label2 = 'orbiting satellite' and label3 = 'NOAA-19' and label4 = NULL;
+resolveTerm conn xs = do
+  let query1 = [r|
+      select concept_id 
+      from qualified_concept_view 
+      where label1 = ? and label2 = ? and label3 = ? and label4 = ?
+  |]
+  xs :: [ (Maybe String, Maybe String, Maybe String, Maybe String) ] <- PG.query conn query1 ()
+  return xs
+
+
+
+
 getConceptLabels conn = do
   -- same as above - except with the concept labels
   let query1 = [r|
