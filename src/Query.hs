@@ -1,5 +1,8 @@
-
-
+{-
+  resolve textual qualified vocab terms, to their concept_id
+    eg. Just \"Platform/Satellite/orbiting satellite/NOAA-19\""  -> int
+  
+-}
 {-# LANGUAGE ScopedTypeVariables, OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes #-}
 
@@ -7,27 +10,19 @@ module Query where
 
 import qualified Database.PostgreSQL.Simple as PG(query, connectPostgreSQL)
 import Database.PostgreSQL.Simple.Types as PG(Only(..))
--- import qualified Data.Map as Map
-
+import qualified Data.ByteString.Char8 as BS
+import Data.Function( (&) )
 import Text.RawString.QQ
 
-import qualified Data.ByteString.Char8 as BS
-import qualified Data.Text.Lazy as LT(pack, empty, append)
-
-
-import Data.Function( (&) )
-
-
 -- TODO move to Utils?
-
 pad :: Int -> a -> [a] -> [a]
 pad l x xs = replicate (l - length xs) x ++ xs
 
 padR l x xs = xs ++ replicate (l - length xs) x 
 
 
-
 {-
+  eg.
   -[ RECORD 42 ]-----------------------------------------------------------------------------------------------------------
   concept_id | 42
   label0     | mooring
@@ -79,6 +74,6 @@ resolveTerm conn term = do
 
 main = do
   conn <- PG.connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
-  let facetTerm = Just $ BS.pack "Platform/Satellite/orbiting satellite/NOAA-19"
+  let facetTerm = Just "Platform/Satellite/orbiting satellite/NOAA-19"
   Query.resolveTerm conn facetTerm
 
