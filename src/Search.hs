@@ -70,16 +70,14 @@ data Params = Params {
 -}
 
 
-resolveTerm term = do
+resolveTerm conn term = do
 
   -- this isn't quite right... if it's not a term - then we shouldn't be doing anything, 
   let qualifiedFacet = 
         case term of 
           Just text -> BS.split '/' text 
           Nothing -> []
-
         & map f 
-
         & map Just        -- turn into Maybe
         & padR 5 Nothing  -- right pad
 
@@ -89,10 +87,15 @@ resolveTerm term = do
           
 
 
-  print $ "qualified facetQ: " 
-    
-  print $ qualifiedFacet
+  print "qualified facetQ: " 
+  print qualifiedFacet
 
+  concept <- FacetCalc.resolveTerm conn qualifiedFacet
+
+  print "resolved concept: " 
+  print concept
+
+  return ()
 
   -- this isn't quite right - it should be parsed, and then if there is no
   --  thing 
@@ -117,7 +120,7 @@ request conn params = do
   let facetTerm = facetQ params 
 
   
-  resolveTerm facetTerm
+  resolveTerm conn facetTerm
 
   -- we are going to have to change this to be maybe types...
   -- 

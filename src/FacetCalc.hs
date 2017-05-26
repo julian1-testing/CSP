@@ -14,6 +14,7 @@ module FacetCalc where
 
 
 import qualified Database.PostgreSQL.Simple as PG(query, connectPostgreSQL)
+import Database.PostgreSQL.Simple.Types as PG(Only(..))
 import qualified Data.Map as Map
 
 -- https://www.reddit.com/r/haskell/comments/4gmw1u/reverse_function_application/
@@ -23,7 +24,8 @@ import Debug.Trace(trace)
 
 import Text.RawString.QQ
 
-
+-- TODO remove with resolveTerm
+import qualified Data.ByteString.Char8 as BS
 
 -- deduplicate - O log n
 -- http://stackoverflow.com/questions/16108714/haskell-removing-duplicates-from-a-list
@@ -54,17 +56,40 @@ getConceptNesting conn = do
 
 
 
--- where label1 = 'Satellite' and label2 = 'orbiting satellite' and label3 = 'NOAA-19' and label4 = NULL;
-resolveTerm conn xs = do
+resolveTerm conn qualifiedTerm = do
   let query1 = [r|
       select concept_id 
       from qualified_concept_view 
-      where label1 = ? and label2 = ? and label3 = ? and label4 = ?
+      where label0 = ? and label1 = ? and label2 = ? and label3 = ? and label4 is null -- ?
   |]
-  xs :: [ (Maybe String, Maybe String, Maybe String, Maybe String) ] <- PG.query conn query1 ()
+  xs :: [ (Only Int) ] <- PG.query conn query1 (qualifiedTerm :: [ (Maybe BS.ByteString) ] )
   return xs
 
 
+
+
+
+{-
+  xs :: [ (Only Int)] <- PG.query conn
+      [r|
+          with s as (
+              select id
+              from record
+              where uuid = ?
+          ),
+          i as (
+              insert into record(uuid)
+              select ?
+              where not exists (select 1 from s)
+              returning id
+          )
+          select id from i
+          union all
+          select id from s
+      |]
+      (uuid :: String, uuid :: String)
+-}
+ 
 
 
 getConceptLabels conn = do
