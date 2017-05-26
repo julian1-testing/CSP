@@ -360,8 +360,6 @@ deleteAll conn = do
 
 
 main = do
-    print "hi"
-
     conn <- PG.connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
 
     recordText <- readFile "./test-data/argo.xml"

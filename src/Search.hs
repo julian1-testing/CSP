@@ -33,6 +33,7 @@ import qualified Summary as Summary(fromList, sort, formatXML)
 import qualified RecordGet as RecordGet(getRecords)
 import qualified Metadata as Metadata(formatXML)
 import qualified Helpers as H(concatLT, pad)
+import qualified Query as Query(resolveTerm)
 
 
 -- TODO move to Utils,
@@ -69,35 +70,6 @@ data Params = Params {
   then trim
 -}
 
-
-resolveTerm conn term = do
-
-  -- this isn't quite right... if it's not a term - then we shouldn't be doing anything, 
-  let qualifiedFacet = 
-        case term of 
-          Just text -> BS.split '/' text 
-          Nothing -> []
-        & map f 
-        & reverse
-        & map Just        -- turn into Maybe
-        & padR 5 Nothing  -- right pad
-
-        where 
-          f "Platform" = "AODN Platform Category Vocabulary" 
-          f x = x 
-          
-
-
-  print "qualified facetQ: " 
-  print qualifiedFacet
-
-  concept <- FacetCalc.resolveTerm conn qualifiedFacet
-
-  print "resolved concept: " 
-  print concept
-
-  return ()
-
   -- this isn't quite right - it should be parsed, and then if there is no
   --  thing 
   -- ok it works but it replicates on the wrong side...
@@ -121,7 +93,7 @@ request conn params = do
   let facetTerm = facetQ params 
 
   
-  resolveTerm conn facetTerm
+  Query.resolveTerm conn facetTerm
 
   -- we are going to have to change this to be maybe types...
   -- 
