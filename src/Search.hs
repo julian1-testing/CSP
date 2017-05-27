@@ -88,11 +88,6 @@ request conn params = do
   -- let trace_ = False
 
   ------------------------------------
-  print $ "facetQ: " ++ (show.facetQ) params
-
-  let facetTerm = facetQ params 
-  Query.resolveTerm conn facetTerm
-
    -- TODO - control logging in a switch
   -- change to getNestingFromDB
   -----------------------
@@ -129,17 +124,25 @@ request conn params = do
   -- select a particular record....
   -- we should consider whether we use flatten() or not...
   -- LOOKS like it worked...
+  -- case concept of 
+
+  print $ "facetQ: " ++ (show.facetQ) params
+
+  let facetTerm = facetQ params 
+  conceptSelect <- Query.resolveTerm conn facetTerm
+
   let facetMap'' = Map.mapWithKey f facetMap' 
         where
           f concept records = 
-            case concept of 
-              Just 352 -> ([], records)
-              _ -> ([],[])
+            case concept == conceptSelect of
+              True  -> ([], records)
+              False -> ([],[])
 
   -- so should we have a func. applyFacetQuery facetQuery facetMap 
 
-
+  -- re-propagate
   let facetMap = FacetCalc.propagate nestings facetMap''
+
 
   -- OK - this is a flat map.... -- 
   -- we can either drill down. jk 

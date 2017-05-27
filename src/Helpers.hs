@@ -107,7 +107,6 @@ pad count =
 -- pad count = replicate count ' ' 
 
 
-
 -- concat list of lazy text
 -- is this not defined somewhere by the library?
 concatLT lst = foldl LT.append LT.empty lst

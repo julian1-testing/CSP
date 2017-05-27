@@ -98,13 +98,15 @@ app req res = do
 
   let params =  queryString req
   -- LBS.putStrLn $ encode "got request"
-  printReq req
+  -- printReq req
   -- printParams params
 
   -- TODO check if this works for POST and GET?
   x <- case (pathInfo req) of
 
-    [ "srv","eng","xml.search.imos" ] -> xmlSearchImos params
+    [ "srv","eng","xml.search.imos" ] -> do
+      printReq req
+      xmlSearchImos params
 
     [ "images", "logos", imageId ] -> imagesLogos imageId
 
@@ -173,7 +175,7 @@ xmlSearchImos params = do
 
 
 imagesLogos imageId = do
-  BS.putStrLn $ E.encodeUtf8 imageId
+  -- BS.putStrLn $ E.encodeUtf8 imageId
   s <- LBS.readFile "resources/logo.png"
   return $
     responseLBS status200 [ (hContentType, "image/png") ] s
