@@ -2,6 +2,10 @@
 - freetext search
 - get the other metadata fields starting to be filled in - parameters, organisations, dates etc.
 
+- would be good to get the organisation in - since it fills a lot of the space.
+
+- need to check for errors in portal geonetwork store.
+    - it may be some id/uuid is being used as a css class to target the expansion box element etc..
 
 
 ----
