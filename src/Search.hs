@@ -145,15 +145,13 @@ request conn params = do
               False -> ([],[])
 -}
 
-  -- select the elements we are interested in....
-  -- then we'll create a map....
+  -- select the records we are interested in according to the facet criteria
   let lst = mapGet conceptSelect facetMap' 
 
-  -- create a set for fast inclusion of selected records....
+  -- create a set for fast inclusion testing of selected records....
   let s = Set.fromList lst
 
-  -- let m = Set.member 123 s
-
+  -- now map over the initial map - to filter everything 
   let facetMap'' = Map.map f initialFacetMap
         where
           f (accum,records) = 
