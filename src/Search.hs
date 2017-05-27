@@ -16,33 +16,21 @@ import qualified Data.Map as Map
 import qualified Data.Set as Set
 import qualified Data.Text.Lazy.IO as LT(putStrLn)
 import qualified Data.Text.Lazy as LT
--- import qualified Data.Utils.List as List(pad)
 
 import Debug.Trace(trace)
 import Data.Function( (&) )
 
-import Control.Monad(unless, when)
-
-
 import qualified Data.ByteString.Char8 as BS
 import qualified Data.Text.Encoding as E(encodeUtf8)
-
-
 
 import qualified FacetCalc as FacetCalc --(buildLeafFacetMap,main)
 import qualified Summary as Summary(fromList, sort, formatXML)
 import qualified RecordGet as RecordGet(getRecords)
 import qualified Metadata as Metadata(formatXML)
-import qualified Helpers as H(concatLT, pad)
+import qualified Helpers as H(concatLT)
 import qualified Query as Query(resolveTerm)
 
 
--- TODO move to Utils,
--- data
-pad :: Int -> a -> [a] -> [a]
-pad l x xs = replicate (l - length xs) x ++ xs
-
-padR l x xs = xs ++ replicate (l - length xs) x 
 
 
 -- ease syntax
@@ -72,16 +60,16 @@ data Params = Params {
 -}
 
   -- this isn't quite right - it should be parsed, and then if there is no
-  --  thing 
+  --  thing
   -- ok it works but it replicates on the wrong side...
-  -- ok it works.... now can we 
+  -- ok it works.... now can we
 
 
 search :: Connection -> Params -> IO LT.Text
 search conn params = do
   {-
       The main facet search where we take a facet query
-      and work out the records and output the concepts and metadata as xml 
+      and work out the records and output the concepts and metadata as xml
 
       -- TODO - control logging in a switch
   -}
@@ -113,21 +101,21 @@ search conn params = do
 
   -- decode the facet selection criteria - as a single concept
   -- TODO parse full A u B and A ^ B type expressions - easy enough
-  let facetTerm = facetQ params 
+  let facetTerm = facetQ params
   conceptSelect <- Query.resolveTerm conn facetTerm
 
 
   -- select the records we are interested in according to the facet criteria
   -- Nothing will select the root node - nice...
-  let lst = mapGet conceptSelect facetMap' 
+  let lst = mapGet conceptSelect facetMap'
 
   -- create a set for fast inclusion testing of selected records....
   let s = Set.fromList lst
 
-  -- map over the initial leaf map - and prune all records excepted selected 
+  -- map over the initial leaf map - and prune all records excepted selected
   let facetMap'' = Map.map f leafFacetMap
         where
-          f (accum,records) = 
+          f (accum,records) =
             let filteredRecords = filter (\e -> Set.member e s) records in
             (accum, filteredRecords)
 
@@ -138,8 +126,8 @@ search conn params = do
 
 
 
-  -- OK - this is a flat map.... -- 
-  -- we can either drill down. jk 
+  -- OK - this is a flat map.... --
+  -- we can either drill down. jk
 
   -- get the concept, parent and label from db as a Map
   let makePair (concept, parent, label) =
@@ -148,9 +136,9 @@ search conn params = do
   labels <- FacetCalc.getConceptLabels conn
       >>= return.(Map.fromList).(map makePair)
   -- print "# labels"
-  -- printMap labels 
+  -- printMap labels
 
-  -- join the label information with the concept/facet map 
+  -- join the label information with the concept/facet map
   let facetMapWithLabels =
        Map.foldlWithKey f [] facetMap
         where
@@ -159,6 +147,7 @@ search conn params = do
             case concept of
               Nothing ->
                 {-
+                  review is this still the case...
                   the root node, which appears once - and is'nt a concept or something that we have a label
                   and we cannot store the parent parent_id which will be Nothing since then we get a self-referential child/parent
                   that will create infinite recursion when we go to format the graph.
@@ -173,8 +162,7 @@ search conn params = do
   -- print "# complete facet list"
   -- (mapM print) facetMapWithLabels
 
-
-  -- Should do the sort before this...
+  -- TODO maybe do the sort before joining labels?
   -- rearrange graph for output formatting
   let facetGraph = Summary.fromList facetMapWithLabels
   -- printMap facetGraph
