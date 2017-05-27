@@ -90,69 +90,45 @@ request conn params = do
 
   ------------------------------------
    -- TODO - control logging in a switch
-  -- change to getNestingFromDB
   -----------------------
-  -- get the child/parent concept nestings
-  -- is this a fast lookup, should we move this out of the facet code...
-  nestings <- FacetCalc.getConceptNesting conn
-  -- if trace_ then mapM print nestings else return [ ]
-  -- case trace_ of True -> mapM print nestings
-  -- when trace_ $ ( mapM print nestings >> return ())
 
-  -- get the initial leaf records
+  -- get the child/parent concept conceptNestings
+  conceptNestings <- FacetCalc.getConceptNesting conn
+  -- print "# conceptNestings"
+  -- mapM print conceptNestings
+
+  -- get initial list records - with records recorded on leaf nodes
   facetList <- FacetCalc.getConceptRecordList conn
   -- print "# facetLeaf counts "
   -- mapM print facetList
 
-  -- compute facet counts
-  let initialFacetMap = FacetCalc.mapFromList facetList
-  -- print "# initialFacetMap after creating the leaf map "
-  printMap initialFacetMap
+  -- turn into a map
+  let leafFacetMap = FacetCalc.mapFromList facetList
+  -- print "# leafFacetMap after creating the leaf map "
+  -- printMap leafFacetMap
 
-  -- initial facet map is not propagated....
-  -- why do we even use this function....
 
-  -- get the propagated map
-  let facetMap' = FacetCalc.propagate nestings initialFacetMap
+  -- propagated records up the concept map
+  let facetMap' = FacetCalc.propagate conceptNestings leafFacetMap
   -- print "# propagated facetMap"
   -- printMap facetMap
 
 
-  {-
-      TODO: - just introduce a corresponding unflatten function to the flatten function 
-                to ease all this translation
-  -}
-  -- select a particular record....
-  -- we should consider whether we use flatten() or not...
-  -- LOOKS like it worked...
-  -- case concept of 
-
-  print $ "facetQ: " ++ (show.facetQ) params
-
+  -- decode the facet selection criteria - as a single concept
+  -- TODO parse full A u B and A ^ B type expressions - easy enough
   let facetTerm = facetQ params 
   conceptSelect <- Query.resolveTerm conn facetTerm
 
-  -- THIS IS WRONG
-  -- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  -- we should be directly selecting the elements - as a list. can then implement expression syntax easily.
-  -- when have list of records - we fold or recurse the original facet map - and filter- 
-{-
-  let facetMap'' = Map.mapWithKey f facetMap' 
-        where
-          f concept records = 
-            case concept == conceptSelect || conceptSelect == Nothing of
-              True  -> ([], records)
-              False -> ([],[])
--}
 
   -- select the records we are interested in according to the facet criteria
+  -- Nothing will select the root node - nice...
   let lst = mapGet conceptSelect facetMap' 
 
   -- create a set for fast inclusion testing of selected records....
   let s = Set.fromList lst
 
-  -- now map over the initial map - to filter everything 
-  let facetMap'' = Map.map f initialFacetMap
+  -- map over the initial leaf map - and prune all records excepted selected 
+  let facetMap'' = Map.map f leafFacetMap
         where
           f (accum,records) = 
             let filteredRecords = filter (\e -> Set.member e s) records in
@@ -160,28 +136,12 @@ request conn params = do
 
 
 
-
-  -- let a = head lst 
-  -- OK. rather than a map - we should fold - and then just select the records as a list... 
-  -- then we redis
-  -- Ugghhhhh.... we have to distribute stuff back on to the leaf nodes again.
-  --  can we do this without referring back to the db...
-
-  -- VERY VERY IMPORTANT.
-  -- NO - instead - we have the list of valid record ids. So just prune the original leaf tree. and propagate again....
-  -- eg. we just test whether ...
-  -- GOOD - should be simple...
-
-  -- VERY IMPORTANT
-  -- also should *not* be looping through and selecting. - Instead should be selecting directly 
-  -- actually it's a bit hard. - because to repropagate - need to have all the parents. 
-
-  -- so should we have a func. applyFacetQuery facetQuery facetMap 
-
-  -- re-propagate
-  let facetMap = FacetCalc.propagate nestings facetMap''
+  -- propagate records up the leaf map again
+  let facetMap = FacetCalc.propagate conceptNestings facetMap''
 
 
+
+  -- 
   -- OK - this is a flat map.... -- 
   -- we can either drill down. jk 
 
@@ -194,10 +154,8 @@ request conn params = do
   -- print "# labels"
   -- printMap labels 
 
-  -- now join the label information with the concept/facet map 
-  -- and take the record count - TODO facetMap should be passed as an argument
-  -- TODO - this is not a record list. - it's a conceptCountList
-  let initialFacetMap =
+  -- join the label information with the concept/facet map 
+  let leafFacetMap =
        Map.foldlWithKey f [] facetMap
         where
         f m concept records =
@@ -217,7 +175,7 @@ request conn params = do
                 (concept, parent, label, length records) : m
 
   -- print "# complete facet list"
-  -- (mapM print) initialFacetMap
+  -- (mapM print) leafFacetMap
 
   {-
     TODO - review this. 
@@ -225,7 +183,7 @@ request conn params = do
 
   -}
   -- rearrange graph for output formatting
-  let facetGraph = Summary.fromList initialFacetMap
+  let facetGraph = Summary.fromList leafFacetMap
   -- printMap facetGraph
 
 
