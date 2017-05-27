@@ -77,20 +77,17 @@ data Params = Params {
   -- ok it works.... now can we 
 
 
-request :: Connection -> Params -> IO LT.Text
-request conn params = do
+search :: Connection -> Params -> IO LT.Text
+search conn params = do
   {-
-      do a db lookup - and build a facetCountGraph 
-        then format it as XML
-      also output the metadata
+      The main facet search where we take a facet query
+      and work out the records and output the concepts and metadata as xml 
 
-      TODO  - rename functions to Count.
+      -- TODO - control logging in a switch
   -}
   -- let trace_ = False
 
   ------------------------------------
-   -- TODO - control logging in a switch
-  -----------------------
 
   -- get the child/parent concept conceptNestings
   conceptNestings <- FacetCalc.getConceptNesting conn
@@ -176,15 +173,11 @@ request conn params = do
   -- print "# complete facet list"
   -- (mapM print) facetMapWithLabels
 
-  {-
-    TODO - review this. 
-      suspect we might be able to build it directly....
 
-  -}
+  -- Should do the sort before this...
   -- rearrange graph for output formatting
   let facetGraph = Summary.fromList facetMapWithLabels
   -- printMap facetGraph
-
 
   let sortedGraph = Summary.sort facetGraph
   -- print "# sorted graph"
@@ -199,7 +192,6 @@ request conn params = do
 
   -- generate summary xml
   let summaryXML = Summary.formatXML (length allRecordIds) sortedGraph
-
 
   -- do pagination
   let count = to params - from params + 1
@@ -232,7 +224,7 @@ request conn params = do
 main :: IO ()
 main = do
   conn <- PG.connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
-  s <- request conn $ Params { from = 0, to = 10000, facetQ = Nothing }
+  s <- search conn $ Params { from = 0, to = 10000, facetQ = Nothing }
 
   LT.putStrLn $ s
 

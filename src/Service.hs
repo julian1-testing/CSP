@@ -51,7 +51,7 @@ import qualified Data.List as L(find)
 import qualified Network.HTTP.Types as HTTP(urlEncode, urlDecode)
 
 
-import Search(request, Params(..))
+import Search(search, Params(..))
 
 
 encode = LE.encodeUtf8
@@ -163,7 +163,7 @@ xmlSearchImos params = do
 
   -- test db
   conn <- PG.connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
-  s <- Search.request conn searchParams
+  s <- Search.search conn searchParams
 
   return $
     -- application/xml;charset=UTF-8
