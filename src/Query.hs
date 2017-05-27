@@ -19,7 +19,7 @@ import Text.RawString.QQ
 -- pad :: Int -> a -> [a] -> [a]
 -- pad l x xs = replicate (l - length xs) x ++ xs
 
-padR l x xs = xs ++ replicate (l - length xs) x 
+padR l x xs = xs ++ replicate (l - length xs) x
 
 
 {-
@@ -36,13 +36,13 @@ padR l x xs = xs ++ replicate (l - length xs) x
 dbGetTerm conn qualifiedTerm = do
   let query1 = [r|
       SET transform_null_equals TO ON;
-      select concept_id 
-      from qualified_concept_view 
-      where label0 = ? and label1 = ? and label2 = ? and label3 = ? and label4 = ? 
+      select concept_id
+      from qualified_concept_view
+      where label0 = ? and label1 = ? and label2 = ? and label3 = ? and label4 = ?
   |]
   xs :: [ (Only Int) ] <- PG.query conn query1 (qualifiedTerm :: [ (Maybe BS.ByteString) ] )
 
-  -- destructure the return result
+  -- destructure the return rows
   return ( case xs of
         [ Only concept ] -> Just concept
         _ -> Nothing
@@ -55,24 +55,17 @@ resolveTerm conn term = do
   -- actually - perhaps ok - if the thing can't be parsed - we end up returning Nothing.
 
   -- parse an prepare term ready for db lookup by db query
-  let parsedTerm = 
-        maybe [] (BS.split '/') term   -- split on '/' 
+  let parsedTerm =
+        maybe [] (BS.split '/') term   -- split on '/'
         & map f           -- map to concept scheme
         & reverse
         & map Just        -- turn into Maybe
         & padR 5 Nothing  -- right pad columns
-        where 
-          f "Platform" = "AODN Platform Category Vocabulary" 
-          f x = x 
+        where
+          f "Platform" = "AODN Platform Category Vocabulary"
+          f x = x
 
   concept <- dbGetTerm conn parsedTerm
-
-{-
-  -- destructure the return result
-  let j = case concept of
-        [ Only concept ] -> Just concept
-        _ -> Nothing
--}
 
   print $ "resolved concept: "  ++ show concept
   return concept
