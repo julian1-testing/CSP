@@ -34,19 +34,19 @@ padR l x xs = xs ++ replicate (l - length xs) x
 -}
 
 dbGetTerm conn qualifiedTerm = do
-  let query1 = [r|
+  let query = [r|
       SET transform_null_equals TO ON;
       select concept_id
       from qualified_concept_view
       where label0 = ? and label1 = ? and label2 = ? and label3 = ? and label4 = ?
   |]
-  xs :: [ (Only Int) ] <- PG.query conn query1 (qualifiedTerm :: [ (Maybe BS.ByteString) ] )
+  -- do db query 
+  xs :: [ (Only Int) ] <- PG.query conn query (qualifiedTerm :: [ (Maybe BS.ByteString) ] )
 
   -- destructure the return rows
-  return ( case xs of
-        [ Only concept ] -> Just concept
-        _ -> Nothing
-      )
+  return $ case xs of
+    [ Only concept ] -> Just concept
+    _ -> Nothing
 
 
 

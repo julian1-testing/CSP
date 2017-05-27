@@ -24,7 +24,7 @@ import qualified Data.ByteString.Char8 as BS(pack)
 
 import Data.Char(isSpace)
 
-import qualified Data.Text.Lazy as LT(pack, empty, append)
+import qualified Data.Text.Lazy as LT(pack, empty, append, justifyRight)
 import qualified Data.List as List(unfoldr)
 
 
@@ -81,15 +81,30 @@ doHTTPPost url body = do
 
 -- return white space String with length of count
 -- TODO should probably use Bytestring or lazy text,  LT.pack LT.append etc
+-- pad :: Int -> a -> [a] -> [a]
+-- pad l x xs = replicate (l - length xs) x ++ xs
+-- TODO this is wrongly named - it just una limit is reached where this redine
+-- it's just replicate
+-- actually it's a LT or BS - and not a list.
+-- See justifyRight  - and also JustifyLeft  applied to an emptyString
+
+-- maybe change the name of this...  it's more like a replicate function for LT...
+
+pad count = LT.justifyRight count ' ' LT.empty
+
+{-
 pad count =
   LT.pack $ List.unfoldr f count
   where 
     f 0 = Nothing
     f x = Just (' ', x - 1)
+-}
+-- pad count = replicate count ' ' 
+
 
 
 -- concat list of lazy text
+-- is this not defined somewhere by the library?
 concatLT lst = foldl LT.append LT.empty lst
-
 
 
