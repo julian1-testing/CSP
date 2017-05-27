@@ -13,6 +13,7 @@ import Database.PostgreSQL.Simple.Internal as Internal(Connection)
 
 -- TODO Should be Data.Map.Lazy as Map ?
 import qualified Data.Map as Map
+import qualified Data.Set as Set
 import qualified Data.Text.Lazy.IO as LT(putStrLn)
 import qualified Data.Text.Lazy as LT
 -- import qualified Data.Utils.List as List(pad)
@@ -99,14 +100,14 @@ request conn params = do
   -- when trace_ $ ( mapM print nestings >> return ())
 
   -- get the initial leaf records
-  facetLeafs <- FacetCalc.getConceptRecordList conn
+  facetList <- FacetCalc.getConceptRecordList conn
   -- print "# facetLeaf counts "
-  -- mapM print facetLeafs
+  -- mapM print facetList
 
   -- compute facet counts
-  let initialFacetMap = FacetCalc.mapFromList facetLeafs
+  let initialFacetMap = FacetCalc.mapFromList facetList
   -- print "# initialFacetMap after creating the leaf map "
-  -- printMap initialFacetMap
+  printMap initialFacetMap
 
   -- initial facet map is not propagated....
   -- why do we even use this function....
@@ -135,13 +136,34 @@ request conn params = do
   -- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   -- we should be directly selecting the elements - as a list. can then implement expression syntax easily.
   -- when have list of records - we fold or recurse the original facet map - and filter- 
+{-
   let facetMap'' = Map.mapWithKey f facetMap' 
         where
           f concept records = 
             case concept == conceptSelect || conceptSelect == Nothing of
               True  -> ([], records)
               False -> ([],[])
+-}
 
+  -- select the elements we are interested in....
+  -- then we'll create a map....
+  let lst = mapGet conceptSelect facetMap' 
+
+  -- create a set for fast inclusion of selected records....
+  let s = Set.fromList lst
+
+  -- let m = Set.member 123 s
+
+  let facetMap'' = Map.map f initialFacetMap
+        where
+          f (accum,records) = 
+            let filteredRecords = filter (\e -> Set.member e s) records in
+            (accum, filteredRecords)
+
+
+
+
+  -- let a = head lst 
   -- OK. rather than a map - we should fold - and then just select the records as a list... 
   -- then we redis
   -- Ugghhhhh.... we have to distribute stuff back on to the leaf nodes again.
