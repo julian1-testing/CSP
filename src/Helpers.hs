@@ -24,7 +24,7 @@ import qualified Data.ByteString.Char8 as BS(pack)
 
 import Data.Char(isSpace)
 
-import qualified Data.Text.Lazy as LT(pack, empty, append, justifyRight)
+import qualified Data.Text.Lazy as LT(pack, empty, append, justifyRight, replicate)
 import qualified Data.List as List(unfoldr)
 
 
@@ -91,6 +91,11 @@ doHTTPPost url body = do
 -- maybe change the name of this...  it's more like a replicate function for LT...
 
 pad count = LT.justifyRight count ' ' LT.empty
+
+
+-- should be able to use replicate function...
+-- replicate :: Int64 -> Text -> Text
+-- pad count = replicate count ' ' LT.empty 
 
 {-
 pad count =
