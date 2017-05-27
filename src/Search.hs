@@ -196,10 +196,10 @@ request conn params = do
   -- printMap facetGraph
 
 
-  -- get the records for the root node,
+  -- get the records from the root node,
   let allRecordIds = mapGet Nothing facetMap
 
-  print $ "allRecordIds: " ++ show allRecordIds
+  print $ "allRecordIds: " ++ (show.length $ allRecordIds) ++ " " ++  show allRecordIds
 
 
   -- generate summary xml
