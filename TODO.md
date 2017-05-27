@@ -1,5 +1,14 @@
 
+- freetext search
+- get the other metadata fields starting to be filled in - parameters, organisations, dates etc.
 
+
+
+----
+
+OLD
+
+----
 -- need a simple concept limited query - for faceted search...
   - then develop the full nested matching
     - should work - with just a recursive generated function with parent_url = ... etc. 
@@ -20,7 +29,7 @@
 done - get portal rhs panel with some data as well as lhs.
 
 - done - need to fill in extra metadata data.
-- and get the actual selection criteria to work.
+- done -  and get the actual selection criteria to work.
 
 - get the abstract in place and the logos.
 
@@ -28,9 +37,9 @@ done - get portal rhs panel with some data as well as lhs.
 
 ----
 
--- TODO Change to name to summary ?
--- Summary
--- and change FacetRequest to Search
+-- done TODO Change to name to summary ?
+  -- Summary
+  -- and change FacetRequest to Search
 
 
 https://catalogue-portal.aodn.org.au/geonetwork/srv/eng/xml.search.imos?protocol=OGC%3AWMS-1.1.1-http-get-map%20or%20OGC%3AWMS-1.3.0-http-get-map%20or%20IMOS%3ANCWMS--proto&sortBy=popularity&from=1&to=1&fast=index&filters=collectionavailability
@@ -38,8 +47,6 @@ https://catalogue-portal.aodn.org.au/geonetwork/srv/eng/xml.search.imos?protocol
 - need to return and tack on metadata
   - need test code to format this....
     - metadataFormat?
-
-
 
 - need to use the record - list - to generate stuff and xml format it - before we do anything else 
 
