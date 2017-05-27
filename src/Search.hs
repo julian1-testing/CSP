@@ -134,7 +134,7 @@ request conn params = do
   let facetMap'' = Map.mapWithKey f facetMap' 
         where
           f concept records = 
-            case concept == conceptSelect of
+            case concept == conceptSelect || conceptSelect == Nothing of
               True  -> ([], records)
               False -> ([],[])
 
