@@ -126,8 +126,6 @@ search conn params = do
 
 
 
-  -- OK - this is a flat map.... --
-  -- we can either drill down. jk
 
   -- get the concept, parent and label from db as a Map
   let makePair (concept, parent, label) =
@@ -138,7 +136,8 @@ search conn params = do
   -- print "# labels"
   -- printMap labels
 
-  -- join the label information with the concept/facet map
+
+  -- join all label information with the concept/facet map
   let facetMapWithLabels =
        Map.foldlWithKey f [] facetMap
         where
@@ -167,12 +166,13 @@ search conn params = do
   let facetGraph = Summary.fromList facetMapWithLabels
   -- printMap facetGraph
 
+  -- sort the graph - currently by internal id
   let sortedGraph = Summary.sort facetGraph
   -- print "# sorted graph"
   -- printMap facetGraph
 
 
-  -- get the records from the root node,
+  -- select records from the root node,
   let allRecordIds = mapGet Nothing facetMap
 
   print $ "allRecordIds: " ++ (show.length $ allRecordIds) ++ " " ++  show allRecordIds
@@ -181,7 +181,7 @@ search conn params = do
   -- generate summary xml
   let summaryXML = Summary.formatXML (length allRecordIds) sortedGraph
 
-  -- do pagination
+  -- handle pagination
   let count = to params - from params + 1
   let pagedIds = take count $ drop (from params - 1) allRecordIds
 
