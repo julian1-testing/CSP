@@ -62,7 +62,9 @@ resolveTerm conn term = do
         & map Just        -- turn into Maybe
         & padR 5 Nothing  -- right pad columns
         where
+          -- TODO organisation etc.
           f "Platform" = "AODN Platform Category Vocabulary"
+          f "Measured parameter" = "AODN Parameter Category Vocabulary"
           f x = x
 
   concept <- dbGetTerm conn parsedTerm
