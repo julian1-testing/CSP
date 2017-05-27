@@ -103,7 +103,7 @@ formatXML rootRecordCount m =
 
         -- should we be formating this label substitution here? or when loading the vocab scheme and set the label? ...
         "AODN Parameter Category Vocabulary" ->
-          formatDimension (parent, "Measured Parameter", count) depth
+          formatDimension (parent, "Measured parameter", count) depth
 
         "AODN Platform Category Vocabulary" ->
           formatDimension (parent, "Platform", count) depth
