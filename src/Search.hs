@@ -141,7 +141,6 @@ request conn params = do
 
 
 
-  -- 
   -- OK - this is a flat map.... -- 
   -- we can either drill down. jk 
 
@@ -155,7 +154,7 @@ request conn params = do
   -- printMap labels 
 
   -- join the label information with the concept/facet map 
-  let leafFacetMap =
+  let facetMapWithLabels =
        Map.foldlWithKey f [] facetMap
         where
         f m concept records =
@@ -175,7 +174,7 @@ request conn params = do
                 (concept, parent, label, length records) : m
 
   -- print "# complete facet list"
-  -- (mapM print) leafFacetMap
+  -- (mapM print) facetMapWithLabels
 
   {-
     TODO - review this. 
@@ -183,7 +182,7 @@ request conn params = do
 
   -}
   -- rearrange graph for output formatting
-  let facetGraph = Summary.fromList leafFacetMap
+  let facetGraph = Summary.fromList facetMapWithLabels
   -- printMap facetGraph
 
 
