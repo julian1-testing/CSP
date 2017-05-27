@@ -91,25 +91,9 @@ request conn params = do
   print $ "facetQ: " ++ (show.facetQ) params
 
   let facetTerm = facetQ params 
-
-  
   Query.resolveTerm conn facetTerm
 
-  -- we are going to have to change this to be maybe types...
-  -- 
-
-
-
-  ------------------------------------
-  -- uggh we want to pad it with nulls....
-
-  -- ok the thing works... 
-
-  -- OK - so we use the db to resolve the symbol... we really want this as a function...
-
-
-  -- TODO - maybe put all the DB actions into another file -- so there's a clear module interface...
-  -- TODO - control logging in a switch
+   -- TODO - control logging in a switch
   -- change to getNestingFromDB
   -----------------------
   -- get the child/parent concept nestings
@@ -151,6 +135,9 @@ request conn params = do
             case concept of 
               Just 352 -> ([], records)
               _ -> ([],[])
+
+  -- so should we have a func. applyFacetQuery facetQuery facetMap 
+
 
   let facetMap = FacetCalc.propagate nestings facetMap''
 

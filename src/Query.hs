@@ -33,7 +33,7 @@ padR l x xs = xs ++ replicate (l - length xs) x
   label4     |
 -}
 
-dbResolveTerm conn qualifiedTerm = do
+dbGetTerm conn qualifiedTerm = do
   let query1 = [r|
       SET transform_null_equals TO ON;
       select concept_id 
@@ -41,34 +41,41 @@ dbResolveTerm conn qualifiedTerm = do
       where label0 = ? and label1 = ? and label2 = ? and label3 = ? and label4 = ? 
   |]
   xs :: [ (Only Int) ] <- PG.query conn query1 (qualifiedTerm :: [ (Maybe BS.ByteString) ] )
-  return xs
+
+  -- destructure the return result
+  return ( case xs of
+        [ Only concept ] -> Just concept
+        _ -> Nothing
+      )
 
 
 
 resolveTerm conn term = do
-  -- TODO we should not be destructuring the Maybe here
-  -- eg. it it's not parsed as a term then we shouldn't ever get here
+  -- TODO perhaps don't accept nothing argument here -- eg. if the facet query cannot be parsed as a term then we shouldn't ever get here
+  -- actually - perhaps ok - if the thing can't be parsed - we end up returning Nothing.
+
+  -- parse an prepare term ready for db lookup by db query
   let parsedTerm = 
-        case term of 
-          Just text -> BS.split '/' text 
-          Nothing -> []
-        & map f 
+        maybe [] (BS.split '/') term   -- split on '/' 
+        & map f           -- map to concept scheme
         & reverse
         & map Just        -- turn into Maybe
         & padR 5 Nothing  -- right pad columns
-
         where 
           f "Platform" = "AODN Platform Category Vocabulary" 
           f x = x 
 
-  concept <- dbResolveTerm conn parsedTerm
+  concept <- dbGetTerm conn parsedTerm
 
+{-
+  -- destructure the return result
   let j = case concept of
         [ Only concept ] -> Just concept
         _ -> Nothing
+-}
 
-  print $ "resolved concept: "  ++ show j
-  return j
+  print $ "resolved concept: "  ++ show concept
+  return concept
 
 
 
