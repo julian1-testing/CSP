@@ -131,12 +131,30 @@ request conn params = do
   let facetTerm = facetQ params 
   conceptSelect <- Query.resolveTerm conn facetTerm
 
+  -- THIS IS WRONG
+  -- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  -- we should be directly selecting the elements - as a list. can then implement expression syntax easily.
+  -- when have list of records - we fold or recurse the original facet map - and filter- 
   let facetMap'' = Map.mapWithKey f facetMap' 
         where
           f concept records = 
             case concept == conceptSelect || conceptSelect == Nothing of
               True  -> ([], records)
               False -> ([],[])
+
+  -- OK. rather than a map - we should fold - and then just select the records as a list... 
+  -- then we redis
+  -- Ugghhhhh.... we have to distribute stuff back on to the leaf nodes again.
+  --  can we do this without referring back to the db...
+
+  -- VERY VERY IMPORTANT.
+  -- NO - instead - we have the list of valid record ids. So just prune the original leaf tree. and propagate again....
+  -- eg. we just test whether ...
+  -- GOOD - should be simple...
+
+  -- VERY IMPORTANT
+  -- also should *not* be looping through and selecting. - Instead should be selecting directly 
+  -- actually it's a bit hard. - because to repropagate - need to have all the parents. 
 
   -- so should we have a func. applyFacetQuery facetQuery facetMap 
 
