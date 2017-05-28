@@ -14,10 +14,15 @@
 
 module Metadata where
 
-
 import qualified Database.PostgreSQL.Simple as PG(connectPostgreSQL)
-import qualified Data.Text.Lazy as LT(pack)
+
+import qualified Data.ByteString.Char8 as BS(ByteString(..), append, empty )
+
+import qualified Data.Text.Lazy as LT(pack, empty, append, fromStrict)
 import qualified Data.Text.Lazy.IO as LT(putStrLn)
+
+import qualified Data.Text.Encoding as E(decodeUtf8, encodeUtf8)
+import qualified Data.Text.Lazy.Encoding as LE(decodeUtf8, encodeUtf8)
 
 import Text.RawString.QQ
 
@@ -69,6 +74,23 @@ formatXML records depth =
         -- this should be really easy to do - because already in the db...
         "<geoBox>170|-70|70|20</geoBox>\n",
 
+        -- has to be a fold and append 
+        -- concatLT lst = foldl LT.append LT.empty lst
+
+        -- LE(encodeUtf8)
+
+        -- is this an efficient way of doing this????
+         -- foldl (\a b -> LT.append a $ LE.decodeUtf8  b) LT.empty  $ geopoly record,
+
+        -- rather than doing 
+        -- we should do a map on the entries first 
+        let polys = map (\a -> formatGeopoly a  1) $ geopoly record in
+        -- LT.fromStrict $ E.decodeUtf8 $ foldl (BS.append ) BS.empty $ polys
+        foldl (LT.append ) LT.empty $ polys
+        ,
+
+
+
         -- nothing in the geonet appears to work
 {-
         [r|
@@ -105,6 +127,14 @@ formatXML records depth =
           H.pad $ depth * 3,
           "<source>", LT.pack uuid, "</source>"
       ]
+
+    formatGeopoly geopoly depth =
+      H.concatLT [
+          "\n",
+          -- H.pad $ depth * 3,
+          "<geoPolygon>", LT.fromStrict $ E.decodeUtf8 geopoly, "</geoPolygon>"
+      ]
+
 
 
 

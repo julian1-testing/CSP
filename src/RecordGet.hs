@@ -125,6 +125,7 @@ getRecordGeopoly conn record record_id = do
 
 getRecord conn record_id = do
   let record = emptyRecord
+  -- there's something else that's slow...
   record <- getRecordUuid conn record record_id
   record <- getRecordMDCommons conn record record_id
   record <- getRecordDataIdentification conn record record_id
