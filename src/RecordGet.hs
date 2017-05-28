@@ -79,11 +79,51 @@ getRecordMDCommons conn record record_id = do
 
 
 
+
+getRecordDataParameters conn record record_id = do
+  xs ::  [ (String, String, String) ]  <- PG.query conn [r|
+      select 
+        -- concept_view.concept_id,
+        -- data_parameter.record_id
+        concept_view.label,
+        concept_view.url,
+        root_label_concept_view.root_label
+      from data_parameter
+      left join root_label_concept_view on root_label_concept_view.concept_id = data_parameter.concept_id
+      left join concept_view on concept_view.concept_id = data_parameter.concept_id 
+      where record_id =  289
+   |]
+   $ Only (record_id :: Int )
+  -- ok this is 
+  -- this is more complicated because there will be lots of them....
+  -- that we have to consume...
+  return $
+{-
+    term :: String,
+    url :: String,
+    rootTerm :: String -- this is a bit more expensive to compute
+-}
+    -- there's not even going to be a match here... - because we just map xs 
+    case xs of 
+      [ (label, url, rootLabel ) ] 
+          -> record { dataParameters =  [ DataParameter { term = label, url = url, rootTerm = rootLabel } ] }
+
+      _ -> record
+
+
+
+
+
+-- dataParameters ....
+-- should probabaly be typles
+
 getRecord conn record_id = do
   let record = emptyRecord
   record <- getRecordUuid conn record record_id
   record <- getRecordMDCommons conn record record_id 
   record <- getRecordDataIdentification conn record record_id
+
+
   return record
 
 

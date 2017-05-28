@@ -46,7 +46,16 @@
         iconSourceUuid   -> source -> which is the uuid
 -}
 
+
+-- TODO - use ByteString ... instead of String?
+{-# LANGUAGE DeriveGeneric #-}
+
 module Record where
+
+import GHC.Generics
+import Data.Aeson
+import qualified Data.ByteString.Lazy.Char8 as LBS(putStrLn, readFile)
+
 
 
 
@@ -81,8 +90,10 @@ data TransferLink = TransferLink {
 
 data DataParameter = DataParameter {
 
-    term :: String,
-    url :: String
+    term :: String, -- eg. label
+    url :: String,
+    rootTerm :: String -- this is a bit more expensive to compute
+
 } deriving (Show, Eq)
 
 
@@ -135,5 +146,23 @@ showRecord myRecord =
         "geoPoly= ", formatList id (geoPoly myRecord), "\n"
     ]
 -}
+
+
+data Test1 = Test1 {
+
+    title1 :: String,
+    abstract1 :: [ String ]
+
+} deriving (Show, Eq, Generic)
+
+instance ToJSON Test1
+
+
+main :: IO ()
+main = do
+  let x = Test1 "mytitle" [ "myabstract" ]
+  let s = encode x
+  LBS.putStrLn s
+  return ()
 
 
