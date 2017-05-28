@@ -1,15 +1,18 @@
 
+-- free text search
+
 maybe it mucks up links because of id. or because of lacking link for wms.
 
-fsSearchAddBtn is missing - 
+done - fsSearchAddBtn is missing - 
   - perhaps because parsing bails out too early...
   - or maybe it's taken from the uuid in the pot link or something?
 
 done - root parameter/platform
 done - geopoly
+
 organisation
 
-looks like there is an issue with parameters being represented more than once.
+appears as if there is an issue with parameters being represented more than once.
 
 
 -----
