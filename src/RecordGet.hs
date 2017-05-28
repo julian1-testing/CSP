@@ -1,8 +1,6 @@
 {-
 
-  Format the metadata part of xml.search.imos
-
-  https://catalogue-portal.aodn.org.au/geonetwork/srv/eng/xml.search.imos?protocol=OGC%3AWMS-1.1.1-http-get-map%20or%20OGC%3AWMS-1.3.0-http-get-map%20or%20IMOS%3ANCWMS--proto&sortBy=popularity&from=1&to=10&fast=index&filters=collectionavailability
+  denormalize the Record structure in the db into hasekll records, according to record_id 
 
 -}
 
@@ -13,22 +11,16 @@
 module RecordGet where
 
 
--- import qualified Database.PostgreSQL.Simple as PG(query, connectPostgreSQL)
-
 import Database.PostgreSQL.Simple as PG
 import Database.PostgreSQL.Simple.Types as PG(Only(..))
-
-import Text.RawString.QQ
-
 import qualified Data.ByteString.Char8 as BS(ByteString(..) )
-
--- import qualified Record.DataIdentification as Record(DataIdentification(..))
+import Text.RawString.QQ
 
 import Record
 
 
 
-getRecordUuid conn record record_id = do
+getRecordUuid conn record_id = do
   xs :: [ (Int, String)] <- PG.query conn [r|
       select
         record.id,
@@ -39,12 +31,12 @@ getRecordUuid conn record record_id = do
     $ Only (record_id :: Int )
   return $
     case xs of
-      [ (record_id, uuid ) ] -> record { uuid = Just uuid }
-      _ -> record
+      [ (record_id, uuid ) ] -> Just uuid
+      _ -> Nothing
 
 
 
-getRecordDataIdentification conn record record_id = do
+getRecordDataIdentification conn record_id = do
   xs :: [ (Maybe String, Maybe String) ]  <- PG.query conn [r|
       select
         di.title,
@@ -56,12 +48,12 @@ getRecordDataIdentification conn record record_id = do
    $ Only (record_id :: Int )
   return $
     case xs of
-      [ (Just title, Just abstract) ] -> record { dataIdentification = Just $ DataIdentification title abstract }
-      _ -> record
+      [ (Just title, Just abstract) ] -> Just $ DataIdentification title abstract
+      _ -> Nothing
 
 
 
-getRecordMDCommons conn record record_id = do
+getRecordMDCommons conn record_id = do
   xs :: [ (Maybe String, Maybe String, Maybe String, Maybe String) ]  <- PG.query conn [r|
       select
         md.jurisdiction_link,
@@ -76,13 +68,12 @@ getRecordMDCommons conn record record_id = do
   return $
     case xs of
       [ (Just jurisdictionLink, Just licenseLink, Just licenseName, Just licenseImageLink) ]
-          -> record { mdCommons = Just $ MDCommons jurisdictionLink licenseLink licenseName licenseImageLink }
-      _ -> record
+          -> Just $ MDCommons jurisdictionLink licenseLink licenseName licenseImageLink
+      _ -> Nothing
 
 
 
-
-getRecordDataParameters conn record record_id = do
+getRecordDataParameters conn record_id = do
   xs :: [ (BS.ByteString, BS.ByteString, BS.ByteString) ] <- PG.query conn [r|
       select
         -- concept_view.concept_id,
@@ -97,14 +88,14 @@ getRecordDataParameters conn record record_id = do
    |]
    $ Only (record_id :: Int )
   return $
-    record { dataParameters = map f xs }
+    map f xs
     where
       f (label, url, rootLabel) = DataParameter { term = label, url = url, rootTerm = rootLabel }
 
 
 
--- this query seems to have slowed things down...
-getRecordGeopoly conn record record_id = do
+-- this query may have slowed things down...
+getRecordGeopolys conn record_id = do
   xs :: [ (Only BS.ByteString ) ] <- PG.query conn [r|
       select
         poly
@@ -113,17 +104,11 @@ getRecordGeopoly conn record record_id = do
    |]
    $ Only (record_id :: Int )
   return $
-    record { geopoly = map (\(Only poly) -> poly ) xs }
+    map (\(Only poly) -> poly ) xs
 
-{-
-id          | 1670
-record_id   | 200
-protocol    | WWW:LINK-1.0-http--link
-linkage     | http://imos.org.au/oceanradar_sites.html
-description | Radar sites page on IMOS website
--}
 
-getTransferLinks conn record record_id = do
+
+getTransferLinks conn record_id = do
   xs :: [ (BS.ByteString, BS.ByteString, BS.ByteString) ] <- PG.query conn [r|
       select
         protocol,
@@ -134,45 +119,35 @@ getTransferLinks conn record record_id = do
    |]
    $ Only (record_id :: Int )
   return $
-    record { transferLinks = map f xs }
+    map f xs
     where
       f ( protocol, linkage, description ) = TransferLink protocol linkage description 
 
 
-{-
-    record { dataParameters = map f xs }
-    where
-      f (label, url, rootLabel) = DataParameter { term = label, url = url, rootTerm = rootLabel }
--}
-
-
-
-
--- TODO - get rid of the horrible record passing stuff... 
-
-{-
-    protocol :: String,
-    linkage :: String,
-    description :: String
--}
-
--- dataParameters ....
--- should probabaly be typles
 
 getRecord conn record_id = do
-  let record = emptyRecord
-  -- there's something else that's slow...
-  record <- getRecordUuid conn record record_id
-  record <- getRecordMDCommons conn record record_id
-  record <- getRecordDataIdentification conn record record_id
 
-  record <- getRecordDataParameters conn record record_id
-  record <- getRecordGeopoly conn record record_id
+  -- TODO there's something slow... although maybe the xml formatting,
+  uuid <- getRecordUuid conn record_id
+  dataIdentification <- getRecordDataIdentification conn record_id
+  mdCommons <- getRecordMDCommons conn record_id
+  dataParameters <- getRecordDataParameters conn record_id
+  transferLinks <- getTransferLinks conn record_id
+  geopolys <- getRecordGeopolys conn record_id
 
-  record <- getTransferLinks conn record record_id
+  let record = Record { 
+                uuid = uuid, 
+                dataIdentification = dataIdentification,
+                mdCommons = mdCommons,
+                attrConstraints = [], 
+                useLimitations = [],
+                dataParameters = dataParameters,
+                temporalBegin = Nothing,
+                transferLinks = transferLinks,
+                geopoly = geopolys -- TODO should be plural
+              }
 
-  print record
-
+  -- print record
   return record
 
 

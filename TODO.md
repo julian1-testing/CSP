@@ -8,6 +8,9 @@
 
 maybe it mucks up links because of id. or because of lacking link for wms.
 
+
+done - get rid of the horrible record passing stuff where pass the current record state into the record decoding... 
+
 done - fsSearchAddBtn is missing - 
   - perhaps because parsing bails out too early...
   - or maybe it's taken from the uuid in the pot link or something?
