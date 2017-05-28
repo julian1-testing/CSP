@@ -63,7 +63,7 @@ formatXML records depth =
         "<link>|Point of truth URL of this metadata record|https://catalogue-imos.aodn.org.au:443/geonetwork/srv/en/metadata.show?uuid=",
 
         -- maybe  "" id (Just "hi")
-        maybe ( "") LT.pack  ( uuid record) ,
+        maybe ( "") LT.pack ( uuid record) ,
         -- uuid record
         -- "aaad092c-c3af-42e6-87e0-bdaef945f522"
         "|WWW:LINK-1.0-http--metadata-URL|text/html</link>\n",
@@ -103,11 +103,13 @@ formatXML records depth =
         ,
 
         -- nothing in the geonet appears to be used
-{-
+
         [r|
           <geonet:info xmlns:geonet="http://www.fao.org/geonetwork" >
               <id>153</id>
-              <uuid>aaad092c-c3af-42e6-87e0-bdaef945f522</uuid>
+        |],
+              "<uuid>",  maybe ( "") LT.pack ( uuid record) , "</uuid>",
+        [r|
               <schema>iso19139.mcp-2.0</schema>
               <createDate>2016-05-25T16:35:13</createDate>
               <changeDate>2017-05-27T00:00:03</changeDate>
@@ -121,7 +123,7 @@ formatXML records depth =
               <selected>false</selected>
             </geonet:info>
         |],
--}
+
         H.pad $ depth * 3, "</metadata>"
       ]
 
