@@ -32,6 +32,10 @@ import qualified Helpers as H(concatLT, pad)
 
 
 
+bsToLazy b =  LT.fromStrict $ E.decodeUtf8  b
+
+
+
 formatXML records depth =
   H.concatLT $ map (\record -> formatRecord record depth) records
   -- H.concatLT $ map (flip $ formatRecord depth ) records
@@ -58,13 +62,13 @@ formatXML records depth =
         -- "<responsibleParty>resourceProvider|resource|Bureau of Meteorology (BOM)|</responsibleParty><responsibleParty>principalInvestigator|resource|Bureau of Meteorology (BOM)|</responsibleParty><responsibleParty>distributor|metadata|Integrated Marine Observing System (IMOS)|</responsibleParty>\n",
 
         -- parameter works - straight from vocab,
-        "<parameter>Skin temperature of the water body</parameter>\n",
+        -- "<parameter>Skin temperature of the water body</parameter>\n",
 
         -- organisation works
         "<organisation>Integrated Marine Observing System (IMOS)</organisation>\n",
 
         -- platform works
-        "<platform>NOAA-17</platform>\n",
+        -- "<platform>NOAA-17</platform>\n",
 
         -- temp extent works,
         "<tempExtentBegin>1992-03-19t14:00:00.000z</tempExtentBegin>\n",
@@ -74,20 +78,18 @@ formatXML records depth =
         -- this should be really easy to do - because already in the db...
         "<geoBox>170|-70|70|20</geoBox>\n",
 
-        -- has to be a fold and append 
-        -- concatLT lst = foldl LT.append LT.empty lst
-
-        -- LE(encodeUtf8)
-
+        
         -- is this an efficient way of doing this????
-         -- foldl (\a b -> LT.append a $ LE.decodeUtf8  b) LT.empty  $ geopoly record,
-
-        -- rather than doing 
-        -- we should do a map on the entries first 
-        let polys = map (\a -> formatGeopoly a  1) $ geopoly record in
+        -- foldl (\a b -> LT.append a $ LE.decodeUtf8  b) LT.empty  $ geopoly record,
         -- LT.fromStrict $ E.decodeUtf8 $ foldl (BS.append ) BS.empty $ polys
-        foldl (LT.append ) LT.empty $ polys
+        let polys = map (formatGeopoly $ depth + 1) $ geopoly record in
+        foldl (LT.append ) LT.empty polys
         ,
+
+        let dps = map (formatDataParameter $ depth + 1) $ dataParameters record in
+        foldl (LT.append ) LT.empty dps
+        ,
+
 
 
 
@@ -128,13 +130,28 @@ formatXML records depth =
           "<source>", LT.pack uuid, "</source>"
       ]
 
-    formatGeopoly geopoly depth =
+    formatGeopoly depth geopoly =
       H.concatLT [
           "\n",
-          -- H.pad $ depth * 3,
-          "<geoPolygon>", LT.fromStrict $ E.decodeUtf8 geopoly, "</geoPolygon>"
+          H.pad $ depth * 3,
+          "<geoPolygon>", bsToLazy geopoly, "</geoPolygon>"
       ]
 
+    formatDataParameter depth dp = 
+      H.concatLT [
+        "\n",
+        H.pad $ depth * 3,
+        -- f (label, url, rootLabel) =
+        case dp of
+
+          DataParameter label _ "AODN Parameter Category Vocabulary" -> 
+            H.concatLT [ "<parameter>", bsToLazy label, "</parameter>" ] 
+
+          DataParameter label _ "AODN Platform Category Vocabulary" -> 
+            H.concatLT [ "<platform>", bsToLazy label, "</platform>" ] 
+
+          _ -> "" 
+      ]
 
 
 
