@@ -20,6 +20,8 @@ import Database.PostgreSQL.Simple.Types as PG(Only(..))
 
 import Text.RawString.QQ
 
+import qualified Data.ByteString.Char8 as BS(ByteString(..) )
+
 -- import qualified Record.DataIdentification as Record(DataIdentification(..))
 
 import Record
@@ -81,7 +83,7 @@ getRecordMDCommons conn record record_id = do
 
 
 getRecordDataParameters conn record record_id = do
-  xs :: [ (String, String, String) ] <- PG.query conn [r|
+  xs :: [ (BS.ByteString, BS.ByteString, BS.ByteString) ] <- PG.query conn [r|
       select
         -- concept_view.concept_id,
         -- data_parameter.record_id
@@ -103,7 +105,7 @@ getRecordDataParameters conn record record_id = do
 
 -- this query seems to have slowed things down...
 getRecordGeopoly conn record record_id = do
-  xs :: [ (Only String) ] <- PG.query conn [r|
+  xs :: [ (Only BS.ByteString ) ] <- PG.query conn [r|
       select
         poly
       from geopoly

@@ -52,11 +52,13 @@
 
 module Record where
 
+{-
 import GHC.Generics
 import Data.Aeson
 import qualified Data.ByteString.Lazy.Char8 as LBS(putStrLn, readFile)
+-}
 
-
+import qualified Data.ByteString.Char8 as BS(ByteString(..) )
 
 
 data DataIdentification = DataIdentification {
@@ -90,9 +92,9 @@ data TransferLink = TransferLink {
 
 data DataParameter = DataParameter {
 
-    term :: String, -- eg. label
-    url :: String,
-    rootTerm :: String -- this is a bit more expensive to compute
+    term :: BS.ByteString, -- eg. label
+    url :: BS.ByteString,
+    rootTerm :: BS.ByteString-- this is a bit more expensive to compute
 
 } deriving (Show, Eq)
 
@@ -109,7 +111,7 @@ data Record = Record {
     dataParameters :: [ DataParameter ],
     temporalBegin :: Maybe String,   -- todo
     transferLinks :: [ TransferLink ],
-    geopoly :: [ String ]            -- todo
+    geopoly :: [ BS.ByteString ]            -- this is slow, should be a bytestring?, or indexing issue?
 } deriving (Show, Eq)
 
 
@@ -148,6 +150,7 @@ showRecord myRecord =
 -}
 
 
+{-
 data Test1 = Test1 {
 
     title1 :: String,
@@ -165,4 +168,4 @@ main = do
   LBS.putStrLn s
   return ()
 
-
+-}
