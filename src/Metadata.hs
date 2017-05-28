@@ -76,6 +76,7 @@ formatXML records depth =
 
         -- it looks like the geobox works -- but not
         -- this should be really easy to do - because already in the db...
+        -- geobox is 
         "<geoBox>170|-70|70|20</geoBox>\n",
 
         
@@ -86,14 +87,12 @@ formatXML records depth =
         foldl (LT.append ) LT.empty polys
         ,
 
+        -- dataparameters - eg. parameter, platform, organisation
         let dps = map (formatDataParameter $ depth + 1) $ dataParameters record in
         foldl (LT.append ) LT.empty dps
         ,
 
-
-
-
-        -- nothing in the geonet appears to work
+        -- nothing in the geonet appears to be used
 {-
         [r|
           <geonet:info xmlns:geonet="http://www.fao.org/geonetwork" >
