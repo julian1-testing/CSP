@@ -83,9 +83,9 @@ data MDCommons = MDCommons {
 
 data TransferLink = TransferLink {
 
-    protocol :: String,
-    linkage :: String,
-    description :: String
+    protocol :: BS.ByteString,
+    linkage :: BS.ByteString,
+    description :: BS.ByteString
 } deriving (Show, Eq)
 
 

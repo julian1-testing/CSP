@@ -115,10 +115,46 @@ getRecordGeopoly conn record record_id = do
   return $
     record { geopoly = map (\(Only poly) -> poly ) xs }
 
+{-
+id          | 1670
+record_id   | 200
+protocol    | WWW:LINK-1.0-http--link
+linkage     | http://imos.org.au/oceanradar_sites.html
+description | Radar sites page on IMOS website
+-}
+
+getTransferLinks conn record record_id = do
+  xs :: [ (BS.ByteString, BS.ByteString, BS.ByteString) ] <- PG.query conn [r|
+      select
+        protocol,
+        linkage,
+        description
+      from transfer_link
+      where record_id = ?
+   |]
+   $ Only (record_id :: Int )
+  return $
+    record { transferLinks = map f xs }
+    where
+      f ( protocol, linkage, description ) = TransferLink protocol linkage description 
+
+
+{-
+    record { dataParameters = map f xs }
+    where
+      f (label, url, rootLabel) = DataParameter { term = label, url = url, rootTerm = rootLabel }
+-}
 
 
 
 
+-- TODO - get rid of the horrible record passing stuff... 
+
+{-
+    protocol :: String,
+    linkage :: String,
+    description :: String
+-}
 
 -- dataParameters ....
 -- should probabaly be typles
@@ -133,7 +169,9 @@ getRecord conn record_id = do
   record <- getRecordDataParameters conn record record_id
   record <- getRecordGeopoly conn record record_id
 
-  -- print record
+  record <- getTransferLinks conn record record_id
+
+  print record
 
   return record
 

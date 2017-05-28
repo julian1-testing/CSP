@@ -1,5 +1,10 @@
 
--- free text search
+- get rid of the the horrible passing the record into the record decodd functions
+
+- free text search
+- image from db. because it will prove it works.
+    -- only issue is db conn handling.
+- transfer links...
 
 maybe it mucks up links because of id. or because of lacking link for wms.
 

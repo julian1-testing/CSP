@@ -102,8 +102,8 @@ formatXML records depth =
         foldl (LT.append ) LT.empty dps
         ,
 
-        -- nothing in the geonet appears to be used
-
+        -- nothing in the geonet appears to be used except the record uuid
+        -- geonet
         [r|
           <geonet:info xmlns:geonet="http://www.fao.org/geonetwork" >
               <id>153</id>
