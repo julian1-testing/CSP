@@ -128,6 +128,8 @@ create table data_parameter (
 -- important
 CREATE UNIQUE INDEX my_data_parameter_unique_idx ON data_parameter(record_id, concept_id);
 
+create index on data_parameter(record_id);
+
 
 
 create table attr_constraint  (
@@ -166,7 +168,7 @@ create table geopoly (
   poly		  text not null
 );
 
-
+create index on geopoly(record_id );
 
 
 commit;

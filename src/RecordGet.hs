@@ -81,7 +81,7 @@ getRecordMDCommons conn record record_id = do
 
 
 getRecordDataParameters conn record record_id = do
-  xs :: [ (String, String, String) ]  <- PG.query conn [r|
+  xs :: [ (String, String, String) ] <- PG.query conn [r|
       select
         -- concept_view.concept_id,
         -- data_parameter.record_id
@@ -94,11 +94,25 @@ getRecordDataParameters conn record record_id = do
       where record_id = ?
    |]
    $ Only (record_id :: Int )
-
   return $
     record { dataParameters = map f xs }
     where
       f (label, url, rootLabel) = DataParameter { term = label, url = url, rootTerm = rootLabel }
+
+
+
+-- this query seems to have slowed things down...
+getRecordGeopoly conn record record_id = do
+  xs :: [ (Only String) ] <- PG.query conn [r|
+      select
+        poly
+      from geopoly
+      where record_id = ?
+   |]
+   $ Only (record_id :: Int )
+  return $
+    record { geopoly = map (\(Only poly) -> poly ) xs }
+
 
 
 
@@ -113,7 +127,8 @@ getRecord conn record_id = do
   record <- getRecordMDCommons conn record record_id
   record <- getRecordDataIdentification conn record record_id
 
-  record <- getRecordDataParameters conn record record_id 
+  record <- getRecordDataParameters conn record record_id
+  record <- getRecordGeopoly conn record record_id
 
   -- print record
 
