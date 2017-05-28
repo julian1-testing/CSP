@@ -1,4 +1,10 @@
 
+root parameter/platform
+organisation
+geopoly
+
+
+-----
 - freetext search
 - get the other metadata fields starting to be filled in - parameters, organisations, dates etc.
 

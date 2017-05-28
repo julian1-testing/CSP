@@ -13,11 +13,13 @@ drop view if exists facet_basic_view;
 drop view if exists wms_view;
 drop view if exists wfs_view;
 drop view if exists transfer_link_view;
+
+drop view if exists root_label_concept_view;
+drop view if exists qualified_concept_view;
+
 drop view if exists concept_view;
 drop view if exists parent_view;
 drop view if exists record_view;
-
-drop view if exists qualified_concept_view;
 
 -- associate concept parent (eg. skos:broader) relationships between concepts via skos:narrower and skos:narrowMatch
 
@@ -171,34 +173,54 @@ left join temporal_begin tb on tb.record_id = record.id
 
 
 
-create or replace view qualified_concept_view as
+create view qualified_concept_view as
 select
  
   concept_view.concept_id,
   concept_view.label as label0,
-  concept_view_c.label as label1,
-  concept_view_cc.label as label2,
-  concept_view_ccc.label as label3,
-  concept_view_cccc.label as label4
+  concept_view_1.label as label1,
+  concept_view_2.label as label2,
+  concept_view_3.label as label3,
+  concept_view_4.label as label4
     
   from concept_view
 
-  left join concept_view concept_view_c
-    on concept_view_c.concept_id = concept_view.parent_id
+  left join concept_view concept_view_1
+    on concept_view_1.concept_id = concept_view.parent_id
 
-  left join concept_view concept_view_cc
-    on concept_view_cc.concept_id = concept_view_c.parent_id
+  left join concept_view concept_view_2
+    on concept_view_2.concept_id = concept_view_1.parent_id
 
-  left join concept_view concept_view_ccc
-    on concept_view_ccc.concept_id = concept_view_cc.parent_id
+  left join concept_view concept_view_3
+    on concept_view_3.concept_id = concept_view_2.parent_id
 
-  left join concept_view concept_view_cccc
-    on concept_view_cccc.concept_id = concept_view_ccc.parent_id
+  left join concept_view concept_view_4
+    on concept_view_4.concept_id = concept_view_3.parent_id
 
-  left join concept_view concept_view_ccccc
-    on concept_view_ccccc.concept_id = concept_view_cccc.parent_id
+  left join concept_view concept_view_5
+    on concept_view_5.concept_id = concept_view_4.parent_id
 
   -- order by concept_view.concept_id
+;
+
+
+
+create view root_label_concept_view as
+select 
+  concept_id,
+  case 
+    when label1 is null then label0 
+    when label2 is null then label1 
+    when label3 is null then label2 
+    when label4 is null then label3 
+    -- when label5 is null then label4 
+  else label4 
+  end as root_label
+ 
+  -- do we want the root concept or the root label?
+  from qualified_concept_view 
+
+  order by root_label
 ;
 
 
