@@ -45,11 +45,12 @@ formatXML records depth =
       H.concatLT [
         "\n", H.pad $ depth * 3, "<metadata>"
         ,
-        case uuid record of
-          Just uuid_ -> formatSource uuid_ (depth + 1)
-        ,
+
         case dataIdentification record of
           Just di -> formatTitle di (depth + 1)
+        ,
+        case uuid record of
+          Just uuid_ -> formatSource uuid_ (depth + 1)
         ,
 
         formatImage (depth + 1), "\n",

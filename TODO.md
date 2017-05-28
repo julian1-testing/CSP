@@ -1,7 +1,14 @@
 
-root parameter/platform
+maybe it mucks up links because of id. or because of lacking link for wms.
+
+fsSearchAddBtn is missing - 
+  - perhaps because parsing bails out too early...
+
+done - root parameter/platform
+done - geopoly
 organisation
-geopoly
+
+looks like there is an issue with parameters being represented more than once.
 
 
 -----
