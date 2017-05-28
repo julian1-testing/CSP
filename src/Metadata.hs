@@ -49,15 +49,24 @@ formatXML records depth =
         case dataIdentification record of
           Just di -> formatTitle di (depth + 1)
         ,
-        case uuid record of
-          Just uuid_ -> formatSource uuid_ (depth + 1)
+        -- source (not uuid!!)
+
+        "<source>ed23e365-c459-4aa4-bbc1-5d2cd0274af0</source>"
+        -- case uuid record of
+        --  Just uuid_ -> formatSource uuid_ (depth + 1)
         ,
 
         formatImage (depth + 1), "\n",
 
         -- POT works -> fills in the more
         H.pad $ depth * 3,
-        "<link>|Point of truth URL of this metadata record|https://catalogue-imos.aodn.org.au:443/geonetwork/srv/en/metadata.show?uuid=aaad092c-c3af-42e6-87e0-bdaef945f522|WWW:LINK-1.0-http--metadata-URL|text/html</link>\n",
+        "<link>|Point of truth URL of this metadata record|https://catalogue-imos.aodn.org.au:443/geonetwork/srv/en/metadata.show?uuid=",
+
+        -- maybe  "" id (Just "hi")
+        maybe ( "") LT.pack  ( uuid record) ,
+        -- uuid record
+        -- "aaad092c-c3af-42e6-87e0-bdaef945f522"
+        "|WWW:LINK-1.0-http--metadata-URL|text/html</link>\n",
 
         -- does not appear do anything,
         -- "<responsibleParty>resourceProvider|resource|Bureau of Meteorology (BOM)|</responsibleParty><responsibleParty>principalInvestigator|resource|Bureau of Meteorology (BOM)|</responsibleParty><responsibleParty>distributor|metadata|Integrated Marine Observing System (IMOS)|</responsibleParty>\n",
@@ -123,13 +132,14 @@ formatXML records depth =
           "<title>", LT.pack $ title di, LT.pack "</title>"
       ]
 
+{-
     formatSource uuid depth =
       H.concatLT [
           "\n",
           H.pad $ depth * 3,
           "<source>", LT.pack uuid, "</source>"
       ]
-
+-}
     formatGeopoly depth geopoly =
       H.concatLT [
           "\n",
