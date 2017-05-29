@@ -194,10 +194,12 @@ data TransferLink = TransferLink {
         H.pad $ depth * 3,
 
         case link of
-          TransferLink protocol linkage description -> H.concatLT [ 
+          TransferLink protocol linkage name description -> H.concatLT [ 
+{-
               "<link>", 
-              "layer|", bsToLazy description, "|", bsToLazy linkage, "|application/vnd.ogc.wms_xml",
+              bsToLazy name, "|", bsToLazy description, "|", bsToLazy linkage, "|application/vnd.ogc.wms_xml",
               "</link>"  
+-}
             ]
 
           _ -> "" 

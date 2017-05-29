@@ -122,7 +122,7 @@ getTransferLinks conn record_id = do
   return $
     map f xs
     where
-      f ( protocol, linkage, name description ) = TransferLink protocol linkage name description 
+      f ( protocol, linkage, name, description ) = TransferLink protocol linkage name description 
 
 
 
