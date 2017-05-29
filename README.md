@@ -1,38 +1,10 @@
 
-## (simple) Catalog Services for Portal
+## Catalog Services for Portal
 
 
-### Build,
-
+### Usage
 ```
-apt-get install cabal-install
-cabal install hxt
-cabal install hxt-curl
-cabal install warp
-# cabal install warp-tls
-
-# cabal install http-client
-cabal install http-client-tls
-cabal install raw-strings-qq
-
-apt-get install libpq-dev
-cabal install postgresql-simple
-
-```
-
-### Usage example,
-
-```
-# start server
-./target/CSP
-
-# dtest xml.search request
-curl -s http://10.1.1.1:3000/srv/eng/xml.search.imos | xmllint --format -
-```
-
-
-### create db and load schemes
-```
+# build db
 psql -h postgres.localnet -U admin -d postgres -f sql/db.sql
 psql -h postgres.localnet -U harvest -d harvest -f sql/tables.sql
 psql -h postgres.localnet -U harvest -d harvest -f sql/views.sql
@@ -57,14 +29,39 @@ harvest=> select * from wms_view;
 harvest=> select * from record_view; 
 
 
-# run portal services - xml.search.imos, logos etc.
+# start portal catalog services - xml.search.imos, logos etc.
 $ ./target/Service 
 Listening on port 3000
+
+
+# test xml.search request
+curl -s 'http://localhost:3000/srv/eng/xml.search.imos?protocol=OGC%3AWMS-1.1.1-http-get-map%20or%20OGC%3AWMS-1.3.0-http-get-map%20or%20IMOS%3ANCWMS--proto&sortBy=popularity&from=10&to=20&fast=index&filters=collectionavailability' | xmllint --format - | less
 ...
 
+```
 
+
+
+### cabal dependencies,
 
 ```
+apt-get install cabal-install
+cabal install hxt
+cabal install hxt-curl
+cabal install warp
+# cabal install warp-tls
+
+# cabal install http-client
+cabal install http-client-tls
+cabal install raw-strings-qq
+
+apt-get install libpq-dev
+cabal install postgresql-simple
+
+```
+
+
+
 
 
 ### Vim
