@@ -20,8 +20,10 @@ create table concept (
   label       text not null
 );
 
+-- TODO maybe uniqueness constraint on combinations that link things,
 
--- skos relationships
+
+-- skos and scheme relationships
 
 create table narrower (
 
@@ -29,8 +31,11 @@ create table narrower (
   concept_id  integer references concept(id),
   narrower_id integer references concept(id)
 );
+-- untested
+create index on narrower(concept_id);
+create index on narrower(narrower_id);
 
--- TODO uniqueness constraint on the combination  that link things,
+
 
 
 create table narrow_match (
@@ -39,6 +44,12 @@ create table narrow_match (
   concept_id  integer references concept(id),
   narrower_id integer references concept(id)
 );
+-- not tested
+create index on narrow_match(concept_id);
+create index on narrow_match(narrower_id);
+
+
+
 
 
 create table scheme_has_top_concept (
@@ -48,6 +59,10 @@ create table scheme_has_top_concept (
   concept_id  integer references concept(id),
   scheme_id   integer references concept(id)
 );
+-- not tested
+create index on scheme_has_top_concept(concept_id);
+create index on scheme_has_top_concept(scheme_id);
+
 
 
 

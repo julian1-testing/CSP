@@ -1,4 +1,5 @@
 
+OLD DEPRECATED
 
 -- tree modelled as a sql 'adjacency list'
 -- recusively computes the sum of child nodes

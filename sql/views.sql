@@ -123,6 +123,7 @@ select * from transfer_link_view where protocol = 'OGC:WFS-1.0.0-http-get-capabi
 ;
 
 
+/*
 --
 -- count the matching records for a leaf facet
 -- may need to be turned into a function - so that we can filter by resource and scheme
@@ -149,7 +150,7 @@ select
   from facet_basic_view
   left join concept_view on concept_view.concept_id = facet_basic_view.concept_id
 ;
-
+*/
 
 
 create view record_view as

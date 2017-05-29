@@ -162,6 +162,7 @@ formatXML rootRecordCount m =
         -- concatMap f children
 
 
+{-  TODO deprecate
 
 getTestConceptRecordList conn = do
   -- get all facets and facet count from db and return as flat list
@@ -176,7 +177,7 @@ getTestConceptRecordList conn = do
   xs :: [ (Int, Maybe Int, String, Int) ] <- PG.query conn query ()
   return xs
 
-
+-}
 
 {-
   Main test/example is in Search
