@@ -11,6 +11,7 @@ module RecordStore where
 import Database.PostgreSQL.Simple as PG
 import Database.PostgreSQL.Simple.Types as PG(Only(..))
 import Text.RawString.QQ
+import qualified Data.ByteString.Char8 as BS(putStrLn, concat)
 
 import Helpers as H -- (parseXML)
 import ParseMCP20(parse)
@@ -29,6 +30,7 @@ import Record
 
 storeUUID conn uuid = do
 
+    print "store uuid"
 
     -- must get the id, so we can delete all old bits,
     -- this is harder than it looks....
@@ -66,7 +68,7 @@ storeUUID conn uuid = do
 
 
 storeMDCommons conn record_id mdCommons = do
-    print "hi this is mdCommons"
+    print "store mdcommons"
     {- deleting each time isn't nearly as nice
     -- upsert....
     -- but if there are multiple items......  then we have to do a delete first... in case one has been removed????
@@ -115,7 +117,7 @@ storeMDCommons conn record_id mdCommons = do
 
 
 storeDataIdentification conn record_id dataIdentification = do
-    print "hi this is dataIdentification"
+    print "store dataIdentification"
     {- deleting each time isn't nearly as nice
     -- upsert....
     -- but if there are multiple items......  then we have to do a delete first... in case one has been removed????
@@ -165,19 +167,22 @@ storeTransferLink conn record_id transferLink = do
                 ? as record_id,
                 ? as protocol,
                 ? as linkage,
+                ? as name,
                 ? as description
             )
             insert into transfer_link (
                 record_id,
                 protocol,
                 linkage,
+                name,
                 description
             )
             (select * from a)
-            on conflict(record_id, protocol, linkage) -- (my_transfer_protocol_unique_idx )
+            on conflict(record_id, protocol, linkage, name) -- (my_transfer_protocol_unique_idx )
             do update set
                 protocol = (select protocol from a),
                 linkage = (select linkage from a),
+                name = (select name from a),
                 description = (select description from a)
 
             returning transfer_link.id
@@ -187,12 +192,14 @@ storeTransferLink conn record_id transferLink = do
             record_id, -- :: Int,
             protocol t,-- :: String,
             linkage t, -- :: String,
+            name t, -- :: String,
             description t-- :: String
         )
     return ()
 
 
 storeTransferLinks conn record_id transferLinks = do
+    print "store transferlinks"
     -- mapM (putStrLn.show) transferLinks
     mapM (storeTransferLink conn record_id) transferLinks
 
@@ -233,8 +240,8 @@ storeDataParameter conn record_id dataParameter  = do
         |] (concept_id :: Int, record_id:: Int)
         return ()
 
-      0 -> putStrLn $ "dataParameter '" ++ url_ ++ "' not found!"
-      _ -> putStrLn $ "dataParameter '" ++ url_ ++ "' found multiple matches?"
+      0 -> BS.putStrLn $ BS.concat [ "dataParameter '", url_ , "' not found!" ]
+      _ -> BS.putStrLn $ BS.concat [ "dataParameter '", url_ , "' found multiple matches?" ]
 
 
 

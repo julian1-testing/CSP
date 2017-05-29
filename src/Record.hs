@@ -85,6 +85,7 @@ data TransferLink = TransferLink {
 
     protocol :: BS.ByteString,
     linkage :: BS.ByteString,
+    name :: BS.ByteString,
     description :: BS.ByteString
 } deriving (Show, Eq)
 
@@ -94,7 +95,9 @@ data DataParameter = DataParameter {
 
     term :: BS.ByteString, -- eg. label
     url :: BS.ByteString,
-    rootTerm :: BS.ByteString-- this is a bit more expensive to compute
+
+                              -- don't think this is correct for parsing. 
+    rootTerm :: BS.ByteString-- this is a bit more expensive to compute, this is not used in db. but computed.
 
 } deriving (Show, Eq)
 

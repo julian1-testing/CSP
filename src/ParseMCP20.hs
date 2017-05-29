@@ -11,11 +11,14 @@ module ParseMCP20 where
 -}
 
 
-import Control.Exception 
+import Control.Exception
 
 import Text.XML.HXT.Core
 
 import Helpers(parseXML, atTag, atChildName, getChildText, stripSpace)
+
+
+import qualified Data.ByteString.Char8 as BS(ByteString(..), pack )
 
 -- import everything
 import Record --as Record(Record(..))
@@ -30,7 +33,7 @@ parseFileIdentifier =
 
 
 parseMDCommons =
-  atTag "gmd:resourceConstraints" >>> atChildName "mcp:MD_Commons" >>> 
+  atTag "gmd:resourceConstraints" >>> atChildName "mcp:MD_Commons" >>>
   proc md_commons -> do
 
     jurisdictionLink <- atChildName "mcp:jurisdictionLink" >>> atChildName "gmd:URL" >>> getChildText -< md_commons
@@ -99,7 +102,6 @@ parseTemporalExtentBegin =
 
 
 parseGeoPolygon =
-    -- change name
   -- multiple
   atTag "gmd:extent"  >>> atChildName "gmd:EX_Extent" >>>
   proc extent -> do
@@ -107,7 +109,7 @@ parseGeoPolygon =
         >>> atChildName "gmd:polygon" >>> atChildName "gml:Polygon"
         >>> atChildName "gml:exterior" >>> atChildName "gml:LinearRing"
         >>> atChildName "gml:posList" >>> getChildText -< extent
-    returnA -< begin
+    returnA -< BS.pack begin
 
 
 
@@ -120,11 +122,15 @@ parseTransferLinks =
 
     protocol    <- atChildName "gmd:protocol" >>> atChildName "gco:CharacterString" >>> getChildText  -< resource
     linkage     <- atChildName "gmd:linkage"  >>> atChildName "gmd:URL" >>> getChildText -< resource
+    name        <- atChildName "gmd:name"  >>> atChildName "gmx:MimeFileType" >>> getChildText -< resource
     description <- atChildName "gmd:description" >>> atChildName "gco:CharacterString" >>> getChildText -< resource
+
+    -- so
     returnA -< TransferLink {
-        protocol = protocol,
-        linkage = linkage,
-        description = description
+        protocol = BS.pack protocol,
+        linkage = BS.pack linkage,
+        name = BS.pack name,
+        description = BS.pack description
     }
 
 
@@ -136,8 +142,9 @@ parseDataParameters =
     term_ <- atChildName "mcp:term"  >>> atChildName "gco:CharacterString" >>> getChildText -< term
     url  <- atChildName "mcp:vocabularyTermURL"  >>> atChildName "gmd:URL" >>> getChildText -< term
     returnA -< DataParameter {
-        term = term_,
-        url = url
+        term = BS.pack term_,
+        url = BS.pack url,
+        rootTerm = BS.pack "" -- NOTE empty on parse, but filled in when we return.
     }
 
 
@@ -187,23 +194,20 @@ parse elts = do
          _ -> Nothing
 
     let temporalBegin' = case temporalBegin of
-         [ tb ] -> Just tb  
+         [ tb ] -> Just tb
          _ -> Nothing
 
-	-- if the thing doesn't have a uuid it's not recognisable
-	-- but we should still continue parsing the data.
-
     let record = Record {
-			uuid = uuid', --identifier, --"myident",--uuid',
-			dataIdentification = dataIdentification', -----
-			mdCommons = mdCommons', -----
-			attrConstraints = attrConstraints ,
-			useLimitations = useLimitations,
-			dataParameters = dataParameters,
-			temporalBegin = temporalBegin',    ----
-			transferLinks = transferLinks,
-			geopoly = geopoly
-			}
+      uuid = uuid',
+      dataIdentification = dataIdentification',
+      mdCommons = mdCommons',
+      attrConstraints = attrConstraints ,
+      useLimitations = useLimitations,
+      dataParameters = dataParameters,
+      temporalBegin = temporalBegin',
+      transferLinks = transferLinks,
+      geopoly = geopoly
+      }
 
     return record
 
@@ -230,16 +234,16 @@ main = testArgoRecord
 
 
 
-    -- so how do we handle all this... 
+    -- so how do we handle all this...
     -- I think we need to change the parsing structure....
     -- WE need null
-    
+
     -- we either use null.... or encode it something else....
 
 --    let ide
 
 -- ok if everything
--- parsing everything optionally - means we don't really have to return left and right 
+-- parsing everything optionally - means we don't really have to return left and right
 -- we can analyze it separately later?
 -- having the record be sufficiently flexible is quite nice...
 
@@ -253,18 +257,18 @@ main = testArgoRecord
 
     -- we really need to have this....
     -- but maybe we can handle another way....
-    -- blah blah 
+    -- blah blah
     -- might be easier to just set error?
 -- case (identifier, dataIdentification, temporalBegin) of
-            -- ([ uuid ], [ di ], [tb]) -> 
+            -- ([ uuid ], [ di ], [tb]) ->
 
 
 
-{- 
+{-
     putStrLn $ case myRecord of
         Right myRecord  -> showRecord myRecord
         Left msg -> msg
- -}   
+ -}
 
     -- try ( print $ Left "whoot" ) -- putStrLn.showRecord $ myRecord)
     -- catch (print $ head []) $ \(e ::  Exception NoMethodError) -> print "good message"

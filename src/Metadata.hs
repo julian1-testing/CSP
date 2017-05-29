@@ -183,6 +183,9 @@ data TransferLink = TransferLink {
     linkage :: BS.ByteString,
     description :: BS.ByteString
 } deriving (Show, Eq)
+
+<link>imos:anmn_velocity_timeseries_map|Moorings - velocity time-series|http://geoserver-123.aodn.org.au/geoserver/wms|OGC:WMS-1.1.1-http-get-map|application/vnd.ogc.wms_xml</link>
+
 -}
 
     formatLink depth link = 
@@ -191,7 +194,11 @@ data TransferLink = TransferLink {
         H.pad $ depth * 3,
 
         case link of
-          TransferLink protocol linkage description -> "<link></link>" 
+          TransferLink protocol linkage description -> H.concatLT [ 
+              "<link>", 
+              "layer|", bsToLazy description, "|", bsToLazy linkage, "|application/vnd.ogc.wms_xml",
+              "</link>"  
+            ]
 
           _ -> "" 
       ]

@@ -37,11 +37,11 @@ psql -h postgres.localnet -U admin -d postgres -f sql/db.sql
 psql -h postgres.localnet -U harvest -d harvest -f sql/tables.sql
 psql -h postgres.localnet -U harvest -d harvest -f sql/views.sql
 
-# load vocab
+# load vocabs
 ./target/LoadScheme
 
 # do harvest
-./target/CSW
+./target/Harvest
 
 psql -h postgres.localnet -d harvest -U harvest
 

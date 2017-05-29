@@ -109,10 +109,11 @@ getRecordGeopolys conn record_id = do
 
 
 getTransferLinks conn record_id = do
-  xs :: [ (BS.ByteString, BS.ByteString, BS.ByteString) ] <- PG.query conn [r|
+  xs :: [ (BS.ByteString, BS.ByteString, BS.ByteString, BS.ByteString) ] <- PG.query conn [r|
       select
         protocol,
         linkage,
+        name,
         description
       from transfer_link
       where record_id = ?
@@ -121,7 +122,7 @@ getTransferLinks conn record_id = do
   return $
     map f xs
     where
-      f ( protocol, linkage, description ) = TransferLink protocol linkage description 
+      f ( protocol, linkage, name description ) = TransferLink protocol linkage name description 
 
 
 

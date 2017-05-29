@@ -18,7 +18,7 @@
 {-# LANGUAGE Arrows, NoMonomorphismRestriction #-}
 {-# LANGUAGE QuasiQuotes #-}
 
-module CSWHarvest where
+module CSW where
 
 import Text.XML.HXT.Core
 
