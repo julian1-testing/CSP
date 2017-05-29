@@ -1,14 +1,22 @@
 
-- TEST - get rid of geopoly again - and check xml nesting for geopoly doesn't use  - because we can see all the images properly.
 
-- get rid of the the horrible passing the record into the record decodd functions
+
+- add the wfs links... and see if it works.
 
 - free text search
 - image from db. because it will prove it works.
     -- only issue is db conn handling.
-- transfer links...
 
-maybe it mucks up links because of id. or because of lacking link for wms.
+--
+
+- TEST - get rid of geopoly again - and check xml nesting for geopoly doesn't use  - because we can see all the images properly.
+
+done - get rid of the the horrible passing the record into the record decodd functions
+
+
+done - transfer links... for wms at least
+
+done - maybe it mucks up links because of id. or because of lacking link for wms.
 
 
 done - get rid of the horrible record passing stuff where pass the current record state into the record decoding... 
@@ -20,9 +28,9 @@ done - fsSearchAddBtn is missing -
 done - root parameter/platform
 done - geopoly
 
-organisation
+done - organisation
 
-appears as if there is an issue with parameters being represented more than once.
+done appears as if there is an issue with parameters being represented more than once - because harvested more than once.
 
 
 -----

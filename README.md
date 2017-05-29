@@ -1,5 +1,5 @@
 
-## Catalog Services for Portal
+## Catalog Services for Portal - PoC
 
 - implements faceted search, search pagination etc, support for online resources, for Portal search
 - csw harvest of external geoservers
