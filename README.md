@@ -1,7 +1,7 @@
 
 ## Catalog Services for Portal
 
-- implements faceted search, csw harvesting of external geoservers, and online resources etc, to support Portal 
+- implements faceted search, csw harvesting of external geoservers, and online resources, search pagination etc, to support Portal 
 
 ### Usage
 ```
