@@ -37,12 +37,17 @@ psql -h postgres.localnet -U admin -d postgres -f sql/db.sql
 psql -h postgres.localnet -U harvest -d harvest -f sql/tables.sql
 psql -h postgres.localnet -U harvest -d harvest -f sql/views.sql
 
+
+# build binaries
+./build
+
 # load vocabs
 ./target/LoadScheme
 
-# do harvest
+# harvest https://catalogue-imos.aodn.org.au/geonetwork
 ./target/Harvest
 
+# connect db
 psql -h postgres.localnet -d harvest -U harvest
 
 
@@ -50,6 +55,13 @@ harvest=> \x
 Expanded display is on.
 harvest=> select * from wms_view; 
 harvest=> select * from record_view; 
+
+
+# run portal services - xml.search.imos, logos etc.
+$ ./target/Service 
+Listening on port 3000
+...
+
 
 
 ```
