@@ -34,7 +34,6 @@ curl -s http://10.1.1.1:3000/srv/eng/xml.search.imos | xmllint --format -
 ### create db and load schemes
 ```
 psql -h postgres.localnet -U admin -d postgres -f sql/db.sql
-
 psql -h postgres.localnet -U harvest -d harvest -f sql/tables.sql
 psql -h postgres.localnet -U harvest -d harvest -f sql/views.sql
 

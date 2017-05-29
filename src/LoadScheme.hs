@@ -233,6 +233,7 @@ storeInScheme conn s = do
 
 storeAll conn vocab vocabCategory = do
   -- TODO change name
+  -- this complicated load order is due to dependencies...
 
   storeSchemes conn  vocab
   storeSchemes conn vocabCategory
@@ -243,9 +244,6 @@ storeAll conn vocab vocabCategory = do
   storeSchemeHasTopConcept conn vocab
   storeSchemeHasTopConcept conn vocabCategory
 
-  -- storeInScheme conn  vocab
-  -- storeInScheme conn vocabCategory
-
   storeNarrowMatchs conn vocab
   storeNarrowMatchs conn vocabCategory
 
@@ -255,8 +253,13 @@ storeAll conn vocab vocabCategory = do
 
 
 
+-- TODO why don't we do all these things separately? is there an ordering 
+
+-- 
+
 --------------------------
 
+-- vocab/aodn_aodn-organisation-category-vocabulary.rdf  vocab/aodn_aodn-organisation-vocabulary.rdf
 
 main :: IO ()
 main = do
@@ -278,6 +281,13 @@ main = do
   param         <- readFile "./vocab/aodn_aodn-discovery-parameter-vocabulary.rdf"
   paramCategory <- readFile "./vocab/aodn_aodn-parameter-category-vocabulary.rdf"
   storeAll conn param paramCategory
+
+
+  -- organisation
+  print "doing organisation"
+  org <- readFile "./vocab/aodn_aodn-organisation-vocabulary.rdf"
+  orgCategory <- readFile "./vocab/aodn_aodn-organisation-category-vocabulary.rdf"
+  storeAll conn org orgCategory
 
 
   -- are there any other resources?
