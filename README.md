@@ -15,7 +15,7 @@ psql -h postgres.localnet -U harvest -d harvest -f sql/views.sql
 
 
 # build binaries
-# see more.md for cabal deps
+# see doc/more.md for cabal deps
 ./build
 
 # load vocabs
