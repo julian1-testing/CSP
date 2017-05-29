@@ -108,6 +108,9 @@ formatXML rootRecordCount m =
         "AODN Platform Category Vocabulary" ->
           formatDimension (parent, "Platform", count) depth
 
+        "AODN Platform Organisation Vocabulary" ->
+          formatDimension (parent, "Organisation", count) depth
+
         _ ->
           formatCategory (parent, label, count) depth
 

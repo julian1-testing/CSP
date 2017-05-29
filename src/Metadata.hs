@@ -171,6 +171,9 @@ formatXML records depth =
           DataParameter label _ "AODN Platform Category Vocabulary" -> 
             H.concatLT [ "<platform>", bsToLazy label, "</platform>" ] 
 
+          DataParameter label _ "AODN Organisation Category Vocabulary" -> 
+            H.concatLT [ "<organisation>", bsToLazy label, "</organisation>" ] 
+
           _ -> "" 
       ]
 

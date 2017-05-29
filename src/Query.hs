@@ -65,6 +65,7 @@ resolveTerm conn term = do
           -- TODO organisation etc.
           f "Platform" = "AODN Platform Category Vocabulary"
           f "Measured parameter" = "AODN Parameter Category Vocabulary"
+          f "Organisation" = "AODN Organisation Category Vocabulary"
           f x = x
 
   concept <- dbGetTerm conn parsedTerm
