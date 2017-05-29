@@ -269,12 +269,9 @@ storeVocabImproved conn vocab = do
 
 main :: IO ()
 main = do
-  -- TODO see if storeVocabImproved can be used instead
+  -- TODO see if storeVocabImproved can be used instead of loading both vocabs concurrently
+  -- TODO - do the loading in seperate transactions
   conn <- connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
-
-  -- should we be using plural?
-  -- cannot rebuild the facets from out under - actually we can we just need to reindex,..
-  -- db needs to be empty - otherwise all record linking via will need to be removed 
 
   -- platform
   print "doing platform"
