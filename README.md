@@ -1,6 +1,7 @@
 
 ## Catalog Services for Portal
 
+- implements faceted search, csw harvesting of external geoservers, and online resources etc, to support Portal 
 
 ### Usage
 ```
@@ -16,17 +17,8 @@ psql -h postgres.localnet -U harvest -d harvest -f sql/views.sql
 # load vocabs
 ./target/LoadScheme
 
-# harvest https://catalogue-imos.aodn.org.au/geonetwork
+# harvest external catalog ie. https://catalogue-imos.aodn.org.au/geonetwork
 ./target/Harvest
-
-# connect db
-psql -h postgres.localnet -d harvest -U harvest
-
-
-harvest=> \x 
-Expanded display is on.
-harvest=> select * from wms_view; 
-harvest=> select * from record_view; 
 
 
 # start portal catalog services - xml.search.imos, logos etc.
@@ -96,6 +88,7 @@ from, vim /usr/share/vim/vim80/syntax/haskell.vim
 
 
 ### Old - Notes, on libraries
+
 
 - http-client 
   https://haskell-lang.org/library/http-client 
