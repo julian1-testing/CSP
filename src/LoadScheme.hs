@@ -233,7 +233,7 @@ storeInScheme conn s = do
 
 storeAll conn vocab vocabCategory = do
   -- TODO change name
-  -- this complicated load order is due to dependencies...
+  -- this complicated load order - may not be required
 
   storeSchemes conn  vocab
   storeSchemes conn vocabCategory
@@ -251,18 +251,25 @@ storeAll conn vocab vocabCategory = do
   storeNarrower conn vocabCategory
 
 
+-- TODO - we need to test whether we can load a vocab independently of its category
+-- do this by examining the table counts for vocab items, before and after the change
+
+storeVocabImproved conn vocab = do
+  -- untested
+  storeSchemes conn  vocab
+  storeConcepts conn vocab
+  storeSchemeHasTopConcept conn vocab
+  storeNarrowMatchs conn vocab
+  storeNarrower conn vocab
 
 
--- TODO why don't we do all these things separately? is there an ordering 
-
--- 
 
 --------------------------
 
--- vocab/aodn_aodn-organisation-category-vocabulary.rdf  vocab/aodn_aodn-organisation-vocabulary.rdf
 
 main :: IO ()
 main = do
+  -- TODO see if storeVocabImproved can be used instead
   conn <- connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
 
   -- should we be using plural?
