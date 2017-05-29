@@ -1,9 +1,9 @@
 
 ## Catalog Services for Portal
 
-- implements faceted search, and online resources, search pagination etc, to support Portal search
-- csw harvest support of external geoservers
-- harvest, record state and indexes, are localized in a db backend, with no filesystem
+- implements faceted search, search pagination etc, support for online resources, for Portal search
+- csw harvest of external geoservers
+- harvest, record state and indexes, state is localized to a db backend, with no filesystem
 
 
 ### Usage
