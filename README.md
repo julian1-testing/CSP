@@ -1,9 +1,9 @@
 
 ## Catalog Services for Portal - PoC
 
-- implements faceted search, search pagination etc, support for online resources, for Portal search
-- csw harvest of external geoservers
-- harvest, record state and indexes, state is localized to a db backend, with no filesystem
+- implements faceted search, search pagination, online resources, to drive AODN Portal
+- supports csw harvest of external mcp/19139 catalogues, but not mandatory
+- records, concepts and indexes - all state localized to a db backend, with no filesystem requirement
 
 
 ### Usage
