@@ -197,14 +197,15 @@ data TransferLink = TransferLink {
         H.pad $ depth * 3,
 
         case link of
-          TransferLink protocol linkage name description -> H.concatLT [ 
-{-
+          TransferLink protocol linkage name description | protocol == "OGC:WMS-1.1.1-http-get-map" -> H.concatLT [ 
               "<link>", 
-              bsToLazy name, "|", bsToLazy description, "|", bsToLazy linkage, "|application/vnd.ogc.wms_xml",
+              bsToLazy name, "|", bsToLazy description, "|", bsToLazy linkage,  "|", bsToLazy protocol, "|application/vnd.ogc.wms_xml",
               "</link>"  
--}
             ]
 
+            -- imos:anmn_velocity_timeseries_map|Moorings - velocity time-series|http://geoserver-123.aodn.org.au/geoserver/wms|OGC:WMS-1.1.1-http-get-map|application/vnd.ogc.wms_xml
+
+            -- imos:anmn_acoustics_map|ANMN Passive Acoustic Observatories|http://geoserver-123.aodn.org.au/geoserver/wmsOGC:WMS-1.1.1-http-get-map|application/vnd.ogc.wms_xml
           _ -> "" 
       ]
 
