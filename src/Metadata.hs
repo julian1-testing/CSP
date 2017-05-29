@@ -87,7 +87,7 @@ formatXML records depth =
         -- it looks like the geobox works -- but not
         -- this should be really easy to do - because already in the db...
         -- geobox is 
-        "<geoBox>170|-70|70|20</geoBox>\n",
+        -- "<geoBox>170|-70|70|20</geoBox>\n",
 
         
         -- is this an efficient way of doing this????
@@ -101,6 +101,15 @@ formatXML records depth =
         let dps = map (formatDataParameter $ depth + 1) $ dataParameters record in
         foldl (LT.append ) LT.empty dps
         ,
+
+        let links = map (formatLink $ depth + 1) $ transferLinks record in
+        foldl (LT.append ) LT.empty links
+        ,
+
+
+    
+        -- we need to format links like the following...
+        -- <link>imos:anmn_velocity_timeseries_map|Moorings - velocity time-series|http://geoserver-123.aodn.org.au/geoserver/wms|OGC:WMS-1.1.1-http-get-map|application/vnd.ogc.wms_xml</link>
 
         -- nothing in the geonet appears to be used except the record uuid
         -- geonet
@@ -164,6 +173,30 @@ formatXML records depth =
 
           _ -> "" 
       ]
+
+
+
+{-
+data TransferLink = TransferLink {
+
+    protocol :: BS.ByteString,
+    linkage :: BS.ByteString,
+    description :: BS.ByteString
+} deriving (Show, Eq)
+-}
+
+    formatLink depth link = 
+      H.concatLT [
+        "\n",
+        H.pad $ depth * 3,
+
+        case link of
+          TransferLink protocol linkage description -> "<link></link>" 
+
+          _ -> "" 
+      ]
+
+
 
 
 

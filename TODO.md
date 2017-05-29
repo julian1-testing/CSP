@@ -1,4 +1,6 @@
 
+- TEST - get rid of geopoly again - and check xml nesting for geopoly doesn't use  - because we can see all the images properly.
+
 - get rid of the the horrible passing the record into the record decodd functions
 
 - free text search
