@@ -16,7 +16,7 @@ module Metadata where
 
 import qualified Database.PostgreSQL.Simple as PG(connectPostgreSQL)
 
-import qualified Data.ByteString.Char8 as BS(ByteString(..), append, empty )
+import qualified Data.ByteString.Char8 as BS(ByteString(..), append, empty, unpack )
 
 import qualified Data.Text.Lazy as LT(pack, empty, append, fromStrict)
 import qualified Data.Text.Lazy.IO as LT(putStrLn)
@@ -24,11 +24,15 @@ import qualified Data.Text.Lazy.IO as LT(putStrLn)
 import qualified Data.Text.Encoding as E(decodeUtf8, encodeUtf8)
 import qualified Data.Text.Lazy.Encoding as LE(decodeUtf8, encodeUtf8)
 
+
+import qualified Text.XML.HXT.DOM.Util as X(attrEscapeXml, textEscapeXml, stringEscapeXml)
+
 import Text.RawString.QQ
 
 import Record
 import qualified RecordGet as RecordGet(getRecords)
 import qualified Helpers as H(concatLT, pad)
+
 
 
 
@@ -50,7 +54,7 @@ formatXML records depth =
           Just di -> formatTitle di (depth + 1)
         ,
         -- source (not uuid!!)
-
+        -- probably not needed,
         "<source>ed23e365-c459-4aa4-bbc1-5d2cd0274af0</source>"
         -- case uuid record of
         --  Just uuid_ -> formatSource uuid_ (depth + 1)
@@ -61,12 +65,11 @@ formatXML records depth =
         -- POT works -> fills in the more
         H.pad $ depth * 3,
         "<link>|Point of truth URL of this metadata record|https://catalogue-imos.aodn.org.au:443/geonetwork/srv/en/metadata.show?uuid=",
-
-        -- maybe  "" id (Just "hi")
-        maybe ( "") LT.pack ( uuid record) ,
-        -- uuid record
-        -- "aaad092c-c3af-42e6-87e0-bdaef945f522"
-        "|WWW:LINK-1.0-http--metadata-URL|text/html</link>\n",
+          -- maybe  "" id (Just "hi")
+          maybe ( "") LT.pack ( uuid record) ,
+          -- uuid record
+          -- "aaad092c-c3af-42e6-87e0-bdaef945f522"
+          "|WWW:LINK-1.0-http--metadata-URL|text/html</link>\n",
 
         -- does not appear do anything,
         -- "<responsibleParty>resourceProvider|resource|Bureau of Meteorology (BOM)|</responsibleParty><responsibleParty>principalInvestigator|resource|Bureau of Meteorology (BOM)|</responsibleParty><responsibleParty>distributor|metadata|Integrated Marine Observing System (IMOS)|</responsibleParty>\n",
@@ -86,10 +89,10 @@ formatXML records depth =
 
         -- it looks like the geobox works -- but not
         -- this should be really easy to do - because already in the db...
-        -- geobox is 
+        -- geobox is
         -- "<geoBox>170|-70|70|20</geoBox>\n",
 
-        
+
         -- is this an efficient way of doing this????
         -- foldl (\a b -> LT.append a $ LE.decodeUtf8  b) LT.empty  $ geopoly record,
         -- LT.fromStrict $ E.decodeUtf8 $ foldl (BS.append ) BS.empty $ polys
@@ -107,7 +110,7 @@ formatXML records depth =
         ,
 
 
-    
+
         -- we need to format links like the following...
         -- <link>imos:anmn_velocity_timeseries_map|Moorings - velocity time-series|http://geoserver-123.aodn.org.au/geoserver/wms|OGC:WMS-1.1.1-http-get-map|application/vnd.ogc.wms_xml</link>
 
@@ -158,55 +161,54 @@ formatXML records depth =
           "<geoPolygon>", bsToLazy geopoly, "</geoPolygon>"
       ]
 
-    formatDataParameter depth dp = 
+    formatDataParameter depth dp =
       H.concatLT [
         "\n",
         H.pad $ depth * 3,
         -- f (label, url, rootLabel) =
         case dp of
 
-          DataParameter label _ "AODN Parameter Category Vocabulary" -> 
-            H.concatLT [ "<parameter>", bsToLazy label, "</parameter>" ] 
+          DataParameter label _ "AODN Parameter Category Vocabulary" ->
+            H.concatLT [ "<parameter>", bsToLazy label, "</parameter>" ]
 
-          DataParameter label _ "AODN Platform Category Vocabulary" -> 
-            H.concatLT [ "<platform>", bsToLazy label, "</platform>" ] 
+          DataParameter label _ "AODN Platform Category Vocabulary" ->
+            H.concatLT [ "<platform>", bsToLazy label, "</platform>" ]
 
-          DataParameter label _ "AODN Organisation Category Vocabulary" -> 
-            H.concatLT [ "<organisation>", bsToLazy label, "</organisation>" ] 
+          DataParameter label _ "AODN Organisation Category Vocabulary" ->
+            H.concatLT [ "<organisation>", bsToLazy label, "</organisation>" ]
 
-          _ -> "" 
+          _ -> ""
       ]
 
 
 
-{-
-data TransferLink = TransferLink {
+    {-
+    data TransferLink = TransferLink {
 
-    protocol :: BS.ByteString,
-    linkage :: BS.ByteString,
-    description :: BS.ByteString
-} deriving (Show, Eq)
+        protocol :: BS.ByteString,
+        linkage :: BS.ByteString,
+        description :: BS.ByteString
+    } deriving (Show, Eq)
 
-<link>imos:anmn_velocity_timeseries_map|Moorings - velocity time-series|http://geoserver-123.aodn.org.au/geoserver/wms|OGC:WMS-1.1.1-http-get-map|application/vnd.ogc.wms_xml</link>
+    <link>imos:anmn_velocity_timeseries_map|Moorings - velocity time-series|http://geoserver-123.aodn.org.au/geoserver/wms|OGC:WMS-1.1.1-http-get-map|application/vnd.ogc.wms_xml</link>
 
--}
+    -}
 
-    formatLink depth link = 
+    formatLink depth link =
       H.concatLT [
         "\n",
         H.pad $ depth * 3,
-
         case link of
-          TransferLink protocol linkage name description | protocol == "OGC:WMS-1.1.1-http-get-map" -> H.concatLT [ 
-              "<link>", 
-              bsToLazy name, "|", bsToLazy description, "|", bsToLazy linkage,  "|", bsToLazy protocol, "|application/vnd.ogc.wms_xml",
-              "</link>"  
+          TransferLink protocol linkage name description | protocol == "OGC:WMS-1.1.1-http-get-map" -> H.concatLT [
+              "<link>",
+                bsToLazy name,
+                "|", LT.pack $ X.textEscapeXml $ BS.unpack description,
+                "|", bsToLazy linkage,
+                "|", bsToLazy protocol,
+                "|application/vnd.ogc.wms_xml",
+              "</link>"
             ]
-
-            -- imos:anmn_velocity_timeseries_map|Moorings - velocity time-series|http://geoserver-123.aodn.org.au/geoserver/wms|OGC:WMS-1.1.1-http-get-map|application/vnd.ogc.wms_xml
-
-            -- imos:anmn_acoustics_map|ANMN Passive Acoustic Observatories|http://geoserver-123.aodn.org.au/geoserver/wmsOGC:WMS-1.1.1-http-get-map|application/vnd.ogc.wms_xml
-          _ -> "" 
+          _ -> ""
       ]
 
 
