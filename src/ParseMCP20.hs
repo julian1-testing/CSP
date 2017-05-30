@@ -170,30 +170,6 @@ parse elts = do
     transferLinks <- runX (elts >>> parseTransferLinks)
     geopoly <- runX (elts >>> parseGeoPolygon )
 
-    -- print $ "identifier " ++ show identifier
-    -- print $ "dataIdentification " ++ show dataIdentification
-    -- print $ "mdCommons " ++ show mdCommons
-    -- print $ "temporalBegin " ++ show temporalBegin
-
-    -- temporal begin is sometimes empty...
-
-    -- TODO use Data-Maybe  . listToMaybe 
-{-
-    let uuid' = case identifier of
-            [ id ] -> Just id
-            _ -> Nothing
-    let dataIdentification' = case dataIdentification of
-         [ di ] -> Just di
-         _ -> Nothing
-    let mdCommons' = case mdCommons of
-         [ mdc ] -> Just mdc
-         _ -> Nothing
-
-    let temporalBegin' = case temporalBegin of
-         [ tb ] -> Just tb
-         _ -> Nothing
-
--}
 
     let uuid' = Maybe.listToMaybe identifier
     let dataIdentification' = Maybe.listToMaybe dataIdentification
