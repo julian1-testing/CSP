@@ -208,8 +208,9 @@ formatXML records depth =
                 "|application/vnd.ogc.wms_xml",
               "</link>"
             ]
+          _ -> ""
 
-          TransferLink protocol linkage name description -> H.concatLT [ "<!-- ", bsToLazy protocol, bsToLazy linkage, bsToLazy name, bsToLazy description, "-->" ]
+          -- TransferLink protocol linkage name description -> H.concatLT [ "<!-- ", bsToLazy protocol, bsToLazy linkage, bsToLazy name, bsToLazy description, "-->" ]
       ]
 
 
