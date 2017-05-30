@@ -134,7 +134,13 @@ extractStringParam params key = do
   (_, v_) <- L.find f params
   v <- v_
   -- it's not clear urlDecode is needed for 'facet.q' but not for 'protocol'
-  return $ HTTP.urlDecode False v
+
+  -- treat exmplit empty strings eg. any="" as Nothing values also 
+  case HTTP.urlDecode False v of 
+    "" -> Nothing
+    x -> return x
+
+  -- return $ HTTP.urlDecode False v
   where
     f (k, _) = k == key
 
