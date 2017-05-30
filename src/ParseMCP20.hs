@@ -1,5 +1,6 @@
 
-{-# LANGUAGE Arrows, NoMonomorphismRestriction #-}
+{-# LANGUAGE Arrows, NoMonomorphismRestriction, OverloadedStrings #-}
+
 
 module ParseMCP20 where
 
@@ -15,6 +16,7 @@ import Control.Exception
 import Text.XML.HXT.Core
 import Helpers(parseXML, atTag, atChildName, getChildText, stripSpace)
 import qualified Data.ByteString.Char8 as BS(ByteString(..), pack )
+import qualified Data.Maybe as Maybe(listToMaybe)
 
 -- import everything
 import Record
@@ -117,17 +119,41 @@ parseTransferLinks =
 
     protocol    <- atChildName "gmd:protocol" >>> atChildName "gco:CharacterString" >>> getChildText  -< resource
     linkage     <- atChildName "gmd:linkage"  >>> atChildName "gmd:URL" >>> getChildText -< resource
-    name        <- atChildName "gmd:name"  >>> atChildName "gmx:MimeFileType" >>> getChildText -< resource
-    description <- atChildName "gmd:description" >>> atChildName "gco:CharacterString" >>> getChildText -< resource
+
+    -- name        <- atChildName "gmd:name"  >>> atChildName "gmx:MimeFileType" >>> getChildText -< resource
+                  -- this logical operation doesn't work ...
+    -- name        <- (( atChildName "gmd:name"  >>> atChildName "gco:CharacterString" >>> getChildText ) <+> ( getChildText  )) -< resource 
+    -- name        <- (    ( getChildText  ) <+> ( atChildName "gmd:name"  >>> atChildName "gco:CharacterString" >>> getChildText ) ) -< resource 
+
+    -- hang on ... ..... 
+    -- the name always existsc
+
+    -- atChildName s = getChildren >>> hasName s
+    -- usgghhh it's now returning 21? 
+
+    -- name exists in 10 cases - but there will be a reason = nil... if empty....
+    -- getChildText = getChildren >>> getText
+
+    -- name        <- (atChildName "gmd:name" >>> atChildName "gco:CharacterString" >>> getChildren >>> ( isText <+> getText ))  -< resource 
+
+    -- this is GOOD only gets text if there is text... so should be able to combine...
+    -- name        <- (atChildName "gmd:name" >>> atChildName "gco:CharacterString" >>> getChildren >>> isText >>> getText ) 
+
+    -- FUCKING HELL...
+    
+    name        <- (atChildName "gmd:name" >>> atChildName "gco:CharacterString" >>> getChildren >>> isText ) `orElse` ( isElem )  -< resource 
+
+    description <- atChildName "gmd:description" >>> atChildName "gco:CharacterString" >>> getChildText   -< resource 
 
     -- so
     returnA -< TransferLink {
         protocol = BS.pack protocol,
         linkage = BS.pack linkage,
-        name = BS.pack name,
+        name = "",
         description = BS.pack description
     }
 
+-- 11 records no name, 4 with characterString, 0 with gmxMimeFileType, 
 
 
 parseDataParameters =
@@ -176,14 +202,14 @@ parse elts = do
 
     -- temporal begin is sometimes empty...
 
+    -- TODO use Data-Maybe  . listToMaybe 
+{-
     let uuid' = case identifier of
             [ id ] -> Just id
             _ -> Nothing
-
     let dataIdentification' = case dataIdentification of
          [ di ] -> Just di
          _ -> Nothing
-
     let mdCommons' = case mdCommons of
          [ mdc ] -> Just mdc
          _ -> Nothing
@@ -191,6 +217,13 @@ parse elts = do
     let temporalBegin' = case temporalBegin of
          [ tb ] -> Just tb
          _ -> Nothing
+
+-}
+
+    let uuid' = Maybe.listToMaybe identifier
+    let dataIdentification' = Maybe.listToMaybe dataIdentification
+    let mdCommons' = Maybe.listToMaybe mdCommons
+    let temporalBegin' = Maybe.listToMaybe temporalBegin
 
     let record = Record {
       uuid = uuid',
@@ -211,14 +244,16 @@ parse elts = do
 
 testArgoRecord = do
 
-    recordText <- readFile "./test-data/aus-cpr.xml"
-    -- recordText <- readFile "./test-data/argo.xml"
+    -- recordText <- readFile "./test-data/aus-cpr.xml"
+    recordText <- readFile "./test-data/argo.xml"
     let elts = Helpers.parseXML recordText
 
-    myRecord <- parse elts
+    record <- parse elts
 
-    print $ show myRecord
+    print $ show record
 
+    print "number of transferLinks"
+    print $ length $ transferLinks record
 
     return ()
 
