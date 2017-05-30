@@ -29,7 +29,7 @@ import qualified RecordGet as RecordGet(getRecords)
 import qualified Metadata as Metadata(formatXML)
 import qualified Helpers as H(concatLT)
 import qualified Query as Query(resolveTerm)
-
+import qualified FreeText as FreeText(search)
 
 
 
@@ -106,11 +106,30 @@ search conn params = do
   conceptSelect <- Query.resolveTerm conn facetTerm
 
 
-  -- print "WHOOT"
+  print "------"
+  print "WHOOT" 
+  print $ Search.any params
+
+  -- uggh - we're going to need a monadic maybe....
+ 
+
+
 
   -- select the records we are interested in according to the facet criteria
   -- Nothing will select the root node - nice...
   let lst = mapGet conceptSelect facetMap'
+
+
+  -- Apply freetext search
+  xxxx <- maybe (return lst) (FreeText.search conn) (Search.any params)
+
+  -- FreeText(search)
+  -- we need to take the intersection of the record ids.... 
+
+  print "------"
+  print xxxx
+ 
+
 
   -- create a set for fast inclusion testing of selected records....
   let s = Set.fromList lst
