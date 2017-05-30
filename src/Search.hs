@@ -117,17 +117,20 @@ search conn params = do
 
   -- select the records we are interested in according to the facet criteria
   -- Nothing will select the root node - nice...
-  let lst = mapGet conceptSelect facetMap'
+  let facetSelectionLst = mapGet conceptSelect facetMap'
 
 
-  -- Apply freetext search
-  xxxx <- maybe (return lst) (FreeText.search conn) (Search.any params)
+  -- ppply freetext search, if no freetext criteria return facetSelectionLst
+  freeTextLst <- maybe (return facetSelectionLst) (FreeText.search conn) (Search.any params)
+
+  -- now take intersection of facet and freeText
+  let lst = Set.toList $ Set.intersection (Set.fromList freeTextLst) (Set.fromList facetSelectionLst)
 
   -- FreeText(search)
   -- we need to take the intersection of the record ids.... 
 
   print "------"
-  print xxxx
+  print lst 
  
 
 
