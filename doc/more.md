@@ -53,8 +53,16 @@ from, vim /usr/share/vim/vim80/syntax/haskell.vim
     http://rachbelaid.com/postgres-full-text-search-is-good-enough/
     note use of string_agg, and coalesce
 
+- HXT
+  https://wiki.haskell.org/HXT
+
+  functions,
+  https://hackage.haskell.org/package/hxt-9.3.1.16/docs/Text-XML-HXT-Arrow-XmlArrow.html
+
 
 ### Old - Notes, on libraries
+
+
 
 
 - http-client

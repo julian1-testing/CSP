@@ -19,6 +19,7 @@ FLAGS="-i./src -O2 -outputdir tmp"
 # files=' src/Record.hs '
 # files=' src/FreeText.hs '
 # files=' src/Service.hs '
+# files=' src/ParseMCP20.hs '
 files=' src/LoadSchemes.hs src/Harvest.hs src/Service.hs '
 
 

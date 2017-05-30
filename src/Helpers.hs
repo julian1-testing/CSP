@@ -30,7 +30,8 @@ import qualified Data.List as List(unfoldr)
 
 -- XML helpers
 
-parseXML s = readString [ withValidate no
+parseXML s = readString [ 
+      withValidate no
     , withRemoveWS yes  -- throw away formating WS
     ] s
 
