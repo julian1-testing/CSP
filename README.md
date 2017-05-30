@@ -2,7 +2,7 @@
 ## Catalog Services for Portal - PoC
 
 - implements faceted search, search pagination, online resources, to drive AODN Portal
-- harvest external mcp2.0/19139catalogues via csw, but is not dependent upon this metadata form
+- harvest external mcp2.0/19139 catalogues over csw, but no dependence on this metadata form
 - records, concepts and indexes - all state localized to a db backend, with no filesystem needed
 
 
