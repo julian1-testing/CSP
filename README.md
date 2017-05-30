@@ -1,9 +1,10 @@
 
 ## Catalog Services for Portal - PoC
 
-- implements faceted search, search pagination, online resources, to drive AODN Portal
+- implements faceted search, freetext search, pagination, online resources, to drive AODN Portal
 - csw harvesting external catalogues
-- support mcp2.0/19139 records, but no dependence on this metadata form - subset only, and easy to transform
+- support mcp2.0/19139 records, but creates no dependence on metadata form - subset only, and easy to transform
+- freetext search impelemnted with postgres 9.5 freetext support 
 - records, concepts and indexes - all state localized to a db backend, with no filesystem needed
 
 
