@@ -10,6 +10,9 @@
 
 - popularity
 
+- externalize DB connection details for app and test. eg. Config.hs
+
+- change record uuid etc to bytestring.
 
 
 done - free text search

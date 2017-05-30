@@ -1,5 +1,8 @@
 {-
+    TODO - convert all String to ByteString
+
     Record structure - containing everything needed for Portal
+      modelled after mcp2, but not dependent upon it.
 
     we work out what we need by looking at
         1. MetaDataRecord.js and seeing the fields
@@ -47,16 +50,8 @@
 -}
 
 
--- TODO - use ByteString ... instead of String?
-{-# LANGUAGE DeriveGeneric #-}
-
 module Record where
 
-{-
-import GHC.Generics
-import Data.Aeson
-import qualified Data.ByteString.Lazy.Char8 as LBS(putStrLn, readFile)
--}
 
 import qualified Data.ByteString.Char8 as BS(ByteString(..) )
 
@@ -103,7 +98,6 @@ data DataParameter = DataParameter {
 
 
 
--- change name - PortalRecord, or MCP2 Record - depending on how we end up using it...
 data Record = Record {
 
     uuid :: Maybe String,
@@ -121,54 +115,4 @@ data Record = Record {
 
 emptyRecord = Record Nothing  Nothing Nothing [] [] [] Nothing [] []
 
--- should use ByteString?
--- should pass in the formatting function to use....
 
-{-
-showRecord myRecord =
-  -- change to show
-
-    let formatList f xs = concatMap id $ map (\x ->  "\n  -" ++ f x) xs in
-
-    concatMap id [
-        "uuid= ",  show (uuid  myRecord), "\n",
-
-        -- TODO -- tidy
-{-
-        "dataIdentification.title= " ++ (show $ (title.dataIdentification) myRecord), "\n",
-        "dataIdentification.abstract= " ++ (show $ (abstract.dataIdentification) myRecord), "\n",
-        "dataIdentification.jurisdictionLinke = " ++ (show $ (jurisdictionLink.dataIdentification) myRecord), "\n",
-        "dataIdentification.licenseLink= " ++ (show $ (licenseLink.dataIdentification) myRecord), "\n",
-        "dataIdentification.licenseName= " ++ (show $ (licenseName.dataIdentification) myRecord), "\n",
-        "dataIdentification.licenseImageLink = " ++ (show $ (licenseImageLink.dataIdentification) myRecord), "\n",
--}
-
-        "attrConstraints= ", formatList id (attrConstraints myRecord), "\n",
-        "useLimitations= ", formatList id (useLimitations myRecord), "\n",
-        "dataParameters= ", formatList show (dataParameters myRecord), "\n",
-        "temporalBegin= ",  show $ temporalBegin myRecord, "\n",
-        "transferLinks= ", formatList show (transferLinks myRecord), "\n",
-        "geoPoly= ", formatList id (geoPoly myRecord), "\n"
-    ]
--}
-
-
-{-
-data Test1 = Test1 {
-
-    title1 :: String,
-    abstract1 :: [ String ]
-
-} deriving (Show, Eq, Generic)
-
-instance ToJSON Test1
-
-
-main :: IO ()
-main = do
-  let x = Test1 "mytitle" [ "myabstract" ]
-  let s = encode x
-  LBS.putStrLn s
-  return ()
-
--}
