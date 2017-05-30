@@ -12,16 +12,12 @@ module ParseMCP20 where
 
 
 import Control.Exception
-
 import Text.XML.HXT.Core
-
 import Helpers(parseXML, atTag, atChildName, getChildText, stripSpace)
-
-
 import qualified Data.ByteString.Char8 as BS(ByteString(..), pack )
 
 -- import everything
-import Record --as Record(Record(..))
+import Record
 
 
 parseFileIdentifier =
@@ -113,7 +109,6 @@ parseGeoPolygon =
 
 
 
--- change name to links...
 parseTransferLinks =
   atTag "gmd:transferOptions" >>> atChildName "gmd:MD_DigitalTransferOptions" >>>
   proc transfer -> do
@@ -150,8 +145,8 @@ parseDataParameters =
 
 
 
-----------------
-
+------------------
+-- tests
 
 
 testParse elts = do
@@ -233,65 +228,4 @@ main = testArgoRecord
 
 
 
-
-    -- so how do we handle all this...
-    -- I think we need to change the parsing structure....
-    -- WE need null
-
-    -- we either use null.... or encode it something else....
-
---    let ide
-
--- ok if everything
--- parsing everything optionally - means we don't really have to return left and right
--- we can analyze it separately later?
--- having the record be sufficiently flexible is quite nice...
-
--- Maybe have another structure to map from MCP2 to the Record. for other strategies
-
--- if it has an mdcommons we expect everything in mdcommons
-
--- VERY IMPORTANT - we should parse it in the same structure that it exists - and handle
--- everything else later.
-
-
-    -- we really need to have this....
-    -- but maybe we can handle another way....
-    -- blah blah
-    -- might be easier to just set error?
--- case (identifier, dataIdentification, temporalBegin) of
-            -- ([ uuid ], [ di ], [tb]) ->
-
-
-
-{-
-    putStrLn $ case myRecord of
-        Right myRecord  -> showRecord myRecord
-        Left msg -> msg
- -}
-
-    -- try ( print $ Left "whoot" ) -- putStrLn.showRecord $ myRecord)
-    -- catch (print $ head []) $ \(e ::  Exception NoMethodError) -> print "good message"
-
-
-{-
-   let headWithDefault x d = case not $ null x of
-            True -> head x
-            False -> d
-
-
-    let myRecord = Record {
-        -- if the list is empty??????   need to test....
-        uuid = headWithDefault identifier "blah",
-        dataIdentification = head dataIdentification,     -- t dangerous... fixme  uuid should never be null, since searchable index
-
-        attrConstraints = attrConstraints ,
-        useLimitations = useLimitations,
-        dataParameters = dataParameters,
-
-        temporalBegin = headWithDefault temporalBegin "unknown",
-        transferLinks = transferLinks,
-        geoPoly = geoPoly
-    }
--}
 
