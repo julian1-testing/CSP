@@ -1,10 +1,11 @@
 {-
 
-  denormalize the Record structure in the db into hasekll records, according to record_id 
+  - denormalize the Record structure in the db into hasekll records, according to record_id 
 
+  - the way to improve performance here (behave more like orm mapper), is to left join all record with the table/data of interest
+      then map and appropriate for each record_id on the client side of the db. 
 -}
 
--- needed for disambiguating types,
 {-# LANGUAGE QuasiQuotes, ScopedTypeVariables, OverloadedStrings #-}
 
 
@@ -157,6 +158,8 @@ getRecords conn records = do
   mapM (getRecord conn) records
 
 
+----
+-- tests
 
 main :: IO ()
 main = do
@@ -165,85 +168,11 @@ main = do
   record <- getRecord conn record_id
 
   -- (putStrLn.show) $ record.uuid
---- fucking helll
+  -- fucking hell
   let b = case (uuid record) of
                   Just a -> ""
                   Nothing -> ""
 
-
   (putStrLn.show) $ record
 
 
-
-
-
--- THINK we want a proper constructor with the actual values...
--- is left outer join ok?
--- that will probably take care of the formatting also,
-
--- ok, I think we may actually want to combine all the data stuctures back together again...
--- hmmmm, - and if it's one-to-may - then can't actually be done in a single sql statement ...
-
--- record 120 - this is more complicated than it looks.
-
-{-
-data Record = Record {
-
-    uuid :: Maybe String,
-    dataIdentification :: Maybe DataIdentification ,
-    mdCommons :: Maybe MDCommons,
-    attrConstraints :: [ String ],   -- todo
-    useLimitations :: [ String ],    -- todo
-    dataParameters :: [ DataParameter ],
-    temporalBegin :: Maybe String,   -- todo
-    transferLinks :: [ TransferLink ],
-    geopoly :: [ String ]            -- todo
-} deriving (Show, Eq)
-
-
--}
-
--- constructing this thing back into a sensible object is not that simple ...
-
--- VERY IMPORTANT -
--- I think - we may want to do it object by object.... - that way we can assemble everything
--- then we can just call sql for each record that we have to process
--- and not do anything....
-
--- but if that's the case... - we should compose it - bit by bit according to the record id
-
-
----- hmmmm this is a lot of work...
----- we have RecordStore RecordRetrieve
-
-
-{-
-  record <- getRecordUuid conn emptyRecord record_id
-  -- (putStrLn.show) record
-  record <- getRecordMDCommons conn record record_id
-  -- putStrLn "----"
-  record <- getRecordDataIdentification conn record record_id
--}
-
-
--- let r = head xs
--- let record = Record (Just $ snd r) Nothing Nothing [] [] [] Nothing [] []
--- mapM (putStrLn.show) xs
--- return xs
-
-{-
-  let f (\id uuid title abstract ->  Record uuid DataIdentificatoin title abstract
-      []
-      []
-      []
-      None
-      []
-      []
-    )
--}
- {-
-  let di = Just $ DataIdentification "ssss" "ppppp"
-  let c = MDCommons "a" "b" "c" "d"
-  let record = Record (Just "uuid") di (Just c)  [] [] [] Nothing [] []
-  let xs' = map id xs
--}

@@ -379,34 +379,3 @@ main = do
 
 
 
-{-
-            -- storeUUID conn uuid title = do
-            record_id <- storeUUID conn 
-            storeDataIdentification conn record_id (Record.dataIdentification record)
-            storeTransferLinks conn record_id (Record.transferLinks record)
--}
-{- 
-    -- look up the required concept
-    -- think we want to do this separately 
-    xs :: [ (Int, String) ] <- query conn "select id, label from concept where url = ?" (Only url)
-    -- putStrLn $ (show.length) xs
-    case length xs of
-      1 -> do
-        -- store the concept
-        let (concept_id, concept_label) : _ = xs
-        PG.execute conn [r|
-          insert into facet(concept_id, record_id)
-          values (?, (select record.id from record where record.uuid = ?))
-          on conflict
-          do nothing
-        |] (concept_id :: Int, uuid :: String)
-        return ()
-
-      0 -> putStrLn $ "dataParameter '" ++ url ++ "' not found!"
-      _ -> putStrLn $ "dataParameter '" ++ url ++ "' found multiple matches?"
-
--}
-    -- dataParameters <- runX (parseXML recordText >>> parseDataParameters)
-    -- putStrLn $ "data parameter count: " ++ (show.length) dataParameters
-    -- mapM (putStrLn.show) dataParameters
-

@@ -2,7 +2,8 @@
 ## Catalog Services for Portal - PoC
 
 - implements faceted search, search pagination, online resources, to drive AODN Portal
-- harvest external mcp2.0/19139 catalogues over csw, but no dependence on this metadata form
+- csw harvesting external catalogues
+- support mcp2.0/19139 records, but no dependence on this metadata form - subset only, and easy transform
 - records, concepts and indexes - all state localized to a db backend, with no filesystem needed
 
 
@@ -16,10 +17,11 @@ psql -h postgres.localnet -U harvest -d harvest -f sql/views.sql
 
 # build binaries
 # see doc/more.md for cabal deps
-./build
+./clean.sh
+./build.sh
 
 # load vocabs
-./target/LoadScheme
+./target/LoadSchemes.hs
 
 # harvest external catalog ie. https://catalogue-imos.aodn.org.au/geonetwork
 ./target/Harvest

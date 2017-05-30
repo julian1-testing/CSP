@@ -13,7 +13,7 @@
 {-# LANGUAGE Arrows, NoMonomorphismRestriction #-}
 {-# LANGUAGE QuasiQuotes #-}
 
-module LoadScheme where
+module LoadSchemes where
 
 
 import Text.XML.HXT.Core
