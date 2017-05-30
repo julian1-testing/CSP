@@ -275,24 +275,21 @@ main = do
 
   -- platform
   print "doing platform"
-  platform <- readFile "./vocab/aodn_aodn-platform-vocabulary.rdf"
-  platformCategory <- readFile "./vocab/aodn_aodn-platform-category-vocabulary.rdf"
+  platform <- readFile "./resources/vocab/aodn_aodn-platform-vocabulary.rdf"
+  platformCategory <- readFile "./resources/ocab/aodn_aodn-platform-category-vocabulary.rdf"
   storeAll conn platform platformCategory
-
 
   -- parameter
   print "doing parameter"
-  param         <- readFile "./vocab/aodn_aodn-discovery-parameter-vocabulary.rdf"
-  paramCategory <- readFile "./vocab/aodn_aodn-parameter-category-vocabulary.rdf"
+  param         <- readFile "./resources/vocab/aodn_aodn-discovery-parameter-vocabulary.rdf"
+  paramCategory <- readFile "./resources/vvocab/aodn_aodn-parameter-category-vocabulary.rdf"
   storeAll conn param paramCategory
-
 
   -- organisation
   print "doing organisation"
-  org <- readFile "./vocab/aodn_aodn-organisation-vocabulary.rdf"
-  orgCategory <- readFile "./vocab/aodn_aodn-organisation-category-vocabulary.rdf"
+  org <- readFile "./resources/vvocab/aodn_aodn-organisation-vocabulary.rdf"
+  orgCategory <- readFile "./resources/vvocab/aodn_aodn-organisation-category-vocabulary.rdf"
   storeAll conn org orgCategory
-
 
   -- are there any other resources?
   close conn
