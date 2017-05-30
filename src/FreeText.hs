@@ -12,11 +12,19 @@ module FreeText where
 
 import Database.PostgreSQL.Simple as PG
 import Database.PostgreSQL.Simple.Types as PG(Only(..))
+
+import qualified Data.ByteString.Char8 as BS(ByteString(..), pack)
+
+-- import qualified Data.ByteString.Char8 as BS-- (pack)
+-- import Data.ByteString.Char8 
+
+-- import qualified Data.ByteString.Char8 as BS(ByteString(..) )
+
 import Text.RawString.QQ
 
 
 search conn query = do
-    print $ "freetext query: '" ++ query ++ "'"
+    -- BS.putStrln $ "freetext query: '" ++ query ++ "'"
 
     xs :: [ (Only Int)] <- PG.query conn
       [r|
@@ -28,18 +36,20 @@ search conn query = do
             ) as x
           where x.result = true;
       |]
-      $ Only (query :: String )
+      $ (query :: Only BS.ByteString)
 
     return $
       map (\(Only record_id) -> record_id) xs
 
 
-
+----
+-- test
 
 main = do
     conn <- PG.connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
-
-    xs <- search conn "argo & profiles"
-
+    -- xs <- search conn "argo"
+    -- xs <- search conn "argo & profiles"
+    -- xs <- search conn "'argo profiles'"
+    xs <- search conn ( Only $ BS.pack "'argo profiles'" )
     print xs
 
