@@ -49,7 +49,9 @@ from, vim /usr/share/vim/vim80/syntax/haskell.vim
 
 - has PointOfTruth and OnlineResourceType
 
-
+- postgres full text search
+    http://rachbelaid.com/postgres-full-text-search-is-good-enough/
+    note use of string_agg, and coalesce
 
 
 ### Old - Notes, on libraries

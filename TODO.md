@@ -1,11 +1,27 @@
 
 
+-- freetext search,
+
+select to_tsvector( title) || to_tsvector( abstract) from data_identification; 
+select record_id, to_tsvector( title) || to_tsvector( abstract) @@ 'argo'  as result from data_identification;
+
+select record_id, ( to_tsvector( title) || to_tsvector( abstract))  @@ to_tsquery( 'argo')  as result from data_identification  ;
+
+
+select record_id, ( to_tsvector( title) || to_tsvector( abstract))  @@ to_tsquery( 'argo & profile')  as result from data_identification  ;
+
+select record_id from ( select record_id, ( to_tsvector( title) || to_tsvector( abstract))  @@ to_tsquery( 'argo & profile')  as result from data_identification  ) as x where result = true;
+
 
 - add the wfs links... and see if it works.
 
 - free text search
 - image from db. because it will prove it works.
     -- only issue is db conn handling.
+
+
+tidy  QQ imports and qualify them
+import Text.RawString.QQ(r)
 
 --
 

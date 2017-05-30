@@ -3,7 +3,7 @@
 
 - implements faceted search, search pagination, online resources, to drive AODN Portal
 - csw harvesting external catalogues
-- support mcp2.0/19139 records, but no dependence on this metadata form - subset only, and easy transform
+- support mcp2.0/19139 records, but no dependence on this metadata form - subset only, and easy to transform
 - records, concepts and indexes - all state localized to a db backend, with no filesystem needed
 
 

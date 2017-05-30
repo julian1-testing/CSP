@@ -50,7 +50,8 @@ data Params = Params {
 
     to :: Int,
     from :: Int,
-    facetQ :: Maybe BS.ByteString
+    facetQ :: Maybe BS.ByteString,
+    any :: Maybe BS.ByteString
 } deriving (Show, Eq)
 
 
@@ -104,6 +105,8 @@ search conn params = do
   let facetTerm = facetQ params
   conceptSelect <- Query.resolveTerm conn facetTerm
 
+
+  -- print "WHOOT"
 
   -- select the records we are interested in according to the facet criteria
   -- Nothing will select the root node - nice...
@@ -212,7 +215,7 @@ search conn params = do
 main :: IO ()
 main = do
   conn <- PG.connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
-  s <- search conn $ Params { from = 0, to = 10000, facetQ = Nothing }
+  s <- search conn $ Params { from = 0, to = 10000, facetQ = Nothing, Search.any = Nothing }
 
   LT.putStrLn $ s
 

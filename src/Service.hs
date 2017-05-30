@@ -148,17 +148,20 @@ xmlSearchImos params = do
   printParams params
 
   -- TODO fix this destructuring is no good
-  let Just from = extractIntParam params "from"
+  let Just from = extractIntParam params "from"     -- pagination
   let Just to = extractIntParam params "to"
-  let facetQ = extractStringParam params "facet.q"
+  let facetQ = extractStringParam params "facet.q"  -- facet search expression
+  let any = extractStringParam params "any"         -- freetext
 
+  -- any: argo profile
   -- facet.q: Platform/Vessel/vessel%20of%20opportunity
   -- HTTP.urlDecode False v
 
   let searchParams = Search.Params {
       to = to,
       from = from,
-      facetQ = facetQ
+      facetQ = facetQ,
+      Search.any = any
   }
 
   -- test db

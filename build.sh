@@ -17,7 +17,9 @@ FLAGS="-i./src -O2 -outputdir tmp"
 # files=' src/Query.hs '
 # files=' src/Service.hs '
 # files=' src/Record.hs '
-files=' src/LoadSchemes.hs src/Harvest.hs src/Service.hs '
+# files=' src/LoadSchemes.hs src/Harvest.hs src/Service.hs '
+# files=' src/FreeText.hs '
+files=' src/Service.hs '
 
 
 for i in $files; do
