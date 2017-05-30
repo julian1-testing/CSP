@@ -1,4 +1,11 @@
+{-
+    free text search across title and abstract
+    - could add vocab as well by just joining concept tables
+    - could build the tsvectors on record insert - if search across a much larger number of records
 
+    see,
+      http://rachbelaid.com/postgres-full-text-search-is-good-enough/
+-}
 {-# LANGUAGE ScopedTypeVariables, OverloadedStrings, QuasiQuotes #-}
 
 module FreeText where
@@ -9,39 +16,22 @@ import Text.RawString.QQ
 
 
 search conn query = do
-
-    print "store uuid"
-
+    print $ "freetext query: '" ++ query ++ "'"
 
     xs :: [ (Only Int)] <- PG.query conn
-        [r|
+      [r|
+          select record_id from (
+            select
+              record_id,
+              (to_tsvector( title) || to_tsvector(abstract)) @@ to_tsquery( ?) as result
+              from data_identification
+            ) as x
+          where x.result = true;
+      |]
+      $ Only (query :: String )
 
-            select record_id from ( 
-              select 
-                record_id, 
-                ( to_tsvector( title) || to_tsvector( abstract)) @@ to_tsquery( ?) as result 
-                from data_identification
-              ) as x 
-            where x.result = true;
-        |]
-
-        $ Only (query :: String )
-        -- (query :: Only String)
-
-    -- got to be a map 
-
-    {-
-    let record_id = case xs of
-         [] -> -99999 -- avoided because sql will return a value
-         [ Only record_id ] -> record_id
-
-    putStrLn $ "record_id is " ++ show record_id
-    return record_id
-    -}
-
-    -- return [ 123 ] 
     return $
-      map (\(Only poly) -> poly ) xs
+      map (\(Only record_id) -> record_id) xs
 
 
 
@@ -52,6 +42,4 @@ main = do
     xs <- search conn "argo & profiles"
 
     print xs
-
-    print "done"
 
