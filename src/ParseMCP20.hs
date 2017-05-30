@@ -142,18 +142,6 @@ parseDataParameters =
 
 
 
-
-------------------
--- tests
-
-
-testParse elts = do
-    identifier <- runX (elts >>> parseFileIdentifier)
-    dataIdentification <- runX (elts >>> parseDataIdentification )
-    return dataIdentification
-
-
-
 parse elts = do
     -- runX returns an IO type...  so this function must be monadic
 
@@ -190,6 +178,18 @@ parse elts = do
 
 
 
+------------------
+-- tests
+
+
+testParseDataIdentification elts = do
+    identifier <- runX (elts >>> parseFileIdentifier)
+    dataIdentification <- runX (elts >>> parseDataIdentification )
+    return dataIdentification
+
+
+
+
 testArgoRecord = do
 
     -- recordText <- readFile "./test-data/aus-cpr.xml"
@@ -200,10 +200,8 @@ testArgoRecord = do
 
     print $ show record
 
-    print "number of transferLinks"
+    print "transferLinks count"
     print $ length $ transferLinks record
-
-    return ()
 
 
 main = testArgoRecord
