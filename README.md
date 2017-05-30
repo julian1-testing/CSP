@@ -5,7 +5,7 @@
 - csw harvesting external catalogues
 - support mcp2.0/19139 records, but creates no dependence on metadata form - subset only, and easy to transform
 - freetext search impelemnted with postgres 9.5 freetext support 
-- records, concepts and indexes - all state localized to a db backend, with no filesystem needed
+- records, concepts and indexes - all state localized to a db backend, no filesystem needed
 
 
 ### Usage
