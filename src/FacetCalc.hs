@@ -21,11 +21,12 @@ import qualified Data.Map as Map
 import Data.Function( (&) )
 import Data.Set(toList, fromList)
 import Debug.Trace(trace)
-
 import Text.RawString.QQ
-
 -- TODO remove with resolveTerm
 import qualified Data.ByteString.Char8 as BS
+
+
+import qualified Config as Config(connString)
 
 -- deduplicate - O log n
 -- http://stackoverflow.com/questions/16108714/haskell-removing-duplicates-from-a-list
@@ -276,7 +277,7 @@ testPropagateOnce = do
 
 testPropagateAll = do
   -- one nesting level only
-  conn <- PG.connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
+  conn <- PG.connectPostgreSQL Config.connString
 
   nestings <- getConceptNesting conn
   -- putStrLn "nestings"

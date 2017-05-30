@@ -15,6 +15,8 @@ import qualified Data.ByteString.Char8 as BS
 import Data.Function( (&) )
 import Text.RawString.QQ
 
+import qualified Config as Config(connString)
+
 -- TODO move to Utils?
 -- pad :: Int -> a -> [a] -> [a]
 -- pad l x xs = replicate (l - length xs) x ++ xs
@@ -76,7 +78,7 @@ resolveTerm conn term = do
 
 
 main = do
-  conn <- PG.connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
+  conn <- PG.connectPostgreSQL Config.connString
   let facetTerm = Just "Platform/Satellite/orbiting satellite/NOAA-19"
   Query.resolveTerm conn facetTerm
 

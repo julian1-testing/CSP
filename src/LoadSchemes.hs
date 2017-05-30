@@ -17,11 +17,12 @@ module LoadSchemes where
 
 
 import Text.XML.HXT.Core
-import Database.PostgreSQL.Simple
+
+import qualified Database.PostgreSQL.Simple as PG
 import Text.RawString.QQ
 
-import Helpers(parseXML, atTag, atChildName, getChildText, stripSpace) -- we don't use all these
-
+import Helpers(parseXML, atTag, atChildName, getChildText, stripSpace)
+import qualified Config as Config(connString)
 
 
 isDescription = do
@@ -75,7 +76,7 @@ storeSchemes conn s = do
       -- query = "insert into scheme(url,title) values (?, ?)"
       query = "insert into concept(url,label) values (?, ?)"
       -- TODO - make it a tuple instead... of array
-      store (url,title) = execute conn query [url, title]
+      store (url,title) = PG.execute conn query [url, title]
 
 
 
@@ -101,7 +102,7 @@ storeConcepts conn s = do
     where
     -- TODO tuple not array
       query = "insert into concept(url,label) values (?, ?)"
-      store (url,label) = execute conn query [url, label]
+      store (url,label) = PG.execute conn query [url, label]
 
 
 --------------------------
@@ -130,7 +131,7 @@ storeNarrower conn s = do
         )
       |]
       -- TODO tuple not array
-      store (url,narrower_url) = execute conn query [url, narrower_url]
+      store (url,narrower_url) = PG.execute conn query [url, narrower_url]
 
 
 --------------------------
@@ -158,7 +159,7 @@ storeNarrowMatchs conn s = do
           (select id from concept where concept.url = ?)
         )
       |]
-      store (url,narrower_url) = execute conn query [url, narrower_url]
+      store (url,narrower_url) = PG.execute conn query [url, narrower_url]
 
 
 -----------
@@ -191,7 +192,7 @@ storeSchemeHasTopConcept conn s = do
           (select id from concept where concept.url = ?)
         )
       |]
-      store (url,other_url) = execute conn query [other_url, url]
+      store (url,other_url) = PG.execute conn query [other_url, url]
 
 
 
@@ -271,7 +272,7 @@ main :: IO ()
 main = do
   -- TODO see if storeVocabImproved can be used instead of loading both vocabs concurrently
   -- TODO - do the loading in seperate transactions
-  conn <- connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
+  conn <- PG.connectPostgreSQL Config.connString
 
   -- platform
   print "doing platform"
@@ -292,7 +293,7 @@ main = do
   storeAll conn org orgCategory
 
   -- are there any other resources?
-  close conn
+  PG.close conn
   putStrLn "finished"
 
 

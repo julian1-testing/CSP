@@ -17,6 +17,8 @@ import Database.PostgreSQL.Simple.Types as PG(Only(..))
 import qualified Data.ByteString.Char8 as BS(ByteString(..) )
 import Text.RawString.QQ
 
+import qualified Config as Config(connString)
+
 import Record
 
 
@@ -163,7 +165,8 @@ getRecords conn records = do
 
 main :: IO ()
 main = do
-  conn <- PG.connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
+  conn <- PG.connectPostgreSQL Config.connString
+
   let record_id = 289
   record <- getRecord conn record_id
 

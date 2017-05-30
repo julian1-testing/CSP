@@ -34,24 +34,20 @@ import Network.Wai.Handler.Warp (run)
 import Network.HTTP.Types (status200, status404)
 import Network.HTTP.Types.Header (hContentType, hContentEncoding)
 
-
 import qualified Data.Text.Encoding as E(encodeUtf8)
 import qualified Data.Text.Lazy.Encoding as LE(encodeUtf8)
 -- import qualified Data.Text.Lazy as LT
-
 import qualified Data.ByteString.Char8 as BS(putStrLn, pack, concat, readInt)
 import qualified Data.ByteString.Lazy.Char8 as LBS(readFile)
 
-
 import qualified Database.PostgreSQL.Simple as PG(query, connectPostgreSQL)
 import qualified Database.PostgreSQL.Simple.Types as PG(Only(..))
-
 import qualified Data.List as L(find)
-
 import qualified Network.HTTP.Types as HTTP(urlEncode, urlDecode)
 
 
 import Search(search, Params(..))
+import qualified Config as Config(connString)
 
 
 encode = LE.encodeUtf8
@@ -171,7 +167,8 @@ xmlSearchImos params = do
   }
 
   -- test db
-  conn <- PG.connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
+
+  conn <- PG.connectPostgreSQL Config.connString
   s <- Search.search conn searchParams
 
   return $

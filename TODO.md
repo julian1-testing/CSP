@@ -1,25 +1,26 @@
 
 - other links - wfs downloads
 
-- attribution
+- attribution - on download,
 
 - image from db. if only to prove it works.
-    -- only issue is db conn handling.
+    -- need to understand conn handling only issue is db conn handling.
 
-- work out why the polygon vidw isn't working
+- work out why the polygon geopoly isn't working? 
 
 - popularity
-
-- externalize DB connection details for app and test. eg. Config.hs
 
 - change record uuid etc to bytestring.
 
 
+tidy QQ imports and qualify them. eg.
+  import Text.RawString.QQ(r)
+
+
+
+done - externalize DB connection details for app and test. eg. Config.hs
+
 done - free text search
-
-
-tidy  QQ imports and qualify them
-import Text.RawString.QQ(r)
 
 
 

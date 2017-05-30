@@ -16,6 +16,7 @@ import qualified Data.ByteString.Char8 as BS(putStrLn, concat)
 import Helpers as H -- (parseXML)
 import ParseMCP20(parse)
 import Record
+import qualified Config as Config(connString)
 
 
 ----------------
@@ -365,17 +366,18 @@ deleteAll conn = do
     return ()
 
 
+----
+-- test
+
 
 main = do
-    conn <- PG.connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
-
+    conn <- PG.connectPostgreSQL Config.connString
     recordText <- readFile "./test-data/argo.xml"
+
     let elts = parseXML recordText
     record <- ParseMCP20.parse elts
     print record
     storeAll conn record
 
     PG.close conn
-
-
 

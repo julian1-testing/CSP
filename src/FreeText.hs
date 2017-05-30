@@ -15,6 +15,8 @@ import Database.PostgreSQL.Simple.Types as PG(Only(..))
 import qualified Data.ByteString.Char8 as BS(ByteString(..), pack, putStrLn, concat)
 import Text.RawString.QQ(r)
 
+import qualified Config as Config(connString)
+
 
 search conn query = do
     BS.putStrLn $ BS.concat [ "freetext query: '", query, "'!" ]
@@ -39,11 +41,13 @@ search conn query = do
 -- test
 
 main = do
-    conn <- PG.connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
+    conn <- PG.connectPostgreSQL Config.connString
     -- xs <- search conn "argo"
     -- xs <- search conn "argo & profiles"
     -- xs <- search conn "'argo profiles'"
     -- xs <- search conn ( BS.pack "'argo profiles'" )
     xs <- search conn "'argo profiles'"
     print xs
+
+    PG.close conn
 

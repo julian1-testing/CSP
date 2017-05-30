@@ -19,6 +19,7 @@ import qualified Record as R
 import qualified RecordStore as RS
 import qualified ParseMCP20 as ParseMCP20
 
+import qualified Config as R
 ----------------
 
 doGetAndProcessRecord conn uuid title = do
