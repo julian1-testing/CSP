@@ -10,21 +10,14 @@
 
 module FreeText where
 
-import Database.PostgreSQL.Simple as PG
+import qualified Database.PostgreSQL.Simple as PG
 import Database.PostgreSQL.Simple.Types as PG(Only(..))
-
-import qualified Data.ByteString.Char8 as BS(ByteString(..), pack)
-
--- import qualified Data.ByteString.Char8 as BS-- (pack)
--- import Data.ByteString.Char8 
-
--- import qualified Data.ByteString.Char8 as BS(ByteString(..) )
-
-import Text.RawString.QQ
+import qualified Data.ByteString.Char8 as BS(ByteString(..), pack, putStrLn, concat)
+import Text.RawString.QQ(r)
 
 
 search conn query = do
-    -- BS.putStrln $ "freetext query: '" ++ query ++ "'"
+    BS.putStrLn $ BS.concat [ "freetext query: '", query, "'!" ]
 
     xs :: [ (Only Int)] <- PG.query conn
       [r|
@@ -50,7 +43,7 @@ main = do
     -- xs <- search conn "argo"
     -- xs <- search conn "argo & profiles"
     -- xs <- search conn "'argo profiles'"
-    -- xs <- search conn ( Only $ BS.pack "'argo profiles'" )
-    xs <- search conn ( BS.pack "'argo profiles'" )
+    -- xs <- search conn ( BS.pack "'argo profiles'" )
+    xs <- search conn "'argo profiles'"
     print xs
 
