@@ -141,7 +141,9 @@ parseTransferLinks =
 
     -- FUCKING HELL...
     
-    name        <- (atChildName "gmd:name" >>> atChildName "gco:CharacterString" >>> getChildren >>> isText ) `orElse` ( isElem )  -< resource 
+    -- name        <- (atChildName "gmd:name" >>> atChildName "gco:CharacterString" >>> getChildren >>> isText >>> getText ) `orElse` ( isElem >>> getText  ) -< resource 
+    -- https://stackoverflow.com/questions/34694801/hxt-using-orelse-to-replace-missing-attribute-value-with-default
+    name        <- (atChildName "gmd:name" >>> atChildName "gco:CharacterString" >>> getChildren >>> isText >>> getText ) `orElse` ( constA "whoot" ) -< resource 
 
     description <- atChildName "gmd:description" >>> atChildName "gco:CharacterString" >>> getChildText   -< resource 
 
@@ -149,7 +151,7 @@ parseTransferLinks =
     returnA -< TransferLink {
         protocol = BS.pack protocol,
         linkage = BS.pack linkage,
-        name = "",
+        name = BS.pack name,
         description = BS.pack description
     }
 
