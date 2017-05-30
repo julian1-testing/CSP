@@ -1,31 +1,24 @@
 
+- other links - wfs downloads
 
--- freetext search,
+- attribution
 
-select to_tsvector( title) || to_tsvector( abstract) from data_identification; 
-select record_id, to_tsvector( title) || to_tsvector( abstract) @@ 'argo'  as result from data_identification;
-
-select record_id, ( to_tsvector( title) || to_tsvector( abstract))  @@ to_tsquery( 'argo')  as result from data_identification  ;
-
-
-select record_id, ( to_tsvector( title) || to_tsvector( abstract))  @@ to_tsquery( 'argo & profile')  as result from data_identification  ;
-
-select record_id from ( select record_id, ( to_tsvector( title) || to_tsvector( abstract))  @@ to_tsquery( 'argo & profile')  as result from data_identification  ) as x where result = true;
-
-
-- add the wfs links... and see if it works.
-
-- free text search
-- image from db. because it will prove it works.
+- image from db. if only to prove it works.
     -- only issue is db conn handling.
+
+- work out why the polygon vidw isn't working
+
+- popularity
+
+
+
+done - free text search
 
 
 tidy  QQ imports and qualify them
 import Text.RawString.QQ(r)
 
---
 
-- TEST - get rid of geopoly again - and check xml nesting for geopoly doesn't use  - because we can see all the images properly.
 
 done - get rid of the the horrible passing the record into the record decodd functions
 
@@ -48,16 +41,15 @@ done - organisation
 
 done appears as if there is an issue with parameters being represented more than once - because harvested more than once.
 
+done - get rid of geopoly again - and check xml nesting for geopoly doesn't use  - because we can see all the images properly.
 
 -----
-- freetext search
-- get the other metadata fields starting to be filled in - parameters, organisations, dates etc.
+done - freetext search
 
-- would be good to get the organisation in - since it fills a lot of the space.
+done - - would be good to get the organisation in - since it fills a lot of the space.
 
-- need to check for errors in portal geonetwork store.
+done - - need to check for errors in portal geonetwork store.
     - it may be some id/uuid is being used as a css class to target the expansion box element etc..
-
 
 ----
 
