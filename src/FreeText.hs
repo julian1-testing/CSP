@@ -36,7 +36,7 @@ search conn query = do
             ) as x
           where x.result = true;
       |]
-      $ (query :: Only BS.ByteString)
+      $ (Only query :: Only BS.ByteString)
 
     return $
       map (\(Only record_id) -> record_id) xs
@@ -50,6 +50,7 @@ main = do
     -- xs <- search conn "argo"
     -- xs <- search conn "argo & profiles"
     -- xs <- search conn "'argo profiles'"
-    xs <- search conn ( Only $ BS.pack "'argo profiles'" )
+    -- xs <- search conn ( Only $ BS.pack "'argo profiles'" )
+    xs <- search conn ( BS.pack "'argo profiles'" )
     print xs
 
