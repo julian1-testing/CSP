@@ -6,11 +6,11 @@
 # do we need -make also ?
 FLAGS="-i./src -O2 -outputdir tmp"
 
+# needed dirs
 [ -d tmp ] || mkdir tmp
 [ -d target ] || mkdir target
 
-
-
+# uncomment to test module in isolation
 # files=' src/Metadata.hs '
 # files=' src/FacetCalc.hs '
 # files=' src/Search.hs '
@@ -20,6 +20,8 @@ FLAGS="-i./src -O2 -outputdir tmp"
 # files=' src/Service.hs '
 # files=' src/ParseMCP20.hs '
 # files=' src/FreeText.hs '
+
+# main binaries
 files=' src/LoadSchemes.hs src/Harvest.hs src/Service.hs '
 
 
@@ -33,5 +35,4 @@ for i in $files; do
 
   ghc $FLAGS -main-is "$w.main" "$i" -o "target/$w" 
 done
-
 
