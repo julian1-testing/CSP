@@ -58,8 +58,8 @@ import qualified Data.ByteString.Char8 as BS(ByteString(..) )
 
 data DataIdentification = DataIdentification {
 
-    title:: String,
-    abstract:: String
+    title :: String,
+    abstract :: String
 
 } deriving (Show, Eq)
 
@@ -88,11 +88,14 @@ data TransferLink = TransferLink {
 
 data DataParameter = DataParameter {
 
-    term :: BS.ByteString, -- eg. label
+    term :: BS.ByteString, -- eg. pref label
     url :: BS.ByteString,
 
-                              -- don't think this is correct for parsing. 
-    rootTerm :: BS.ByteString-- this is a bit more expensive to compute, this is not used in db. but computed.
+
+    -- the vocabulary used - eg. AODN Platform Category Vocabulary
+    -- this is a computed property constructed with sql view. and not a serialized in the db 
+    -- convenient, but maybe should be removed from here
+    rootTerm :: BS.ByteString
 
 } deriving (Show, Eq)
 
@@ -108,7 +111,7 @@ data Record = Record {
     dataParameters :: [ DataParameter ],
     temporalBegin :: Maybe String,   -- todo
     transferLinks :: [ TransferLink ],
-    geopoly :: [ BS.ByteString ]            -- this is slow, should be a bytestring?, or indexing issue?
+    geopoly :: [ BS.ByteString ]            -- this is slow? or is there an indexing issue
 } deriving (Show, Eq)
 
 
