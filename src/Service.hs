@@ -38,7 +38,8 @@ import qualified Data.Text.Encoding as E(encodeUtf8)
 import qualified Data.Text.Lazy.Encoding as LE(encodeUtf8)
 -- import qualified Data.Text.Lazy as LT
 import qualified Data.ByteString.Char8 as BS(putStrLn, pack, concat, readInt)
-import qualified Data.ByteString.Lazy.Char8 as LBS(readFile)
+import qualified Data.ByteString.Lazy.Char8 as LBS(readFile, fromChunks)
+
 
 import qualified Database.PostgreSQL.Simple as PG(query, connectPostgreSQL)
 import qualified Database.PostgreSQL.Simple.Types as PG(Only(..))
@@ -48,6 +49,7 @@ import qualified Network.HTTP.Types as HTTP(urlEncode, urlDecode)
 
 import Search(search, Params(..))
 import qualified Config as Config(connString)
+import qualified LoadImage as LoadImage(getImage)
 
 
 encode = LE.encodeUtf8
@@ -104,7 +106,7 @@ app req res = do
       printReq req
       xmlSearchImos params
 
-    [ "images", "logos", imageId ] -> imagesLogos imageId
+    [ "images", "logos", imageId ] -> imageLogo imageId
 
     [ "hello" ] -> hello
 
@@ -179,12 +181,20 @@ xmlSearchImos params = do
       ] . encode $ s
 
 
+-- we have to j
 
-imagesLogos imageId = do
-  -- BS.putStrLn $ E.encodeUtf8 imageId
-  s <- LBS.readFile "resources/logo.png"
+imageLogo imageId = do
+
+  BS.putStrLn "---------------------------------------" 
+  BS.putStrLn $ E.encodeUtf8 imageId
+  -- BS.putStrLn "imageLogo" 
+
+  conn <- PG.connectPostgreSQL Config.connString
+  s <- LoadImage.getImage conn 1 
+  let lazyS = LBS.fromChunks [ s ]
+  -- s <- LBS.readFile "resources/logo.png"
   return $
-    responseLBS status200 [ (hContentType, "image/png") ] s
+    responseLBS status200 [ (hContentType, "image/png") ] lazyS
 
 
 

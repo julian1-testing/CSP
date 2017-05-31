@@ -191,5 +191,15 @@ create table geopoly (
 create index on geopoly(record_id);
 
 
+
+
+-- images, logos
+
+create table images ( 
+
+  id serial   primary key not null, 
+  image bytea 
+);
+
 commit;
 
