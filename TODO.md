@@ -5,7 +5,6 @@
 - image from db. if only to prove it works.
     -- need to understand conn handling only issue is db conn handling.
 
-- work out why the polygon geopoly isn't working? 
 
 - popularity
 
@@ -15,6 +14,11 @@
 tidy QQ imports and qualify them. eg.
   import Text.RawString.QQ(r)
 
+
+- polys for gridded data....
+
+
+done for griddedi - work out why the polygon geopoly isn't working? 
 
 done - other links - wfs downloads
 
