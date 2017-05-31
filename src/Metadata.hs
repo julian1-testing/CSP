@@ -27,7 +27,7 @@ import qualified Text.XML.HXT.DOM.Util as X(attrEscapeXml, textEscapeXml, string
 import Text.RawString.QQ
 
 import Record
-import qualified RecordGet as RecordGet(getRecords)
+import qualified RecordGet as RecordGet(getRecords, getRecordIdFromUuid)
 import qualified Helpers as H(concatLT, pad)
 import qualified Config as Config(connString)
 
@@ -179,17 +179,15 @@ formatXML records depth =
       ]
 
 
-
     {-
-    data TransferLink = TransferLink {
+        data TransferLink = TransferLink {
 
-        protocol :: BS.ByteString,
-        linkage :: BS.ByteString,
-        description :: BS.ByteString
-    } deriving (Show, Eq)
+            protocol :: BS.ByteString,
+            linkage :: BS.ByteString,
+            description :: BS.ByteString
+        } deriving (Show, Eq)
 
-    <link>imos:anmn_velocity_timeseries_map|Moorings - velocity time-series|http://geoserver-123.aodn.org.au/geoserver/wms|OGC:WMS-1.1.1-http-get-map|application/vnd.ogc.wms_xml</link>
-
+        <link>imos:anmn_velocity_timeseries_map|Moorings - velocity time-series|http://geoserver-123.aodn.org.au/geoserver/wms|OGC:WMS-1.1.1-http-get-map|application/vnd.ogc.wms_xml</link>
     -}
 
     formatLink depth link =
@@ -203,22 +201,17 @@ formatXML records depth =
                 bsToLazy name,
                 "|", LT.pack $ X.textEscapeXml $ BS.unpack description,
 
-                -- "|", bsToLazy linkage,
                 -- need to xmlescap the & in links
-                --  <link>|https://catalogue-imos.aodn.org.au:443/geonetwork/srv/en/file.disclaimer?uuid=72dbe843-2fb1-4b2e-8b7e-4661d857affb&fname=NRS_mooring_diagram.gif&access=private|WWW:DOWNLOAD-1.0-http--downloadother</link>
-
                 "|", LT.pack $ X.textEscapeXml $ BS.unpack linkage,
 
                 "|", bsToLazy protocol,
+                -- GN appends a mime type as well supposedly discovered dynamically...
                 -- "|application/vnd.ogc.wms_xml",
               "</link>"
             ]
-          _ -> ""
-
+          -- _ -> ""
           -- TransferLink protocol linkage name description -> H.concatLT [ "<!-- ", bsToLazy protocol, bsToLazy linkage, bsToLazy name, bsToLazy description, "-->" ]
       ]
-
-
 
 
 
@@ -233,20 +226,35 @@ formatXML records depth =
       ]
 
 
+----
+-- tests
+
 
 
 
 main :: IO ()
 main = do
+  -- TODO currently assumes argo is populated in the db.
   conn <- PG.connectPostgreSQL Config.connString
 
-  records <- RecordGet.getRecords conn [ 289, 290 ]
+  --- records <- RecordGet.getRecords conn [ 289, 290 ]
+  argo_id <- RecordGet.getRecordIdFromUuid conn "4402cb50-e20a-44ee-93e6-4728259250d2" -- argo
 
-  mapM (putStrLn.show) records
+  print argo_id
 
-  let s = formatXML records 0
+  case argo_id of
+    Just record_id ->  do
+      -- records <- RecordGet.getRecords conn [ 289, 290 ]
+      records <- RecordGet.getRecords conn [ record_id ]
 
-  LT.putStrLn $ s
+      mapM (putStrLn.show) records
+
+      let s = formatXML records 0
+      LT.putStrLn $ s
+
+    Nothing -> do
+      putStrLn "couldn't find argo"
+
 
 
 

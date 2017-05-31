@@ -1,9 +1,9 @@
 {-
 
-  - denormalize the Record structure in the db into hasekll records, according to record_id 
+  - denormalize the Record structure in the db into hasekll records, according to record_id
 
   - the way to improve performance here (behave more like orm mapper), is to left join all record with the table/data of interest
-      then map and appropriate for each record_id on the client side of the db. 
+      then map and appropriate for each record_id on the client side of the db.
 -}
 
 {-# LANGUAGE QuasiQuotes, ScopedTypeVariables, OverloadedStrings #-}
@@ -23,6 +23,26 @@ import Record
 
 
 
+
+getRecordIdFromUuid conn uuid = do
+  -- convenience function.  helper for tests -
+  -- TODO this code doesn't really belong here - better place to put this?
+  xs :: [ (Only Int)] <- PG.query conn [r|
+      select
+        record.id
+      from record
+      where record.uuid = ?
+    |]
+    $ Only (uuid :: BS.ByteString)
+  return $
+    -- TODO can we use listToMaybe? - not sure because the Only also needs destructuring
+    case xs of
+      [ Only record_id ] -> Just record_id
+      _ -> Nothing
+
+
+
+-- TODO should
 getRecordUuid conn record_id = do
   xs :: [ (Int, String)] <- PG.query conn [r|
       select
@@ -125,7 +145,7 @@ getTransferLinks conn record_id = do
   return $
     map f xs
     where
-      f ( protocol, linkage, name, description ) = TransferLink protocol linkage name description 
+      f ( protocol, linkage, name, description ) = TransferLink protocol linkage name description
 
 
 
@@ -139,11 +159,11 @@ getRecord conn record_id = do
   transferLinks <- getTransferLinks conn record_id
   geopolys <- getRecordGeopolys conn record_id
 
-  let record = Record { 
-                uuid = uuid, 
+  let record = Record {
+                uuid = uuid,
                 dataIdentification = dataIdentification,
                 mdCommons = mdCommons,
-                attrConstraints = [], 
+                attrConstraints = [],
                 useLimitations = [],
                 dataParameters = dataParameters,
                 temporalBegin = Nothing,
