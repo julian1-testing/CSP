@@ -50,7 +50,7 @@ isCoreConcept = do
 --------------------------
 {-
   Conceptscheme stuff
-  we store the conceptscheme in the same table as a concept since it makes dealing with concepts and their parent 
+  we store the conceptscheme in the same table as a concept since it makes dealing with concepts and their parent
   relationships a lot easier.
   perhaps need to change the name of concept table to resource or conceptResource etc.
 -}

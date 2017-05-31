@@ -1,7 +1,7 @@
 {-
     interface for interacting with CSW web-services
 
-    TODO 
+    TODO
     - maybe move the CSW parsing to a separate file
     - think about the transaction boundaries when deleting old and storing to db
 
@@ -28,7 +28,7 @@ import qualified Data.ByteString.Lazy.Char8 as BLC
 import Text.RawString.QQ
 
 
--- TODO tighten? 
+-- TODO tighten?
 import Helpers as Helpers
 
 
@@ -119,13 +119,13 @@ doGetRecordById uuid title = do
 
 
 testRetrievingAllRecords = do
-    
+
     -- get records
-    result <- doGetRecords "https://catalogue-imos.aodn.org.au/geonetwork" 
+    result <- doGetRecords "https://catalogue-imos.aodn.org.au/geonetwork"
     let elts = Helpers.parseXML result
     identifiers <- runX (elts >>> parseCSWSummaryRecord)
     mapM (putStrLn.show) identifiers
-    
+
     -- process each record
     mapM (uncurry doGetRecordById) identifiers
 

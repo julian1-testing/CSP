@@ -38,13 +38,13 @@ doGetAndProcessRecords conn = do
 
     -- delete current index for all records
     RS.deleteAll conn
-    
+
     -- get records to process
-    result <- CSW.doGetRecords "https://catalogue-imos.aodn.org.au/geonetwork" 
+    result <- CSW.doGetRecords "https://catalogue-imos.aodn.org.au/geonetwork"
     let elts = Helpers.parseXML result
     identifiers <- runX (elts >>> CSW.parseCSWSummaryRecord)
     mapM (putStrLn.show) identifiers
- 
+
     -- process each record
     mapM (uncurry $ doGetAndProcessRecord conn) identifiers
 
@@ -53,7 +53,7 @@ doGetAndProcessRecords conn = do
 main :: IO ()
 main = do
   conn <- PG.connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
-  doGetAndProcessRecords conn 
+  doGetAndProcessRecords conn
   PG.close conn
 
   return ()
@@ -62,14 +62,14 @@ main = do
 {-
 -- TODO if showRecord was just show, then we wouldn't have to destructure
 putStrLn $ case myRecord of
-    Right record -> 
+    Right record ->
       R.showRecord record
-    Left msg -> 
+    Left msg ->
       msg
 -}
 
     -- myRecord <- ParseMCP20.parse elts
-    -- putStrLn $ applyEither Record.showRecord id myRecord 
+    -- putStrLn $ applyEither Record.showRecord id myRecord
 {-
     case myRecord of
         Right record -> do
@@ -82,7 +82,7 @@ putStrLn $ case myRecord of
 {-
 -- apply left or right function according to Either type
 -- probably in stdlib
-applyEither lf rf x 
+applyEither lf rf x
   = case x of
     Right a -> lf a
     Left a -> rf a

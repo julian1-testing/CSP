@@ -170,7 +170,7 @@ propagateRecordsToParentConcept nestings m =
 
         -}
         -- fold over the concept/parent nestings
-        -- and update the concept -> records 
+        -- and update the concept -> records
 
         -- get the records associated with child concept
         let (childAccum, childRecords) = mapGet (Just concept_id) m in
@@ -218,11 +218,11 @@ putStrLnConceptRecordMap m = do
 
 
 
-flatten m = 
+flatten m =
   -- simplify the map of propagated record ids
   Map.mapWithKey f m
   where
-    f (Just concept_id) (accum,_) = accum 
+    f (Just concept_id) (accum,_) = accum
     f Nothing (_,children) = children
 
 
@@ -296,7 +296,7 @@ testPropagateAll = do
 
   putStrLn "\n# after processing"
   -- putStrLnConceptRecordMap m'
-  putStrLnConceptRecordMap $ flatten m' 
+  putStrLnConceptRecordMap $ flatten m'
 
   -- get rid of this and just flatten the thing entirely
   --let (m'', records) = adjustRootRecord m'
@@ -324,14 +324,14 @@ adjustRootRecord m =
 
 
 {-
-  the termination function of having all records propagated - won't work... 
-  ahhhhhhh - hang on. 
-  
+  the termination function of having all records propagated - won't work...
+  ahhhhhhh - hang on.
+
     rather than use a count . why not have another list - that is the accumulated list that passes through.
-    then we can use the same  
+    then we can use the same
 
     then we can do another parse to compute the counts....
 
-    
+
 -}
 

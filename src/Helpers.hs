@@ -20,7 +20,7 @@ import Network.HTTP.Types.Header(HeaderName(..), hContentType)
 
 --
 import qualified Data.ByteString.Char8 as BS(pack)
--- import qualified Data.ByteString.Lazy.Char8 as LBS 
+-- import qualified Data.ByteString.Lazy.Char8 as LBS
 
 import Data.Char(isSpace)
 
@@ -30,7 +30,7 @@ import qualified Data.List as List(unfoldr)
 
 -- XML helpers
 
-parseXML s = readString [ 
+parseXML s = readString [
       withValidate no
     , withRemoveWS yes  -- throw away formating WS
     ] s
@@ -96,16 +96,16 @@ pad count = LT.justifyRight count ' ' LT.empty
 
 -- should be able to use replicate function...
 -- replicate :: Int64 -> Text -> Text
--- pad count = replicate count ' ' LT.empty 
+-- pad count = replicate count ' ' LT.empty
 
 {-
 pad count =
   LT.pack $ List.unfoldr f count
-  where 
+  where
     f 0 = Nothing
     f x = Just (' ', x - 1)
 -}
--- pad count = replicate count ' ' 
+-- pad count = replicate count ' '
 
 
 -- concat list of lazy text

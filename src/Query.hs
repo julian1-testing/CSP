@@ -42,7 +42,7 @@ dbGetTerm conn qualifiedTerm = do
       from qualified_concept_view
       where label0 = ? and label1 = ? and label2 = ? and label3 = ? and label4 = ?
   |]
-  -- do db query 
+  -- do db query
   xs :: [ (Only Int) ] <- PG.query conn query (qualifiedTerm :: [ (Maybe BS.ByteString) ] )
 
   -- destructure the return rows

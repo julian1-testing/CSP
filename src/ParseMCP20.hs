@@ -116,9 +116,9 @@ parseTransferLinks =
 
     protocol    <- atChildName "gmd:protocol" >>> atChildName "gco:CharacterString" >>> getChildText  -< resource
     linkage     <- atChildName "gmd:linkage"  >>> atChildName "gmd:URL" >>> getChildText -< resource
-    -- https://stackoverflow.com/questions/34694801/hxt-using-orelse-to-replace-missing-attribute-value-with-default 
-    name        <- (atChildName "gmd:name" >>> atChildName "gco:CharacterString" >>> getChildren >>> isText >>> getText ) `orElse` ( constA "" ) -< resource 
-    description <- atChildName "gmd:description" >>> atChildName "gco:CharacterString" >>> getChildText   -< resource 
+    -- https://stackoverflow.com/questions/34694801/hxt-using-orelse-to-replace-missing-attribute-value-with-default
+    name        <- (atChildName "gmd:name" >>> atChildName "gco:CharacterString" >>> getChildren >>> isText >>> getText ) `orElse` ( constA "" ) -< resource
+    description <- atChildName "gmd:description" >>> atChildName "gco:CharacterString" >>> getChildText   -< resource
 
     returnA -< TransferLink {
         protocol = BS.pack protocol,
