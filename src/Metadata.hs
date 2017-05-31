@@ -33,8 +33,8 @@ import qualified Config as Config(connString)
 
 
 
-
-bsToLazy b =  LT.fromStrict $ E.decodeUtf8  b
+-- TODO better way?
+bsToLazy b =  LT.fromStrict $ E.decodeUtf8 b
 
 
 
@@ -48,28 +48,27 @@ formatXML records depth =
         "\n", H.pad $ depth * 3, "<metadata>"
         ,
 
+        -- TODO use maybe() - and flip the depth argument...
         case dataIdentification record of
           Just di -> formatTitle di (depth + 1)
         ,
-        -- source (not uuid!!)
-        -- probably not needed,
+        -- source (not uuid!!), probably not be needed
         "<source>ed23e365-c459-4aa4-bbc1-5d2cd0274af0</source>"
-        -- case uuid record of
-        --  Just uuid_ -> formatSource uuid_ (depth + 1)
         ,
 
+        -- image
         formatImage (depth + 1), "\n",
 
-        -- POT works -> fills in the more
+        -- Point of Truth
         H.pad $ depth * 3,
         "<link>|Point of truth URL of this metadata record|https://catalogue-imos.aodn.org.au:443/geonetwork/srv/en/metadata.show?uuid=",
           -- maybe  "" id (Just "hi")
-          maybe ( "") LT.pack ( uuid record) ,
+          maybe "" LT.pack (uuid record),
           -- uuid record
           -- "aaad092c-c3af-42e6-87e0-bdaef945f522"
           "|WWW:LINK-1.0-http--metadata-URL|text/html</link>\n",
 
-        -- does not appear do anything,
+        -- responsibleParty doesn't do anything on step1,
         -- "<responsibleParty>resourceProvider|resource|Bureau of Meteorology (BOM)|</responsibleParty><responsibleParty>principalInvestigator|resource|Bureau of Meteorology (BOM)|</responsibleParty><responsibleParty>distributor|metadata|Integrated Marine Observing System (IMOS)|</responsibleParty>\n",
 
         -- parameter works - straight from vocab,
@@ -78,24 +77,21 @@ formatXML records depth =
         -- organisation works
         "<organisation>Integrated Marine Observing System (IMOS)</organisation>\n",
 
-        -- platform works
-        -- "<platform>NOAA-17</platform>\n",
 
-        -- temp extent works,
+        -- temp extent works
         "<tempExtentBegin>1992-03-19t14:00:00.000z</tempExtentBegin>\n",
         "<tempExtentEnd>2017-05-27t13:59:59.000z</tempExtentEnd>\n",
-
-        -- it looks like the geobox works -- but not
-        -- this should be really easy to do - because already in the db...
-        -- geobox is
-        -- "<geoBox>170|-70|70|20</geoBox>\n",
 
 
         -- is this an efficient way of doing this????
         -- foldl (\a b -> LT.append a $ LE.decodeUtf8  b) LT.empty  $ geopoly record,
         -- LT.fromStrict $ E.decodeUtf8 $ foldl (BS.append ) BS.empty $ polys
+
+{-
         let polys = map (formatGeopoly $ depth + 1) $ geopoly record in
         foldl (LT.append ) LT.empty polys
+-}
+        formatGeopoly $ depth + 1
         ,
 
         -- dataparameters - eg. parameter, platform, organisation
@@ -107,13 +103,8 @@ formatXML records depth =
         foldl (LT.append ) LT.empty links
         ,
 
-
-
-        -- we need to format links like the following...
-        -- <link>imos:anmn_velocity_timeseries_map|Moorings - velocity time-series|http://geoserver-123.aodn.org.au/geoserver/wms|OGC:WMS-1.1.1-http-get-map|application/vnd.ogc.wms_xml</link>
-
-        -- nothing in the geonet appears to be used except the record uuid
         -- geonet
+        -- nothing appears to be used except the record uuid 
         [r|
           <geonet:info xmlns:geonet="http://www.fao.org/geonetwork" >
               <id>153</id>
@@ -137,6 +128,7 @@ formatXML records depth =
         H.pad $ depth * 3, "</metadata>"
       ]
 
+
     formatTitle di depth  =
       H.concatLT [
           "\n",
@@ -144,20 +136,22 @@ formatXML records depth =
           "<title>", LT.pack $ title di, LT.pack "</title>"
       ]
 
-{-
-    formatSource uuid depth =
+
+    formatGeopoly depth =
+      -- <geoPolygon>POLYGON ((-85 -15, -85 -10, -80 -10, -80 -15, -85 -15))</geoPolygon>
+
+      -- metadata <gml:posList srsDimension="2">-75 -10 -75 -15 -70 -15 -70 -45 -75 -45 -75 -50 -70 -50 -70 -55 -65 -55 -65 -45 -60 -45 -60 -35 -55 -35 -55 -30 -50 -30 -50 -25 -45 -25 -45 -20 -40 -20 -40 -5 -50 -5 -50 0 -55 0 -55 5 -65 5 -65 10 -75 10 -75 -10</gml:posList>
+      -- note the ,
       H.concatLT [
           "\n",
           H.pad $ depth * 3,
-          "<source>", LT.pack uuid, "</source>"
+          -- "<geoPolygon> ", bsToLazy geopoly, "</geoPolygon>"
+          -- "<geoPolygon>POLYGON ((-85 -15, -85 -10, -80 -10, -80 -15, -85 -15))</geoPolygon>"
+          [r|
+<geoPolygon>POLYGON ((180 -70, 180 -75, 170 -75, 170 -80, 160 -80, 160 -70, 135 -70, 135 -65, 130 -65, 130 -70, 100 -70, 100 -65, 95 -65, 95 -70, 0 -70, 0 -75, -40 -75, -40 -70, -45 -70, -45 -75, -50 -75, -50 -70, -55 -70, -55 -65, -65 -65, -65 -70, -80 -70, -80 -75, -110 -75, -110 -70, -115 -70, -115 -75, -145 -75, -145 -80, -180 -80, -180 65, -175 65, -175 60, -165 60, -165 55, -160 55, -160 60, -150 60, -150 65, -145 65, -145 60, -130 60, -130 55, -125 55, -125 50, -120 50, -120 35, -115 35, -115 30, -110 30, -110 25, -105 25, -105 20, -100 20, -100 30, -90 30, -90 40, -85 40, -85 35, -80 35, -80 40, -75 40, -75 45, -55 45, -55 50, -60 50, -60 55, -65 55, -65 65, -60 65, -60 75, -55 75, -55 70, -50 70, -50 65, -40 65, -40 70, -20 70, -20 75, -15 75, -15 85, -25 85, -25 90, 70 90, 70 85, 40 85, 40 80, 30 80, 30 75, 50 75, 50 70, 20 70, 20 65, 25 65, 25 50, 20 50, 20 55, 15 55, 15 65, 10 65, 10 50, 15 50, 15 45, 30 45, 30 50, 35 50, 35 45, 45 45, 45 40, 40 40, 40 20, 55 20, 55 30, 65 30, 65 25, 70 25, 70 20, 75 20, 75 15, 80 15, 80 25, 95 25, 95 20, 100 20, 100 0, 105 0, 105 20, 110 20, 110 25, 120 25, 120 30, 125 30, 125 45, 135 45, 135 50, 145 50, 145 55, 150 55, 150 50, 155 50, 155 55, 160 55, 160 60, 170 60, 170 65, 180 65, 180 -70), (-75 -10, -75 -15, -70 -15, -70 -45, -75 -45, -75 -50, -70 -50, -70 -55, -65 -55, -65 -45, -60 -45, -60 -35, -55 -35, -55 -30, -50 -30, -50 -25, -45 -25, -45 -20, -40 -20, -40 -5, -50 -5, -50 0, -55 0, -55 5, -65 5, -65 10, -75 10, -75 -10), (15 -15, 15 -30, 30 -30, 30 -25, 35 -25, 35 -15, 40 -15, 40 -10, 35 -10, 35 0, 40 0, 40 5, 45 5, 45 10, 40 10, 40 15, 35 15, 35 25, 25 25, 25 30, 10 30, 10 35, -5 35, -5 30, -10 30, -10 25, -15 25, -15 10, 5 10, 5 5, 10 5, 10 -5, 15 -5, 15 -15), (120 -10, 135 -10, 135 -15, 125 -15, 125 -20, 115 -20, 115 -30, 135 -30, 135 -35, 150 -35, 150 -20, 145 -20, 145 -15, 140 -15, 140 -5, 120 -5, 120 -10), (165 -65, 165 -70, 170 -70, 170 -65, 165 -65), (110 -5, 115 -5, 115 0, 110 0, 110 -5), (5 45, 5 60, -5 60, -5 50, 0 50, 0 45, 5 45), (20 80, 20 75, 25 75, 25 80, 20 80))</geoPolygon>
+          |]
       ]
--}
-    formatGeopoly depth geopoly =
-      H.concatLT [
-          "\n",
-          H.pad $ depth * 3,
-          "<geoPolygon>", bsToLazy geopoly, "</geoPolygon>"
-      ]
+
 
     formatDataParameter depth dp =
       H.concatLT [

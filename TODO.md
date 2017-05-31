@@ -1,5 +1,4 @@
 
-- other links - wfs downloads
 
 - attribution - on download,
 
@@ -17,6 +16,7 @@ tidy QQ imports and qualify them. eg.
   import Text.RawString.QQ(r)
 
 
+done - other links - wfs downloads
 
 done - externalize DB connection details for app and test. eg. Config.hs
 
