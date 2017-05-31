@@ -3,9 +3,10 @@
 
 - implements PoC faceted search, freetext search, pagination, online resources, to drive AODN Portal
 - csw harvesting of external catalogues
-- support mcp2.0/19139 records, but has no dependence on metadata form - subset only, and easy to transform
+- support mcp2.0/19139 records, but not dependent on metadata form - subset only, and easy to transform
 - freetext using postgres 9.5 freetext support 
 - records, concepts and indexes - all state localized to a db backend, no filesystem needed
+- logos stored and served from the db.
 
 
 ### Usage
@@ -22,7 +23,7 @@ psql -h postgres.localnet -U harvest -d harvest -f sql/views.sql
 ./build.sh
 
 # load vocabs
-./target/LoadSchemes.hs
+./target/LoadSchemes
 
 # harvest external catalog ie. https://catalogue-imos.aodn.org.au/geonetwork
 ./target/Harvest

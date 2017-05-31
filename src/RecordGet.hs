@@ -42,7 +42,29 @@ getRecordIdFromUuid conn uuid = do
 
 
 
--- TODO should
+
+
+
+-- decode to string? - yes.  
+--   source <- getRecordSource conn record_id
+
+getRecordSource conn record_id = do
+  xs :: [ (Only String)] <- PG.query conn [r|
+      select
+        source.source
+      from record
+      left join source on source.record_id = record.id
+      where record.id = ?
+    |]
+    $ Only (record_id :: Int)
+  return $
+    case xs of
+      [ (Only source) ] -> Just source
+      _ -> Nothing
+
+
+
+
 getRecordUuid conn record_id = do
   xs :: [ (Int, String)] <- PG.query conn [r|
       select
@@ -153,6 +175,7 @@ getRecord conn record_id = do
 
   -- TODO there's something slow... although maybe the xml formatting,
   uuid <- getRecordUuid conn record_id
+  source <- getRecordSource conn record_id
   dataIdentification <- getRecordDataIdentification conn record_id
   mdCommons <- getRecordMDCommons conn record_id
   dataParameters <- getRecordDataParameters conn record_id
@@ -161,6 +184,7 @@ getRecord conn record_id = do
 
   let record = Record {
                 uuid = uuid,
+                source = source,
                 dataIdentification = dataIdentification,
                 mdCommons = mdCommons,
                 attrConstraints = [],

@@ -104,6 +104,7 @@ data DataParameter = DataParameter {
 data Record = Record {
 
     uuid :: Maybe String,
+    source :: Maybe String,
     dataIdentification :: Maybe DataIdentification ,
     mdCommons :: Maybe MDCommons,
     attrConstraints :: [ String ],   -- todo
@@ -116,6 +117,6 @@ data Record = Record {
 
 
 
-emptyRecord = Record Nothing  Nothing Nothing [] [] [] Nothing [] []
+emptyRecord = Record Nothing Nothing Nothing Nothing [] [] [] Nothing [] []
 
 

@@ -22,14 +22,16 @@ import qualified ParseMCP20 as ParseMCP20
 import qualified Config as R
 ----------------
 
-doGetAndProcessRecord conn uuid title = do
+doGetAndProcessRecord conn source' uuid title = do
 
     print $ "doGetAndProcessRecord " ++ uuid ++ " " ++ title
 
     recordText <- CSW.doGetRecordById uuid title
     record <- ParseMCP20.parse $ Helpers.parseXML recordText
-    RS.storeAll conn record
 
+    let record' = record { R.source = source' }  
+
+    RS.storeAll conn record'
     return ()
 
 
@@ -40,13 +42,16 @@ doGetAndProcessRecords conn = do
     RS.deleteAll conn
 
     -- get records to process
-    result <- CSW.doGetRecords "https://catalogue-imos.aodn.org.au/geonetwork"
+
+    let catalog = "https://catalogue-imos.aodn.org.au/geonetwork"
+
+    result <- CSW.doGetRecords catalog 
     let elts = Helpers.parseXML result
     identifiers <- runX (elts >>> CSW.parseCSWSummaryRecord)
     mapM (putStrLn.show) identifiers
 
     -- process each record
-    mapM (uncurry $ doGetAndProcessRecord conn) identifiers
+    mapM (uncurry $ doGetAndProcessRecord conn $ Just catalog) identifiers
 
 
 

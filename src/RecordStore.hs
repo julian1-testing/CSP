@@ -13,6 +13,9 @@ import Database.PostgreSQL.Simple.Types as PG(Only(..))
 import Text.RawString.QQ
 import qualified Data.ByteString.Char8 as BS(putStrLn, concat)
 
+
+import qualified Data.Maybe as Maybe(fromJust)
+
 import Helpers as H -- (parseXML)
 import ParseMCP20(parse)
 import Record
@@ -29,7 +32,44 @@ import qualified Config as Config(connString)
 -}
 
 
-storeUUID conn uuid = do
+
+-- storeSource conn $ source record
+
+
+
+storeSource conn source = do
+
+    print "store store"
+    xs :: [ (Only Int)] <- PG.query conn
+        [r|
+            with s as (
+                select id
+                from source 
+                where source = ?
+            ),
+            i as (
+                insert into source(source)
+                select ?
+                where not exists (select 1 from s)
+                returning id
+            )
+            select id from i
+            union all
+            select id from s
+        |]
+        (source :: String, source :: String)
+
+    let source_id = case xs of
+         [] -> -99999 -- avoided because sql will return a value
+         [ Only source_id ] -> source_id
+
+    putStrLn $ "source_id is " ++ show source_id
+    return source_id
+
+
+
+
+storeRecord conn uuid source_id = do
 
     print "store uuid"
 
@@ -44,18 +84,19 @@ storeUUID conn uuid = do
                 select id
                 from record
                 where uuid = ?
+                and source_id = ?
             ),
             i as (
-                insert into record(uuid)
-                select ?
+                insert into record(uuid, source_id)
+                select ?, ?
                 where not exists (select 1 from s)
-                returning id
+                returning record.id
             )
             select id from i
             union all
             select id from s
         |]
-        (uuid :: String, uuid :: String)
+        (uuid :: String, source_id :: Int, uuid :: String, source_id :: Int)
 
     let record_id = case xs of
          [] -> -99999 -- avoided because sql will return a value
@@ -324,11 +365,11 @@ storeAll conn record = do
     case (Record.uuid record) of 
             Just uuid_ -> do
 
-                -- TODO need to do this entire thing transactionally,
+                source_id <- storeSource conn $ Maybe.fromJust (source record)  -- TODO fix the fromJust which might throw if no source,
 
                 -- change name storeOrGetUUID
                 -- if we can't get the recordId we're really stuck
-                record_id <- storeUUID conn uuid_ 
+                record_id <- storeRecord conn uuid_  source_id
 
                 -- https://downloads.haskell.org/~ghc/8.0.1/docs/html/libraries/base-4.9.0.0/Data-Maybe.html
                 maybe (return ()) (storeDataIdentification conn record_id) (Record.dataIdentification record) 

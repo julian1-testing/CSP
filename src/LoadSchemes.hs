@@ -277,19 +277,19 @@ main = do
   -- platform
   print "doing platform"
   platform <- readFile "./resources/vocab/aodn_aodn-platform-vocabulary.rdf"
-  platformCategory <- readFile "./resources/ocab/aodn_aodn-platform-category-vocabulary.rdf"
+  platformCategory <- readFile "./resources/vocab/aodn_aodn-platform-category-vocabulary.rdf"
   storeAll conn platform platformCategory
 
   -- parameter
   print "doing parameter"
   param         <- readFile "./resources/vocab/aodn_aodn-discovery-parameter-vocabulary.rdf"
-  paramCategory <- readFile "./resources/vvocab/aodn_aodn-parameter-category-vocabulary.rdf"
+  paramCategory <- readFile "./resources/vocab/aodn_aodn-parameter-category-vocabulary.rdf"
   storeAll conn param paramCategory
 
   -- organisation
   print "doing organisation"
-  org <- readFile "./resources/vvocab/aodn_aodn-organisation-vocabulary.rdf"
-  orgCategory <- readFile "./resources/vvocab/aodn_aodn-organisation-category-vocabulary.rdf"
+  org <- readFile "./resources/vocab/aodn_aodn-organisation-vocabulary.rdf"
+  orgCategory <- readFile "./resources/vocab/aodn_aodn-organisation-category-vocabulary.rdf"
   storeAll conn org orgCategory
 
   -- are there any other resources?

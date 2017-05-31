@@ -162,6 +162,7 @@ parse elts = do
 
     let record = Record {
       uuid = uuid',
+      source = Nothing, -- not initialized
       dataIdentification = dataIdentification',
       mdCommons = mdCommons',
       attrConstraints = attrConstraints ,

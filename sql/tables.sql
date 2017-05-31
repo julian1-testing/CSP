@@ -83,9 +83,18 @@ alter table in_scheme owner to harvest;
 --
 -- probably want a catalog source as well
 
+create table source ( 
+
+  id serial   primary key not null, 
+  source text not null
+);
+
+
+
 create table record (
 
   id          serial primary key not null,
+  source_id   integer references source(id) not null,
   uuid        text not null unique
 );
 
@@ -94,7 +103,7 @@ create table record (
 create table data_identification (
 
     id serial primary key not null,
-    record_id integer references record(id) unique,
+    record_id integer references record(id) unique,   -- should this be not null instead? - no because it's shared?.
 
     title               text, -- not null?
     abstract            text
@@ -120,7 +129,7 @@ create table transfer_link (
   -- mcp2 online resource
 
   id serial   primary key not null,
-  record_id   integer references record(id),  -- more than one
+  record_id   integer references record(id) not null,  -- more than one
 
   protocol    text not null,
   linkage     text not null,
@@ -140,7 +149,7 @@ create table data_parameter (
 
   id serial   primary key not null,
 
-  record_id   integer references record(id),
+  record_id   integer references record(id) not null,
   concept_id  integer references concept(id)
 );
 
@@ -154,7 +163,7 @@ create table attr_constraint  (
 
   id serial   primary key not null,
 
-  record_id  integer references record(id),
+  record_id  integer references record(id) not null,
   attr       text not null
 );
 create index on attr_constraint(record_id);
@@ -164,7 +173,7 @@ create table use_limitation (
 
   id serial   primary key not null,
 
-  record_id  integer references record(id),
+  record_id  integer references record(id) not null,
   limitation text not null
 );
 create index on use_limitation(record_id);
@@ -174,7 +183,7 @@ create table temporal_begin (
 
   id serial   primary key not null,
 
-  record_id  integer references record(id),
+  record_id  integer references record(id) not null,
   begin_	text not null
 );
 create index on temporal_begin(record_id);
@@ -184,7 +193,7 @@ create table geopoly (
 
   id serial   primary key not null,
 
-  record_id  integer references record(id),
+  record_id  integer references record(id) not null,
 	-- should be postgis type
   poly		  text not null
 );
@@ -200,6 +209,8 @@ create table images (
   id serial   primary key not null, 
   image bytea 
 );
+
+
 
 commit;
 
