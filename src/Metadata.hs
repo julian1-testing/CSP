@@ -56,9 +56,12 @@ formatXML records depth =
         -- "<source>ed23e365-c459-4aa4-bbc1-5d2cd0274af0</source>"
 
         -- portal doesn't seem to like full url as source
-        -- formatSource (depth + 1) $ maybe "" id (source record) 
 
-        "<source>",  maybe "" LT.pack ( uuid record) , "</source>"
+        -- formatSource (depth + 1) $ maybe "" id (source record) 
+  
+        -- this just returns the uuid as the source - so we could adjust based on that.
+        -- "<source>",  maybe "" LT.pack ( uuid record) , "</source>"
+        "<source>1</source>"
         ,
 
         -- image
