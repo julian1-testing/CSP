@@ -1,4 +1,5 @@
 
+- understand exceptions in context of db handling etc..
 
 - attribution - on download,
 

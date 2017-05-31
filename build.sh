@@ -20,9 +20,10 @@ FLAGS="-i./src -O2 -outputdir tmp"
 # files=' src/Service.hs '
 # files=' src/ParseMCP20.hs '
 # files=' src/FreeText.hs '
+files=' src/LoadImage.hs '
 
 # main binaries
-files=' src/LoadSchemes.hs src/Harvest.hs src/Service.hs src/Metadata.hs '
+# files=' src/LoadSchemes.hs src/Harvest.hs src/Service.hs src/Metadata.hs '
 
 
 for i in $files; do

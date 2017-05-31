@@ -60,6 +60,13 @@ from, vim /usr/share/vim/vim80/syntax/haskell.vim
   https://hackage.haskell.org/package/hxt-9.3.1.16/docs/Text-XML-HXT-Arrow-XmlArrow.html
 
 
+- PG
+  conn management
+  https://hackage.haskell.org/package/postgresql-simple-0.5.0.0/candidate/docs/Database-PostgreSQL-Simple.html#g:14
+
+
+
+
 ### Old - Notes, on libraries
 
 
