@@ -1,15 +1,12 @@
+{-
+	  parse mcp 2.0 record for portal content
+-}
 
 {-# LANGUAGE Arrows, NoMonomorphismRestriction, OverloadedStrings #-}
 
 
 module ParseMCP20 where
 
-{-
-    IMPORTANT must close resources !!!
-
-	not sure if have closed HXT resources...
-	but we're only doing a string?
--}
 
 
 import Control.Exception
@@ -18,8 +15,9 @@ import Helpers(parseXML, atTag, atChildName, getChildText, stripSpace)
 import qualified Data.ByteString.Char8 as BS(ByteString(..), pack )
 import qualified Data.Maybe as Maybe(listToMaybe)
 
--- import everything
+-- everything
 import Record
+
 
 
 parseFileIdentifier =
@@ -58,15 +56,15 @@ parseDataIdentification =
 
     abstract <- atChildName "gmd:abstract" >>> atChildName "gco:CharacterString" >>> getChildText -< dataIdent
 
-    -- maybe change name to DataIdentification
     returnA -< DataIdentification {
         title = title,
         abstract = abstract
         }
 
 
+
 parseAttributionConstraints =
-  -- have more than one
+  -- multiple
   atTag "gmd:resourceConstraints"  >>> atChildName "mcp:MD_Commons" >>>
   proc md_commons -> do
     attrConstr <- atChildName "mcp:attributionConstraints" >>> atChildName "gco:CharacterString" >>> getChildText -< md_commons
@@ -75,7 +73,7 @@ parseAttributionConstraints =
 
 
 parseUseLimitations =
-  -- have more than one
+  -- multiple
   atTag "gmd:resourceConstraints"  >>> atChildName "gmd:MD_Constraints" >>>
   proc md_commons -> do
     useLimitation <- atChildName "gmd:useLimitation" >>> atChildName "gco:CharacterString"
@@ -116,6 +114,7 @@ parseTransferLinks =
 
     protocol    <- atChildName "gmd:protocol" >>> atChildName "gco:CharacterString" >>> getChildText  -< resource
     linkage     <- atChildName "gmd:linkage"  >>> atChildName "gmd:URL" >>> getChildText -< resource
+
     -- https://stackoverflow.com/questions/34694801/hxt-using-orelse-to-replace-missing-attribute-value-with-default
     name        <- (atChildName "gmd:name" >>> atChildName "gco:CharacterString" >>> getChildren >>> isText >>> getText ) `orElse` ( constA "" ) -< resource
     description <- atChildName "gmd:description" >>> atChildName "gco:CharacterString" >>> getChildText   -< resource
@@ -205,4 +204,5 @@ testArgoRecord = do
 
 
 main = testArgoRecord
+
 
