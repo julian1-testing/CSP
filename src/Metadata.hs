@@ -197,13 +197,20 @@ formatXML records depth =
         "\n",
         H.pad $ depth * 3,
         case link of
-          TransferLink protocol linkage name description | protocol == "OGC:WMS-1.1.1-http-get-map" -> H.concatLT [
+          -- TransferLink protocol linkage name description | protocol == "OGC:WMS-1.1.1-http-get-map" -> H.concatLT [
+          TransferLink protocol linkage name description -> H.concatLT [
               "<link>",
                 bsToLazy name,
                 "|", LT.pack $ X.textEscapeXml $ BS.unpack description,
-                "|", bsToLazy linkage,
+
+                -- "|", bsToLazy linkage,
+                -- need to xmlescap the & in links
+                --  <link>|https://catalogue-imos.aodn.org.au:443/geonetwork/srv/en/file.disclaimer?uuid=72dbe843-2fb1-4b2e-8b7e-4661d857affb&fname=NRS_mooring_diagram.gif&access=private|WWW:DOWNLOAD-1.0-http--downloadother</link>
+
+                "|", LT.pack $ X.textEscapeXml $ BS.unpack linkage,
+
                 "|", bsToLazy protocol,
-                "|application/vnd.ogc.wms_xml",
+                -- "|application/vnd.ogc.wms_xml",
               "</link>"
             ]
           _ -> ""
