@@ -45,15 +45,16 @@ getRecordIdFromUuid conn uuid = do
 
 
 
--- decode to string? - yes.  
---   source <- getRecordSource conn record_id
+
+-- TODO uuid and source should be combined in get accessor...
+-- maybe... it is a join
 
 getRecordSource conn record_id = do
   xs :: [ (Only String)] <- PG.query conn [r|
       select
-        source.source
-      from record
-      left join source on source.record_id = record.id
+        source
+      from source
+      left join record on record.source_id = source.id
       where record.id = ?
     |]
     $ Only (record_id :: Int)

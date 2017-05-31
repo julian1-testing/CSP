@@ -204,7 +204,7 @@ create index on geopoly(record_id);
 
 -- images, logos
 
-create table images ( 
+create table image ( 
 
   id serial   primary key not null, 
   image bytea 

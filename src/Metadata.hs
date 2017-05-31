@@ -53,7 +53,12 @@ formatXML records depth =
           Just di -> formatTitle di (depth + 1)
         ,
         -- source (not uuid!!), probably not be needed
-        "<source>ed23e365-c459-4aa4-bbc1-5d2cd0274af0</source>"
+        -- "<source>ed23e365-c459-4aa4-bbc1-5d2cd0274af0</source>"
+
+        -- portal doesn't seem to like full url as source
+        -- formatSource (depth + 1) $ maybe "" id (source record) 
+
+        "<source>",  maybe "" LT.pack ( uuid record) , "</source>"
         ,
 
         -- image
@@ -109,7 +114,7 @@ formatXML records depth =
           <geonet:info xmlns:geonet="http://www.fao.org/geonetwork" >
               <id>153</id>
         |],
-              "<uuid>",  maybe ( "") LT.pack ( uuid record) , "</uuid>",
+              "<uuid>",  maybe "" LT.pack ( uuid record) , "</uuid>",
         [r|
               <schema>iso19139.mcp-2.0</schema>
               <createDate>2016-05-25T16:35:13</createDate>
@@ -133,8 +138,20 @@ formatXML records depth =
       H.concatLT [
           "\n",
           H.pad $ depth * 3,
-          "<title>", LT.pack $ title di, LT.pack "</title>"
+          "<title>", LT.pack $ title di, "</title>"
       ]
+
+
+
+    formatSource depth source =
+      let source' = LT.pack $ X.textEscapeXml source in
+      H.concatLT [
+          "\n",
+          H.pad $ depth * 3,
+          "<source>", source', "</source>"
+      ]
+
+
 
 
     formatGeopoly depth poly =
