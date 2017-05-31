@@ -16,7 +16,7 @@ module Metadata where
 
 import qualified Database.PostgreSQL.Simple as PG(connectPostgreSQL)
 
-import qualified Data.ByteString.Char8 as BS(ByteString(..), append, empty, unpack )
+import qualified Data.ByteString.Char8 as BS(ByteString(..), append, empty, unpack, split, concat)
 import qualified Data.Text.Lazy as LT(pack, empty, append, fromStrict)
 import qualified Data.Text.Lazy.IO as LT(putStrLn)
 import qualified Data.Text.Encoding as E(decodeUtf8, encodeUtf8)
@@ -87,11 +87,11 @@ formatXML records depth =
         -- foldl (\a b -> LT.append a $ LE.decodeUtf8  b) LT.empty  $ geopoly record,
         -- LT.fromStrict $ E.decodeUtf8 $ foldl (BS.append ) BS.empty $ polys
 
-{-
+
         let polys = map (formatGeopoly $ depth + 1) $ geopoly record in
         foldl (LT.append ) LT.empty polys
--}
-        formatGeopoly $ depth + 1
+
+        -- formatGeopoly $ depth + 1
         ,
 
         -- dataparameters - eg. parameter, platform, organisation
@@ -137,19 +137,24 @@ formatXML records depth =
       ]
 
 
-    formatGeopoly depth =
-      -- <geoPolygon>POLYGON ((-85 -15, -85 -10, -80 -10, -80 -15, -85 -15))</geoPolygon>
+    formatGeopoly depth poly =
+      -- TODO treat geometry as real geometry in the db
+      -- turn -180 -90 -180 -85 -175 -85 -175 -90 -180 -90  
+      -- into -180 -90, -180 -85, -175 -85, -175 -90, -180 -90 
+      let vals = BS.split ' ' poly in
+      let enumeratedVals = zip [0..] vals in 
+      let f s (index,val) = 
+            case index `mod` 2 of 
+              1 | index /= length vals - 1 -> BS.concat [ s, " ", val, "," ]
+              1 -> BS.concat [ s, " ", val ]
+              0 -> BS.concat [ s, " ", val ]
+      in
+      let s = foldl f "" enumeratedVals in
 
-      -- metadata <gml:posList srsDimension="2">-75 -10 -75 -15 -70 -15 -70 -45 -75 -45 -75 -50 -70 -50 -70 -55 -65 -55 -65 -45 -60 -45 -60 -35 -55 -35 -55 -30 -50 -30 -50 -25 -45 -25 -45 -20 -40 -20 -40 -5 -50 -5 -50 0 -55 0 -55 5 -65 5 -65 10 -75 10 -75 -10</gml:posList>
-      -- note the ,
       H.concatLT [
           "\n",
           H.pad $ depth * 3,
-          -- "<geoPolygon> ", bsToLazy geopoly, "</geoPolygon>"
-          -- "<geoPolygon>POLYGON ((-85 -15, -85 -10, -80 -10, -80 -15, -85 -15))</geoPolygon>"
-          [r|
-<geoPolygon>POLYGON ((180 -70, 180 -75, 170 -75, 170 -80, 160 -80, 160 -70, 135 -70, 135 -65, 130 -65, 130 -70, 100 -70, 100 -65, 95 -65, 95 -70, 0 -70, 0 -75, -40 -75, -40 -70, -45 -70, -45 -75, -50 -75, -50 -70, -55 -70, -55 -65, -65 -65, -65 -70, -80 -70, -80 -75, -110 -75, -110 -70, -115 -70, -115 -75, -145 -75, -145 -80, -180 -80, -180 65, -175 65, -175 60, -165 60, -165 55, -160 55, -160 60, -150 60, -150 65, -145 65, -145 60, -130 60, -130 55, -125 55, -125 50, -120 50, -120 35, -115 35, -115 30, -110 30, -110 25, -105 25, -105 20, -100 20, -100 30, -90 30, -90 40, -85 40, -85 35, -80 35, -80 40, -75 40, -75 45, -55 45, -55 50, -60 50, -60 55, -65 55, -65 65, -60 65, -60 75, -55 75, -55 70, -50 70, -50 65, -40 65, -40 70, -20 70, -20 75, -15 75, -15 85, -25 85, -25 90, 70 90, 70 85, 40 85, 40 80, 30 80, 30 75, 50 75, 50 70, 20 70, 20 65, 25 65, 25 50, 20 50, 20 55, 15 55, 15 65, 10 65, 10 50, 15 50, 15 45, 30 45, 30 50, 35 50, 35 45, 45 45, 45 40, 40 40, 40 20, 55 20, 55 30, 65 30, 65 25, 70 25, 70 20, 75 20, 75 15, 80 15, 80 25, 95 25, 95 20, 100 20, 100 0, 105 0, 105 20, 110 20, 110 25, 120 25, 120 30, 125 30, 125 45, 135 45, 135 50, 145 50, 145 55, 150 55, 150 50, 155 50, 155 55, 160 55, 160 60, 170 60, 170 65, 180 65, 180 -70), (-75 -10, -75 -15, -70 -15, -70 -45, -75 -45, -75 -50, -70 -50, -70 -55, -65 -55, -65 -45, -60 -45, -60 -35, -55 -35, -55 -30, -50 -30, -50 -25, -45 -25, -45 -20, -40 -20, -40 -5, -50 -5, -50 0, -55 0, -55 5, -65 5, -65 10, -75 10, -75 -10), (15 -15, 15 -30, 30 -30, 30 -25, 35 -25, 35 -15, 40 -15, 40 -10, 35 -10, 35 0, 40 0, 40 5, 45 5, 45 10, 40 10, 40 15, 35 15, 35 25, 25 25, 25 30, 10 30, 10 35, -5 35, -5 30, -10 30, -10 25, -15 25, -15 10, 5 10, 5 5, 10 5, 10 -5, 15 -5, 15 -15), (120 -10, 135 -10, 135 -15, 125 -15, 125 -20, 115 -20, 115 -30, 135 -30, 135 -35, 150 -35, 150 -20, 145 -20, 145 -15, 140 -15, 140 -5, 120 -5, 120 -10), (165 -65, 165 -70, 170 -70, 170 -65, 165 -65), (110 -5, 115 -5, 115 0, 110 0, 110 -5), (5 45, 5 60, -5 60, -5 50, 0 50, 0 45, 5 45), (20 80, 20 75, 25 75, 25 80, 20 80))</geoPolygon>
-          |]
+          "<geoPolygon>POLYGON ((", bsToLazy s, "))</geoPolygon>"
       ]
 
 
