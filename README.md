@@ -3,9 +3,9 @@
 
 - implements PoC faceted search, freetext search, pagination, online resources, to drive AODN Portal
 - csw harvesting of external catalogues
-- support mcp2.0/19139 records, but not dependent on metadata form - subset only, and easy to transform
-- freetext using postgres 9.5 freetext support 
-- records, concepts and indexes - all state localized to a db backend, no filesystem needed
+- support for mcp2.0/19139, but not dependent on this metadata form - subset only, and easy to transform
+- freetext search implemented with postgres 9.5 freetext support 
+- records, concepts and indexes - all state localized to a db backend, no filesystem, support cloud saas
 - logos stored and served from the db.
 
 
