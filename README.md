@@ -1,15 +1,16 @@
 
 ## Catalog Services for Portal - PoC
 
-- implements PoC faceted search, freetext search, pagination, online resources, usage limit, attr constraints to drive AODN Portal
+- standalone prototype Geonetwork replacement written in Haskell!
+- implements facet search, facet counts, freetext search, pagination, online resources, usage limits, attr constraints etc to drive AODN Portal
 - csw harvesting of external catalogues
-- support for mcp2.0/19139, but not dependent on metadata form - subset only, and easy to transform
-- freetext search implemented with postgres 9.5 freetext support 
-- records, concepts and indexes - all state localized to a db backend, no filesystem, support saas
+- support for mcp2.0/19139, but not dependent on metadata form - subset only, simple to manage, transform, extend
+- freetext search built on top of postgres 9.5 freetext support
+- iso19139 records, skos vocabulary/concepts relationally modelled. localized to db backend, supports easy cloud hosting
 - logos stored and served from the db.
 
 
-### Usage
+### Use
 ```
 # build db
 psql -h postgres.localnet -U admin -d postgres -f sql/db.sql
@@ -39,11 +40,15 @@ curl -s 'http://localhost:3000/srv/eng/xml.search.imos?protocol=OGC%3AWMS-1.1.1-
 ...
 
 
-# configure portal
+# configure portal by pointing at catalog services for portal binary
 vim ./Portal.groovy
 > geonetwork.url = "http://10.1.1.1:3000"
 
 ```
 
-Example of mcp2 record extraction, [mcp2.0/19139](./src/ParseMCP20.hs) 
+### Video demo
+
+[![Demo](./resources/logo.png)](./catalogue-services-for-portal.mp4 "Demo")
+
+
 

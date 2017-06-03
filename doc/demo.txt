@@ -8,7 +8,8 @@ demo csiro  - with different logo
 
 temperature argo & flaot -> step 3
 
-aatams links - on download page
+aatams links 
+  - second link -> aatams application
 
 attributeion, license
 
