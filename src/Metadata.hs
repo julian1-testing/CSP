@@ -31,6 +31,7 @@ import qualified RecordGet as RecordGet(getRecords, getRecordIdFromUuid)
 import qualified Helpers as H(concatLT, pad)
 import qualified Config as Config(connString)
 
+-- import Prelude((<<=))
 
 
 -- TODO better way?
@@ -259,24 +260,16 @@ main = do
 
   --- records <- RecordGet.getRecords conn [ 289, 290 ]
   argo_id <- RecordGet.getRecordIdFromUuid conn "4402cb50-e20a-44ee-93e6-4728259250d2" -- argo
-
   print argo_id
 
-  -- maybe [] (BS.split '/') term
-  -- maybe
-  case argo_id of
-    Just record_id ->  do
-      -- records <- RecordGet.getRecords conn [ 289, 290 ]
-      records <- RecordGet.getRecords conn [ record_id ]
+  maybe
+      (putStrLn "not found")
+      (\record_id -> do
 
-      mapM (putStrLn. map trComma .show) records
-
-      let s = formatXML records 0
-      LT.putStrLn $ s
-
-    Nothing -> do
-      putStrLn "couldn't find argo"
-
-
+          records <- RecordGet.getRecords conn [ record_id ]
+          mapM (putStrLn. map trComma .show) records
+          LT.putStrLn $ formatXML records 0
+      )
+      argo_id
 
 
