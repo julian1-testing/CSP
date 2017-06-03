@@ -11,7 +11,7 @@ FLAGS="-i./src -O2 -outputdir tmp"
 [ -d target ] || mkdir target
 
 # uncomment to test module in isolation
-# files=' src/Metadata.hs '
+files=' src/Metadata.hs '
 # files=' src/FacetCalc.hs '
 # files=' src/Search.hs '
 # files=' src/Query.hs '
@@ -25,7 +25,7 @@ FLAGS="-i./src -O2 -outputdir tmp"
 # main binaries
 # files=' src/LoadSchemes.hs src/Harvest.hs src/Service.hs src/LoadImage.hs '
 # files=' src/Metadata.hs src/Service.hs '
-files=' src/Service.hs '
+# files=' src/Service.hs '
 
 
 for i in $files; do

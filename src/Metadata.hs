@@ -13,7 +13,7 @@
 
 module Metadata where
 
-import qualified Database.PostgreSQL.Simple as PG(connectPostgreSQL)
+import qualified Database.PostgreSQL.Simple as PG(connect, close)
 
 import qualified Data.ByteString.Char8 as BS(ByteString(..), unpack, split, concat)
 import qualified Data.ByteString.Lazy.Char8 as LBS(readFile, fromChunks) 
@@ -29,7 +29,7 @@ import Text.RawString.QQ
 import Record
 import qualified RecordGet as RecordGet(getRecords, getRecordIdFromUuid)
 import qualified Helpers as H(pad)
-import qualified Config as Config(connString)
+import qualified Config as Config(connectionInfo)
 
 
 
@@ -266,7 +266,7 @@ trComma x = x
 main :: IO ()
 main = do
   -- expect argo in the db
-  conn <- PG.connectPostgreSQL Config.connString
+  conn <- PG.connect Config.connectionInfo
 
   --- records <- RecordGet.getRecords conn [ 289, 290 ]
   argo_id <- RecordGet.getRecordIdFromUuid conn "4402cb50-e20a-44ee-93e6-4728259250d2" -- argo
@@ -282,4 +282,4 @@ main = do
       )
       argo_id
 
-
+  PG.close conn

@@ -55,18 +55,6 @@ import qualified LoadImage as LoadImage(getImage)
 encode = LE.encodeUtf8
 
 
--- connString = "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
-
-{-
-connectionInfo  :: PG.ConnectInfo
-connectionInfo = PG.defaultConnectInfo { 
-      PG.connectHost = "postgres.localnet"
-    , PG.connectPort = 5432
-    , PG.connectDatabase = "harvest"
-    , PG.connectUser = "harvest"
-    , PG.connectPassword = "harvest"
-}
--}
 
 
 main = do
