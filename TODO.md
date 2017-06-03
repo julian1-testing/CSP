@@ -1,10 +1,15 @@
 
+- slow deserialization of individual records - algorithm needs to be changed
+
+- organisation support - needs records marked up
+
+- date in step-1 search
+
 - understand exceptions in context of db handling etc..
 
 
 - image from db. if only to prove it works.
     -- need to understand conn handling only issue is db conn handling.
-
 
 - popularity
 

@@ -17,11 +17,7 @@ cabal install postgresql-simple
 
 ```
 
-
-
-
-
-### Vim
+### Vim config
 
 from, vim /usr/share/vim/vim80/syntax/haskell.vim
 
@@ -60,11 +56,12 @@ from, vim /usr/share/vim/vim80/syntax/haskell.vim
   https://hackage.haskell.org/package/hxt-9.3.1.16/docs/Text-XML-HXT-Arrow-XmlArrow.html
 
 
-- PG
-  conn management
+- PG conn management
   https://hackage.haskell.org/package/postgresql-simple-0.5.0.0/candidate/docs/Database-PostgreSQL-Simple.html#g:14
 
-
+- pg pools
+  - http://codeundreamedof.blogspot.com.au/2015/01/a-connection-pool-for-postgresql-in.html
+  - https://github.com/lpsmith/postgresql-libpq/issues/33
 
 
 ### Old - Notes, on libraries

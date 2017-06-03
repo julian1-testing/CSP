@@ -1,15 +1,15 @@
 {-
-    TODO - convert all String to ByteString
 
     Record structure - containing everything needed for Portal
       modelled after mcp2, but not dependent upon it.
 
-    we work out what we need by looking at
-        1. MetaDataRecord.js and seeing the fields
+    revese engineer steps, 
+        1. MetaDataRecord.js for fields
         2. looking at the fields in the response.xml
         3. then mapping the values in response.xml back into original argo.xml record to get tag name
 
-    If any field is genuinely optional then we should use Maybe
+      optional field use Maybe
+      multiple fields use List
 
     Eg.
     ./web-app/js/portal/data/MetadataRecord.js
@@ -19,7 +19,7 @@
         parameterField   -   done db join vocab  parameters we have - just join in the db and format
         platform         -   done db field join vocab
 
-        organisationField    **** don't have yet - .
+        organisationField    **** not marked in metadata
 
         jurisdictionLink    done
         licenseLink         done
@@ -88,17 +88,15 @@ data TransferLink = TransferLink {
 
 data DataParameter = DataParameter {
 
-    term :: BS.ByteString, -- eg. pref label
+    term :: BS.ByteString, -- ie. pref label
     url :: BS.ByteString,
 
-
     -- the vocabulary used - eg. AODN Platform Category Vocabulary
-    -- this is a computed property constructed with sql view. and not a serialized in the db 
+    -- this is a computed property constructed with sql view. and not a serialized in the db
     -- convenient, but maybe should be removed from here
     rootTerm :: BS.ByteString
 
 } deriving (Show, Eq)
-
 
 
 data Record = Record {
@@ -115,7 +113,6 @@ data Record = Record {
     transferLinks :: [ TransferLink ],
     geopoly :: [ BS.ByteString ]            -- this is slow? or is there an indexing issue
 } deriving (Show, Eq)
-
 
 
 emptyRecord = Record Nothing Nothing Nothing Nothing [] [] [] Nothing [] []
