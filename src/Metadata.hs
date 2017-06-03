@@ -57,10 +57,9 @@ formatXML records depth =
 
         -- this just returns the uuid as the source - so we could adjust based on that.
         "\n",
-        "<source>1</source>"
-        ,
+        "<source>1</source>",
 
-        -- image
+        -- image?
         formatImage nextDepth, 
 
         formatPOT nextDepth $ uuid record,
@@ -90,7 +89,6 @@ formatXML records depth =
 
 
         LT.concat $ map (formatGeopoly nextDepth) $ geopoly record,
-
 
         -- geonet
         -- looks like nothing here is used, except the record uuid

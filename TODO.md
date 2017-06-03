@@ -3,7 +3,9 @@
 
 - organisation support - needs records marked up
 
-- date in step-1 search
+- incorporate date in step-1 search
+
+- incorporate transfer-link protocol in / facet.q
 
 - understand exceptions in context of db handling etc..
 

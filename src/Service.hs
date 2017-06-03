@@ -41,24 +41,41 @@ import qualified Data.ByteString.Char8 as BS(putStrLn, pack, concat, readInt)
 import qualified Data.ByteString.Lazy.Char8 as LBS(readFile, fromChunks)
 
 
-import qualified Database.PostgreSQL.Simple as PG(query, connectPostgreSQL)
-import qualified Database.PostgreSQL.Simple.Types as PG(Only(..))
+import qualified Database.PostgreSQL.Simple as PG(connect, close ) 
 import qualified Data.List as L(find)
 import qualified Network.HTTP.Types as HTTP(urlEncode, urlDecode)
 
+import Data.Pool
 
 import Search(search, Params(..))
-import qualified Config as Config(connString)
+import qualified Config as Config(connectionInfo)
 import qualified LoadImage as LoadImage(getImage)
 
 
 encode = LE.encodeUtf8
 
 
+-- connString = "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
+
+{-
+connectionInfo  :: PG.ConnectInfo
+connectionInfo = PG.defaultConnectInfo { 
+      PG.connectHost = "postgres.localnet"
+    , PG.connectPort = 5432
+    , PG.connectDatabase = "harvest"
+    , PG.connectUser = "harvest"
+    , PG.connectPassword = "harvest"
+}
+-}
+
+
 main = do
     let port = 3000
     putStrLn $ "Listening on port " ++ show port
-    run port app
+
+    pool <- createPool (PG.connect Config.connectionInfo) PG.close 1 10 10
+
+    run port (app pool)
 
 
 
@@ -89,8 +106,8 @@ printParams params = do
 -- important - we should probably be decoding and validating params before dispatching...
 
 
-app :: Application
-app req res = do
+--app :: Application
+app pool req res = do
   -- application routing
   -- see, https://hackage.haskell.org/package/wai-3.2.1.1/docs/Network-Wai.html
 
@@ -104,9 +121,10 @@ app req res = do
 
     [ "srv","eng","xml.search.imos" ] -> do
       printReq req
-      xmlSearchImos params
+      withResource pool $ xmlSearchImos params
 
-    [ "images", "logos", imageId ] -> imageLogo imageId
+    [ "images", "logos", imageId ] ->
+      withResource pool $ imageLogo imageId
 
     [ "hello" ] -> hello
 
@@ -146,7 +164,7 @@ extractStringParam params key = do
 
 
 -- xmlSearchImos :: IO Response
-xmlSearchImos params = do
+xmlSearchImos params conn = do
   -- get a db connection, extract the params and delegate off to search
   BS.putStrLn $ E.encodeUtf8 "xmlSearchImos"
   printParams params
@@ -157,10 +175,6 @@ xmlSearchImos params = do
   let facetQ = extractStringParam params "facet.q"  -- facet search expression
   let any = extractStringParam params "any"         -- freetext
 
-  -- any: argo profile
-  -- facet.q: Platform/Vessel/vessel%20of%20opportunity
-  -- HTTP.urlDecode False v
-
   let searchParams = Search.Params {
       to = to,
       from = from,
@@ -168,9 +182,6 @@ xmlSearchImos params = do
       Search.any = any
   }
 
-  -- test db
-
-  conn <- PG.connectPostgreSQL Config.connString
   s <- Search.search conn searchParams
 
   return $
@@ -183,14 +194,14 @@ xmlSearchImos params = do
 
 -- we have to j
 
-imageLogo imageId = do
+imageLogo imageId conn = do
 
   BS.putStrLn "---------------------------------------" 
   BS.putStrLn $ E.encodeUtf8 imageId
   -- BS.putStrLn "imageLogo" 
 
-  conn <- PG.connectPostgreSQL Config.connString
   s <- LoadImage.getImage conn 1 
+
   let lazyS = LBS.fromChunks [ s ]
   -- s <- LBS.readFile "resources/logo.png"
   return $

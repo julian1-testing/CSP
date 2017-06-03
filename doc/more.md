@@ -15,6 +15,8 @@ cabal install raw-strings-qq
 apt-get install libpq-dev
 cabal install postgresql-simple
 
+cabal install resource-pool
+
 ```
 
 ### Vim config
