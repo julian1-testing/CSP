@@ -45,6 +45,5 @@ vim ./Portal.groovy
 
 ```
 
-
-[mcp2.0/19139](./src/ParseMCP20.hs) 
+Example of mcp2 record extraction, [mcp2.0/19139](./src/ParseMCP20.hs) 
 
