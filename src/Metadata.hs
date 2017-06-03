@@ -89,9 +89,7 @@ formatXML records depth =
         maybe "" (formatMDCommons nextDepth) $ mdCommons record, 
 
 
-
         LT.concat $ map (formatGeopoly nextDepth) $ geopoly record,
-
 
 
         -- geonet
@@ -139,13 +137,6 @@ formatXML records depth =
           "<title>", bsToLazy $ title di, "</title>"
       ]
 
-
-{-
-    <imageLink>https://licensebuttons.net/l/by/4.0/88x31.png</imageLink>
-    <jurisdictionLink>http://creativecommons.org/international/</jurisdictionLink>
-    <licenseName>Attribution 4.0 International</licenseName>
-    <licenseLink>http://creativecommons.org/licenses/by/4.0/</licenseLink>
--} 
 
     formatMDCommons depth md =
       let pad = LT.concat [ "\n", H.pad $ depth * 3 ] in

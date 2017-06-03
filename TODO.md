@@ -13,12 +13,11 @@ tidy QQ imports and qualify them. eg.
   import Text.RawString.QQ(r)
 
 
-- polys for gridded data....
+- bounding box for gridded data....
 
+---
 
-
-
-done - (partially done) attribution - on download, use limitation 
+done - attribution - on download, use limitation , license link info
 
 done - change record uuid etc to bytestring.
 
