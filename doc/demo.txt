@@ -1,9 +1,16 @@
 
+navigation
+  temperature
+  mooring
+  satellite --- noa17
+
+can demo csiro 
+
+temperature argo & flaot -> step 3
 
 aatams links - on download page
 
 attributeion, license
-
 
 argo & float
 

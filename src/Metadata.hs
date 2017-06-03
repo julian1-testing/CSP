@@ -57,7 +57,10 @@ formatXML records depth =
 
         -- this just returns the uuid as the source - so we could adjust based on that.
         "\n",
-        "<source>1</source>",
+
+        -- source is used for image...
+        "<source>",  maybe "" bsToLazy $ uuid record, "</source>",
+        -- "<source>1</source>",
 
         -- image?
         formatImage nextDepth, 

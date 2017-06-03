@@ -57,17 +57,40 @@ getImage conn id = do
         -- else throw
 
 
+getImageForUUID conn uuid = do
+    -- xs :: [(Only Binary BS.ByteString)] <- PG.query conn
+    -- map using same id as source
+    -- join source on source.id = record.source_id
+    xs :: [(Only BS.ByteString)] <- PG.query conn
+        [r|
+            select
+              image.image
+            from record
+            join image on image.id = record.source_id
+            where record.uuid = ?
+        |]
+        $ Only (uuid :: BS.ByteString)
 
-main = do
-    s <- BS.readFile "resources/logo.png"
+    return $
+      case xs of
+        [ Only s ] -> s
+        -- else throw
 
+
+
+-- csiro.png
+-- storeImage path 
+
+storeImage' path = do
+    s <- BS.readFile path
     conn <- PG.connect Config.connectionInfo
     record_id <- storeImage conn s
-
     putStrLn $ "stored record_id is " ++ show record_id
-
-    s2 <- getImage conn 1
+    s2 <- getImage conn 1   -- test retrieval
     -- BS.writeFile  "whoot.png" s2
-
     PG.close conn
+
+main = do
+  storeImage' "resources/imos.png"
+  storeImage' "resources/csiro.png"
 

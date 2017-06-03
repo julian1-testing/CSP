@@ -37,7 +37,7 @@ import Network.HTTP.Types.Header (hContentType, hContentEncoding)
 import qualified Data.Text.Encoding as E(encodeUtf8)
 import qualified Data.Text.Lazy.Encoding as LE(encodeUtf8)
 -- import qualified Data.Text.Lazy as LT
-import qualified Data.ByteString.Char8 as BS(putStrLn, pack, concat, readInt)
+import qualified Data.ByteString.Char8 as BS(putStrLn, pack, concat, readInt, split)
 import qualified Data.ByteString.Lazy.Char8 as LBS(readFile, fromChunks)
 
 
@@ -45,11 +45,11 @@ import qualified Database.PostgreSQL.Simple as PG(connect, close )
 import qualified Data.List as L(find)
 import qualified Network.HTTP.Types as HTTP(urlEncode, urlDecode)
 
-import Data.Pool
+import qualified Data.Pool as Pool(createPool, withResource)
 
 import Search(search, Params(..))
 import qualified Config as Config(connectionInfo)
-import qualified LoadImage as LoadImage(getImage)
+import qualified LoadImage as LoadImage(getImage, getImageForUUID)
 
 
 encode = LE.encodeUtf8
@@ -61,7 +61,7 @@ main = do
     let port = 3000
     putStrLn $ "Listening on port " ++ show port
 
-    pool <- createPool (PG.connect Config.connectionInfo) PG.close 1 10 10
+    pool <- Pool.createPool (PG.connect Config.connectionInfo) PG.close 1 10 10
 
     run port (app pool)
 
@@ -109,10 +109,10 @@ app pool req res = do
 
     [ "srv","eng","xml.search.imos" ] -> do
       printReq req
-      withResource pool $ xmlSearchImos params
+      Pool.withResource pool $ xmlSearchImos params
 
     [ "images", "logos", imageId ] ->
-      withResource pool $ imageLogo imageId
+      Pool.withResource pool $ imageLogo imageId
 
     [ "hello" ] -> hello
 
@@ -188,7 +188,11 @@ imageLogo imageId conn = do
   BS.putStrLn $ E.encodeUtf8 imageId
   -- BS.putStrLn "imageLogo" 
 
-  s <- LoadImage.getImage conn 1 
+  -- simple demo of getting an image by uuid...
+  -- s <- LoadImage.getImage conn 1 
+  let uuidGif = (E.encodeUtf8  imageId)
+  let uuid : _ = BS.split '.' uuidGif
+  s <- LoadImage.getImageForUUID conn  uuid 
 
   let lazyS = LBS.fromChunks [ s ]
   -- s <- LBS.readFile "resources/logo.png"
