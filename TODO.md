@@ -6,6 +6,8 @@
 - organisation support - needs records marked up
 
 - incorporate date in step-1 search
+    eg. extFrom: 2017-06-07
+        extTo: 2017-06-21
 
 - incorporate transfer-link protocol in / facet.q
 
