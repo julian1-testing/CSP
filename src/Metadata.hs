@@ -57,8 +57,8 @@ formatXML records depth =
 
         -- portal doesn't seem to like full url as source
 
-        -- formatSource (depth + 1) $ maybe "" id (source record) 
-  
+        -- formatSource (depth + 1) $ maybe "" id (source record)
+
         -- this just returns the uuid as the source - so we could adjust based on that.
         -- "<source>",  maybe "" LT.pack ( uuid record) , "</source>"
         "<source>1</source>"
@@ -112,7 +112,7 @@ formatXML records depth =
         ,
 
         -- geonet
-        -- nothing appears to be used except the record uuid 
+        -- nothing appears to be used except the record uuid
         [r|
           <geonet:info xmlns:geonet="http://www.fao.org/geonetwork" >
               <id>153</id>
@@ -159,12 +159,12 @@ formatXML records depth =
 
     formatGeopoly depth poly =
       -- TODO treat geometry as real geometry in the db
-      -- turn -180 -90 -180 -85 -175 -85 -175 -90 -180 -90  
-      -- into -180 -90, -180 -85, -175 -85, -175 -90, -180 -90 
+      -- turn -180 -90 -180 -85 -175 -85 -175 -90 -180 -90
+      -- into -180 -90, -180 -85, -175 -85, -175 -90, -180 -90
       let vals = BS.split ' ' poly in
-      let enumeratedVals = zip [0..] vals in 
-      let f s (index,val) = 
-            case index `mod` 2 of 
+      let enumeratedVals = zip [0..] vals in
+      let f s (index,val) =
+            case index `mod` 2 of
               1 | index /= length vals - 1 -> BS.concat [ s, " ", val, "," ]
               1 -> BS.concat [ s, " ", val ]
               0 -> BS.concat [ s, " ", val ]
@@ -248,12 +248,13 @@ formatXML records depth =
 ----
 -- tests
 
-
+trComma ',' = '\n'
+trComma x = x
 
 
 main :: IO ()
 main = do
-  -- TODO currently assumes argo is populated in the db.
+  -- expect argo in the db
   conn <- PG.connectPostgreSQL Config.connString
 
   --- records <- RecordGet.getRecords conn [ 289, 290 ]
@@ -261,12 +262,14 @@ main = do
 
   print argo_id
 
+  -- maybe [] (BS.split '/') term
+  -- maybe
   case argo_id of
     Just record_id ->  do
       -- records <- RecordGet.getRecords conn [ 289, 290 ]
       records <- RecordGet.getRecords conn [ record_id ]
 
-      mapM (putStrLn.show) records
+      mapM (putStrLn. map trComma .show) records
 
       let s = formatXML records 0
       LT.putStrLn $ s
