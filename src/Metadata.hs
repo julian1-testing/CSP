@@ -16,10 +16,8 @@ module Metadata where
 
 import qualified Database.PostgreSQL.Simple as PG(connectPostgreSQL)
 
-import qualified Data.ByteString.Char8 as BS(ByteString(..), append, empty, unpack, split, concat)
+import qualified Data.ByteString.Char8 as BS(ByteString(..), unpack, split, concat)
 import qualified Data.ByteString.Lazy.Char8 as LBS(readFile, fromChunks) 
-
--- import qualified Data.Text.Lazy as LT(pack, empty, append, fromStrict)
 import qualified Data.Text.Lazy as LT(pack, empty, append, fromStrict, concat)
 import qualified Data.Text.Lazy.IO as LT(putStrLn)
 import qualified Data.Text.Encoding as E(decodeUtf8, encodeUtf8)
@@ -31,7 +29,6 @@ import Text.RawString.QQ
 
 import Record
 import qualified RecordGet as RecordGet(getRecords, getRecordIdFromUuid)
--- import qualified Helpers as LT.concat, pad)
 import qualified Helpers as H(pad)
 import qualified Config as Config(connString)
 
