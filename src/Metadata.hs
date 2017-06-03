@@ -17,7 +17,10 @@ module Metadata where
 import qualified Database.PostgreSQL.Simple as PG(connectPostgreSQL)
 
 import qualified Data.ByteString.Char8 as BS(ByteString(..), append, empty, unpack, split, concat)
-import qualified Data.Text.Lazy as LT(pack, empty, append, fromStrict)
+import qualified Data.ByteString.Lazy.Char8 as LBS(readFile, fromChunks) 
+
+-- import qualified Data.Text.Lazy as LT(pack, empty, append, fromStrict)
+import qualified Data.Text.Lazy as LT(pack, empty, append, fromStrict, concat)
 import qualified Data.Text.Lazy.IO as LT(putStrLn)
 import qualified Data.Text.Encoding as E(decodeUtf8, encodeUtf8)
 import qualified Data.Text.Lazy.Encoding as LE(decodeUtf8, encodeUtf8)
@@ -28,24 +31,26 @@ import Text.RawString.QQ
 
 import Record
 import qualified RecordGet as RecordGet(getRecords, getRecordIdFromUuid)
-import qualified Helpers as H(concatLT, pad)
+-- import qualified Helpers as LT.concat, pad)
+import qualified Helpers as H(pad)
 import qualified Config as Config(connString)
 
 -- import Prelude((<<=))
 
 
 -- TODO better way?
+-- fromChunks ?
 bsToLazy b =  LT.fromStrict $ E.decodeUtf8 b
 
 
 
 formatXML records depth =
-  H.concatLT $ map (\record -> formatRecord record depth) records
-  -- H.concatLT $ map (flip $ formatRecord depth ) records
+  LT.concat $ map (\record -> formatRecord record depth) records
+  -- LT.concat $ map (flip $ formatRecord depth ) records
   where
 
     formatRecord record depth =
-      H.concatLT [
+      LT.concat [
         "\n", H.pad $ depth * 3, "<metadata>"
         ,
 
@@ -72,7 +77,7 @@ formatXML records depth =
         H.pad $ depth * 3,
         "<link>|Point of truth URL of this metadata record|https://catalogue-imos.aodn.org.au:443/geonetwork/srv/en/metadata.show?uuid=",
           -- maybe  "" id (Just "hi")
-          maybe "" LT.pack (uuid record),
+          maybe "" bsToLazy $ uuid record,
           -- uuid record
           -- "aaad092c-c3af-42e6-87e0-bdaef945f522"
           "|WWW:LINK-1.0-http--metadata-URL|text/html</link>\n",
@@ -97,19 +102,19 @@ formatXML records depth =
         -- LT.fromStrict $ E.decodeUtf8 $ foldl (BS.append ) BS.empty $ polys
 
 
-        let polys = map (formatGeopoly $ depth + 1) $ geopoly record in
-        foldl (LT.append ) LT.empty polys
+        LT.concat $ map (formatGeopoly $ depth + 1) $ geopoly record -- in
+        -- foldl (LT.append ) LT.empty polys
 
         -- formatGeopoly $ depth + 1
         ,
 
         -- dataparameters - eg. parameter, platform, organisation
-        let dps = map (formatDataParameter $ depth + 1) $ dataParameters record in
-        foldl (LT.append ) LT.empty dps
+        LT.concat $ map (formatDataParameter $ depth + 1) $ dataParameters record -- in
+        -- foldl (LT.append ) LT.empty dps
         ,
 
-        let links = map (formatLink $ depth + 1) $ transferLinks record in
-        foldl (LT.append ) LT.empty links
+        LT.concat $ map (formatLink $ depth + 1) $ transferLinks record -- in
+        -- foldl (LT.append ) LT.empty links
         ,
 
         -- geonet
@@ -118,7 +123,7 @@ formatXML records depth =
           <geonet:info xmlns:geonet="http://www.fao.org/geonetwork" >
               <id>153</id>
         |],
-              "<uuid>",  maybe "" LT.pack ( uuid record) , "</uuid>",
+              "<uuid>",  maybe "" bsToLazy $ uuid record, "</uuid>",
         [r|
               <schema>iso19139.mcp-2.0</schema>
               <createDate>2016-05-25T16:35:13</createDate>
@@ -139,17 +144,18 @@ formatXML records depth =
 
 
     formatTitle di depth  =
-      H.concatLT [
+      -- LT.concat [
+      LT.concat [
           "\n",
           H.pad $ depth * 3,
-          "<title>", LT.pack $ title di, "</title>"
+          "<title>", bsToLazy $ title di, "</title>"
       ]
 
 
 
     formatSource depth source =
       let source' = LT.pack $ X.textEscapeXml source in
-      H.concatLT [
+      LT.concat [
           "\n",
           H.pad $ depth * 3,
           "<source>", source', "</source>"
@@ -172,7 +178,7 @@ formatXML records depth =
       in
       let s = foldl f "" enumeratedVals in
 
-      H.concatLT [
+      LT.concat [
           "\n",
           H.pad $ depth * 3,
           "<geoPolygon>POLYGON ((", bsToLazy s, "))</geoPolygon>"
@@ -180,20 +186,20 @@ formatXML records depth =
 
 
     formatDataParameter depth dp =
-      H.concatLT [
+      LT.concat [
         "\n",
         H.pad $ depth * 3,
         -- f (label, url, rootLabel) =
         case dp of
 
           DataParameter label _ "AODN Parameter Category Vocabulary" ->
-            H.concatLT [ "<parameter>", bsToLazy label, "</parameter>" ]
+            LT.concat [ "<parameter>", bsToLazy label, "</parameter>" ]
 
           DataParameter label _ "AODN Platform Category Vocabulary" ->
-            H.concatLT [ "<platform>", bsToLazy label, "</platform>" ]
+            LT.concat [ "<platform>", bsToLazy label, "</platform>" ]
 
           DataParameter label _ "AODN Organisation Category Vocabulary" ->
-            H.concatLT [ "<organisation>", bsToLazy label, "</organisation>" ]
+            LT.concat [ "<organisation>", bsToLazy label, "</organisation>" ]
 
           _ -> ""
       ]
@@ -211,12 +217,12 @@ formatXML records depth =
     -}
 
     formatLink depth link =
-      H.concatLT [
+      LT.concat [
         "\n",
         H.pad $ depth * 3,
         case link of
-          -- TransferLink protocol linkage name description | protocol == "OGC:WMS-1.1.1-http-get-map" -> H.concatLT [
-          TransferLink protocol linkage name description -> H.concatLT [
+          -- TransferLink protocol linkage name description | protocol == "OGC:WMS-1.1.1-http-get-map" -> LT.concat [
+          TransferLink protocol linkage name description -> LT.concat [
               "<link>",
                 bsToLazy name,
                 "|", LT.pack $ X.textEscapeXml $ BS.unpack description,
@@ -230,14 +236,14 @@ formatXML records depth =
               "</link>"
             ]
           -- _ -> ""
-          -- TransferLink protocol linkage name description -> H.concatLT [ "<!-- ", bsToLazy protocol, bsToLazy linkage, bsToLazy name, bsToLazy description, "-->" ]
+          -- TransferLink protocol linkage name description -> LT.concat [ "<!-- ", bsToLazy protocol, bsToLazy linkage, bsToLazy name, bsToLazy description, "-->" ]
       ]
 
 
 
     formatImage depth =
       -- appears that portal disregards the image link in favor of explicit lookup...
-      H.concatLT [
+      LT.concat [
           "\n",
           H.pad $ depth * 3,
           -- "<image>thumbnail|http://whoot/image.jpg</image>"

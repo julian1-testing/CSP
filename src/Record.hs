@@ -58,8 +58,8 @@ import qualified Data.ByteString.Char8 as BS(ByteString(..) )
 
 data DataIdentification = DataIdentification {
 
-    title :: String,
-    abstract :: String
+    title :: BS.ByteString,
+    abstract :: BS.ByteString
 
 } deriving (Show, Eq)
 
@@ -67,10 +67,10 @@ data DataIdentification = DataIdentification {
 
 data MDCommons = MDCommons {
 
-    jurisdictionLink :: String,
-    licenseLink :: String ,
-    licenseName :: String ,
-    licenseImageLink:: String
+    jurisdictionLink :: BS.ByteString,
+    licenseLink :: BS.ByteString,
+    licenseName :: BS.ByteString,
+    licenseImageLink:: BS.ByteString
 
 } deriving (Show, Eq)
 
@@ -103,14 +103,15 @@ data DataParameter = DataParameter {
 
 data Record = Record {
 
-    uuid :: Maybe String,
-    source :: Maybe String,
+    source :: Maybe BS.ByteString, -- should potentially be a datastructure to a source with an id.
+
+    uuid :: Maybe BS.ByteString,
     dataIdentification :: Maybe DataIdentification ,
     mdCommons :: Maybe MDCommons,
-    attrConstraints :: [ String ],   -- todo
-    useLimitations :: [ String ],    -- todo
+    attrConstraints :: [ BS.ByteString ],
+    useLimitations :: [ BS.ByteString ],
     dataParameters :: [ DataParameter ],
-    temporalBegin :: Maybe String,   -- todo
+    temporalBegin :: Maybe BS.ByteString,   -- todo
     transferLinks :: [ TransferLink ],
     geopoly :: [ BS.ByteString ]            -- this is slow? or is there an indexing issue
 } deriving (Show, Eq)
@@ -118,5 +119,8 @@ data Record = Record {
 
 
 emptyRecord = Record Nothing Nothing Nothing Nothing [] [] [] Nothing [] []
+
+
+-- some tests in RecordGet
 
 

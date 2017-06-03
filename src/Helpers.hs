@@ -110,6 +110,8 @@ pad count =
 
 -- concat list of lazy text
 -- is this not defined somewhere by the library?
+
+-- TODO GET RID OF THIS - use LT.concat instead
 concatLT lst = foldl LT.append LT.empty lst
 
 

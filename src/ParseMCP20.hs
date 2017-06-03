@@ -24,7 +24,7 @@ parseFileIdentifier =
   atTag "gmd:fileIdentifier" >>>
   proc identifier -> do
     uuid <- atChildName "gco:CharacterString" >>> getChildText -< identifier
-    returnA -< (uuid)
+    returnA -< BS.pack uuid
 
 
 
@@ -38,10 +38,10 @@ parseMDCommons =
     licenseImageLink <- atChildName "mcp:imageLink" >>> atChildName "gmd:URL" >>> getChildText -< md_commons
 
     returnA -< MDCommons {
-        jurisdictionLink = jurisdictionLink,
-        licenseLink = licenseLink,
-        licenseName = licenseName,
-        licenseImageLink = licenseImageLink
+        jurisdictionLink = BS.pack jurisdictionLink,
+        licenseLink = BS.pack licenseLink,
+        licenseName = BS.pack licenseName,
+        licenseImageLink = BS.pack licenseImageLink
         }
 
 
@@ -57,8 +57,8 @@ parseDataIdentification =
     abstract <- atChildName "gmd:abstract" >>> atChildName "gco:CharacterString" >>> getChildText -< dataIdent
 
     returnA -< DataIdentification {
-        title = title,
-        abstract = abstract
+        title = BS.pack title,
+        abstract = BS.pack abstract
         }
 
 
@@ -68,7 +68,7 @@ parseAttributionConstraints =
   atTag "gmd:resourceConstraints"  >>> atChildName "mcp:MD_Commons" >>>
   proc md_commons -> do
     attrConstr <- atChildName "mcp:attributionConstraints" >>> atChildName "gco:CharacterString" >>> getChildText -< md_commons
-    returnA -< attrConstr
+    returnA -< BS.pack attrConstr
 
 
 
@@ -78,7 +78,7 @@ parseUseLimitations =
   proc md_commons -> do
     useLimitation <- atChildName "gmd:useLimitation" >>> atChildName "gco:CharacterString"
         >>> getChildText -< md_commons
-    returnA -< useLimitation
+    returnA -< BS.pack useLimitation
 
 
 
@@ -86,11 +86,11 @@ parseTemporalExtentBegin =
   -- once
   atTag "gmd:extent"  >>> atChildName "gmd:EX_Extent" >>>
   proc extent -> do
-    begin <- atChildName "gmd:temporalElement" >>> atChildName "mcp:EX_TemporalExtent"
+    temporalBegin <- atChildName "gmd:temporalElement" >>> atChildName "mcp:EX_TemporalExtent"
         >>> atChildName "gmd:extent" >>> atChildName "gml:TimePeriod"
         >>> atChildName "gml:begin" >>> atChildName "gml:TimeInstant"
         >>> atChildName "gml:timePosition" >>> getChildText -< extent
-    returnA -< begin
+    returnA -< BS.pack temporalBegin
 
 
 
@@ -161,7 +161,7 @@ parse elts = do
     let temporalBegin' = Maybe.listToMaybe temporalBegin
 
     let record = Record {
-      uuid = uuid',
+      uuid = uuid'  ,
       source = Nothing, -- not initialized
       dataIdentification = dataIdentification',
       mdCommons = mdCommons',

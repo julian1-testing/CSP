@@ -11,7 +11,8 @@ module RecordStore where
 import Database.PostgreSQL.Simple as PG
 import Database.PostgreSQL.Simple.Types as PG(Only(..))
 import Text.RawString.QQ
-import qualified Data.ByteString.Char8 as BS(putStrLn, concat)
+import qualified Data.ByteString.Char8 as BS(ByteString(..), putStrLn, concat)
+
 
 
 import qualified Data.Maybe as Maybe(fromJust)
@@ -57,7 +58,7 @@ storeSource conn source = do
             union all
             select id from s
         |]
-        (source :: String, source :: String)
+        (source :: BS.ByteString, source :: BS.ByteString)
 
     let source_id = case xs of
          [] -> -99999 -- avoided because sql will return a value
@@ -96,7 +97,7 @@ storeRecord conn uuid source_id = do
             union all
             select id from s
         |]
-        (uuid :: String, source_id :: Int, uuid :: String, source_id :: Int)
+        (uuid :: BS.ByteString, source_id :: Int, uuid :: BS.ByteString, source_id :: Int)
 
     let record_id = case xs of
          [] -> -99999 -- avoided because sql will return a value

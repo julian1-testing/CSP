@@ -42,19 +42,14 @@ getRecordIdFromUuid conn uuid = do
 
 
 
-
-
-
-
--- TODO uuid and source should be combined in get accessor...
--- maybe... it is a join
+-- TODO combine this with getRecordUUID and return source, source_id, and uuid
 
 getRecordSource conn record_id = do
-  xs :: [ (Only String)] <- PG.query conn [r|
+  xs :: [ (Only BS.ByteString)] <- PG.query conn [r|
       select
         source
       from source
-      left join record on record.source_id = source.id
+      join record on record.source_id = source.id
       where record.id = ?
     |]
     $ Only (record_id :: Int)
@@ -67,10 +62,11 @@ getRecordSource conn record_id = do
 
 
 getRecordUuid conn record_id = do
-  xs :: [ (Int, String)] <- PG.query conn [r|
+  xs :: [ (Int, BS.ByteString )] <- PG.query conn [r|
       select
         record.id,
         uuid
+        -- add source...
       from record
       where record.id = ?
     |]
@@ -83,13 +79,12 @@ getRecordUuid conn record_id = do
 
 
 getRecordDataIdentification conn record_id = do
-  xs :: [ (Maybe String, Maybe String) ]  <- PG.query conn [r|
+  xs :: [ (Maybe BS.ByteString, Maybe BS.ByteString) ]  <- PG.query conn [r|
       select
-        di.title,
-        di.abstract
-      from record
-      left join data_identification di on di.record_id = record.id
-      where record.id = ?
+        title,
+        abstract
+      from data_identification
+      where record_id = ?
    |]
    $ Only (record_id :: Int )
   return $
@@ -100,17 +95,17 @@ getRecordDataIdentification conn record_id = do
 
 
 getRecordMDCommons conn record_id = do
-  xs :: [ (Maybe String, Maybe String, Maybe String, Maybe String) ]  <- PG.query conn [r|
+  -- TODO - should fields should support nulls as Maybe type here???
+  xs :: [ (Maybe BS.ByteString, Maybe BS.ByteString, Maybe BS.ByteString, Maybe BS.ByteString) ]  <- PG.query conn [r|
       select
-        md.jurisdiction_link,
-        md.license_link,
-        md.license_name,
-        md.license_image_link
-      from record
-      left join md_commons md on md.record_id = record.id
-      where record.id = ?
+        jurisdiction_link,
+        license_link,
+        license_name,
+        license_image_link
+      from md_commons
+      where record_id = ?
    |]
-   $ Only (record_id :: Int )
+   $ Only (record_id :: Int)
   return $
     case xs of
       [ (Just jurisdictionLink, Just licenseLink, Just licenseName, Just licenseImageLink) ]
@@ -150,7 +145,7 @@ getRecordGeopolys conn record_id = do
    |]
    $ Only (record_id :: Int )
   return $
-    map (\(Only poly) -> poly ) xs
+    map fromOnly xs
 
 
 
@@ -172,6 +167,32 @@ getTransferLinks conn record_id = do
 
 
 
+getRecordAttrConstraints conn record_id = do
+  xs :: [ (Only BS.ByteString ) ] <- PG.query conn [r|
+      select
+        attr
+      from attr_constraint
+      where record_id = ?
+   |]
+   $ Only (record_id :: Int )
+  return $
+    map fromOnly xs
+
+
+
+getRecordUseLimitations conn record_id = do
+  xs :: [ (Only BS.ByteString ) ] <- PG.query conn [r|
+      select
+        limitation
+      from use_limitation
+      where record_id = ?
+   |]
+   $ Only (record_id :: Int )
+  return $
+    map fromOnly xs
+
+
+
 getRecord conn record_id = do
 
   -- TODO there's something slow... although maybe the xml formatting,
@@ -182,14 +203,17 @@ getRecord conn record_id = do
   dataParameters <- getRecordDataParameters conn record_id
   transferLinks <- getTransferLinks conn record_id
   geopolys <- getRecordGeopolys conn record_id
+  attrConstraints <- getRecordAttrConstraints conn record_id
+  useLimitations <- getRecordUseLimitations conn record_id
+
 
   let record = Record {
                 uuid = uuid,
                 source = source,
                 dataIdentification = dataIdentification,
                 mdCommons = mdCommons,
-                attrConstraints = [],
-                useLimitations = [],
+                attrConstraints = attrConstraints,
+                useLimitations = useLimitations,
                 dataParameters = dataParameters,
                 temporalBegin = Nothing,
                 transferLinks = transferLinks,
@@ -223,5 +247,4 @@ main = do
                   Nothing -> ""
 
   (putStrLn.show) $ record
-
 
