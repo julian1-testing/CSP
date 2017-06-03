@@ -35,7 +35,6 @@ import qualified RecordGet as RecordGet(getRecords, getRecordIdFromUuid)
 import qualified Helpers as H(pad)
 import qualified Config as Config(connString)
 
--- import Prelude((<<=))
 
 
 -- TODO better way?
@@ -45,80 +44,59 @@ bsToLazy b =  LT.fromStrict $ E.decodeUtf8 b
 
 
 formatXML records depth =
-  LT.concat $ map (\record -> formatRecord record depth) records
-  -- LT.concat $ map (flip $ formatRecord depth ) records
+
+  -- TODO fix depth order
+  LT.concat $ map (formatRecord depth) records
   where
 
-    formatRecord record depth =
+    formatRecord depth record =
       LT.concat [
-        "\n", H.pad $ depth * 3, "<metadata>"
-        ,
 
-        -- TODO use maybe() - and flip the depth argument...
-        case dataIdentification record of
-          Just di -> formatTitle di (depth + 1)
-        ,
-        -- source (not uuid!!), probably not be needed
-        -- "<source>ed23e365-c459-4aa4-bbc1-5d2cd0274af0</source>"
+        "\n", 
+        H.pad $ depth * 3, "<metadata>",
 
-        -- portal doesn't seem to like full url as source
 
-        -- formatSource (depth + 1) $ maybe "" id (source record)
+        maybe "" (formatDataIdentification (depth + 1)) $ dataIdentification record,
+
 
         -- this just returns the uuid as the source - so we could adjust based on that.
-        -- "<source>",  maybe "" LT.pack ( uuid record) , "</source>"
+        "\n",
         "<source>1</source>"
         ,
 
         -- image
-        formatImage (depth + 1), "\n",
+        formatImage (depth + 1), 
+
 
         -- Point of Truth
-        H.pad $ depth * 3,
-        "<link>|Point of truth URL of this metadata record|https://catalogue-imos.aodn.org.au:443/geonetwork/srv/en/metadata.show?uuid=",
-          -- maybe  "" id (Just "hi")
-          maybe "" bsToLazy $ uuid record,
-          -- uuid record
-          -- "aaad092c-c3af-42e6-87e0-bdaef945f522"
-          "|WWW:LINK-1.0-http--metadata-URL|text/html</link>\n",
+        formatPOT (depth + 1) $ uuid record,
 
         -- responsibleParty doesn't do anything on step1,
-        -- "<responsibleParty>resourceProvider|resource|Bureau of Meteorology (BOM)|</responsibleParty><responsibleParty>principalInvestigator|resource|Bureau of Meteorology (BOM)|</responsibleParty><responsibleParty>distributor|metadata|Integrated Marine Observing System (IMOS)|</responsibleParty>\n",
+        -- "<responsibleParty>resourceProvider|resource|Bureau of Meteorology (BOM)|</responsibleParty><responsibleParty>principalInvestigator|resource|Bureau of Meteorology (BOM)|</responsibleParty>
+        -- <responsibleParty>distributor|metadata|Integrated Marine Observing System (IMOS)|</responsibleParty>\n",
 
-        -- parameter works - straight from vocab,
-        -- "<parameter>Skin temperature of the water body</parameter>\n",
 
-        -- organisation works
+        -- organisation works, but keyword only
         "<organisation>Integrated Marine Observing System (IMOS)</organisation>\n",
 
-
         -- temp extent works
+        -- we have a real temp-extent.
         "<tempExtentBegin>1992-03-19t14:00:00.000z</tempExtentBegin>\n",
         "<tempExtentEnd>2017-05-27t13:59:59.000z</tempExtentEnd>\n",
 
 
-        -- is this an efficient way of doing this????
-        -- foldl (\a b -> LT.append a $ LE.decodeUtf8  b) LT.empty  $ geopoly record,
-        -- LT.fromStrict $ E.decodeUtf8 $ foldl (BS.append ) BS.empty $ polys
-
-
         LT.concat $ map (formatGeopoly $ depth + 1) $ geopoly record -- in
-        -- foldl (LT.append ) LT.empty polys
-
-        -- formatGeopoly $ depth + 1
         ,
 
         -- dataparameters - eg. parameter, platform, organisation
         LT.concat $ map (formatDataParameter $ depth + 1) $ dataParameters record -- in
-        -- foldl (LT.append ) LT.empty dps
         ,
-
+  
         LT.concat $ map (formatLink $ depth + 1) $ transferLinks record -- in
-        -- foldl (LT.append ) LT.empty links
         ,
 
         -- geonet
-        -- nothing appears to be used except the record uuid
+        -- looks like nothing here is used, except the record uuid
         [r|
           <geonet:info xmlns:geonet="http://www.fao.org/geonetwork" >
               <id>153</id>
@@ -143,14 +121,29 @@ formatXML records depth =
       ]
 
 
-    formatTitle di depth  =
-      -- LT.concat [
+
+    formatPOT depth uuid =
+        -- TODO pass the source catalogue as well....
+        -- Point of Truth
+      LT.concat [
+          H.pad $ depth * 3,
+          "<link>|Point of truth URL of this metadata record|https://catalogue-imos.aodn.org.au:443/geonetwork/srv/en/metadata.show?uuid=",
+          maybe "" bsToLazy uuid,
+          "|WWW:LINK-1.0-http--metadata-URL|text/html",
+          "</link>\n"
+      ]
+
+
+    formatDataIdentification depth di =
+      let title' = title di in
       LT.concat [
           "\n",
           H.pad $ depth * 3,
-          "<title>", bsToLazy $ title di, "</title>"
+          "<title>", 
+          -- maybe "" bsToLazy di,
+          bsToLazy title',
+          "</title>"
       ]
-
 
 
     formatSource depth source =
@@ -160,7 +153,6 @@ formatXML records depth =
           H.pad $ depth * 3,
           "<source>", source', "</source>"
       ]
-
 
 
 
@@ -185,6 +177,7 @@ formatXML records depth =
       ]
 
 
+
     formatDataParameter depth dp =
       LT.concat [
         "\n",
@@ -207,7 +200,6 @@ formatXML records depth =
 
     {-
         data TransferLink = TransferLink {
-
             protocol :: BS.ByteString,
             linkage :: BS.ByteString,
             description :: BS.ByteString
@@ -215,7 +207,6 @@ formatXML records depth =
 
         <link>imos:anmn_velocity_timeseries_map|Moorings - velocity time-series|http://geoserver-123.aodn.org.au/geoserver/wms|OGC:WMS-1.1.1-http-get-map|application/vnd.ogc.wms_xml</link>
     -}
-
     formatLink depth link =
       LT.concat [
         "\n",
@@ -226,10 +217,7 @@ formatXML records depth =
               "<link>",
                 bsToLazy name,
                 "|", LT.pack $ X.textEscapeXml $ BS.unpack description,
-
-                -- need to xmlescap the & in links
                 "|", LT.pack $ X.textEscapeXml $ BS.unpack linkage,
-
                 "|", bsToLazy protocol,
                 -- GN appends a mime type as well supposedly discovered dynamically...
                 -- "|application/vnd.ogc.wms_xml",
@@ -248,7 +236,9 @@ formatXML records depth =
           H.pad $ depth * 3,
           -- "<image>thumbnail|http://whoot/image.jpg</image>"
           -- <image>thumbnail|../../srv/en/resources.get?uuid=c317b0fe-02e8-4ff9-96c9-563fd58e82ac&fname=gliders_map_s.png&access=public</image>
-          "<image>https://portal.aodn.org.au/images/AODN/AODN_logo_fullText.png</image>"
+          -- HOw does this work...
+          "<image>https://portal.aodn.org.au/images/AODN/AODN_logo_fullText.png</image>",
+          "\n"
       ]
 
 
