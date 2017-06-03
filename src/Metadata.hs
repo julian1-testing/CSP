@@ -86,7 +86,13 @@ formatXML records depth =
 
         LT.concat $ map (formatAttrConstraint nextDepth) $ attrConstraints record,
 
+        maybe "" (formatMDCommons nextDepth) $ mdCommons record, 
+
+
+
         LT.concat $ map (formatGeopoly nextDepth) $ geopoly record,
+
+
 
         -- geonet
         -- looks like nothing here is used, except the record uuid
@@ -128,22 +134,33 @@ formatXML records depth =
 
 
     formatDataIdentification depth di =
-      let title' = title di in
       LT.concat [
-          "\n",
-          H.pad $ depth * 3,
-          "<title>", 
-          -- maybe "" bsToLazy di,
-          bsToLazy title',
-          "</title>"
+          "\n", H.pad $ depth * 3,
+          "<title>", bsToLazy $ title di, "</title>"
+      ]
+
+
+{-
+    <imageLink>https://licensebuttons.net/l/by/4.0/88x31.png</imageLink>
+    <jurisdictionLink>http://creativecommons.org/international/</jurisdictionLink>
+    <licenseName>Attribution 4.0 International</licenseName>
+    <licenseLink>http://creativecommons.org/licenses/by/4.0/</licenseLink>
+-} 
+
+    formatMDCommons depth md =
+      let pad = LT.concat [ "\n", H.pad $ depth * 3 ] in
+      LT.concat [
+          pad, "<imageLink>", bsToLazy $ licenseImageLink md, "</imageLink>",
+          pad, "<jurisdictionLink>", bsToLazy $ jurisdictionLink md, "</jurisdictionLink>",
+          pad, "<licenseName>", bsToLazy $ licenseName md, "</licenseName>",
+          pad, "<licenseLink>", bsToLazy $ licenseLink md, "</licenseLink>"
       ]
 
 
     formatSource depth source =
       let source' = LT.pack $ X.textEscapeXml source in
       LT.concat [
-          "\n",
-          H.pad $ depth * 3,
+          "\n", H.pad $ depth * 3,
           "<source>", source', "</source>"
       ]
 
