@@ -9,13 +9,13 @@
 
 module Query where
 
-import qualified Database.PostgreSQL.Simple as PG(query, connectPostgreSQL)
-import Database.PostgreSQL.Simple.Types as PG(Only(..))
+import qualified Database.PostgreSQL.Simple as PG(connect, close, query)
+import Database.PostgreSQL.Simple.Types(Only(..))
 import qualified Data.ByteString.Char8 as BS
 import Data.Function( (&) )
 import Text.RawString.QQ
 
-import qualified Config as Config(connString)
+import qualified Config as Config(connectionInfo)
 
 -- TODO move to Utils?
 -- pad :: Int -> a -> [a] -> [a]
@@ -78,9 +78,11 @@ resolveTerm conn term = do
 
 
 main = do
-  conn <- PG.connectPostgreSQL Config.connString
+  conn <- PG.connect Config.connectionInfo
   let facetTerm = Just "Platform/Satellite/orbiting satellite/NOAA-19"
   Query.resolveTerm conn facetTerm
+
+  PG.close conn
 
 
 

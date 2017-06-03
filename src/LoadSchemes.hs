@@ -9,20 +9,20 @@
 
 -}
 
-{-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE Arrows, NoMonomorphismRestriction #-}
-{-# LANGUAGE QuasiQuotes #-}
+{-# LANGUAGE Arrows, NoMonomorphismRestriction, OverloadedStrings, QuasiQuotes  #-}
 
 module LoadSchemes where
 
 
 import Text.XML.HXT.Core
 
-import qualified Database.PostgreSQL.Simple as PG
+
+import qualified Database.PostgreSQL.Simple as PG(connect, close, execute)
 import Text.RawString.QQ
 
 import Helpers(parseXML, atTag, atChildName, getChildText, stripSpace)
-import qualified Config as Config(connString)
+
+import qualified Config as Config(connectionInfo)
 
 
 isDescription = do
@@ -271,8 +271,8 @@ storeVocabImproved conn vocab = do
 main :: IO ()
 main = do
   -- TODO see if storeVocabImproved can be used instead of loading both vocabs concurrently
-  -- TODO - do the loading in seperate transactions
-  conn <- PG.connectPostgreSQL Config.connString
+  -- TODO - organize loading in seperate transactions
+  conn <- PG.connect Config.connectionInfo
 
   -- platform
   print "doing platform"

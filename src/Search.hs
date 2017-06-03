@@ -8,7 +8,7 @@
 
 module Search where
 
-import qualified Database.PostgreSQL.Simple as PG(query, connectPostgreSQL)
+import qualified Database.PostgreSQL.Simple as PG(query, connect, close)
 import Database.PostgreSQL.Simple.Internal as Internal(Connection)
 
 -- TODO Should be Data.Map.Lazy as Map ?
@@ -30,7 +30,7 @@ import qualified Metadata as Metadata(formatXML)
 import qualified Helpers as H(concatLT)
 import qualified Query as Query(resolveTerm)
 import qualified FreeText as FreeText(search)
-import qualified Config as Config(connString)
+import qualified Config as Config(connectionInfo)
 
 -- ease syntax
 -- change to Map.lookup that returns Maybe - can then specify the error action...
@@ -237,9 +237,11 @@ search conn params = do
 
 main :: IO ()
 main = do
-  conn <- PG.connectPostgreSQL Config.connString
+  conn <- PG.connect Config.connectionInfo
 
   s <- search conn $ Params { from = 0, to = 10000, facetQ = Nothing, Search.any = Nothing }
   LT.putStrLn $ s
+
+  PG.close conn
 
 

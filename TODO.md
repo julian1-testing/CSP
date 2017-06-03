@@ -1,4 +1,6 @@
 
+- change test code to 
+
 - slow deserialization of individual records - algorithm needs to be changed
 
 - organisation support - needs records marked up
@@ -19,8 +21,10 @@
 tidy QQ imports and qualify them. eg.
   import Text.RawString.QQ(r)
 
-
 - bounding box for gridded data....
+
+
+done - connection pooling
 
 ---
 

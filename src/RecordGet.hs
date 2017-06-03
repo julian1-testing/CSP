@@ -12,14 +12,14 @@
 module RecordGet where
 
 
-import Database.PostgreSQL.Simple as PG
-import Database.PostgreSQL.Simple.Types as PG(Only(..))
+import qualified Database.PostgreSQL.Simple as PG(connect, close, query)
+import Database.PostgreSQL.Simple.Types(Only(..))
 import qualified Data.ByteString.Char8 as BS(ByteString(..) )
 import Text.RawString.QQ
 
-import qualified Config as Config(connString)
 
 import Record
+import qualified Config as Config(connectionInfo)
 
 
 
@@ -235,7 +235,7 @@ getRecords conn records = do
 
 main :: IO ()
 main = do
-  conn <- PG.connectPostgreSQL Config.connString
+  conn <- PG.connect Config.connectionInfo
 
   let record_id = 289
   record <- getRecord conn record_id
@@ -248,3 +248,4 @@ main = do
 
   (putStrLn.show) $ record
 
+  PG.close conn

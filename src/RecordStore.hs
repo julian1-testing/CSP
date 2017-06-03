@@ -9,18 +9,18 @@ module RecordStore where
 
 
 import Database.PostgreSQL.Simple as PG
-import Database.PostgreSQL.Simple.Types as PG(Only(..))
-import Text.RawString.QQ
+
+import qualified Database.PostgreSQL.Simple as PG(connect, close)
+import qualified Database.PostgreSQL.Simple.Types as PG(Only(..))
 import qualified Data.ByteString.Char8 as BS(ByteString(..), putStrLn, concat)
-
-
-
 import qualified Data.Maybe as Maybe(fromJust)
+import Text.RawString.QQ
+
 
 import Helpers as H -- (parseXML)
 import ParseMCP20(parse)
 import Record
-import qualified Config as Config(connString)
+import qualified Config as Config(connectionInfo)
 
 
 ----------------
@@ -413,7 +413,7 @@ deleteAll conn = do
 
 
 main = do
-    conn <- PG.connectPostgreSQL Config.connString
+    conn <- PG.connect Config.connectionInfo
     recordText <- readFile "./test-data/argo.xml"
 
     let elts = parseXML recordText

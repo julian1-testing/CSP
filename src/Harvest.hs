@@ -7,7 +7,7 @@
 
 module Harvest where
 
-import qualified Database.PostgreSQL.Simple as PG(connectPostgreSQL, close)
+import qualified Database.PostgreSQL.Simple as PG(connect, close)
 import qualified Data.ByteString.Char8 as BS(pack)
 import Text.XML.HXT.Core(runX, (>>>))
 import Text.RawString.QQ
@@ -19,7 +19,8 @@ import qualified Record as R
 import qualified RecordStore as RS
 import qualified ParseMCP20 as ParseMCP20
 
-import qualified Config as R
+
+import qualified Config as Config(connectionInfo)
 ----------------
 
 doGetAndProcessRecord conn source' uuid title = do
@@ -59,7 +60,7 @@ doGetAndProcessRecords conn = do
 
 main :: IO ()
 main = do
-  conn <- PG.connectPostgreSQL "host='postgres.localnet' dbname='harvest' user='harvest' sslmode='require'"
+  conn <- PG.connect Config.connectionInfo
   doGetAndProcessRecords conn
   PG.close conn
 

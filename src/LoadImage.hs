@@ -4,12 +4,12 @@
 module LoadImage where
 
 
-import Database.PostgreSQL.Simple as PG
+import qualified Database.PostgreSQL.Simple as PG(connect, close, query, Binary(..))
 import Database.PostgreSQL.Simple.Types as PG(Only(..))
 import qualified Data.ByteString.Char8 as BS(ByteString(..), readFile, writeFile)
 import Text.RawString.QQ
 
-import qualified Config as Config(connString)
+import qualified Config as Config(connectionInfo)
 
 
 {-
@@ -31,7 +31,7 @@ storeImage conn s = do
         |]
         -- NOTE - the use of Binary type constructor, to avoid UTF-8
         -- https://hackage.haskell.org/package/postgresql-simple-0.5.0.0/candidate/docs/Database-PostgreSQL-Simple.html#g:12
-        $ Only $ Binary (s :: BS.ByteString )
+        $ Only $ PG.Binary (s :: BS.ByteString )
 
     return $
       case xs of
@@ -61,7 +61,7 @@ getImage conn id = do
 main = do
     s <- BS.readFile "resources/logo.png"
 
-    conn <- PG.connectPostgreSQL Config.connString
+    conn <- PG.connect Config.connectionInfo
     record_id <- storeImage conn s
 
     putStrLn $ "stored record_id is " ++ show record_id

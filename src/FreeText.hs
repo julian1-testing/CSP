@@ -10,12 +10,13 @@
 
 module FreeText where
 
-import qualified Database.PostgreSQL.Simple as PG
+
+import qualified Database.PostgreSQL.Simple as PG(connect, close, query)
 import Database.PostgreSQL.Simple.Types as PG(Only(..))
 import qualified Data.ByteString.Char8 as BS(ByteString(..), pack, putStrLn, concat)
 import Text.RawString.QQ(r)
 
-import qualified Config as Config(connString)
+import qualified Config as Config(connectionInfo)
 
 
 search conn query = do
@@ -41,7 +42,8 @@ search conn query = do
 -- test
 
 main = do
-    conn <- PG.connectPostgreSQL Config.connString
+
+    conn <- PG.connect Config.connectionInfo
     -- xs <- search conn "argo"
     -- xs <- search conn "argo & profiles"
     -- xs <- search conn "'argo profiles'"
