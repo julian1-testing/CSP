@@ -8,9 +8,8 @@
 
 -}
 
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE OverloadedStrings, QuasiQuotes #-}
 
-{-# LANGUAGE QuasiQuotes #-}
 
 module Metadata where
 
@@ -36,25 +35,25 @@ import qualified Config as Config(connString)
 
 -- TODO better way?
 -- fromChunks ?
-bsToLazy b =  LT.fromStrict $ E.decodeUtf8 b
+bsToLazy s =  LT.fromStrict $ E.decodeUtf8 s
+
+bsToLazyEscaped s = LT.pack $ X.textEscapeXml $ BS.unpack s
 
 
 
 formatXML records depth =
 
-  -- TODO fix depth order
   LT.concat $ map (formatRecord depth) records
   where
-
     formatRecord depth record =
+
+      let nextDepth = depth + 1 in
       LT.concat [
 
         "\n", 
         H.pad $ depth * 3, "<metadata>",
 
-
-        maybe "" (formatDataIdentification (depth + 1)) $ dataIdentification record,
-
+        maybe "" (formatDataIdentification nextDepth) $ dataIdentification record,
 
         -- this just returns the uuid as the source - so we could adjust based on that.
         "\n",
@@ -62,16 +61,13 @@ formatXML records depth =
         ,
 
         -- image
-        formatImage (depth + 1), 
+        formatImage nextDepth, 
 
-
-        -- Point of Truth
-        formatPOT (depth + 1) $ uuid record,
+        formatPOT nextDepth $ uuid record,
 
         -- responsibleParty doesn't do anything on step1,
         -- "<responsibleParty>resourceProvider|resource|Bureau of Meteorology (BOM)|</responsibleParty><responsibleParty>principalInvestigator|resource|Bureau of Meteorology (BOM)|</responsibleParty>
         -- <responsibleParty>distributor|metadata|Integrated Marine Observing System (IMOS)|</responsibleParty>\n",
-
 
         -- organisation works, but keyword only
         "<organisation>Integrated Marine Observing System (IMOS)</organisation>\n",
@@ -82,15 +78,15 @@ formatXML records depth =
         "<tempExtentEnd>2017-05-27t13:59:59.000z</tempExtentEnd>\n",
 
 
-        LT.concat $ map (formatGeopoly $ depth + 1) $ geopoly record -- in
-        ,
-
-        -- dataparameters - eg. parameter, platform, organisation
-        LT.concat $ map (formatDataParameter $ depth + 1) $ dataParameters record -- in
-        ,
+        LT.concat $ map (formatDataParameter nextDepth) $ dataParameters record,
   
-        LT.concat $ map (formatLink $ depth + 1) $ transferLinks record -- in
-        ,
+        LT.concat $ map (formatLink nextDepth) $ transferLinks record,
+
+        LT.concat $ map (formatUseLimitation nextDepth) $ useLimitations record,
+
+        LT.concat $ map (formatAttrConstraint nextDepth) $ attrConstraints record,
+
+        LT.concat $ map (formatGeopoly nextDepth) $ geopoly record,
 
         -- geonet
         -- looks like nothing here is used, except the record uuid
@@ -174,7 +170,6 @@ formatXML records depth =
       ]
 
 
-
     formatDataParameter depth dp =
       LT.concat [
         "\n",
@@ -204,6 +199,7 @@ formatXML records depth =
 
         <link>imos:anmn_velocity_timeseries_map|Moorings - velocity time-series|http://geoserver-123.aodn.org.au/geoserver/wms|OGC:WMS-1.1.1-http-get-map|application/vnd.ogc.wms_xml</link>
     -}
+
     formatLink depth link =
       LT.concat [
         "\n",
@@ -213,8 +209,8 @@ formatXML records depth =
           TransferLink protocol linkage name description -> LT.concat [
               "<link>",
                 bsToLazy name,
-                "|", LT.pack $ X.textEscapeXml $ BS.unpack description,
-                "|", LT.pack $ X.textEscapeXml $ BS.unpack linkage,
+                "|", bsToLazyEscaped description,
+                "|", bsToLazyEscaped linkage,
                 "|", bsToLazy protocol,
                 -- GN appends a mime type as well supposedly discovered dynamically...
                 -- "|application/vnd.ogc.wms_xml",
@@ -224,6 +220,21 @@ formatXML records depth =
           -- TransferLink protocol linkage name description -> LT.concat [ "<!-- ", bsToLazy protocol, bsToLazy linkage, bsToLazy name, bsToLazy description, "-->" ]
       ]
 
+
+    formatUseLimitation depth limitation = 
+      LT.concat [
+          "\n",
+          H.pad $ depth * 3,
+          "<useLimitation>", bsToLazyEscaped limitation, "</useLimitation>"
+      ]
+
+
+    formatAttrConstraint depth constraint = 
+      LT.concat [
+          "\n",
+          H.pad $ depth * 3,
+          "<attrConstr>", bsToLazyEscaped constraint, "</attrConstr>"
+      ]
 
 
     formatImage depth =

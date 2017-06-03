@@ -23,7 +23,8 @@ FLAGS="-i./src -O2 -outputdir tmp"
 # files=' src/LoadImage.hs '
 
 # main binaries
-files=' src/LoadSchemes.hs src/Harvest.hs src/Service.hs src/LoadImage.hs '
+# files=' src/LoadSchemes.hs src/Harvest.hs src/Service.hs src/LoadImage.hs '
+files=' src/Metadata.hs src/Service.hs '
 
 
 for i in $files; do

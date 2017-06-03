@@ -1,15 +1,12 @@
 
 - understand exceptions in context of db handling etc..
 
-- attribution - on download,
 
 - image from db. if only to prove it works.
     -- need to understand conn handling only issue is db conn handling.
 
 
 - popularity
-
-- change record uuid etc to bytestring.
 
 
 tidy QQ imports and qualify them. eg.
@@ -18,6 +15,12 @@ tidy QQ imports and qualify them. eg.
 
 - polys for gridded data....
 
+
+
+
+done - (partially done) attribution - on download, use limitation 
+
+done - change record uuid etc to bytestring.
 
 done for griddedi - work out why the polygon geopoly isn't working? 
 
